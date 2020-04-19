@@ -1,0 +1,34 @@
+Vanilla:
+* No changes besides some behind the scenes stuff
+
+Vanilla_AlternativeNumbering:
+* Pages are numbered in a more future proof way:
+-- The introductionory pages are still numbered as before, but without the 'of 23' (eg. "Page 2")
+-- Solvable module pages have their numbering prefixed with "1.", starting countdown at "Page 1.1" for the title page.
+-- Needy module pages have their numbering prefixed with "2.", starting countdown at "Page 2.1" for the title page.
+-- Appendices will have roman numeral page numbering, eg. "Page III".
+
+Modded Manuals:
+* By default, besides distinction between solvable, needy & appendix, page ordering will be determined by module release date, similar to how the vanilla manual is not sorted alphabetically either.  
+
+Road To Centurion 1:
+* Changed the introduction pages to account for mods
+-- Bombs can have more than 11 modules
+-- Bombs can have more than 2 strikes before blowing
+-- Not every module can be solved in any order
+-- There are more appendices than just A, B and C. Some manuals may not refer to A, B, C but still use it.
+* Almost every module:
+-- changed the ink blot splatter patterns to not be repetitive in context of the entire manual, and added them where they were missing
+-- some BTS changes, such as html tags not being closed, and making stuff work in context of the entire manual
+-- page numbering, which may not be accurate, due to the non-chronological order I am processing these
+* Colour Flash
+* Turn The Key
+* Turn The Keys: Decreased font sizes because the manual didn't actually fit on one page.
+* 3D Maze
+* Skewed Slots: Appendix placed in appendices
+* Follow The Leader
+* Blind Alley 
+* Hexamaze
+* Battleship: Changed some margins as the manual didn't fit on a page
+
+
