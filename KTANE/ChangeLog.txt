@@ -10,8 +10,6 @@ Vanilla_AlternativeNumbering:
 
 Modded Manuals:
 * By default, besides distinction between solvable, needy & appendix, page ordering will be determined by module release date, similar to how the vanilla manual is not sorted alphabetically either.  
-
-Road To Centurion 1:
 * Changed the introduction pages to account for mods
 -- Bombs can have more than 11 modules
 -- Bombs can have more than 2 strikes before blowing
@@ -21,14 +19,31 @@ Road To Centurion 1:
 -- changed the ink blot splatter patterns to not be repetitive in context of the entire manual, and added them where they were missing
 -- some BTS changes, such as html tags not being closed, and making stuff work in context of the entire manual
 -- page numbering, which may not be accurate, due to the non-chronological order I am processing these
+
+Road To Centurion 1:
 * Colour Flash
 * Turn The Key
-* Turn The Keys: Decreased font sizes because the manual didn't actually fit on one page.
+* Turn The Keys: Decreased font sizes because the manual didn't actually fit on one page. Removed mentions of modules not actually in this pack.
 * 3D Maze
-* Skewed Slots: Appendix placed in appendices
+* Skewed Slots: Appendix placed in appendices, and added a mention about negative numbers not being prime.
 * Follow The Leader
 * Blind Alley 
 * Hexamaze
 * Battleship: Changed some margins as the manual didn't fit on a page
+
+Road To Centurion 2:
+* Anagrams
+* Word Scramble
+* Square Button: Got rid of the red line and gave it the ink blots instead
+* Simon States: Last table didn't fit on the page. Lowered table margins.
+* Round Keypad
+* Listening
+* Morsematics: Reference tables moved to appendices, and made to appear like an appendix. Referenced the appendix on the module's main page, had to decrease margins to make it fit.
+* Forget Me Not: Margins to make the page fit
+* Plumbing
+* Safety Safe: Font size of big table to 98% because it just barely didn't fit
+* Silly Slots
+* Souvenir: Moved the big table to the appendices for ease of updating, and removed modules not present in this pack.
+
 
 
