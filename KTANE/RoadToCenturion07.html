@@ -6082,33 +6082,48 @@
                 <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
                 <span class="page-header-section-title">The Bulb</span>
             </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
             <div class="page-content">
                 <img class="diagram" src="img/Component/The Bulb.svg">
                 <h2>On the Subject of The Bulb</h2>
 
-                <p class="flavour-text">How many bomb defusal experts does it take to screw in a light bulb?</p>
+                <p style="margin: .7em 0;" class="flavour-text">How many bomb defusal experts does it take to screw in a light bulb?</p>
 
-                <p>
+                <p style="margin: .7em 0;">
                     This module has two buttons labeled <strong>I</strong> and <strong>O</strong> and a light bulb,
                     which is either see-through (translucent) or opaque, and is one of six colors:
                     blue, green, purple, red, white or yellow.
                 </p>
-                <p>
+                <p style="margin: .7em 0;">
                     If you incur a strike because you pushed a wrong button, ignore it and continue.
                     If you incur a strike because you unscrewed or screwed in the bulb at an incorrect time,
                     you <em>must</em> undo that before continuing.
                 </p>
-                <p>Begin at <em>Step 1</em> below.</p>
-                <p>
+                <p style="margin: .7em 0;">Begin at <em>Step 1</em> below.</p>
+                <p style="margin: .7em 0;">
                     While the bulb is screwed in, a long press on either button will reset the module back to Step 1.
                     Attempting this while the bulb is out will incur a strike.
                 </p>
 
-                <table class="layout">
+                <style>
+                    table.thebulblayout {
+                        border: none;
+                    }
+                    table.thebulblayout td, table.thebulblayout th {
+                        border: none;
+                        vertical-align: top;
+                        padding: .5em 0;
+                    }
+                    table.thebulblayout th {
+                        white-space: nowrap;
+                    }
+                </style>
+
+                <table class="thebulblayout">
                     <tr>
                         <th>Step 1</th>
                         <td>
-                            <ul id='step-1'>
+                            <ul style="padding-left: 2em; margin: 0;">
                                 <li>If the light is on and the bulb is see-through, press <strong>I</strong> and go to <strong>Step 2</strong>.</li>
                                 <li>If the light is on and the bulb is opaque, press <strong>O</strong> and go to <strong>Step 3</strong>.</li>
                                 <li>Otherwise, unscrew the bulb and go to <strong>Step 4</strong>.</li>
@@ -6118,7 +6133,7 @@
                     <tr>
                         <th>Step 2</th>
                         <td>
-                            <ul id='step-2'>
+                            <ul style="padding-left: 2em; margin: 0;">
                                 <li>If the bulb is red, press <strong>I</strong>, then unscrew it and go to <strong>Step 5</strong>.</li>
                                 <li>If the bulb is white, press <strong>O</strong>, then unscrew it and go to <strong>Step 6</strong>.</li>
                                 <li>Otherwise, unscrew the bulb and go to <strong>Step 7</strong>.</li>
@@ -6128,7 +6143,7 @@
                     <tr>
                         <th>Step 3</th>
                         <td>
-                            <ul id='step-3'>
+                            <ul style="padding-left: 2em; margin: 0;">
                                 <li>If the bulb is green, press <strong>I</strong>, then unscrew it and go to <strong>Step 6</strong>.</li>
                                 <li>If the bulb is purple, press <strong>O</strong>, then unscrew it and go to <strong>Step 5</strong>.</li>
                                 <li>Otherwise, unscrew the bulb and go to <strong>Step 8</strong>.</li>
@@ -6138,7 +6153,7 @@
                     <tr>
                         <th>Step 4</th>
                         <td>
-                            <ul id='step-4'>
+                            <ul style="padding-left: 2em; margin: 0;">
                                 <li>If the bomb has any of the following indicators: CAR, IND, MSA or SND, press <strong>I</strong> and go to <strong>Step 9</strong>.</li>
                                 <li>Otherwise, press <strong>O</strong> and go to <strong>Step 10</strong>.</li>
                             </ul>
@@ -6147,7 +6162,7 @@
                     <tr>
                         <th>Step 5</th>
                         <td>
-                            <ul id='step-5'>
+                            <ul style="padding-left: 2em; margin: 0;">
                                 <li>If the light went off at Step 1, press the same button again, then screw the bulb back in.</li>
                                 <li>Otherwise, press the button you haven’t yet pressed, then screw the bulb back in.</li>
                             </ul>
@@ -6156,7 +6171,7 @@
                     <tr>
                         <th>Step 6</th>
                         <td>
-                            <ul id='step-6'>
+                            <ul style="padding-left: 2em; margin: 0;">
                                 <li>If the bulb went off when you pressed <strong>I</strong>, press the button that you pressed in Step 1, then screw the bulb back in.</li>
                                 <li>Otherwise, press the button that you pressed in Step 2 or 3, then screw the bulb back in.</li>
                             </ul>
@@ -6166,8 +6181,113 @@
             </div>
             <div class="page-footer relative-footer solvablepagecount"></div>
         </div>
+        <div class="page ">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">The Bulb</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <table class="thebulblayout">
+                    <tr>
+                        <th>Step 7</th>
+                        <td>
+                            <ul style="padding-left: 2em; margin: 0;">
+                                <li>If the bulb is green, press <strong>I</strong>, remember <u>SIG</u> and go to <strong>Step 11</strong>.</li>
+                                <li>If the bulb is purple, press <strong>I</strong>, then screw it back in and go to <strong>Step 12</strong>.</li>
+                                <li>If the bulb is blue, press <strong>O</strong>, remember <u>CLR</u> and go to <strong>Step 11</strong>.</li>
+                                <li>Otherwise, press <strong>O</strong>, then screw the bulb back in and go to <strong>Step 13</strong>.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Step 8</th>
+                        <td>
+                            <ul style="padding-left: 2em; margin: 0;">
+                                <li>If the bulb is white, press <strong>I</strong>, remember <u>FRQ</u> and go to <strong>Step 11</strong>.</li>
+                                <li>If the bulb is red, press <strong>I</strong>, then screw it back in and go to <strong>Step 13</strong>.</li>
+                                <li>If the bulb is yellow, press <strong>O</strong>, remember <u>FRK</u> and go to <strong>Step 11</strong>.</li>
+                                <li>Otherwise, press <strong>O</strong>, then screw the bulb back in and go to <strong>Step 12</strong>.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Step 9</th>
+                        <td>
+                            <ul style="padding-left: 2em; margin: 0;">
+                                <li>If the bulb is blue, press <strong>I</strong> and go to <strong>Step 14</strong>.</li>
+                                <li>If the bulb is green, press <strong>I</strong>, then screw it back in and go to <strong>Step 12</strong>.</li>
+                                <li>If the bulb is yellow, press <strong>O</strong> and go to <strong>Step 15</strong>.</li>
+                                <li>If the bulb is white, press <strong>O</strong>, then screw it back in and go to <strong>Step 13</strong>.</li>
+                                <li>If the bulb is purple, screw it back in, then press <strong>I</strong> and go to <strong>Step 12</strong>.</li>
+                                <li>Otherwise, screw the bulb back in, then press <strong>O</strong> and go to <strong>Step 13</strong>.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Step 10</th>
+                        <td>
+                            <ul style="padding-left: 2em; margin: 0;">
+                                <li>If the bulb is purple, press <strong>I</strong> and go to <strong>Step 14</strong>.</li>
+                                <li>If the bulb is red, press <strong>I</strong>, then screw it back in and go to <strong>Step 13</strong>.</li>
+                                <li>If the bulb is blue, press <strong>O</strong> and go to <strong>Step 15</strong>.</li>
+                                <li>If the bulb is yellow, press <strong>O</strong>, then screw it back in and go to <strong>Step 12</strong>.</li>
+                                <li>If the bulb is green, screw it back in, then press <strong>I</strong> and go to <strong>Step 13</strong>.</li>
+                                <li>Otherwise, screw the bulb back in, then press <strong>O</strong> and go to <strong>Step 12</strong>.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Step 11</th>
+                        <td>
+                            <ul style="padding-left: 2em; margin: 0;">
+                                <li>If the bomb has the remembered indicator, press <strong>I</strong>, then screw the bulb back in.</li>
+                                <li>Otherwise, press <strong>O</strong>, then screw the bulb back in.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Step 12</th>
+                        <td>
+                            <ul style="padding-left: 2em; margin: 0;">
+                                <li>If the light is now on, press <strong>I</strong>.</li>
+                                <li>Otherwise, press <strong>O</strong>.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Step 13</th>
+                        <td>
+                            <ul style="padding-left: 2em; margin: 0;">
+                                <li>If the light is now on, press <strong>O</strong>.</li>
+                                <li>Otherwise, press <strong>I</strong>.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Step 14</th>
+                        <td>
+                            <ul style="padding-left: 2em; margin: 0;">
+                                <li>If the bulb is opaque, press <strong>I</strong>, then screw the bulb back in.</li>
+                                <li>Otherwise, press <strong>O</strong>, then screw the bulb back in.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Step 15</th>
+                        <td>
+                            <ul style="padding-left: 2em; margin: 0;">
+                                <li>If the bulb is see-through, press <strong>I</strong>, then screw the bulb back in.</li>
+                                <li>Otherwise, press <strong>O</strong>, then screw the bulb back in.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="page-footer relative-footer solvablepagecount"></div>
+        </div>
         
-        
+
         <div class="page " id="BlindAlley">
             <div class="page-header">
                 <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
@@ -7985,7 +8105,50 @@ OFFICE</div></div><div class='letter' style='left: 50mm; top: 25mm;' data-letter
 
         <!-- Text Field -->
 
-		<!-- Wire Placement -->
+        <div class="page " id="WirePlacement">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Wire Placement</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <img class="diagram" src="img/Component/Wire Placement.svg">
+                <h2>On the Subject of Wire Placement</h2>
+
+                <p class="flavour-text">Sometimes, the wire may look like a face, calming you down... and then you explode.
+
+                </p>
+				<ul>
+                    <li>This module contains a grid of wires.
+                    </li><li>There are always 8 wires on it.
+                    </li><li>Wires can be red, blue, yellow, black or white.
+                    </li><li>In the following table, use only the column corresponding to the color of the wire connected to <span>C3</span>.
+                    </li><li>Cut a wire if it is a specific color and is connected to a specific spot on the grid as indicated in the table.
+                </li>
+				</ul>
+
+                <table style="border: none;">
+                    <tbody>
+						<tr>
+							<td class="corner" rowspan="2"></td>
+							<th colspan="5">Wire connected to <span>C3</span> is</th></tr>
+						<tr><th>Black</th><th>Blue</th><th>Red</th><th>White</th><th>Yellow</th></tr>
+						<tr><th>Cut if color</th><th colspan="5">is connected to:</th></tr>
+						<tr><th>Yellow </th><td>D2</td><td>D1</td><td>D2</td><td>A2</td><td>D1</td></tr>
+						<tr><th>Blue   </th><td>A2</td><td>C4</td><td>A1</td><td>C4</td><td>D4</td></tr>
+						<tr><th>White  </th><td>D3</td><td>D2</td><td>D4</td><td>B3</td><td>B2</td></tr>
+						<tr><th>White  </th><td>B2</td><td>C1</td><td>B4</td><td>A1</td><td>C1</td></tr>
+						<tr><th>Red    </th><td>A1</td><td>B3</td><td>C4</td><td>B2</td><td>B3</td></tr>
+						<tr><th>Blue   </th><td>C3</td><td>C2</td><td>C1</td><td>D3</td><td>B1</td></tr>
+						<tr><th>Black  </th><td>B1</td><td>D4</td><td>A4</td><td>D2</td><td>B4</td></tr>
+						<tr><th>Red    </th><td>C4</td><td>D3</td><td>B1</td><td>C1</td><td>C2</td></tr>
+						<tr><th>Yellow </th><td>A3</td><td>C3</td><td>A2</td><td>A4</td><td>A3</td></tr>
+						<tr><th>Yellow </th><td>D1</td><td>A1</td><td>B2</td><td>B4</td><td>A4</td></tr>
+					</tbody>
+				</table>
+            </div>
+            <div class="page-footer relative-footer solvablepagecount"></div>
+        </div>
  
         
         <div class="page " id="DoubleOh">
@@ -9462,9 +9625,307 @@ OFFICE</div></div><div class='letter' style='left: 50mm; top: 25mm;' data-letter
         
 
     
-
+        <div class="page " id="ColorMath">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Color Math</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <img src="img/Component/Color Math.svg" class="diagram">
+                <h2>On the Subject of Color Math</h2>
+                <p class="flavour-text">
+                    So many colors!
+                </p>
+                <ul>
+                    <li>This module contains 2 rows of LEDs, left (represents the base number) and right (represents adder/subtractor/multiplier/divider and/or answer).</li>
+                    <li>Numbers in this module are ranged from 0-9999 inclusive. LEDs are read from the top (Most Significant Digit) to bottom (Least Significant Digit).</li>
+                    <li>Use Table 1 to convert left side LEDs into the base number.</li>
+                    <li>The display at the middle of this module shows the action that needs to be performed: [A]dd / [S]ubtract / [M]ultiply / [D]ivide.</li>
+                    <li>If the text in the display is GREEN, use Table 2 to convert right side LEDs into the adder/subtractor/multiplier/divider.</li>
+                    <li>If the text in the display is RED, ignore right side LEDS and then use Table 3 to determine the adder/subtractor/multiplier/divider.</li>
+                    <li>Perform the action required and use table 4 to convert the answer into colors, then input it on right side LEDs. Push SUBMIT to check.</li>
+                </ul>
+                <h3>Table 1: Left side LEDs to numbers conversion table</h3>
+                <table style="font-size: 11pt;">
+                    <tr>
+                        <th>LED No.</th>
+                        <th>Blue</th>
+                        <th>Green</th>
+                        <th>Purple</th>
+                        <th>Yellow</th>
+                        <th>White</th>
+                        <th>Magenta</th>
+                        <th>Red</th>
+                        <th>Orange</th>
+                        <th>Gray</th>
+                        <th>Black</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>6</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>4</td>
+                        <td>9</td>
+                        <td>0</td>
+                        <td>8</td>
+                        <td>5</td>
+                        <td>3</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>8</td>
+                        <td>1</td>
+                        <td>9</td>
+                        <td>4</td>
+                        <td>3</td>
+                        <td>6</td>
+                        <td>0</td>
+                        <td>5</td>
+                        <td>7</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>1</td>
+                        <td>9</td>
+                        <td>7</td>
+                        <td>0</td>
+                        <td>2</td>
+                        <td>5</td>
+                        <td>3</td>
+                        <td>8</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>6</td>
+                        <td>8</td>
+                        <td>7</td>
+                        <td>5</td>
+                        <td>4</td>
+                        <td>9</td>
+                        <td>1</td>
+                        <td>3</td>
+                        <td>0</td>
+                        <td>2</td>
+                    </tr>
+                </table>
+                <h3>Table 2: Right side LEDs to numbers conversion table</h3>
+                <table style="font-size: 11pt;">
+                    <tr>
+                        <th>LED No.</th>
+                        <th>Blue</th>
+                        <th>Green</th>
+                        <th>Purple</th>
+                        <th>Yellow</th>
+                        <th>White</th>
+                        <th>Magenta</th>
+                        <th>Red</th>
+                        <th>Orange</th>
+                        <th>Gray</th>
+                        <th>Black</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>6</td>
+                        <td>5</td>
+                        <td>4</td>
+                        <td>3</td>
+                        <td>7</td>
+                        <td>9</td>
+                        <td>8</td>
+                        <td>1</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>2</td>
+                        <td>9</td>
+                        <td>8</td>
+                        <td>0</td>
+                        <td>5</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>7</td>
+                        <td>1</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>5</td>
+                        <td>0</td>
+                        <td>6</td>
+                        <td>4</td>
+                        <td>2</td>
+                        <td>7</td>
+                        <td>9</td>
+                        <td>3</td>
+                        <td>8</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>4</td>
+                        <td>2</td>
+                        <td>9</td>
+                        <td>8</td>
+                        <td>6</td>
+                        <td>7</td>
+                        <td>1</td>
+                        <td>3</td>
+                        <td>0</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="page-footer relative-footer solvablepagecount"></div>
+        </div>
+        <div class="page ">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Color Math</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <h3>Table 3: Finding ASMD in case of red display</h3>
+                <table>
+                    <tr>
+                        <th>Digit No.</th>
+                        <th>0-1 Batteries</th>
+                        <th>2-3 Batteries</th>
+                        <th>4-5 Batteries</th>
+                        <th>6+ Batteries</th>
+                    </tr>
+                    <tr>
+                        <td>1 (MSD)</td>
+                        <td>First digit in serial number</td>
+                        <td>0</td>
+                        <td>Amount of vowels in serial number</td>
+                        <td>DVI-D port counts</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Amount of unlit indicators</td>
+                        <td>PS/2 port counts</td>
+                        <td>Amount of battery holders</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>9</td>
+                        <td>Amount of letters in serial number</td>
+                        <td>Serial port counts</td>
+                        <td>Amount of consonants in serial number</td>
+                    </tr>
+                    <tr>
+                        <td>4 (LSD)</td>
+                        <td>RJ-45 port counts</td>
+                        <td>Last digit in serial number</td>
+                        <td>4</td>
+                        <td>Amount of lit indicators</td>
+                    </tr>
+                </table>
+                <h3>Table 4: Answer to colors conversion table</h3>
+                <table>
+                    <tr>
+                        <th>LED No.</th>
+                        <th>0</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Gray</td>
+                        <td>Green</td>
+                        <td>Orange</td>
+                        <td>White</td>
+                        <td>Purple</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Blue</td>
+                        <td>Green</td>
+                        <td>Black</td>
+                        <td>Purple</td>
+                        <td>Magenta</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Magenta</td>
+                        <td>Yellow</td>
+                        <td>Blue</td>
+                        <td>Gray</td>
+                        <td>Red</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Gray</td>
+                        <td>Blue</td>
+                        <td>Purple</td>
+                        <td>Red</td>
+                        <td>Yellow</td>
+                    </tr>
+                </table>
+                </br>
+                <table>
+                    <tr>
+                        <th>LED No.</th>
+                        <th>5</th>
+                        <th>6</th>
+                        <th>7</th>
+                        <th>8</th>
+                        <th>9</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Blue</td>
+                        <td>Magenta</td>
+                        <td>Black</td>
+                        <td>Yellow</td>
+                        <td>Red</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Red</td>
+                        <td>Gray</td>
+                        <td>Yellow</td>
+                        <td>Orange</td>
+                        <td>White</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Black</td>
+                        <td>Green</td>
+                        <td>Purple</td>
+                        <td>Orange</td>
+                        <td>White</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Magenta</td>
+                        <td>Black</td>
+                        <td>Orange</td>
+                        <td>Green</td>
+                        <td>White</td>
+                    </tr>
+                </table>
+                <ul>
+                    <li>Note: On the subtraction, if the answer is negative, answer as positive.</li>
+                    <li>Note: On the division, if the answer contains remainder, ignore the remainder.</li>
+                    <li>Note: If the answer exceeded 9999, please divide the answer with 10000 and answer with the remainder. (Or in short, modulo it with 10000.)</li>
+                </ul>
+            </div>
+            <div class="page-footer relative-footer solvablepagecount"></div>
+        </div>
  
-		<!-- Color Math -->
+
         <!-- Rhythms -->
         <!-- Only Connect -->
     
@@ -9709,7 +10170,155 @@ OFFICE</div></div><div class='letter' style='left: 50mm; top: 25mm;' data-letter
         </div>
 
 
-		<!-- Web Design -->
+        <div class="page " id="WebDesign">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Web Design</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <img src="img/Component/Web Design.svg" class="diagram">
+                <h2>On the Subject of Web Design</h2>
+                <p class="flavour-text">
+                    Welcome to web design class. The first rule of web design is: You do not talk about Comic Sans MS.
+                    The second rule is: You DO NOT talk about Comic Sans MS. The third rule is: The word "color" is NEVER spelled with a U.
+                </p>
+
+                <style>
+                    table.webdesign-websites p {
+                        margin: 0;
+                    }
+                    table.webdesign-websites p.webdesign-threshold {
+                        font-weight: bold;
+                        margin: .8em 0 .5em;
+                    }
+                    table.webdesign-websites h4 {
+                        margin: .5em 0 .8em;
+                    }
+                </style>
+
+                <ul>
+                    <li>The module displays a snippet of a CSS file on a screen.</li>
+                    <li>Based on the information given, you have to Accept (✓), Consider (Δ), or Reject (✗) the code.</li>
+                </ul>
+
+                <h3>Step 1: Select the website</h3>
+                <p>Find the website this code was quoted from. Use the <strong>Selector</strong> part of the code (the part before <code style="background-color: #D8DADA;">{</code>) to narrow it down to one site, then note down its <strong>Threshold</strong> value.</p>
+                <table style="margin: 0 auto; float: left; margin-left: 1.1em;" class='webdesign-websites'>
+                    <tr>
+                        <td>
+							<h4>Edison Daily (news site)</h4>
+							<p>Elements: body, a, h3, blockquote</p>
+							<p>IDs: #header, #comments</p>
+							<p>Classes: .post, .title, .author</p>
+							<p class='webdesign-threshold'>Threshold: #00FF00</p></td>
+                        <td><h4>Buddymaker (social media)</h4><p>Elements: div, span, img, a</p><p>IDs: #msg, #cover, #content, #sidebar</p><p>Classes: .post, .title, .share</p><p class='webdesign-threshold'>Threshold: #8040C0</p></td>
+                    </tr>
+                    <tr>
+                        <td><h4>PNGdrop (image hosting)</h4><p>Elements: div, img</p><p>IDs: #main, #comments, #fullview</p><p>Classes: .username, .share, .large</p><p class='webdesign-threshold'>Threshold: #BADA55</p></td>
+                        <td><h4>BobIRS (chatroom)</h4><p>Elements: ul, ol, img, b, i</p><p>IDs: #sidebar</p><p>Classes: .avatar, .username</p><p class='webdesign-threshold'>Threshold: #03E61E</p></td>
+                    </tr>
+                    <tr>
+                        <td><h4>Vidhost (video hosting)</h4><p>Elements: div, iframe, b, i</p><p>IDs: #main, #rating, #comments</p><p>Classes: .username, .share, .channel</p><p class='webdesign-threshold'>Threshold: #60061E</p></td>
+                        <td><h4>Go Team Falcon online (online game)</h4><p>Elements: body, iframe</p><p>IDs: #rating, #comments</p><p>Classes: .rating, .fullscreen</p><p class='webdesign-threshold'>Threshold: #501337</p></td>
+                    </tr>
+                    <tr>
+                        <td><h4>Stufflocker (cloud storage)</h4><p>Elements: div, h3, img, iframe</p><p>IDs: #sidebar, #download</p><p>Classes: .menu, .author</p><p class='webdesign-threshold'>Threshold: #B020E5</p></td>
+                        <td><h4>Steel Nexus (forum)</h4><p>Elements: body, div, img, blockquote</p><p>IDs: #header, #content, #sidebar</p><p>Classes: .avatar, .reply</p><p class='webdesign-threshold'>Threshold: #BEA61E</p></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="page-footer relative-footer solvablepagecount"></div>
+        </div>
+        <div class="page ">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Web Design</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <h3>Step 2: Find the color target</h3>
+                <p>
+                    Find the first color name in the CSS file, then use the following table to determine a hexadecimal value of that color.
+                    This value is the <strong>Color Target</strong> that you will need later. If no color name is displayed, use #7F7F7F.
+				</p>
+                    <table style="margin: 0 auto;">
+                        <tr>
+                            <th>Color</th>
+                            <th>Hex value</th>
+                            <th>Color</th>
+                            <th>Hex value</th>
+                            <th>Color</th>
+                            <th>Hex value</th>
+                        </tr>
+                        <tr>
+                            <th>Blue</th>
+                            <td>#0000FF</td>
+                            <th>Yellow</th>
+                            <td>#FFFF00</td>
+                            <th>Red</th>
+                            <td>#FF0000</td>
+                        </tr>
+                        <tr>
+                            <th>Green</th>
+                            <td>#00FF00</td>
+                            <th>White</th>
+                            <td>#FFFFFF</td>
+                            <th>Orange</th>
+                            <td>#FFA500</td>
+                        </tr>
+                        <tr>
+                            <th>Purple</th>
+                            <td>#800080</td>
+                            <th>Magenta</th>
+                            <td>#FF00FF</td>
+                            <th>Gray</th>
+                            <td>#808080</td>
+                        </tr>
+                    </table>
+                <p>
+                    <strong>Note:</strong> The hexadecimal value of a color is denoted in #RRGGBB format.
+				</p>
+                <h3>Step 3: Calculate site score</h3>
+                <p>
+                    Calculate the site score as follows:
+				</p>
+                    <ul>
+                        <li>Start with the number of lines of code inside the <code style="background-color: #D8DADA;">{curly braces}</code>. Counting semi-colons is a good idea because it is a line terminator.</li>
+                        <li>
+                            +3 score each for:
+                            <ul>
+                                <li>R value of the Color Target is less than R value of the threshold.</li>
+                                <li>G value of the Color Target is greater than or equal to G value of the threshold.</li>
+                                <li>B value of the Color Target is greater than B value of the threshold.</li>
+                            </ul>
+                        </li>
+                        <li>+2 score for each <code style="background-color: #D8DADA;">margin</code>/<code style="background-color: #D8DADA;">padding</code>.</li>
+                        <li>+1 score for each <code style="background-color: #D8DADA;">border</code>/<code style="background-color: #D8DADA;">border-radius</code> unless it's <code style="background-color: #D8DADA;">0px</code> or <code style="background-color: #D8DADA;">50%</code>.</li>
+                        <li>-1 score for each <code style="background-color: #D8DADA;">z-index</code> without a <code style="background-color: #D8DADA;">position</code>.</li>
+                        <li>+1 score for each <code style="background-color: #D8DADA;">font-family</code> unless it's <code style="background-color: #D8DADA;">"Comic Sans MS"</code>, which gives a -5 score.</li>
+                        <li>+2 score for each <code style="background-color: #D8DADA;">box-shadow</code>/<code style="background-color: #D8DADA;">text-shadow</code> unless it's <code style="background-color: #D8DADA;">none</code>.</li>
+                        <li>×2 score if the buttons on the module are colored, or -3 score if they are gray.</li>
+                        <li>If your score is now negative or 0, keep adding 16 until it's positive.</li>
+                        <li>Keep adding up the digits of the number until you are left with a single digit. Then use the following table to determine which button to push.</li>
+                    </ul>
+                    <table style="margin: 0 auto;">
+                        <tr>
+                            <th>Accept (✓)</th>
+                            <th>Consider (Δ)</th>
+                            <th>Reject (✗)</th>
+                        </tr>
+                        <tr>
+                            <td>2, 3, 5, 7</td>
+                            <td>6, 8</td>
+                            <td>1, 4, 9</td>
+                        </tr>
+                    </table>
+            </div>
+            <div class="page-footer relative-footer solvablepagecount"></div>
+        </div>
+
+
 		<!-- Chord Qualities -->
         <!-- Creation -->
         
@@ -10170,9 +10779,396 @@ OFFICE</div></div><div class='letter' style='left: 50mm; top: 25mm;' data-letter
             <div class="page-footer relative-footer solvablepagecount"></div>
         </div>
     
-        <!-- Boolean Venn Diagram -->
+
+        <div class="page " id="BooleanVennDiagram">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Boolean Venn Diagram</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <img src="img/Component/Boolean Venn Diagram.svg" class="diagram">
+                <h2>On the Subject of Boolean Venn Diagrams</h2>
+                <p class="flavour-text">
+                    Why is there a big Venn diagram? Why are there some weird symbols? Oh no...</p>
+    
+                <ul style="margin-bottom: 0.5em;">
+                    <li>
+                        This module has eight buttons, one for each enclosed section of the Venn diagram and one representing the area not enclosed in any section of the diagram.</li>
+                    <li>
+                        The three circles are referred to as "A" (top), "B" (bottom left), and "C" (bottom right).</li>
+                    <li>
+                        For each section, use the boolean logic expression displayed above the Venn diagram to determine if that section is "true" or "false" by using the following rules:
+                        <ul>
+                            <li> If the section is enclosed in a circle, then the value for that variable is considered to be "true". Otherwise, it is "false".<br>
+                                 <i>Example: The middle section is enclosed in all three circles, so "A", "B", and "C" should all be considered to be "true" while evaluating that section.</i></li>
+                            <li> Evaluate the operator inside the parentheses before the one outside of the parentheses.</li>
+                            <li> Images describing each operator can be found below (gray regions represent "true").</li>
+                            <li> If the section evaluates to "true", press the button that corresponds with it. The section will turn green.</li>
+                        </ul>
+                    </li>
+                    <li> Solve the module by pressing the buttons corresponding to all of the "true" sections.</li>
+                    <li> Note: if an incorrect button is pressed, a strike will be issued and the section will turn red.</li>
+                </ul>
+                <!-- Note that this table may be replaced with a harder version -->
+                <style>
+                    .booleanvenndiagram-table td {
+                        width:25%;
+                        text-align:center;
+                        font-weight: bold;
+                        font-size: 125%;
+                        line-height: 120%;
+                    }
+                </style>
+
+                <table style="width:100%; float: left; margin-top: 0;" class="booleanvenndiagram-table">
+                    <tr><td>X <span style="font-size: 125%;">&#x2227;</span> Y<br>AND</td><td>X <span style="font-size: 125%;">&#x2228;</span> Y<br>OR</td><td>X <span style="font-size: 125%;">&#x22BB;</span> Y<br>XOR</td><td>X <span style="font-size: 200%;">&#x2192;</span> Y<br>IMPLIES</td></tr>
+                    <tr><td><img src="img/modules/booleanvenndiagram/TAND.svg"></td><td><img src="img/modules/booleanvenndiagram/TOR.svg"></td><td><img src="img/modules/booleanvenndiagram/TXOR.svg"></td><td><img src="img/modules/booleanvenndiagram/TLIMP.svg"></td></tr>
+                    <tr style="height:10px"></tr>
+                    <tr><td>X | Y<br>NAND</td><td>X <span style="font-size: 200%;">&#x2193;</span> Y<br>NOR</td><td>X <span style="font-size: 200%;">&#x2194;'</span> Y<br>XNOR</td><td>X <span style="font-size: 200%;">&#x2190;</span> Y<br>IMPLIED BY</td></tr>
+                    <tr><td><img src="img/modules/booleanvenndiagram/TNAND.svg"></td><td><img src="img/modules/booleanvenndiagram/TNOR.svg"></td><td><img src="img/modules/booleanvenndiagram/TXNOR.svg"></td><td><img src="img/modules/booleanvenndiagram/TRIMP.svg"></td></tr>
+                </table>
+            </div>
+            <div class="page-footer relative-footer solvablepagecount"></div>
+        </div>
+
+
 		<!-- Point of Order -->
-		<!-- Ice Cream -->
+
+        <div class="page " id="IceCream">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Ice Cream</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <img src="img/Component/Ice Cream.svg" class="diagram">
+                <h2>On the Subject of Ice Cream</h2>
+                <p class="flavour-text">Simon screams for ice cream!</p>
+
+                <ul>
+                    <li>The module has a display with a customer's name, and a display with five types of ice cream.</li>
+                    <li>Using the table, determine the allergies of the customer.</li>
+                    <li>Go through the first applicable flavour list below and select the first ice cream flavour that the customer is not allergic to which is also currently available in the flavour list on the bomb. <b>All flavours are made out of real ingredients.</b></li>
+                    <li>Press the 'sell' button once the correct ice cream flavour is selected. Repeat for all three customers.</li>
+                    <li>Note that the ice cream parlour is not open all day! Only sell ice cream on even-numbered minutes! Selling ice cream on an odd-numbered minute causes a strike.</li>
+                </ul>
+                <!--<b><i>THE OPENING TIME IS TEMPORARILY DISABLED</i></b>-->
+
+                <h3 style="margin-bottom: 0.5em;">Recipes for Ice Cream Flavours:</h3>
+                <ul style="margin-top: 0;">
+                    <li><b>Tutti Frutti:</b> Vanilla Flavour, Fruit Pieces*.</li>
+                    <li><b>Rocky Road:</b> Chocolate Flavour, Nuts, Marshmallows.</li>
+                    <li><b>Raspberry Ripple:</b> Vanilla Flavour, Raspberry Sauce.</li>
+                    <li><b>Double Chocolate:</b> Chocolate Flavour, Chocolate Chips.</li>
+                    <li><b>Double Strawberry:</b> Strawberry Flavour, Strawberries.</li>
+                    <li><b>Cookies and Cream:</b> Vanilla Flavour, Cookies.</li>
+                    <li><b>Neapolitan:</b> Strawberry Flavour, Chocolate Flavour, Vanilla Flavour.</li>
+                    <li><b>Mint Chocolate Chip:</b> Mint Flavour, Chocolate Chips.</li>
+                    <li><b>The Classic:</b> Vanilla Flavour, Chocolate Sauce, Cherry.</li>
+                    <li><b>Vanilla:</b> Vanilla Flavour.</li>
+                </ul>
+
+                <h3 style="margin-bottom: 0;">Allergy Converter**:</h3>
+                <table style="width:100%; border:0; border: none; margin-top: 0;">
+                    <tr style="padding-top: 0; margin-top: 0;">
+                        <td style="border:0; padding-top: 0;">
+                            <ul>
+                                <li><b>Chocolate:</b> 0</li>
+                                <li><b>Strawberry:</b> 1</li>
+                                <li><b>Raspberry:</b> 2</li>
+                                <li><b>Nuts:</b> 3</li>
+                                <li><b>Cookies:</b> 4</li>
+                            </ul>
+                        </td>
+                        <td style="border:0;">
+                            <ul>
+                                <li><b>Mint:</b> 5</li>
+                                <li><b>Fruit:</b> 6***</li>
+                                <li><b>Cherry:</b> 7</li>
+                                <li><b>Marshmallows:</b> 8</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+                <p class='footnote' style="margin-bottom: 0;">* Fruit pieces include strawberries, bananas, cherries, and raspberries.</p>
+                <p class='footnote' style="margin-bottom: 0;">** None of the customers are allergic to vanilla flavouring.</p>
+                <p class='footnote' style="margin-bottom: 0;">*** Having a fruit allergy implies you are also allergic to strawberries, raspberries, and cherries.</p>
+            </div>
+            <div class="page-footer relative-footer solvablepagecount"></div>
+        </div>
+        <div class="page ">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Ice Cream</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <p> To find out which ingredients the customer is allergic to, use the allergy table.</p>
+                <p> The rows are the customers, and the columns are the last digit of the serial number.</p>
+                <p><b>Allergy Table:</b></p>
+                <table style="width: 100%; margin-top: 1em; border: none;">
+                    <tbody>
+                        <tr>
+                            <th class="corner"></th>
+                            <th>0-1</th>
+                            <th>2-3</th>
+                            <th>4-5</th>
+                            <th>6-7</th>
+                            <th>8-9</th>
+                        </tr>
+                        <tr>
+                            <th>Mike</th>
+                            <td>1-5-0</td>
+                            <td>6-8-3</td>
+                            <td>0-7-1</td>
+                            <td>4-3-2</td>
+                            <td>3-6-1</td>
+                        </tr>
+                        <tr>
+                            <th>Tim</th>
+                            <td>0-8-3</td>
+                            <td>2-1-4</td>
+                            <td>4-3-5</td>
+                            <td>2-6-7</td>
+                            <td>1-4-3</td>
+                        </tr>
+                        <tr>
+                            <th>Tom</th>
+                            <td>8-4-5</td>
+                            <td>1-6-7</td>
+                            <td>2-5-6</td>
+                            <td>3-7-5</td>
+                            <td>3-6-1</td>
+                        </tr>
+                        <tr>
+                            <th>Dave</th>
+                            <td>2-6-7</td>
+                            <td>0-1-4</td>
+                            <td>8-2-3</td>
+                            <td>7-8-1</td>
+                            <td>5-7-3</td>
+                        </tr>
+                        <tr>
+                            <th>Adam</th>
+                            <td>3-4-1</td>
+                            <td>3-6-2</td>
+                            <td>0-2-1</td>
+                            <td>2-4-7</td>
+                            <td>8-5-6</td>
+                        </tr>
+                        <tr>
+                            <th>Cheryl</th>
+                            <td>1-6-3</td>
+                            <td>7-5-2</td>
+                            <td>1-4-5</td>
+                            <td>4-2-0</td>
+                            <td>3-7-5</td>
+                        </tr>
+                        <tr>
+                            <th>Sean</th>
+                            <td>4-6-1</td>
+                            <td>2-3-6</td>
+                            <td>1-5-7</td>
+                            <td>6-8-2</td>
+                            <td>2-7-4</td>
+                        </tr>
+                        <tr>
+                            <th>Ashley</th>
+                            <td>6-2-5</td>
+                            <td>4-1-7</td>
+                            <td>0-8-2</td>
+                            <td>1-2-6</td>
+                            <td>3-6-7</td>
+                        </tr>
+                        <tr>
+                            <th>Jessica</th>
+                            <td>4-2-6</td>
+                            <td>1-2-3</td>
+                            <td>0-3-4</td>
+                            <td>6-5-0</td>
+                            <td>4-7-8</td>
+                        </tr>
+                        <tr>
+                            <th>Taylor</th>
+                            <td>6-3-5</td>
+                            <td>5-1-2</td>
+                            <td>4-2-6</td>
+                            <td>7-1-0</td>
+                            <td>3-7-2</td>
+                        </tr>
+                        <tr>
+                            <th>Simon</th>
+                            <td>0-3-5</td>
+                            <td>1-6-4</td>
+                            <td>5-4-8</td>
+                            <td>2-0-7</td>
+                            <td>7-3-6</td>
+                        </tr>
+                        <tr>
+                            <th>Sally</th>
+                            <td>4-6-3</td>
+                            <td>1-0-2</td>
+                            <td>6-7-4</td>
+                            <td>2-5-8</td>
+                            <td>0-3-1</td>
+                        </tr>
+                        <tr>
+                            <th>Jade</th>
+                            <td>3-7-1</td>
+                            <td>0-8-2</td>
+                            <td>7-1-3</td>
+                            <td>6-7-8</td>
+                            <td>4-5-1</td>
+                        </tr>
+                        <tr>
+                            <th>Sam</th>
+                            <td>2-4-1</td>
+                            <td>7-8-0</td>
+                            <td>3-4-6</td>
+                            <td>1-0-3</td>
+                            <td>6-5-2</td>
+                        </tr>
+                        <tr>
+                            <th>Gary</th>
+                            <td>1-2-5</td>
+                            <td>6-8-0</td>
+                            <td>3-2-1</td>
+                            <td>7-4-5</td>
+                            <td>1-8-4</td>
+                        </tr>
+                        <tr>
+                            <th>Victor</th>
+                            <td>0-3-1</td>
+                            <td>2-5-7</td>
+                            <td>3-4-6</td>
+                            <td>6-7-1</td>
+                            <td>5-3-0</td>
+                        </tr>
+                        <tr>
+                            <th>George</th>
+                            <td>8-1-2</td>
+                            <td>6-4-8</td>
+                            <td>0-4-3</td>
+                            <td>1-6-4</td>
+                            <td>3-2-5</td>
+                        </tr>
+                        <tr>
+                            <th>Jacob</th>
+                            <td>7-3-2</td>
+                            <td>1-5-6</td>
+                            <td>5-4-7</td>
+                            <td>3-4-0</td>
+                            <td>6-2-1</td>
+                        </tr>
+                        <tr>
+                            <th>Pat</th>
+                            <td>5-6-2</td>
+                            <td>1-3-6</td>
+                            <td>3-4-7</td>
+                            <td>2-0-5</td>
+                            <td>8-1-3</td>
+                        </tr>
+                        <tr>
+                            <th>Bob</th>
+                            <td>5-6-8</td>
+                            <td>2-1-0</td>
+                            <td>4-8-2</td>
+                            <td>4-2-5</td>
+                            <td>0-5-1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="page-footer relative-footer solvablepagecount"></div>
+        </div>
+        <div class="page ">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Ice Cream</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <p>To find out which flavours to sell to the customer first, use the following table of flavour lists.</p>
+                <p>Read the table in normal reading order (left to right, then top to bottom) and choose the first applicable list.</p>
+                <h3>Flavour List Table:</h3>
+                <table class="repeaters-table" style="border: none;">
+                    <tbody>
+                        <tr>
+                            <th style="width:50%">If there are more lit than unlit indicators:</th>
+                            <th>Otherwise, if there is an empty port plate present on the bomb:</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li>Cookies and Cream</li>
+                                    <li>Neapolitan</li>
+                                    <li>Tutti Frutti</li>
+                                    <li>The Classic</li>
+                                    <li>Rocky Road</li>
+                                    <li>Double Chocolate</li>
+                                    <li>Mint Chocolate Chip</li>
+                                    <li>Double Strawberry</li>
+                                    <li>Raspberry Ripple</li>
+                                    <li>Vanilla</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>Double Chocolate</li>
+                                    <li>Mint Chocolate Chip</li>
+                                    <li>Neapolitan</li>
+                                    <li>Rocky Road</li>
+                                    <li>Tutti Frutti</li>
+                                    <li>Double Strawberry</li>
+                                    <li>Cookies and Cream</li>
+                                    <li>Raspberry Ripple</li>
+                                    <li>The Classic</li>
+                                    <li>Vanilla</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th style="white-space: normal;">Otherwise, if there are 3 or more batteries:</th>
+                            <th>Otherwise:</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li>Neapolitan</li>
+                                    <li>Tutti Frutti</li>
+                                    <li>Cookies and Cream</li>
+                                    <li>Raspberry Ripple</li>
+                                    <li>Double Strawberry</li>
+                                    <li>Mint Chocolate Chip</li>
+                                    <li>Double Chocolate</li>
+                                    <li>The Classic</li>
+                                    <li>Rocky Road</li>
+                                    <li>Vanilla</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>Double Strawberry</li>
+                                    <li>Cookies and Cream</li>
+                                    <li>Rocky Road</li>
+                                    <li>The Classic</li>
+                                    <li>Neapolitan</li>
+                                    <li>Double Chocolate</li>
+                                    <li>Tutti Frutti</li>
+                                    <li>Raspberry Ripple</li>
+                                    <li>Mint Chocolate Chip</li>
+                                    <li>Vanilla</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="page-footer relative-footer solvablepagecount"></div>
+        </div>
+
+
 		<!-- The Screw -->
     
         <div class="page " id="Yahtzee">
@@ -10807,7 +11803,239 @@ OFFICE</div></div><div class='letter' style='left: 50mm; top: 25mm;' data-letter
 
 
 
-        <!-- Needy HTTP Response -->
+        <div class="page " id="HttpResponse">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">HTTP Response</span>
+            </div>
+            <div class="page-footer absolute-footer neediespagecount"></div>
+            <div class="page-content">
+                <img src="img/Component/HTTP Response.svg" class="diagram">
+                <h2>On the Subject of HTTP Response</h2>
+                <p class="flavour-text">
+                    When your bomb acts as a web server...
+                </p>
+                <ul>
+                    <li>The module displays a remote or local status string. You must response to it with a 3-digit status code.</li>
+                    <li>Remote codes can be found on Table 1 while local codes can be found on Table 2.</li>
+                    <li>An undisclosed source told us that, due to display limits, some strings may be abbreviated.</li>
+                    <li>Use the keypad to enter the correct response code to disable the needy module.</li>
+                    <li><b>Caution: There’s no delete button, so be careful!</b></li>
+                </ul>
+    
+                <h3>Table 1: Remote status, response as listed.</h3>
+                <table>
+                  <tr>
+                    <th>Full name</th>
+                    <th>Abbrev.</th>
+                    <th>Response</th>
+                    <th>Full name</th>
+                    <th>Abbrev.</th>
+                    <th>Response</th>
+                  </tr>
+                  <tr>
+                    <td>Continue</td>
+                    <td>Cont</td>
+                    <td>100</td>
+                    <td>Unauthorized</td>
+                    <td>Unauth</td>
+                    <td>401</td>
+                  </tr>
+                  <tr>
+                    <td>Switching Protocols</td>
+                    <td>SwPrt</td>
+                    <td>101</td>
+                    <td>Payment Required</td>
+                    <td>PayReq</td>
+                    <td>402</td>
+                  </tr>
+                  <tr>
+                    <td>Processing</td>
+                    <td>Proc</td>
+                    <td>102</td>
+                    <td>Forbidden</td>
+                    <td>Frbd</td>
+                    <td>403</td>
+                  </tr>
+                  <tr>
+                    <td>OK</td>
+                    <td>OK</td>
+                    <td>200</td>
+                    <td>Not Found</td>
+                    <td>NFnd</td>
+                    <td>404</td>
+                  </tr>
+                  <tr>
+                    <td>Created</td>
+                    <td>Crtd</td>
+                    <td>201</td>
+                    <td>Request Time-out</td>
+                    <td>TmOut</td>
+                    <td>408</td>
+                  </tr>
+                  <tr>
+                    <td>Moved Permanently</td>
+                    <td>MvPerm</td>
+                    <td>301</td>
+                    <td>Gone</td>
+                    <td>Gone</td>
+                    <td>410</td>
+                  </tr>
+                  <tr>
+                    <td>Found</td>
+                    <td>Found</td>
+                    <td>302</td>
+                    <td>I’m a teapot</td>
+                    <td>ImaTp</td>
+                    <td>418</td>
+                  </tr>
+                  <tr>
+                    <td>Not Modified</td>
+                    <td>NMod</td>
+                    <td>304</td>
+                    <td>Internal Server Error</td>
+                    <td>SrvErr</td>
+                    <td>500</td>
+                  </tr>
+                  <tr>
+                    <td>Use Proxy</td>
+                    <td>UPrx</td>
+                    <td>305</td>
+                    <td>Bad Gateway</td>
+                    <td>BGw</td>
+                    <td>502</td>
+                  </tr>
+                  <tr>
+                    <td>Bad Request</td>
+                    <td>BadR</td>
+                    <td>400</td>
+                    <td>Service Unavailable</td>
+                    <td>SrvUn</td>
+                    <td>503</td>
+                  </tr>
+                </table>
+            </div>
+            <div class="page-footer relative-footer neediespagecount"></div>
+        </div>
+        <div class="page ">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">HTTP Response</span>
+            </div>
+            <div class="page-footer absolute-footer neediespagecount"></div>
+            <div class="page-content">
+                <h3>Table 2: Local status. Add the number of batteries times the sum of the numerical digits in the serial number to the response first.</h3>
+                <table>
+                  <tr>
+                    <th>Full name</th>
+                    <th>Abbrev.</th>
+                    <th>Response</th>
+                    <th>Fullname</th>
+                    <th>Abbrev.</th>
+                    <th>Response</th>
+                  </tr>
+                  <tr>
+                    <td>Strike</td>
+                    <td>Stk</td>
+                    <td>601</td>
+                    <td>Detonate</td>
+                    <td>Dtn</td>
+                    <td>602</td>
+                  </tr>
+                  <tr>
+                    <td>Pass</td>
+                    <td>Ps</td>
+                    <td>603</td>
+                    <td>Press</td>
+                    <td>Prs</td>
+                    <td>604</td>
+                  </tr>
+                  <tr>
+                    <td>Command</td>
+                    <td>Cmd</td>
+                    <td>605</td>
+                    <td>Release</td>
+                    <td>Rls</td>
+                    <td>606</td>
+                  </tr>
+                  <tr>
+                    <td>Blue</td>
+                    <td>Blue</td>
+                    <td>701</td>
+                    <td>Green</td>
+                    <td>Grn</td>
+                    <td>702</td>
+                  </tr>
+                  <tr>
+                    <td>Red</td>
+                    <td>Red</td>
+                    <td>703</td>
+                    <td>Yellow</td>
+                    <td>Yel</td>
+                    <td>704</td>
+                  </tr>
+                  <tr>
+                    <td>Black</td>
+                    <td>Blk</td>
+                    <td>705</td>
+                    <td>White</td>
+                    <td>Wht</td>
+                    <td>706</td>
+                  </tr>
+                  <tr>
+                    <td>Cut</td>
+                    <td>Cut</td>
+                    <td>801</td>
+                    <td>Unscrew</td>
+                    <td>Uns</td>
+                    <td>802</td>
+                  </tr>
+                  <tr>
+                    <td>Set</td>
+                    <td>Set</td>
+                    <td>803</td>
+                    <td>Locate</td>
+                    <td>Loc</td>
+                    <td>804</td>
+                  </tr>
+                  <tr>
+                    <td>Indicator</td>
+                    <td>Indc</td>
+                    <td>805</td>
+                    <td>Batteries</td>
+                    <td>Batt</td>
+                    <td>806</td>
+                  </tr>
+                  <tr>
+                    <td>Timer</td>
+                    <td>Tmr</td>
+                    <td>901</td>
+                    <td>Lower</td>
+                    <td>Lwr</td>
+                    <td>902</td>
+                  </tr>
+                  <tr>
+                    <td>Upper</td>
+                    <td>Upr</td>
+                    <td>903</td>
+                    <td>Lever</td>
+                    <td>Lvr</td>
+                    <td>904</td>
+                  </tr>
+                  <tr>
+                    <td>Time</td>
+                    <td>Time</td>
+                    <td>905</td>
+                    <td>Done</td>
+                    <td>Done</td>
+                    <td>906</td>
+                  </tr>
+                </table>
+                <p>Note: In the rare case the response number is over 999, subtract 999 from the response code.</p>
+            </div>
+            <div class="page-footer relative-footer neediespagecount"></div>
+        </div>
+
 
         <div class="page " id="TranslatedVentingGas">
             <div class="page-header">
