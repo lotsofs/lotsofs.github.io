@@ -35,6 +35,17 @@
     url(../fonts/YuGothic-Bold.ttf); 
 }
 
+@font-face {
+    font-family: 'Agency FB';
+    src: url('../fonts/Agency FB.ttf');
+}
+
+@font-face {
+    font-family: 'Agency FB';
+    font-weight: bold;
+    src: url('../fonts/Agency FB Bold.ttf');
+}
+
 
 /* Korean */
 /* [0] */
