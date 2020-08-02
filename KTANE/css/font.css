@@ -14,7 +14,7 @@
     font-family: 'AaRoundLi'; 
     font-weight: normal; 
     font-style: normal; 
-    url('../fonts/AaRoundLi.ttf') format('truetype'); 
+    src: url('../fonts/AaRoundLi.ttf') format('truetype'); 
 }
 @font-face { 
     font-family: 'Pangolin'; 
