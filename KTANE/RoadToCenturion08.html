@@ -7186,7 +7186,55 @@
         </div>
 
 
-		<!-- Colored Squares -->
+        <div class="page " id="ColoredSquares">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Colored Squares</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <img class="diagram" src="img/Component/Colored Squares.svg">
+                <h2>On the Subject of Colored Squares</h2>
+                <p class="flavour-text">There is order in chaos. A pattern in the colors. Find it, and all will become clear.</p>
+
+                <ul>
+                    <li>Press all squares in the correct group to progress the module.</li>
+                    <li>Pressing a square will cause it to light up white. Make all squares white to disarm the module.</li>
+                    <li>To begin, press the color group containing the fewest squares. 
+                        <!-- If there is a tie, you are looking at a different module. Refer to Appendix CS. -->
+                    </li>
+                    <li>Then use the table to determine the next group to press in each stage.</li>
+                    <li>“Group” refers to all squares of a particular color, or all non-white squares in the topmost row or leftmost column containing non-white squares.</li>
+                    <li>Pressing an incorrect square will result in a strike and reset the module.</li>
+                    <li>White squares will remain white for the duration of the module, but non-white squares may change color in each stage.</li>
+                </ul>
+
+                <table>
+                    <tr>
+                        <th rowspan="2">Currently White Squares</th>
+                        <th colspan="7">Previous Group of Squares Pressed</th>
+                    </tr>
+                    <tr><th>Red</th><th>Blue</th><th>Green</th><th>Yellow</th><th>Magenta</th><th>Row</th><th>Column</th></tr>
+                    <tr><th>1</th><td>Blue</td><td>Column</td><td>Red</td><td>Yellow</td><td>Row</td><td>Green</td><td>Magenta</td></tr>
+                    <tr><th>2</th><td>Row</td><td>Green</td><td>Blue</td><td>Magenta</td><td>Red</td><td>Column</td><td>Yellow</td></tr>
+                    <tr><th>3</th><td>Yellow</td><td>Magenta</td><td>Green</td><td>Row</td><td>Blue</td><td>Red</td><td>Column</td></tr>
+                    <tr><th>4</th><td>Blue</td><td>Green</td><td>Yellow</td><td>Column</td><td>Red</td><td>Row</td><td>Magenta</td></tr>
+                    <tr><th>5</th><td>Yellow</td><td>Row</td><td>Blue</td><td>Magenta</td><td>Column</td><td>Red</td><td>Green</td></tr>
+                    <tr><th>6</th><td>Magenta</td><td>Red</td><td>Yellow</td><td>Green</td><td>Column</td><td>Blue</td><td>Row</td></tr>
+                    <tr><th>7</th><td>Green</td><td>Row</td><td>Column</td><td>Blue</td><td>Magenta</td><td>Yellow</td><td>Red</td></tr>
+                    <tr><th>8</th><td>Magenta</td><td>Red</td><td>Green</td><td>Blue</td><td>Yellow</td><td>Column</td><td>Row</td></tr>
+                    <tr><th>9</th><td>Column</td><td>Yellow</td><td>Red</td><td>Green</td><td>Row</td><td>Magenta</td><td>Blue</td></tr>
+                    <tr><th>10</th><td>Green</td><td>Column</td><td>Row</td><td>Red</td><td>Magenta</td><td>Blue</td><td>Yellow</td></tr>
+                    <tr><th>11</th><td>Red</td><td>Yellow</td><td>Row</td><td>Column</td><td>Green</td><td>Magenta</td><td>Blue</td></tr>
+                    <tr><th>12</th><td>Column</td><td>Blue</td><td>Magenta</td><td>Red</td><td>Yellow</td><td>Row</td><td>Green</td></tr>
+                    <tr><th>13</th><td>Row</td><td>Magenta</td><td>Column</td><td>Yellow</td><td>Blue</td><td>Green</td><td>Red</td></tr>
+                    <tr><th>14</th><td>Red</td><td>Blue</td><td>Magenta</td><td>Row</td><td>Green</td><td>Yellow</td><td>Column</td></tr>
+                    <tr><th>15</th><td>Column</td><td>Row</td><td>Column</td><td>Row</td><td>Column</td><td>Row</td><td>Column</td></tr>
+                </table>
+            </div>
+        </div>
+
+
 		<!-- Adjacent Letters -->
         
         <div class="page " id="ThirdBase">
@@ -10816,7 +10864,87 @@ OFFICE</div></div><div class='letter' style='left: 50mm; top: 25mm;' data-letter
         </div>
 
 
-		<!-- FizzBuzz -->
+        <div class="page " id="FizzBuzz">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">FizzBuzz</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <img src="img/Component/FizzBuzz.svg" class="diagram">
+                <h2>On the Subject of FizzBuzz</h2>
+                <p class="flavour-text">
+                    Why put a classic schoolyard game on a bomb? Wait... that's odd...
+                </p>
+                <ul>
+                    <li>
+                        This module has three displays, each with a seven-digit number.
+                    </li>
+                    <li>
+                        For each number, find the column corresponding to the color of the number in the table below. Go through that column and take a note of each integer whose condition applies.
+                    </li>
+                    <li>
+                        Take the sum of these integers to get a number. Take this number and add it to each digit of the displayed number to get a new seven-digit (or less if the first few digits are zeros) number. <b>Be sure to disregard any carry digits you get when performing this operation</b>.
+                    </li>
+                    <li>
+                        If the new number is not divisible by three or five, do nothing.<br>
+                        If the new number is divisible by three and not five, use the button to change the display to "FIZZ".<br>
+                        If the new number is divisible by five and not three, use the button to change the display to "BUZZ".<br>
+                        If the new number is divisible by both five and three, use the button to change the display to "FIZZBUZZ"
+                    </li>
+                    <li>
+                        Finally, repeat for the remaining numbers and press "SUBMIT" once all three numbers' displays are correct.
+                    </li>
+                </ul>
+    
+                <style>
+                    table.fizzbuzz-table {
+                        border: none;
+                    }
+                    table.fizzbuzz-table th {
+                        text-align: right;;
+                    }
+                    table.fizzbuzz-table td, table.fizzbuzz-table th.fizzbuzz-corner {
+                        text-align: center;
+                    }
+                    table.fizzbuzz-table tr.fizzbuzz-rotated > th {
+                        position: relative;
+                        text-align: left;
+                        height: 4em;
+                        min-width: 30px;
+                    }
+                    table.fizzbuzz-table tr.fizzbuzz-rotated > th > span.text {
+                        top: 50%;
+                        left: 50%;
+                        position: absolute;
+                        transform: translate(-50%, -50%) rotate(-50deg);
+                        transform-origin: middle center;
+                        text-align: center;
+                        line-height: 1.25;
+                    }
+                </style>
+
+                <table class='fizzbuzz-table'>
+                    <tr class='fizzbuzz-rotated'>
+                        <th class='fizzbuzz-corner'>Condition
+                        <th><span class='text'>red</span>
+                        <th><span class='text'>green</span>
+                        <th><span class='text'>blue</span>
+                        <th><span class='text'>yellow</span>
+                        <th><span class='text'>white</span>
+                    </tr>
+    
+                    <tr><th>3 or more battery holders are present on the bomb.                   </th><td>7</td><td>3</td><td>2</td><td>4</td><td>5</td></tr>
+                    <tr><th>At least one Serial <u>and</u> Parallel port are present on the bomb. </th><td>3</td><td>4</td><td>9</td><td>2</td><td>8</td></tr>
+                    <tr><th>3 letters and 3 digits are present in the serial number.             </th><td>4</td><td>5</td><td>8</td><td>8</td><td>2</td></tr>
+                    <tr><th>At least one DVI-D <u>and</u> Stereo RCA port are present on the bomb.</th><td>2</td><td>3</td><td>7</td><td>9</td><td>1</td></tr>
+                    <tr><th>2 or more strikes are present on the bomb.                           </th><td>6</td><td>6</td><td>1</td><td>2</td><td>8</td></tr>
+                    <tr><th>5 or more batteries are present on the bomb.                         </th><td>1</td><td>2</td><td>2</td><td>5</td><td>3</td></tr>
+                    <tr><th>None of the above apply.                                             </th><td>3</td><td>1</td><td>8</td><td>3</td><td>4</td></tr>
+                </table>
+            </div>
+        </div>
+
 		<!-- The Clock -->
 		
     
@@ -10867,7 +10995,267 @@ OFFICE</div></div><div class='letter' style='left: 50mm; top: 25mm;' data-letter
 
     
 		<!-- Bitwise Operations -->
-		<!-- Fast Math -->
+
+        <div class="page " id="FastMath">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Fast Math</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <img src="img/Component/Fast Math.svg" class="diagram">
+                <h2>On the Subject of Fast Math</h2>
+                <p class="flavour-text">
+                    Gotta go fast!
+                </p>
+
+                <ul>
+                    <li>Two letters will be displayed on the screen. Use the number pad, then the submit button to disarm the module. The module will have 3 - 5 stages before being disarmed.</li>
+                    <li>Press the "GO!" button to start. You have 10 seconds to submit the <b>two digits</b> answer. (The time can be changed in the Mod settings file.)</li>
+                    <li>If the countdown meter reaches 0, a strike will be recorded, and the module will reset.</li>
+                    <li>Once a stage is complete, the timer will restart, and two new letters will show on the display.</li>
+                    <li>
+                        Follow these rules before submitting your answer:
+                        <ul>
+                            <li>If there is a lit MSA indicator, add 20 to your number.</li>
+                            <li>If there is a serial port present, add 14 to your number.</li>
+                            <li>If the serial number contains a letter F, A, S or T, subtract 5 from your number.</li>
+                            <li>If there is an RJ-45 port present, add 27 to your number.</li>
+                            <li>If the bomb has more than 3 batteries, subtract 15 from your number.</li>
+                        </ul>
+                    </li>
+                    <li><i>If the total number is greater than 99, use the last two digits of the total number. If the total number is less than 0, add 50 to the total number.</i></li>
+                </ul>
+                <table class="repeaters-table">
+                    <tr>
+                        <th class="repeaters-spacer" colspan="2">Right letter:</th>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>C</th>
+                        <th>D</th>
+                        <th>E</th>
+                        <th>G</th>
+                        <th>K</th>
+                        <th>N</th>
+                        <th>P</th>
+                        <th>S</th>
+                        <th>T</th>
+                        <th>X</th>
+                        <th>Z</th>
+                    </tr>
+                    <tr>
+                        <th rowspan="13">Left letter:</th>
+                        <th>A</th>
+                        <td>25</td>
+                        <td>11</td>
+                        <td>53</td>
+                        <td>97</td>
+                        <td>02</td>
+                        <td>42</td>
+                        <td>51</td>
+                        <td>97</td>
+                        <td>12</td>
+                        <td>86</td>
+                        <td>55</td>
+                        <td>73</td>
+                        <td>33</td>
+                    </tr>
+                    <tr>
+                        <th>B</th>
+                        <td>54</td>
+                        <td>07</td>
+                        <td>32</td>
+                        <td>19</td>
+                        <td>84</td>
+                        <td>33</td>
+                        <td>27</td>
+                        <td>78</td>
+                        <td>26</td>
+                        <td>46</td>
+                        <td>09</td>
+                        <td>13</td>
+                        <td>58</td>
+                    </tr>
+                    <tr>
+                        <th>C</th>
+                        <td>86</td>
+                        <td>37</td>
+                        <td>44</td>
+                        <td>01</td>
+                        <td>05</td>
+                        <td>26</td>
+                        <td>93</td>
+                        <td>49</td>
+                        <td>18</td>
+                        <td>69</td>
+                        <td>23</td>
+                        <td>40</td>
+                        <td>22</td>
+                    </tr>
+                    <tr>
+                        <th>D</th>
+                        <td>54</td>
+                        <td>28</td>
+                        <td>77</td>
+                        <td>93</td>
+                        <td>11</td>
+                        <td>00</td>
+                        <td>35</td>
+                        <td>61</td>
+                        <td>27</td>
+                        <td>48</td>
+                        <td>13</td>
+                        <td>72</td>
+                        <td>80</td>
+                    </tr>
+                    <tr>
+                        <th>E</th>
+                        <td>99</td>
+                        <td>36</td>
+                        <td>23</td>
+                        <td>95</td>
+                        <td>67</td>
+                        <td>05</td>
+                        <td>26</td>
+                        <td>17</td>
+                        <td>44</td>
+                        <td>60</td>
+                        <td>26</td>
+                        <td>41</td>
+                        <td>67</td>
+                    </tr>
+                    <tr>
+                        <th>G</th>
+                        <td>74</td>
+                        <td>95</td>
+                        <td>03</td>
+                        <td>04</td>
+                        <td>56</td>
+                        <td>23</td>
+                        <td>54</td>
+                        <td>29</td>
+                        <td>52</td>
+                        <td>38</td>
+                        <td>10</td>
+                        <td>76</td>
+                        <td>98</td>
+                    </tr>
+                    <tr>
+                        <th>K</th>
+                        <td>88</td>
+                        <td>46</td>
+                        <td>37</td>
+                        <td>96</td>
+                        <td>02</td>
+                        <td>52</td>
+                        <td>81</td>
+                        <td>37</td>
+                        <td>12</td>
+                        <td>70</td>
+                        <td>14</td>
+                        <td>36</td>
+                        <td>78</td>
+                    </tr>
+                    <tr>
+                        <th>N</th>
+                        <td>54</td>
+                        <td>43</td>
+                        <td>12</td>
+                        <td>65</td>
+                        <td>94</td>
+                        <td>03</td>
+                        <td>47</td>
+                        <td>23</td>
+                        <td>16</td>
+                        <td>62</td>
+                        <td>73</td>
+                        <td>46</td>
+                        <td>21</td>
+                    </tr>
+                    <tr>
+                        <th>P</th>
+                        <td>07</td>
+                        <td>33</td>
+                        <td>26</td>
+                        <td>01</td>
+                        <td>67</td>
+                        <td>26</td>
+                        <td>27</td>
+                        <td>77</td>
+                        <td>83</td>
+                        <td>14</td>
+                        <td>27</td>
+                        <td>93</td>
+                        <td>09</td>
+                    </tr>
+                    <tr>
+                        <th>S</th>
+                        <td>63</td>
+                        <td>64</td>
+                        <td>94</td>
+                        <td>27</td>
+                        <td>48</td>
+                        <td>84</td>
+                        <td>33</td>
+                        <td>10</td>
+                        <td>16</td>
+                        <td>74</td>
+                        <td>43</td>
+                        <td>99</td>
+                        <td>04</td>
+                    </tr>
+                    <tr>
+                        <th>T</th>
+                        <td>35</td>
+                        <td>39</td>
+                        <td>03</td>
+                        <td>25</td>
+                        <td>47</td>
+                        <td>62</td>
+                        <td>38</td>
+                        <td>45</td>
+                        <td>88</td>
+                        <td>48</td>
+                        <td>34</td>
+                        <td>31</td>
+                        <td>27</td>
+                    </tr>
+                    <tr>
+                        <th>X</th>
+                        <td>67</td>
+                        <td>30</td>
+                        <td>27</td>
+                        <td>71</td>
+                        <td>09</td>
+                        <td>11</td>
+                        <td>44</td>
+                        <td>37</td>
+                        <td>18</td>
+                        <td>40</td>
+                        <td>32</td>
+                        <td>15</td>
+                        <td>78</td>
+                    </tr>
+                    <tr>
+                        <th>Z</th>
+                        <td>13</td>
+                        <td>23</td>
+                        <td>26</td>
+                        <td>85</td>
+                        <td>92</td>
+                        <td>12</td>
+                        <td>73</td>
+                        <td>56</td>
+                        <td>81</td>
+                        <td>07</td>
+                        <td>75</td>
+                        <td>47</td>
+                        <td>99</td>
+                    </tr>
+                </table>
+            </div>
+        </div> 
+
 		<!-- Minesweeper -->
 		<!-- Zoo -->
         
@@ -12997,6 +13385,76 @@ OFFICE</div></div><div class='letter' style='left: 50mm; top: 25mm;' data-letter
                 </table>
             </div>
         </div>
+
+        <!-- <div class="page " id="AppendixCS">
+            <\!-- Referenced by: Colored Squares -\->
+            <style>
+                .cosqbr-sibling {
+                    clear: both;
+                    margin: 1em 0;
+                    overflow: auto;
+                }
+                .cosqbr-sibling > .cosqbr-component {
+                    float: right;
+                    margin-left: .5cm;
+                }
+                .cosqbr-sibling > .cosqbr-component > img {
+                    width: 3cm;
+                }
+                .cosqbr-sibling > .cosqbr-explanation {
+                    font-weight: bold;
+                }
+                .cosqbr-sibling > .cosqbr-link {
+                    font-size: 24pt;
+                    text-decoration: underline;
+                }
+            </style>
+
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Appendix CS</span>
+            </div>
+            <div class="page-footer absolute-footer appendixpagecount"></div>
+            <div class="page-content">
+                <h2>Appendix CS: Identifying brethren of <cite>Colored Squares</cite></h2>
+
+                <div class='cosqbr-sibling'>
+                    <div class='cosqbr-component'><img src="img/Component/Colored Squares.svg"></div>
+                    <div class='cosqbr-explanation'>If one color occurs fewer times than any other (no tie):</div>
+                    <div class='cosqbr-link'>Colored Squares</div>
+                </div>
+
+                <\!-- <div class='cosqbr-sibling'>
+                    <div class='cosqbr-component'><img src="img/Component/Uncolored Squares.svg"></div>
+                    <div class='cosqbr-explanation'>If two colors occur fewer times than the rest (two-way tie):</div>
+                    <div class='cosqbr-link'>Uncolored Squares</div>
+                </div> -->
+
+                <!-- <div class='cosqbr-sibling'>
+                    <div class='cosqbr-component'><img src="img/Component/Decolored Squares.svg"></div>
+                    <div class='cosqbr-explanation'>If three colors occur exactly twice each and two occur exactly 5 times each:</div>
+                    <div class='cosqbr-link'>Decolored Squares</div>
+                </div> -->
+
+                <!-- <div class='cosqbr-sibling'>
+                    <div class='cosqbr-component'><img src="img/Component/Discolored Squares.svg"></div>
+                    <div class='cosqbr-explanation'>If four colors occur exactly once each:</div>
+                    <div class='cosqbr-link'>Discolored Squares</div>
+                </div> -->
+
+                <!-- <div class='cosqbr-sibling'>
+                    <div class='cosqbr-component'><img src="img/Component/Varicolored Squares.svg"></div>
+                    <div class='cosqbr-explanation'>If four colors occur exactly three times each:</div>
+                    <div class='cosqbr-link'>Varicolored Squares</div>
+                </div> -->
+
+                <!-- <div class='cosqbr-sibling'>
+                    <div class='cosqbr-component'><img src="img/Component/Juxtacolored Squares.svg"></div>
+                    <div class='cosqbr-explanation'>If there are 16 different colors:</div>
+                    <div class='cosqbr-link'>Juxtacolored Squares</div>
+                </div> -\->
+            </div>
+        </div> -->
 
         <div class="page " id="AppendixSouvenir">
             <!-- Referenced by: Souvenir -->
