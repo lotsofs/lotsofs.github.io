@@ -370,7 +370,7 @@ q {
     position: relative;
     height: 0;
     top: 63em; /* = 10.5in at 12pt (1em) */
-    display: none;
+    /* display: none; */
 }
 
 .gamedisclaimer {
