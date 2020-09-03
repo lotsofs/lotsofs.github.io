@@ -42,12 +42,12 @@ textarea {
 	font-family: 'Special Elite';
 	src: local('Special Elite'), 
 		 local('Special Elite Regular'),
-		 url('../fonts/SpecialElite-webfont.eot'),
-		 url('../fonts/SpecialElite-webfont.eot?#iefix') format('embedded-opentype'),
-		 url('../fonts/SpecialElite-webfont.woff2') format('woff2'),
-		 url('../fonts/SpecialElite-webfont.woff') format('woff'),
-		 url('../fonts/SpecialElite-webfont.ttf') format('truetype'),
-		 url('../fonts/SpecialElite-webfont.svg#special_eliteregular') format('svg');
+		 url('../font/SpecialElite-webfont.eot'),
+		 url('../font/SpecialElite-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('../font/SpecialElite-webfont.woff2') format('woff2'),
+		 url('../font/SpecialElite-webfont.woff') format('woff'),
+		 url('../font/SpecialElite-webfont.ttf') format('truetype'),
+		 url('../font/SpecialElite-webfont.svg#special_eliteregular') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
