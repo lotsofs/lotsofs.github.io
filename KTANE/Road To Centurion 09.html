@@ -6802,34 +6802,28 @@
 
                 <p class="flavour-text">Child’s play. Just follow the leader. Only if you fail to follow, the penalty is somewhat more explosive.</p>
 
-                <p>This module contains 8-12 wires connecting numerically
-                labeled plugs in a looping sequence.  Each wire leads from one plug to the next
-                plug that contains a wire in ascending numerical order. A wire leading from plug 1 is considered to be “wire 1”.</p>
+                <p>This module contains 8-12 wires connecting numerically labeled plugs in a loop.  Each wire leads from one plug to another plug in clockwise order. In this manual, wires are numbered according to the plug they lead from; a wire from plug 1 to plug 2 is considered to be “wire 1”, while a wire from plug 12 to plug 1 is considered to be “wire 12”.</p>
 
-                <p>Progress through the module by first determining the
-                starting wire, then checking whether to cut each wire in the sequence.
-                Each wire will need to be either cut or left
-                uncut based on the state of the previous wire(s) in the sequence.</p>
+                <p> Progress through the module by first cutting the starting wire, then cutting each applicable wire in the order of the sequence. Each wire will need to be either cut or left uncut based on the state of the previous wire(s) in the sequence. Avoid cutting wires out of sequence.</p>
 
-                <h3>Determine Start Position</h3>
+                <h3>Determining the starting wire</h3>
 
                 <p>Follow the first rule below that applies:</p>
 
                 <ol>
-                    <li>If <span class='rule' id='rule-port'>an RJ-45 port</span> is present and there is a wire
-                        leading from <span class='rule' id='rule-plug-start'>plug 4</span> <em>directly</em> to <span class='rule' id='rule-plug-end'>plug 5</span>, begin at that wire.</li>
+                    <li>If an RJ-45 port is present and there is a wire
+                        leading from plug 4 <em>directly</em> to plug 5, begin at that wire.</li>
                     <li>Otherwise, if there is a wire that begins at a plug
-                        matching <span class='rule' id='rule-start-2'>the number of batteries on the bomb</span>, begin
+                        matching the number of batteries on the bomb, begin
                         with that wire.</li>
                     <li>Otherwise, if there is a wire that begins at a plug
-                        matching <span class='rule' id='rule-start-3'>the first numeral of the serial number</span>,
+                        matching the first numeral of the serial number,
                         begin at that wire.</li>
-                    <li>Otherwise, if there is a <span class='rule' id='rule-indicator-lit'>lit</span> indicator with the
-                        label <span class='rule' id='rule-indicator'>CLR</span>, disregard all further instructions and
+                    <li>Otherwise, if there is a lit indicator with the
+                        label CLR, disregard all further instructions and
                         cut all wires present on this module in descending
                         numerical order.</li>
-                    <li>If none of the above apply, the start position is
-                        the plug containing a wire <span class='rule' id='rule-else'>earliest in numerical order</span>.</li>
+                    <li>If none of the above apply, the starting wire is the wire earliest in numerical order.</li>
                 </ol>
 
                 <!-- <i>See Appendix A for indicator identification reference.</i> -->
@@ -6846,23 +6840,13 @@
             </div>
             <div class="page-footer absolute-footer solvablepagecount"></div>
             <div class="page-content">
-                <h3>Cutting Wires</h3>
+                <h3>Cutting wires</h3>
                 <ul>
-                    <li><u>Always</u> cut the wire at the starting plug.
-                        Then progress to the next wire.</li>
-                    <li>From this position, cut the wires as directed by
-                        the steps in the following table.  The starting
-                        step corresponds to the <span class='rule' id='rule-starting-step'>first letter in the serial
-                        number</span>. <span id='rule-starting-step-fallback'>If the serial number contains no letters</span>,
-                        begin at step <span class='rule' id='rule-starting-step-fallback-step'>A</span>.</li>
-                    <li>When progressing to the next wire, also progress to
-                        the next step alphabetically in the table to determine
-                        whether to cut the wire.</li>
-                    <li>“Previous wire(s)” may refer to wires beyond the
-                        original starting position in the sequence.</li>
-                    <li>If the wire at the starting plug is <span class='rule' id='rule-reverse-colors'>red, green, or
-                        white</span>, progress through the steps in reverse
-                        alphabetical order instead.</li>
+                    <li><u>Always</u> cut the wire at the starting plug.Then progress to the next wire.</li>
+                    <li>From this position, cut the wires as directed by the steps in the following table.  The starting step corresponds to the first letter in the serial number. If the serial number contains no letters, begin at step A.</li>
+                    <li>When progressing to the next wire, also progress to the next step alphabetically in the table to determine whether to cut the wire.</li>
+                    <li>“Previous wire(s)” may refer to wires beyond the original starting position in the sequence.</li>
+                    <li>If the wire at the starting plug is red, green or white, progress through the steps in reverse alphabetical order instead.</li>
                 </ul>
                 <table class="repeaters-table">
                     <tr>
@@ -7606,7 +7590,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <p style="margin-top: 3em;"><strong>Other pairs/sets of words include</strong>: ad/add, aloud/allowed, altar/alter, arc/ark, baited/bated, base/bass, blew/blue, brake/break, carat/caret/carrot/karat, ceiling/sealing, cent/scent/sent, cereal/serial, choral/coral/corral, coarse/course, creak/creek, dear/deer, discussed/disgust, elicit/illicit, everyday/every day, faint/feint, faze/phase, find/fined, flair/flare, flea/flee, gait/gate, idle/idol/idyll, lighting/lightning/lightening, loan/lone/lend, oar/or/ore, pail/pale, pair/pare/pear, poor/pore/pour, praise/prays/preys, precedence/precedents/presidents, right/rite/wright/write, road/rode/rowed, ring/wring, role/roll, seam/seem, stairs/stares, steal/steel, straight/strait, though/thought/through/thorough, vain/vane/vein, vary/very, wait/weight, and weak/week.</p>
+                <p><strong>Other pairs/sets of words include</strong>: ad/add, aloud/allowed, altar/alter, arc/ark, baited/bated, base/bass, blew/blue, brake/break, carat/caret/carrot/karat, ceiling/sealing, cent/scent/sent, cereal/serial, choral/coral/corral, coarse/course, creak/creek, dear/deer, discussed/disgust, elicit/illicit, everyday/every day, faint/feint, faze/phase, find/fined, flair/flare, flea/flee, gait/gate, idle/idol/idyll, lighting/lightning/lightening, loan/lone/lend, oar/or/ore, pail/pale, pair/pare/pear, poor/pore/pour, praise/prays/preys, precedence/precedents/presidents, right/rite/wright/write, road/rode/rowed, ring/wring, role/roll, seam/seem, stairs/stares, steal/steel, straight/strait, though/thought/through/thorough, vain/vane/vein, vary/very, wait/weight, and weak/week.</p>
                 <p>For lack of space, the differences for these words have been omitted, but they should be fairly common knowledge to most English speakers.</p>
             </div>
         </div>
