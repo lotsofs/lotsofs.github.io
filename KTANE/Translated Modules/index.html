@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="no-js">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Bomb Defusal Manual for the video game Keep Talking and Nobody Explodes">
+    <title>Keep Talking and Nobody Explodes - Translated Modules Manuals</title>
+    <meta name="viewport" content="initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../css/font.css">
+    <link rel="stylesheet" type="text/css" href="../css/font-korean.css">
+    <link rel="stylesheet" type="text/css" href="../css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="../css/main.css">
+    <!-- <link rel="stylesheet" type="text/css" href="css/en.css" id="languageCSS"> -->
+    <link rel="icon" href="../favicon.ico" type="image/png">
+    <style>
+        .corner {
+            border: none;
+        }
+
+        body {
+            counter-reset: mainpagescounter 1 solvablescounter 0 neediescounter 0 appendixcounter 0;
+        }
+
+        .mainpages::before {
+            counter-increment: mainpagescounter;
+            content: "Page "counter(mainpagescounter);
+        }
+
+        .solvablepagecount::before {
+            counter-increment: solvablescounter;
+            content: "Page 1."counter(solvablescounter);
+        }
+
+        .neediespagecount::before {
+            counter-increment: neediescounter;
+            content: "Page 2."counter(neediescounter);
+        }
+
+        .appendixpagecount::before {
+            counter-increment: appendixcounter;
+            content: "Page "counter(appendixcounter, upper-roman);
+        }
+
+        body .page:nth-of-type(7n+1) {
+            background-image: url("./img/background/page-bg-noise-01.png");
+        }
+
+        body .page:nth-of-type(7n+2) {
+            background-image: url("./img/background/page-bg-noise-02.png");
+        }
+
+        body .page:nth-of-type(7n+3) {
+            background-image: url("./img/background/page-bg-noise-03.png");
+        }
+
+        body .page:nth-of-type(7n+4) {
+            background-image: url("./img/background/page-bg-noise-04.png");
+        }
+
+        body .page:nth-of-type(7n+5) {
+            background-image: url("./img/background/page-bg-noise-05.png");
+        }
+
+        body .page:nth-of-type(7n+6) {
+            background-image: url("./img/background/page-bg-noise-06.png");
+        }
+
+        body .page:nth-of-type(7n+7) {
+            background-image: url("./img/background/page-bg-noise-07.png");
+        }
+    </style>
+    <style>
+        @font-face { font-family: 'Mada'; font-weight: normal; font-style: normal; src: url('../font/Mada-Regular.ttf') format('truetype'); }
+        @font-face { font-family: 'SourceSerifPro'; font-weight: normal; font-style: normal; src: url('../font/SourceSerifPro-Regular.ttf') format('truetype'); }
+        @font-face { font-family: 'Yantramanav'; font-weight: normal; font-style: normal; src: url('../font/Yantramanav-Regular.ttf') format('truetype'); }
+        @font-face { font-family: 'Vollkorn'; font-weight: normal; font-style: normal; src: url('../font/Vollkorn-Regular.ttf') format('truetype'); }
+        @font-face { font-family: 'Alef'; font-weight: normal; font-style: normal; src: url('../font/Alef-Regular.ttf') format('truetype'); }
+        @font-face { font-family: "Yu Gothic"; font-weight: 500; font-style: normal; src: local("Yu Gothic Medium"), url(font/YuGothic-Medium.ttf); }
+
+        
+        .arabic { font-family: 'Mada'; }
+        .cyrillic { font-family: 'SourceSerifPro'; }
+        .devanagari td { font-family: 'Yantramanav'; }
+        .greek td { font-family: 'Vollkorn'; }
+        .hebrew td { font-family: 'Alef'; }
+        .japanese td { font-family: 'Yu Gothic'; }
+        .korean td { font-family: 'Nanum'; }
+    </style>
+</head>
+
+
+<body dir="ltr">
+    <div id="ManualContent">
+        <div class="page section-title " id="TitlePage">
+            <div class="page-footer absolute-footer" data-args="pageNum=1;pageCount=23"><span class="gamedisclaimer">Video game companion manual, not suitable for print. Find out more at www.keeptalkinggame.com</span></div>
+            <div class="page-content">
+                <img src="../img/ktane-logo.png" class="logo" alt="Keep Talking and Nobody Explodes">
+
+                <div class="title" style="margin-top: 12em;">
+
+                    <div class="title" style="margin-top: -5em; font-size: 0.8em;">
+                        <h1>
+                            <span>Translated Modules Manuals</span>
+                        </h1>
+                    </div>
+                </div>
+
+                <!-- <h2 class="website" style="margin-top: 1em;">www.keeptalkinggame.com</h2> -->
+<!-- 
+                <h2 class="versioning" style="margin-top: 1em;">
+                    <span>Just looking for a quick bomb defusal manual link? Use these links:</span>
+                    <br>• <span class="verification-code"><b><a href="./Road To Centurion 09.html">Most complete manual</a></b></span>
+                    <br>• <span class="verification-code"><b><a href="./Road To Centurion 06.html">Manual I'm currently using</a></b></span>
+                </h2> -->
+
+                <img src="../img/black_s.png" alt="LotsOfS Channel Logo" height="200" style="margin-top: 4em;">
+
+            </div>
+        </div>
+
+        <!-- <div class="page section-title " id="DefusingBombs">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+                <span class="page-header-section-title">Introduction</span>
+            </div>
+            <div class="page-footer absolute-footer mainpages"></div>
+            <div class="page-content">
+                <div class="vertical-spacer"></div>
+
+                <div class="intro" style="margin-top: -10em;">
+                    <p>
+                        Keep Talking and Nobody Explodes is a local multiplayer party game for two or more players. The objective of the game is to defuse a bomb before time runs out by using the instructions found in the Bomb Defusal Manual.
+                    </p>
+                    <p>
+                        One player takes the role of the bomb Defuser. All other players take the role of Experts who must use the Bomb Defusal Manual to guide the Defuser through the challenging task of defusing a bomb.
+                    </p>
+                    <h1 style="margin-top: 3em;"><i>What's This Document?</i></h1>
+                    <p>
+                        This document lists, on the next page, a bunch of links to custom merged HTML versions of those bomb defusal manuals I made, as well as information about these manuals on the pages thereafter for anyone who may be interested.
+                    </p>
+                    <p>
+                        These manuals are an attempt at merging modded manuals for Keep Talking and Nobody Explodes into the base game's manual that isn't the game's automatically generated PDF. Large PDFs can get slow, and most of the mods' provided PDFs are outdated in some way.
+                    </p>
+                    <p>
+                        I wanted a manual with everything in one place that I could simply link to people and it would have everything they'd need, and nothing more. The <a href="http://ktane.timwi.de">Timwi repo</a> is great, but it can give a bit of a sensory overload if you're new.
+                    </p>
+                    <p>
+                        See the Changes section for more information on my mission statement with these manuals. Should you need to contact me: <a href="http://twitch.tv/lotsofs">Twitch</a>, <a href="http://twitter.com/lotsofs">Twitter</a>, <a href="http://discord.gg/lotsofs">Discord</a>.
+                    </p>
+                </div>
+            </div>
+        </div> -->
+
+
+        <div class="page ">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Translated</span>
+                <span class="page-header-section-title">The Button</span>
+            </div>
+            <div class="page-footer absolute-footer mainpages"></div>
+            <div class="page-content">
+                <h2>Colour Flash</h2>
+                <table>
+                    <tr><th>ISO-639</th>    <th>Anglonym</th>   <th>Endonym</th>                        <th>Manual</th> </tr>
+                    <tr><td>af</td>     <td>Afrikaans</td>      <td>Afrikaans</td>                      <td>N/A *</td>       </tr>
+                    <tr><td>ar</td>     <td>Arabic</td>         <td class="arabic">العربية</td>        <td><a class="arabic" href=https://lotsofs.github.io/KTANE/Translated%20Modules/Colour%20Flash%20AR%20Arabic.html>ألوان مضيئة</a> by R4Y & Mhmd_FVC</td>         </tr>
+                    <tr><td>az</td>     <td>Azerbaijani</td>    <td>Azərbaycanca</td>                   <td>N/A *</td>       </tr>
+                    <tr><td>be</td>     <td>Belarusian</td>     <td class="cyrillic">Беларуская</td>    <td>N/A *</td>       </tr>
+                    <tr><td>bg</td>     <td>Bulgarian</td>      <td class="cyrillic">Български</td>     <td>N/A *</td>       </tr>
+                    <tr><td>bn</td>     <td>Bengali</td>        <td>বাংলা</td>                           <td>N/A *</td>     </tr>
+                    <tr><td>br</td>     <td>Breton</td>         <td>Brezhoneg</td>                      <td>N/A *</td>       </tr>
+                    <tr><td>ca</td>     <td>Catalan</td>        <td>Català</td>                         <td>N/A *</td>       </tr>
+                    <tr><td>cs</td>     <td>Czech</td>          <td>Čeština</td>                        <td>N/A *</td>       </tr>
+                    <tr><td>de</td>     <td>German</td>         <td>Deutsch</td>                        <td><a href=https://lotsofs.github.io/KTANE/Translated%20Modules/Colour%20Flash%20DE%20German.html>Farbenblitz</a> by PowerSlaveAlfons</td>       </tr>
+                    <tr><td>el</td>     <td>Greek</td>          <td class="greek">Ελληνικά</td>         <td>N/A *</td>       </tr>
+                    <tr><td>en</td>     <td>English</td>        <td>English</td>                        <td><a href=https://ktane.timwi.de/HTML/Colour%20Flash.html>Colour Flash</a> by Bashly</td>       </tr>
+                    <tr><td>eo</td>     <td>Esperanto</td>      <td>Esperanto</td>                      <td>N/A *</td>       </tr>
+                    <tr><td>es</td>     <td>Spanish</td>        <td>Español</td>                        <td>N/A *</td>       </tr>
+                    <tr><td>eu</td>     <td>Basque</td>         <td>Euskara</td>                        <td>N/A *</td>       </tr>
+                    <tr><td>fi</td>     <td>Finnish</td>        <td>Suomi</td>                          <td>N/A *</td>       </tr>
+                    <tr><td>fr</td>     <td>French</td>         <td>Français</td>                       <td>N/A *</td>       </tr>
+                    <tr><td>fy</td>     <td>Frisian</td>        <td>Frysk</td>                          <td>N/A *</td>       </tr>
+                    <tr><td>ga</td>     <td>Irish</td>          <td>Gaeilge</td>                        <td>N/A *</td>       </tr>
+                    <tr><td>gl</td>     <td>Galician</td>       <td>Galego</td>                         <td>N/A *</td>       </tr>
+                    <tr><td>he</td>     <td>Hebrew</td>         <td class="hebrew">עברית</td>           <td>N/A *</td>       </tr>
+                    <tr><td>hi</td>     <td>Hindi</td>          <td class="devanagari">हिन्दी</td>        <td>N/A *</td>        </tr>
+                    <tr><td>hr</td>     <td>Croatian</td>       <td>Hrvatski</td>                       <td>N/A *</td>       </tr>
+                    <tr><td>hu</td>     <td>Hungarian</td>      <td>Magyarul</td>                       <td>N/A *</td>       </tr>
+                    <tr><td>it</td>     <td>Italian</td>        <td>Italiano</td>                       <td>N/A *</td>       </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="page ">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Translated</span>
+                <span class="page-header-section-title">The Button</span>
+            </div>
+            <div class="page-footer absolute-footer mainpages"></div>
+            <div class="page-content">
+                <h3>Colour Flash (cont.)</h3>
+                <table>
+                    <tr><th>ISO-639</th>    <th>Anglonym</th>       <th>Endonym</th>                            <th>Manual</th> </tr>
+                    <tr><td>ja</td>         <td>Japanese</td>       <td class="japanese">日本語</td>             <td>N/A *</td>       </tr>
+                    <tr><td>jv</td>         <td>Javanese</td>       <td>Jawa</td>                               <td>N/A *</td>       </tr>
+                    <tr><td>ko</td>         <td>Korean</td>         <td class="korean">한국어</td>              <td>N/A *</td>       </tr>
+                    <tr><td>la</td>         <td>Latin</td>          <td>Latina</td>                             <td>N/A *</td>       </tr>
+                    <tr><td>lb</td>         <td>Luxembourgish</td>  <td>Lëtzebuergesch</td>                     <td>N/A *</td>       </tr>
+                    <tr><td>mk</td>         <td>Macedonian</td>     <td class="cyrillic">Македонски</td>        <td>N/A *</td>       </tr>
+                    <tr><td>ml</td>         <td>Malayalam</td>      <td>മലയാളം</td>                          <td>N/A *</td>        </tr>
+                    <tr><td>nl</td>         <td>Dutch</td>          <td>Nederlands</td>                         <td><a href=https://lotsofs.github.io/KTANE/Translated%20Modules/Colour%20Flash%20NL%20Dutch.html>Kleurenflits</a> by S.</td>     </tr>
+                    <tr><td>oc</td>         <td>Occitan</td>        <td>Occitan</td>                            <td>N/A *</td>       </tr>
+                    <tr><td>pl</td>         <td>Polish</td>         <td>Polski</td>                             <td>N/A *</td>       </tr>
+                    <tr><td>pt</td>         <td>Portugese</td>      <td>Português</td>                          <td>N/A *</td>       </tr>
+                    <tr><td>ro</td>         <td>Romanian</td>       <td>Română</td>                             <td>N/A *</td>       </tr>
+                    <tr><td>ru</td>         <td>Russian</td>        <td class="cyrillic">Русский</td>           <td>N/A *</td>       </tr>
+                    <tr><td>so</td>         <td>Somali</td>         <td>Soomaaliga</td>                         <td>N/A *</td>       </tr>
+                    <tr><td>sv</td>         <td>Swedish</td>        <td>Svenska</td>                            <td>N/A *</td>       </tr>
+                    <tr><td>tl</td>         <td>Tagalog</td>        <td>Tagalog</td>                            <td>N/A *</td>       </tr>
+                    <tr><td>tr</td>         <td>Turkish</td>        <td>Türkçe</td>                             <td>N/A *</td>       </tr>
+                    <tr><td>tt</td>         <td>Tatar</td>          <td class="cyrillic">Татарча</td>           <td>N/A *</td>       </tr>
+                    <tr><td>uk</td>         <td>Ukrainian</td>      <td class="cyrillic">Українська</td>        <td>N/A *</td>       </tr>
+                    <tr><td>vi</td>         <td>Vietnamese</td>     <td>Tiếng Việt</td>                         <td>N/A *</td>       </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="page ">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Manuals Hub</span>
+                <span class="page-header-section-title">Changes</span>
+            </div>
+            <div class="page-footer absolute-footer mainpages"></div>
+            <div class="page-content">
+                <div style="text-align: center;">
+                    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><i>This page intentionally left blank.</i>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
