@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>カラーフラッシュ — Keep Talking and Nobody Explodes Module</title>
+    <meta name="viewport" content="initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../css/font.css">
+    <link rel="stylesheet" type="text/css" href="../css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="../css/main.css">
+    <link rel="icon" href="../favicon.ico" type="image/png">
+    <script src="js/ktane-utils.js"></script>
+    <style>
+        @font-face { font-family: "Yu Gothic"; font-weight: 500; font-style: normal; src: local("Yu Gothic Medium"), url(../font/YuGothic-Medium.ttf); }
+        .page-content , .page-header-section-title { font-family: 'Special Elite', 'Yu Gothic'; }
+        .condition {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body dir="ltr">
+<div class="section">
+    <div class="page page-bg-01">
+        <div class="page-header">
+            <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+            <span class="page-header-section-title">カラーフラッシュ</span>
+        </div>
+        <div class="page-content">
+            <svg class="diagram" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 348 348" fill="none" stroke-linecap="square" stroke-miterlimit="10">
+                <path d="M5.08 5.776h336.91v337.67H5.08z" stroke="#000" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"></path>
+                <path d="M282.734 40.554c0-8.376 6.966-15.165 15.56-15.165 4.126 0 8.084 1.59 11 4.44 2.92 2.84 4.56 6.7 4.56 10.72 0 8.37-6.967 15.16-15.56 15.16-8.594 0-15.56-6.79-15.56-15.17z" stroke="#000" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"></path>
+                <rect stroke="#000000" id="svg_25" height="79.72727" width="188" y="48.63636" x="48.18183" fill="#000000"/>
+                <rect stroke-width="1" stroke="#000000" id="svg_26" height="151" width="152" y="147.84233" x="17.40909" fill="none"/>
+                <rect stroke-width="1" stroke="#000000" id="svg_28" height="151" width="152" y="147.84233" x="178.77273" fill="none"/>
+                <text stroke="null" transform="matrix(1.006213665008545,0,0,0.96855099056037,-0.4159978371972102,3.2341763832389407) " font-weight="light" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="27" id="svg_29" y="97.40625" 
+                    x="71.28906" stroke-opacity="null" stroke-width="0" fill="#ffffff">&lt;missing_text&gt;</text>
+                    <text stroke="null" transform="matrix(1.006213665008545,0,0,0.9546665460532651,-0.4159978371972102,6.131012631821841) " font-weight="normal" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="27" id="svg_30" y="234.4432" 
+                    x="66.31994" stroke-opacity="null" stroke-width="0" fill="#000000">はい</text>
+                    <text stroke="null" transform="matrix(1.006213665008545,0,0,0.9546665460532651,-0.4159978371972102,6.131012631821841) " font-weight="normal" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="27" id="svg_32" y="234" 
+                    x="212.55971" stroke-opacity="null" stroke-width="0" fill="#000000">いいえ</text> 
+            </svg>
+            
+            <h2>モジュール詳細：カラーフラッシュ</h2>
+            <p class="flavour-text">
+                色を特定することは簡単だ｡赤､青､緑､などなど｡しかし､文字の色が違う色だとそう簡単にはいかないようだ...
+            </p>
+
+            <ul>
+                <li>｢カラーフラッシュ｣モジュールは8つの色を表す単語を異なる色で順番に表示する｡</li>
+                <li>利用される色は赤､黄色､緑､青､マゼンタと白である｡</li>
+                <li>加えてモジュールには｢はい｣ボタンと｢いいえ｣ボタンが含まれる｡</li>
+                <li>モジュールを解除するには､｢はい｣｢いいえ｣ボタンのうち､<em>どちらか一方</em>が押されなければならないが､それは下記のルールに従って正しいタイミングで行われなければならない｡</li>
+                <li>どのルールセットを利用するかは､シーケンスの最後の単語の色によって決定する｡</li>
+                <li>ルールはルールセットごとに一番上から順に一番下まで適応する｡</li>
+            </ul>
+
+            <table>
+                <tbody><tr>
+                     <td>
+                         <div class="condition">シーケンスの最後の単語の色が赤の場合:</div>
+                         <div>緑が単語として3回以上表示されていれば､3回目に緑が単語か色として表示されている時にはいを押す｡</div>
+                         <div>青が色としてちょうど1回表示されていれば､マゼンタが単語として表示されている時にいいえを押す｡</div>
+                         <div>それ以外の場合､最後に白が単語か色として表示されいる時にはいを押す｡</div>
+                     </td>
+                 </tr>
+                 <tr>
+                     <td>
+                         <div class="condition">シーケンスの最後の単語の色が黄色の場合:</div>
+                         <div>単語の青が緑の色で表示されれば､最初に緑が色として表示されている時にはいを押す｡</div>
+                         <div>単語の白が白か赤の色で表示されれば､2回目に単語と色が一致しない時にはいを押す｡</div>
+                         <div>それ以外の場合､マゼンタが単語か色として表示されている回数を数える｡(単語のマゼンタがマゼンタの色で表示された場合は1回として数える｡)
+                             最初から数えて､シーケンスのその回数番目の要素が表示されている時にいいえを押す｡(例:合計4回表示された場合､シーケンスの4番目の要素で押す｡)</div>
+                     </td>
+                 </tr>
+            </tbody></table>
+        </div>
+        <div class="page-footer relative-footer">ページ 1/2</div>
+    </div>
+
+    <div class="page page-bg-02">
+        <div class="page-header">
+            <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+            <span class="page-header-section-title">カラーフラッシュ</span>
+        </div>
+        <div class="page-content">
+            <p>前ページのテーブルの続き
+
+            </p><table>
+                <tbody><tr>
+                    <td>
+                        <div class="condition">シーケンスの最後の単語の色が緑の場合:</div>
+                         <div>同じ単語が異なる色で連続して表示されれば､シーケンスの5の要素が表示されている時にいいえを押す｡</div>
+                         <div>マゼンタが単語として3回以上表示されれば､最初に黄色が単語か色として表示される時にいいえを押す｡</div>
+                         <div>それ以外の場合､単語と色が一致する時にはいを押す｡</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="condition">シーケンスの最後の単語の色が青の場合:</div>
+                        <div>3回以上単語と色が一致しなければ､最初に単語と色が一致しない時にはいを押す｡</div>
+                        <div>単語の赤が黄色の色で表示されるか､単語の黄色が白の色で表示されれば､単語の白が赤の色で表示される時にいいえを押す｡</div>
+                        <div>それ以外の場合､最後に緑が単語か色として表示されている時にはいを押す｡</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="condition">シーケンスの最後の単語の色がマゼンタの場合:</div>
+                        <div>同じ色が異なる単語で連続して表示されれば､シーケンスの3番目の要素ではいを押す｡</div>
+                        <div>黄色が単語として表示される回数が青が色として表示される回数よりも多ければ､最後に黄色が単語として表示されるときにいいえを押す｡</div>
+                        <div>それ以外の場合､最初にシーケンスの7番目の要素の単語と一致する色の要素が表示されている時にいいえを押す｡</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="condition">シーケンスの最後の単語の色が白の場合:</div>
+                        <div>3番目の要素の色が4番目か5番目の要素の単語と一致すれば､最初に青が単語か色として表示されている時にいいえを押す｡</div>
+                        <div>単語の黄色が赤の色で表示されれば､最後に青が色として表示されているときにはいを押す｡</div>
+                        <div>それ以外の場合､いいえを押す｡</div>
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+        <div class="page-footer relative-footer">ページ 2/2</div>
+    </div>
+</div>
+</body>
+</html>
