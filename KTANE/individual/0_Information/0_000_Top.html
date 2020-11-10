@@ -37,8 +37,7 @@
         }
         .appendixpagecount::before { 
             counter-increment: appendixcounter;
-            content: "Page 4." counter(appendixcounter); 
-            /* , upper-roman); */
+            content: "Page " counter(appendixcounter, upper-roman);
         }
 
         body .page:nth-of-type(7n+1) {
