@@ -1,0 +1,118 @@
+<div class="page " id="FollowTheLeader">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Follow the Leader</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <img class="diagram" src="img/Component/Follow the Leader.svg">
+        <h2>On the Subject of Follow the Leader</h2>
+
+        <p class="flavour-text">Child’s play. Just follow the leader. Only if you fail to follow, the penalty is somewhat more explosive.</p>
+
+        <p>This module contains 8-12 wires connecting numerically labeled plugs in a loop.  Each wire leads from one plug to another plug in clockwise order. In this manual, wires are numbered according to the plug they lead from; a wire from plug 1 to plug 2 is considered to be “wire 1”, while a wire from plug 12 to plug 1 is considered to be “wire 12”.</p>
+
+        <p> Progress through the module by first cutting the starting wire, then cutting each applicable wire in the order of the sequence. Each wire will need to be either cut or left uncut based on the state of the previous wire(s) in the sequence. Avoid cutting wires out of sequence.</p>
+
+        <h3>Determining the starting wire</h3>
+
+        <p>Follow the first rule below that applies:</p>
+
+        <ol>
+            <li>If an RJ-45 port is present and there is a wire
+                leading from plug 4 <em>directly</em> to plug 5, begin at that wire.</li>
+            <li>Otherwise, if there is a wire that begins at a plug
+                matching the number of batteries on the bomb, begin
+                with that wire.</li>
+            <li>Otherwise, if there is a wire that begins at a plug
+                matching the first numeral of the serial number,
+                begin at that wire.</li>
+            <li>Otherwise, if there is a lit indicator with the
+                label CLR, disregard all further instructions and
+                cut all wires present on this module in descending
+                numerical order.</li>
+            <li>If none of the above apply, the starting wire is the wire earliest in numerical order.</li>
+        </ol>
+
+        <!-- <i>See Appendix A for indicator identification reference.</i> -->
+        <!-- <br> -->
+        <!-- <i>See Appendix B for battery identification reference.</i> -->
+        <!-- <br> -->
+        <!-- <i>See Appendix C for port identification reference.</i> -->
+    </div>
+</div>
+<div class="page ">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Follow the Leader</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <h3>Cutting wires</h3>
+        <ul>
+            <li><u>Always</u> cut the wire at the starting plug.Then progress to the next wire.</li>
+            <li>From this position, cut the wires as directed by the steps in the following table.  The starting step corresponds to the first letter in the serial number. If the serial number contains no letters, begin at step A.</li>
+            <li>When progressing to the next wire, also progress to the next step alphabetically in the table to determine whether to cut the wire.</li>
+            <li>“Previous wire(s)” may refer to wires beyond the original starting position in the sequence.</li>
+            <li>If the wire at the starting plug is red, green or white, progress through the steps in reverse alphabetical order instead.</li>
+        </ul>
+        <table class="repeaters-table">
+            <tr>
+                <th>Step</th>
+                <th>Cut this wire if:</th>
+            </tr>
+            <tr>
+                <th>A or N</th>
+                <td class='table-rule'>The previous wire is not yellow or blue or green.</td>
+            </tr>
+            <tr>
+                <th>B or O</th>
+                <td class='table-rule'>The previous wire leads to an even numbered plug.</td>
+            </tr>
+            <tr>
+                <th>C or P</th>
+                <td class='table-rule'>The previous wire should be cut.</td>
+            </tr>
+            <tr>
+                <th>D or Q</th>
+                <td class='table-rule'>The previous wire is red or blue or black.</td>
+            </tr>
+            <tr>
+                <th style="white-space: nowrap;">E or R</th>
+                <td class='table-rule'>Two of the previous three wires share a color.</td>
+            </tr>
+            <tr>
+                <th>F or S</th>
+                <td class='table-rule'>Exactly one of the previous two wires is the same color as this wire.</td>
+            </tr>
+            <tr>
+                <th>G or T</th>
+                <td class='table-rule'>The previous wire is yellow or white or green.</td>
+            </tr>
+            <tr>
+                <th>H or U</th>
+                <td class='table-rule'>The previous wire should not be cut.</td>
+            </tr>
+            <tr>
+                <th>I or V</th>
+                <td class='table-rule'>The previous wire skips a plug.</td>
+            </tr>
+            <tr>
+                <th>J or W</th>
+                <td class='table-rule'>The previous wire is not white or black or red.</td>
+            </tr>
+            <tr>
+                <th>K or X</th>
+                <td class='table-rule'>The previous two wires are different colors.</td>
+            </tr>
+            <tr>
+                <th>L or Y</th>
+                <td class='table-rule'>The previous wire does not lead to a position labeled 6 or less.</td>
+            </tr>
+            <tr>
+                <th style="white-space: nowrap;">M or Z</th>
+                <td class='table-rule'>Exactly one or neither of the previous two wires are white or black.</td>
+            </tr>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,104 @@
+<div class="page " id="LightCycle">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Light Cycle</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <img class="diagram" src="img/Component/Light Cycle.svg">
+        <h2>On the Subject of Light Cycles</h2>
+
+        <p class="flavour-text">The name “blinkenlights” was taken.</p>
+
+        <p>There are six colored LEDs in a row which continuously flash in sequence from left to right.
+            To disarm this module, determine a sequence of colors, then input that sequence by
+            pressing the button when each color is lit. (For example, to enter the color red,
+            press the button when the red LED is lit.)</p>
+
+        <p>Determine the correct sequence of colors as follows:</p>
+
+        <ul>
+            <li>Start with the order of the LEDs on the module. This is a sequence of six colors.</li>
+            <li>Take the first and last character of the serial number, then the second and second-last,
+                etc. up to the last and first character, resulting in a list of 6 pairs.</li>
+            <li>For each such pair of characters, look up the information in the following table.
+                Use the first in the pair for the row, the second for the column. A letter in the table
+                refers to a color (R&nbsp;=&nbsp;red, Y&nbsp;=&nbsp;yellow, G&nbsp;=&nbsp;green, B&nbsp;=&nbsp;blue,
+                M&nbsp;=&nbsp;magenta, W&nbsp;=&nbsp;white), while a number refers to a position in
+                your sequence (1 through 6). Swap those two colors in your sequence.</li>
+            <li>After performing the six swaps, enter the resulting sequence.</li>
+        </ul>
+    </div>
+</div>
+<div class="page ">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Light Cycle</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+
+        <style>
+            table.lightcycle-table {
+                width: 100%;
+                border: none;
+            }
+            table.lightcycle-table tr:nth-child(6n+2) td, table.lightcycle-table tr:nth-child(6n+2) th {
+                border-top: 1mm solid black;
+            }
+            table.lightcycle-table tr td:nth-child(3n+2), table.lightcycle-table tr th:nth-child(3n+2) {
+                border-left: 1mm solid black;
+            }
+            table.lightcycle-table td, table.lightcycle-table th {
+                padding: .1em .2em;
+                font-size: 11pt;
+                text-align: center;
+                white-space: nowrap;
+            }
+            table.lightcycle-table col.lightcycle-first {
+                width: 2em;
+            }
+        </style>
+
+        <table class='lightcycle-table'>
+            <col class='lightcycle-first'>
+            <tr><td class='corner'></td><th>A, B, C</th><th>D, E, F</th><th>G, H, I</th><th>J, K, L</th><th>M, N, O</th><th>P, Q, R</th><th>S, T, U</th><th>V, W, X</th><th>Y, Z, 0</th><th>1, 2, 3</th><th>4, 5, 6</th><th>7, 8, 9</th></tr>
+            <tr><th>A</th><td>5/B</td><td>B/R</td><td>M/G</td><td>Y/5</td><td>4/1</td><td>R/W</td><td>6/4</td><td>1/6</td><td>2/3</td><td>3/M</td><td>G/Y</td><td>W/2</td></tr>
+            <tr><th>B</th><td>2/R</td><td>6/M</td><td>4/3</td><td>5/B</td><td>R/5</td><td>Y/2</td><td>1/G</td><td>M/Y</td><td>W/6</td><td>3/4</td><td>B/W</td><td>G/1</td></tr>
+            <tr><th>C</th><td>M/Y</td><td>2/4</td><td>Y/R</td><td>3/5</td><td>W/2</td><td>G/B</td><td>1/W</td><td>R/3</td><td>5/G</td><td>4/6</td><td>B/M</td><td>6/1</td></tr>
+            <tr><th>D</th><td>5/6</td><td>6/3</td><td>1/4</td><td>M/2</td><td>R/Y</td><td>2/M</td><td>W/R</td><td>B/G</td><td>Y/W</td><td>3/B</td><td>G/1</td><td>4/5</td></tr>
+            <tr><th>E</th><td>B/R</td><td>W/2</td><td>2/3</td><td>1/4</td><td>M/B</td><td>5/6</td><td>Y/W</td><td>R/M</td><td>G/Y</td><td>6/G</td><td>3/5</td><td>4/1</td></tr>
+            <tr><th>F</th><td>R/Y</td><td>2/G</td><td>1/M</td><td>Y/5</td><td>5/R</td><td>W/B</td><td>6/3</td><td>B/1</td><td>M/4</td><td>G/6</td><td>3/2</td><td>4/W</td></tr>
+            <tr><th>G</th><td>Y/1</td><td>5/4</td><td>2/W</td><td>R/Y</td><td>1/R</td><td>B/3</td><td>6/G</td><td>G/6</td><td>M/B</td><td>W/5</td><td>4/2</td><td>3/M</td></tr>
+            <tr><th>H</th><td>3/5</td><td>W/Y</td><td>G/2</td><td>2/B</td><td>5/G</td><td>M/R</td><td>B/3</td><td>1/4</td><td>4/6</td><td>Y/M</td><td>6/W</td><td>R/1</td></tr>
+            <tr><th>I</th><td>R/M</td><td>4/5</td><td>5/W</td><td>B/1</td><td>M/6</td><td>3/2</td><td>W/B</td><td>G/Y</td><td>Y/R</td><td>1/4</td><td>6/G</td><td>2/3</td></tr>
+            <tr><th>J</th><td>W/B</td><td>R/6</td><td>5/Y</td><td>4/1</td><td>2/5</td><td>Y/3</td><td>M/W</td><td>3/2</td><td>B/G</td><td>G/M</td><td>1/R</td><td>6/4</td></tr>
+            <tr><th>K</th><td>6/4</td><td>B/2</td><td>W/G</td><td>R/5</td><td>G/1</td><td>2/Y</td><td>Y/R</td><td>M/B</td><td>1/6</td><td>3/W</td><td>5/3</td><td>4/M</td></tr>
+            <tr><th>L</th><td>6/4</td><td>B/5</td><td>W/6</td><td>1/G</td><td>R/2</td><td>4/R</td><td>G/W</td><td>3/M</td><td>2/B</td><td>Y/3</td><td>5/Y</td><td>M/1</td></tr>
+            <tr><th>M</th><td>W/3</td><td>3/G</td><td>2/4</td><td>Y/M</td><td>M/2</td><td>R/5</td><td>6/R</td><td>B/6</td><td>G/Y</td><td>5/B</td><td>1/W</td><td>4/1</td></tr>
+            <tr><th>N</th><td>1/Y</td><td>6/M</td><td>2/1</td><td>G/R</td><td>3/G</td><td>5/B</td><td>R/4</td><td>4/3</td><td>W/2</td><td>Y/W</td><td>B/5</td><td>M/6</td></tr>
+            <tr><th>O</th><td>R/5</td><td>3/G</td><td>2/3</td><td>W/4</td><td>B/2</td><td>1/M</td><td>5/6</td><td>M/1</td><td>4/Y</td><td>G/B</td><td>6/R</td><td>Y/W</td></tr>
+            <tr><th>P</th><td>1/4</td><td>4/B</td><td>6/2</td><td>3/W</td><td>M/R</td><td>Y/6</td><td>B/Y</td><td>2/G</td><td>5/M</td><td>G/5</td><td>R/3</td><td>W/1</td></tr>
+            <tr><th>Q</th><td>5/G</td><td>M/B</td><td>4/W</td><td>Y/2</td><td>R/M</td><td>W/4</td><td>6/1</td><td>3/6</td><td>B/Y</td><td>1/5</td><td>G/R</td><td>2/3</td></tr>
+            <tr><th>R</th><td>M/G</td><td>5/6</td><td>G/M</td><td>W/5</td><td>Y/2</td><td>R/4</td><td>B/1</td><td>1/B</td><td>2/R</td><td>4/3</td><td>6/W</td><td>3/Y</td></tr>
+            <tr><th>S</th><td>R/Y</td><td>6/5</td><td>5/G</td><td>G/B</td><td>W/M</td><td>4/3</td><td>1/W</td><td>B/1</td><td>3/6</td><td>2/4</td><td>Y/2</td><td>M/R</td></tr>
+            <tr><th>T</th><td>G/3</td><td>B/2</td><td>6/W</td><td>M/B</td><td>1/5</td><td>Y/4</td><td>5/M</td><td>W/R</td><td>4/6</td><td>3/Y</td><td>2/G</td><td>R/1</td></tr>
+            <tr><th>U</th><td>5/1</td><td>W/3</td><td>4/5</td><td>3/4</td><td>Y/W</td><td>1/Y</td><td>B/G</td><td>6/2</td><td>M/6</td><td>G/R</td><td>2/M</td><td>R/B</td></tr>
+            <tr><th>V</th><td>M/6</td><td>6/B</td><td>1/G</td><td>3/5</td><td>W/R</td><td>B/4</td><td>G/M</td><td>R/1</td><td>2/W</td><td>5/2</td><td>4/Y</td><td>Y/3</td></tr>
+            <tr><th>W</th><td>Y/M</td><td>B/1</td><td>5/3</td><td>2/G</td><td>3/2</td><td>R/5</td><td>1/4</td><td>W/6</td><td>4/W</td><td>G/R</td><td>M/Y</td><td>6/B</td></tr>
+            <tr><th>X</th><td>4/2</td><td>R/B</td><td>W/5</td><td>Y/M</td><td>2/Y</td><td>5/1</td><td>B/R</td><td>G/3</td><td>M/G</td><td>3/6</td><td>6/W</td><td>1/4</td></tr>
+            <tr><th>Y</th><td>G/Y</td><td>1/R</td><td>5/4</td><td>4/G</td><td>3/B</td><td>M/6</td><td>2/5</td><td>Y/2</td><td>R/1</td><td>W/3</td><td>B/W</td><td>6/M</td></tr>
+            <tr><th>Z</th><td>G/B</td><td>B/G</td><td>1/5</td><td>M/1</td><td>3/M</td><td>R/3</td><td>Y/W</td><td>6/Y</td><td>5/2</td><td>4/6</td><td>W/R</td><td>2/4</td></tr>
+            <tr><th>0</th><td>2/R</td><td>R/B</td><td>5/G</td><td>W/2</td><td>Y/1</td><td>4/Y</td><td>3/5</td><td>1/M</td><td>B/W</td><td>G/6</td><td>6/4</td><td>M/3</td></tr>
+            <tr><th>1</th><td>R/4</td><td>W/6</td><td>3/2</td><td>2/W</td><td>4/Y</td><td>6/5</td><td>B/R</td><td>5/G</td><td>Y/B</td><td>G/M</td><td>M/1</td><td>1/3</td></tr>
+            <tr><th>2</th><td>4/B</td><td>B/3</td><td>6/4</td><td>W/1</td><td>M/Y</td><td>R/6</td><td>G/5</td><td>Y/W</td><td>5/2</td><td>2/R</td><td>3/G</td><td>1/M</td></tr>
+            <tr><th>3</th><td>B/6</td><td>M/3</td><td>4/B</td><td>1/4</td><td>2/5</td><td>Y/1</td><td>G/Y</td><td>R/W</td><td>W/G</td><td>5/2</td><td>6/M</td><td>3/R</td></tr>
+            <tr><th>4</th><td>M/R</td><td>2/B</td><td>W/5</td><td>6/Y</td><td>B/3</td><td>4/2</td><td>G/1</td><td>Y/6</td><td>5/G</td><td>3/M</td><td>R/W</td><td>1/4</td></tr>
+            <tr><th>5</th><td>Y/1</td><td>5/6</td><td>1/W</td><td>W/4</td><td>B/G</td><td>G/5</td><td>4/M</td><td>2/B</td><td>3/R</td><td>6/3</td><td>M/2</td><td>R/Y</td></tr>
+            <tr><th>6</th><td>3/4</td><td>W/B</td><td>Y/G</td><td>5/M</td><td>R/1</td><td>G/W</td><td>1/2</td><td>6/Y</td><td>B/R</td><td>M/6</td><td>4/3</td><td>2/5</td></tr>
+            <tr><th>7</th><td>4/G</td><td>6/5</td><td>Y/4</td><td>G/B</td><td>3/1</td><td>M/Y</td><td>5/3</td><td>1/M</td><td>2/R</td><td>R/2</td><td>B/W</td><td>W/6</td></tr>
+            <tr><th>8</th><td>Y/B</td><td>R/2</td><td>W/R</td><td>5/3</td><td>1/W</td><td>3/5</td><td>B/M</td><td>G/4</td><td>6/Y</td><td>4/G</td><td>2/1</td><td>M/6</td></tr>
+            <tr><th>9</th><td>G/Y</td><td>3/1</td><td>5/M</td><td>R/2</td><td>6/W</td><td>M/B</td><td>Y/6</td><td>2/4</td><td>4/G</td><td>B/5</td><td>1/R</td><td>W/3</td></tr>
+            <tr><td class='corner'></td><th>A, B, C</th><th>D, E, F</th><th>G, H, I</th><th>J, K, L</th><th>M, N, O</th><th>P, Q, R</th><th>S, T, U</th><th>V, W, X</th><th>Y, Z, 0</th><th>1, 2, 3</th><th>4, 5, 6</th><th>7, 8, 9</th></tr>                </table>
+    </div>
+</div>

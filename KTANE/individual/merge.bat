@@ -1,0 +1,1 @@
+for /F "tokens=*" %%A in (dir.txt) do type "%%A" >> output.html

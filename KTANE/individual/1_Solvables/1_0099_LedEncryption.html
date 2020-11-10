@@ -1,0 +1,44 @@
+<div class="page " id="LedEncryption">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">LED Encryption</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <img src="img/Component/LED Encryption.svg" class="diagram">
+        <h2>On the Subject of LED Encryption</h2>
+        <p class="flavour-text">
+            Ooooh, shiny lights and buttons.
+            Touchy touchy!
+        </p>
+
+        <ul>
+            <li style="margin: .5em 0;">Two to five LEDs are installed at the top of the module, representing stages. To disarm the module, these stages must be solved in order.</li>
+            <li style="margin: .5em 0;">Four buttons with four different letters are shown. The letters change at each stage.</li>
+            <li style="margin: .5em 0;">The current stage is indicated by a number in the top left of the module.</li>
+            <li style="margin: .5em 0;">The current stage’s multiplier is indicated by that stage’s LED according to the following table:
+                <table>
+                    <tr>
+                        <td>Red</td>
+                        <td>Green</td>
+                        <td>Blue</td>
+                        <td>Yellow</td>
+                        <td>Purple</td>
+                        <td>Orange</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                        <td>7</td>
+                    </tr>
+                </table>
+            </li>
+            <li style="margin: .5em 0;">Assign each letter of the alphabet to the numbers 0–25 (A = 0, B = 1, C = 2, etc.).</li>
+            <li style="margin: .5em 0;">A button is correct if its letter value, multiplied by the current stage’s multiplier, modulo 26, is equal to the value of the letter on its diagonally opposite button.</li>
+            <li style="margin: .5em 0;">At each stage, press a correct button. There may be more than one possible answer.</li>
+        </ul>
+    </div>
+</div>

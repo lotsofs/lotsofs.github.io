@@ -1,0 +1,63 @@
+<div class="page " id="TwoBits">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Two Bits</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <img src="img/Component/Two Bits.svg" class="diagram">
+        <h2>On the Subject of Two Bits</h2>
+        <p class="flavour-text">
+            This poorly programmed lookup device is as maddening with its slow responses as
+            it is unforgiving with ill-timed inputs. Patience required.</p>
+
+        <p style="margin: 0 0;">Query a series of two-letter codes to track down the correct
+            answer before submitting it. This primitive lookup machine
+            is intolerant to incomplete and excessive inputs, as well as
+            any input while it is busy.</p>
+
+        <h3>Step 1: Determine Initial Code</h3>
+        <p style="margin: 0 0;">If the serial number contains a letter, use the leftmost letter's numeric
+            position in the alphabet as your base value (e.g. A=1, B=2). For no letters, use 0.</p>
+        <p style="margin: 0 0;">Add the last digit of the serial number multiplied by the number of batteries
+            present.</p>
+        <p style="margin: 0 0;">If there is a Stereo RCA port present, double the current value.*</p>
+        <p style="margin: 0 0;">This value** is now the current code.</p>
+
+        <p style="margin: 0 0; font-size: 9.5pt">* Note: Skip this step if there is also an RJ45 port present.</p>
+        <p style="margin: 0 0; font-size: 9.5pt">** Note: Use the last two digits if the value is greater than 99. Prepend with a zero if less than 10.</p>
+
+        <h3>Step 2: Determine character pair and Perform Query</h3>
+
+        <p style="margin: 0 0;">Using the current code, look up the character pair. Enter that pair into the
+            device and press "Query".</p>
+            
+        <style>
+            table.twobitstable td, table.twobitstable th {
+                padding: .2em .75em .1em;
+            }
+        </style>
+
+        <table class='twobitstable' style="border: none;">
+            <tr><th style="border: none;">       </th><th>-0</th><th>-1</th><th>-2</th><th>-3</th><th>-4</th><th>-5</th><th>-6</th><th>-7</th><th>-8</th><th>-9</th></tr>
+            <tr>                    <th>0-</th><td>kb</td><td>dk</td><td>gv</td><td>tk</td><td>pv</td><td>kp</td><td>bv</td><td>vt</td><td>pz</td><td>dt</td></tr>
+            <tr>                    <th>1-</th><td>ee</td><td>zk</td><td>ke</td><td>ck</td><td>zp</td><td>pp</td><td>tp</td><td>tg</td><td>pd</td><td>pt</td></tr>
+            <tr>                    <th>2-</th><td>tz</td><td>eb</td><td>ec</td><td>cc</td><td>cz</td><td>zv</td><td>cv</td><td>gc</td><td>bt</td><td>gt</td></tr>
+            <tr>                    <th>3-</th><td>bz</td><td>pk</td><td>kz</td><td>kg</td><td>vd</td><td>ce</td><td>vb</td><td>kd</td><td>gg</td><td>dg</td></tr>
+            <tr>                    <th>4-</th><td>pb</td><td>vv</td><td>ge</td><td>kv</td><td>dz</td><td>pe</td><td>db</td><td>cd</td><td>td</td><td>cb</td></tr>
+            <tr>                    <th>5-</th><td>gb</td><td>tv</td><td>kk</td><td>bg</td><td>bp</td><td>vp</td><td>ep</td><td>tt</td><td>ed</td><td>zg</td></tr>
+            <tr>                    <th>6-</th><td>de</td><td>dd</td><td>ev</td><td>te</td><td>zd</td><td>bb</td><td>pc</td><td>bd</td><td>kc</td><td>zb</td></tr>
+            <tr>                    <th>7-</th><td>eg</td><td>bc</td><td>tc</td><td>ze</td><td>zc</td><td>gp</td><td>et</td><td>vc</td><td>tb</td><td>vz</td></tr>
+            <tr>                    <th>8-</th><td>ez</td><td>ek</td><td>dv</td><td>cg</td><td>ve</td><td>dp</td><td>bk</td><td>pg</td><td>gk</td><td>gz</td></tr>
+            <tr>                    <th>9-</th><td>kt</td><td>ct</td><td>zz</td><td>vg</td><td>gd</td><td>cp</td><td>be</td><td>zt</td><td>vk</td><td>dc</td></tr>
+        </table>
+
+        <h3>Step 3: Repeat and Submit</h3>
+
+        <p style="margin: 0 0;">The response code from the device from the query in Step 2 is now your current
+            code. Perform Step 2 an additional 2 times, using the new code each time.</p>
+
+        <p style="margin: 0 0;">After receiving the response code from the final query, look up the
+            corresponding character pair, enter the pair into the device and press "Submit".</p>
+    </div>
+</div>

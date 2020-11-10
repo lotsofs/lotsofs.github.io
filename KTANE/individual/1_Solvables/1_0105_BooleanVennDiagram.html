@@ -1,0 +1,50 @@
+<div class="page " id="BooleanVennDiagram">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Boolean Venn Diagram</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <img src="img/Component/Boolean Venn Diagram.svg" class="diagram">
+        <h2>On the Subject of Boolean Venn Diagrams</h2>
+        <p class="flavour-text">
+            Why is there a big Venn diagram? Why are there some weird symbols? Oh no...</p>
+
+        <ul style="margin-bottom: 0.5em;">
+            <li>
+                This module has eight buttons, one for each enclosed section of the Venn diagram and one representing the area not enclosed in any section of the diagram.</li>
+            <li>
+                The three circles are referred to as "A" (top), "B" (bottom left), and "C" (bottom right).</li>
+            <li>
+                For each section, use the boolean logic expression displayed above the Venn diagram to determine if that section is "true" or "false" by using the following rules:
+                <ul>
+                    <li> If the section is enclosed in a circle, then the value for that variable is considered to be "true". Otherwise, it is "false".<br>
+                         <i>Example: The middle section is enclosed in all three circles, so "A", "B", and "C" should all be considered to be "true" while evaluating that section.</i></li>
+                    <li> Evaluate the operator inside the parentheses before the one outside of the parentheses.</li>
+                    <li> Images describing each operator can be found below (gray regions represent "true").</li>
+                    <li> If the section evaluates to "true", press the button that corresponds with it. The section will turn green.</li>
+                </ul>
+            </li>
+            <li> Solve the module by pressing the buttons corresponding to all of the "true" sections.</li>
+            <li> Note: if an incorrect button is pressed, a strike will be issued and the section will turn red.</li>
+        </ul>
+        <!-- Note that this table may be replaced with a harder version -->
+        <style>
+            .booleanvenndiagram-table td {
+                width:25%;
+                text-align:center;
+                font-weight: bold;
+                font-size: 125%;
+                line-height: 120%;
+            }
+        </style>
+
+        <table style="width:100%; float: left; margin-top: 0;" class="booleanvenndiagram-table">
+            <tr><td>X <span style="font-size: 125%;">&#x2227;</span> Y<br>AND</td><td>X <span style="font-size: 125%;">&#x2228;</span> Y<br>OR</td><td>X <span style="font-size: 125%;">&#x22BB;</span> Y<br>XOR</td><td>X <span style="font-size: 200%;">&#x2192;</span> Y<br>IMPLIES</td></tr>
+            <tr><td><img src="img/modules/booleanvenndiagram/TAND.svg"></td><td><img src="img/modules/booleanvenndiagram/TOR.svg"></td><td><img src="img/modules/booleanvenndiagram/TXOR.svg"></td><td><img src="img/modules/booleanvenndiagram/TLIMP.svg"></td></tr>
+            <tr style="height:10px"></tr>
+            <tr><td>X | Y<br>NAND</td><td>X <span style="font-size: 200%;">&#x2193;</span> Y<br>NOR</td><td>X <span style="font-size: 200%;">&#x2194;'</span> Y<br>XNOR</td><td>X <span style="font-size: 200%;">&#x2190;</span> Y<br>IMPLIED BY</td></tr>
+            <tr><td><img src="img/modules/booleanvenndiagram/TNAND.svg"></td><td><img src="img/modules/booleanvenndiagram/TNOR.svg"></td><td><img src="img/modules/booleanvenndiagram/TXNOR.svg"></td><td><img src="img/modules/booleanvenndiagram/TRIMP.svg"></td></tr>
+        </table>
+    </div>
+</div>

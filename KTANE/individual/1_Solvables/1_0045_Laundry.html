@@ -1,0 +1,354 @@
+<div class="page " id="Laundry">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Laundry</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <img src="img/Component/Laundry.svg" class="diagram">
+        <h2>On the Subject of Laundry</h2>
+        <p class="flavour-text">Sorting and folding are the least of your worries.</p>
+
+        <p class='strong'>
+            All the messes from the previous explosions must be cleaned up. Using the
+            Laundry Symbol Reference L4UHDR9 and the rules below, determine the correct
+            setting on the machine panel. Once satisfied, insert a coin. On error, a sock
+            will be lost, and a strike gained.</p>
+
+        <p>
+            Determine the piece of clothing that has to be cleaned with the tables below.
+            For all values higher than 5, subtract 6 from the total until the new number
+            is less than 6. For all negative values, add 6 until you have a value between 0–5.</p>
+
+        <ul>
+            <li><strong>The Clothing Item</strong> (table L41) is determined by the number
+                of unsolved modules (excluding needy modules) + total amount of indicators.</li>
+            <li><strong>The Item Material</strong> (table L42) is determined by the total
+                number of ports + the number of solved modules – battery holders.</li>
+            <li><strong>The Item Color</strong> (table L43) is determined by the last digit
+                of serial number + batteries.</li>
+        </ul>
+
+        <p>
+            <strong>Use washing instructions based on the material, drying instructions based on
+            the color, and use ironing and special instructions based on the item.</strong>
+            But, prioritize the following rules from top to bottom:</p>
+
+        <ul>
+            <li>If the color is Clouded Pearl ALWAYS use non-chlorine bleach.</li>
+            <li>If the item is made out of leather, or in the color Jade Cluster, it can’t go
+                above 120°F. To be safe ALWAYS wash at 80°F.</li>
+            <li>If the item is a corset or the material is corduroy then use special
+                instructions based on material.</li>
+            <li>If the material is wool or the color is Star Lemon Quartz ALWAYS dry with
+                high heat.</li>
+            <li>If a letter of the clothing material matches a letter in your serial code,
+                then the color takes over the special instructions.</li>
+            <li>BUT if there are exactly 4 batteries in 2 holders and a there is a lit BOB
+                indicator, ignore all other rules. Bob did the work for you. Just throw in
+                the coin. Thanks BOB.</li>
+        </ul>
+
+        <p><strong>
+            Input the solution through putting The Washing Symbol top-left, The Drying
+            top-right, Ironing on the top display and Special on the bottom display.</strong></p>
+    </div>
+</div>
+<div class="page ">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Laundry</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+
+        <h4 style="margin: 1.5em 0 .5em; text-align: center;">Table L41: Clothing Item Reference</h4>
+        
+        <style>
+            table.laundrytable {
+                width: 100%;
+                border: none;
+            }
+            table.laundrytable td {
+                white-space: nowrap;
+            }
+        </style>
+
+        <table class='laundrytable'>
+            <tr>
+                <td style="border: none;"></td>
+                <th>CLOTHING ITEM</th>
+                <th>WASHING</th>
+                <th>DRYING</th>
+                <th>IRONING</th>
+                <th>SPECIAL</th>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>Corset</td>
+                <td>140°F</td>
+                <td>Dry Flat</td>
+                <td>2 dots</td>
+                <td><img src='img/modules/laundry/bleach.png' width='40'></td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Shirt</td>
+                <td>105°F</td>
+                <td><img src='img/modules/laundry/high heat.png' width='40'></td>
+                <td>No steam</td>
+                <td>No Tetrachlorethylene</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Skirt</td>
+                <td>30°C</td>
+                <td>Hang To Dry</td>
+                <td><img src='img/modules/laundry/iron.png' width='40'></td>
+                <td>Reduced Moisture</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Skort</td>
+                <td><img src='img/modules/laundry/machine wash gentle or delicate.png' width='40'></td>
+                <td>Tumble Dry</td>
+                <td>3 Dots</td>
+                <td>Circle Top Left</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Shorts</td>
+                <td>Do Not Wring</td>
+                <td>Shade</td>
+                <td>150°C</td>
+                <td><img src='img/modules/laundry/do not bleach.png' width='40'></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Scarf</td>
+                <td>95°C</td>
+                <td>Dry</td>
+                <td><img src='img/modules/laundry/iron at 110°C 230°F.png' width='40'></td>
+                <td>Do not Dry Clean</td>
+            </tr>
+        </table>
+
+        <h4 style="margin: 1.5em 0 .5em; text-align: center;">Table L42: Clothing Material Reference</h4>
+
+        <table class='laundrytable'>
+            <tr>
+                <td class='corner'></td>
+                <th>CLOTHING MATERIAL</th>
+                <th>WASHING</th>
+                <th>DRYING</th>
+                <th>IRONING</th>
+                <th>SPECIAL</th>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>Polyester</td>
+                <td>50°C</td>
+                <td>No Heat</td>
+                <td>2 dots</td>
+                <td><img src='img/modules/laundry/petroleum solvent only.png' width='40'></td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Cotton</td>
+                <td><img src='img/modules/laundry/95°C or 200°F dots.png' width='40'></td>
+                <td>Medium Heat</td>
+                <td>Iron</td>
+                <td>Do Not Dry Clean</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Wool</td>
+                <td>Handwash</td>
+                <td><img src='img/modules/laundry/dry in the shade.png' width='40'></td>
+                <td>390°F</td>
+                <td>Reduced Moisture</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Nylon</td>
+                <td>30°C</td>
+                <td>Drip Dry</td>
+                <td><img src='img/modules/laundry/no steam.png' width='40'></td>
+                <td>Low Heat</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Corduroy</td>
+                <td>105°F</td>
+                <td><img src='img/modules/laundry/drip dry.png' width='40'></td>
+                <td>110°C</td>
+                <td>W</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Leather</td>
+                <td>Do Not Wash</td>
+                <td>Do Not Dry</td>
+                <td>Do Not Iron</td>
+                <td><img src='img/modules/laundry/any solvent except tetrachlorethylene.png' width='40'></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="page ">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Laundry</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+
+        <h4 style="margin: 0 0 .5em; text-align: center;">Table L43: Clothing Color Reference</h4>
+
+        <table class='laundrytable'>
+            <tr>
+                <td class='corner'></td>
+                <th>CLOTHING COLOR</th>
+                <th>WASHING</th>
+                <th>DRYING</th>
+                <th>IRONING</th>
+                <th>SPECIAL</th>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>Ruby Fountain</td>
+                <td>140°F</td>
+                <td><img src='img/modules/laundry/high heat.png' width='40'></td>
+                <td>Do Not Iron</td>
+                <td><img src='img/modules/laundry/any solvent.png' width='40'></td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Star Lemon Quartz</td>
+                <td><img src='img/modules/laundry/95°C or 200°F.png' width='40'></td>
+                <td>Dry Flat</td>
+                <td>Iron</td>
+                <td><img src='img/modules/laundry/low heat.png' width='40'></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Sapphire Springs</td>
+                <td>80°F</td>
+                <td>Tumble Dry</td>
+                <td><img src='img/modules/laundry/iron at 200°C 390°F.png' width='40'></td>
+                <td><img src='img/modules/laundry/short cycle.png' width='40'></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Jade Cluster</td>
+                <td>30°C</td>
+                <td><img src='img/modules/laundry/do not tumble dry.png' width='40'></td>
+                <td>300°F</td>
+                <td><img src='img/modules/laundry/no steam finishing.png' width='40'></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Clouded Pearl</td>
+                <td><img src='img/modules/laundry/machine wash permanent press.png' width='40'></td>
+                <td>Low Heat</td>
+                <td>No steam</td>
+                <td><img src='img/modules/laundry/low heat.png' width='40'></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Malinite</td>
+                <td>60°C</td>
+                <td>Medium Heat</td>
+                <td><img src='img/modules/laundry/iron at 200°C 390°F.png' width='40'></td>
+                <td><img src='img/modules/laundry/non-chlorine bleach.png' width='40'></td>
+            </tr>
+        </table>
+
+        <style>
+            table.laundryreference {
+                table-layout: fixed;
+                width: 100%;
+                border: none;
+            }
+            table.laundryreference col {
+                width: 12.5%
+            }
+            table.laundryreference td {
+                text-align: center;
+                vertical-align: top;
+                padding: 0;
+                border: none;
+            }
+            table.laundryreference td div.label {
+                font-size: 8pt;
+            }
+        </style>
+
+        <h4 style="margin: 1.5em 0 .5em; margin-bottom: 0; text-align: center;">Laundry Symbol Reference</h4>
+
+        <table class='laundryreference'>
+            <col><col><col><col><col><col><col><col>
+            <tr>
+                <td><img src='img/modules/laundry/machine%20wash%20permanent%20press.png' width='55'><div class='label'>machine wash<br>permanent<br>press</div></td>
+                <td><img src='img/modules/laundry/machine%20wash%20gentle%20or%20delicate.png' width='55'><div class='label'>machine wash<br>gentle or<br>delicate</div></td>
+                <td><img src='img/modules/laundry/hand%20wash.png' width='55'><div class='label'>hand<br>wash</div></td>
+                <td><img src='img/modules/laundry/do%20not%20wash.png' width='55'><div class='label'>do not<br>wash</div></td>
+                <td><img src='img/modules/laundry/30°C%20or%2080°F.png' width='55'><div class='label'>30°C<br>or 80°F</div></td>
+                <td><img src='img/modules/laundry/40°C%20or%20105°F.png' width='55'><div class='label'>40°C<br>or 105°F</div></td>
+                <td><img src='img/modules/laundry/50°C%20or%20120°F.png' width='55'><div class='label'>50°C<br>or 120°F</div></td>
+                <td><img src='img/modules/laundry/60°C%20or%20140°F.png' width='55'><div class='label'>60°C<br>or 140°F</div></td>
+            </tr>
+            <tr>
+                <td><img src='img/modules/laundry/70°C%20or%20160°F.png' width='55'><div class='label'>70°C<br>or 160°F</div></td>
+                <td><img src='img/modules/laundry/95°C%20or%20200°F.png' width='55'><div class='label'>95°C<br>or 200°F</div></td>
+                <td><img src='img/modules/laundry/30°C%20or%2080°F%20dots.png' width='55'><div class='label'>30°C<br>or 80°F</div></td>
+                <td><img src='img/modules/laundry/40°C%20or%20105°F%20dots.png' width='55'><div class='label'>40°C<br>or 105°F</div></td>
+                <td><img src='img/modules/laundry/50°C%20or%20120°F%20dots.png' width='55'><div class='label'>50°C<br>or 120°F</div></td>
+                <td><img src='img/modules/laundry/60°C%20or%20140°F%20dots.png' width='55'><div class='label'>60°C<br>or 140°F</div></td>
+                <td><img src='img/modules/laundry/70°C%20or%20160°F%20dots.png' width='55'><div class='label'>70°C<br>or 160°F</div></td>
+                <td><img src='img/modules/laundry/95°C%20or%20200°F%20dots.png' width='55'><div class='label'>95°C<br>or 200°F</div></td>
+            </tr>
+            <tr>
+                <td><img src='img/modules/laundry/do%20not%20wring.png' width='55'><div class='label'>do not<br>wring</div></td>
+                <td><img src='img/modules/laundry/tumble%20dry.png' width='55'><div class='label'>tumble dry</div></td>
+                <td><img src='img/modules/laundry/low%20heat%20dry.png' width='55'><div class='label'>low heat</div></td>
+                <td><img src='img/modules/laundry/medium%20heat.png' width='55'><div class='label'>medium heat</div></td>
+                <td><img src='img/modules/laundry/high%20heat.png' width='55'><div class='label'>high heat</div></td>
+                <td><img src='img/modules/laundry/no%20heat.png' width='55'><div class='label'>no heat</div></td>
+                <td><img src='img/modules/laundry/hang%20to%20dry.png' width='55'><div class='label'>hang to dry</div></td>
+                <td><img src='img/modules/laundry/drip%20dry.png' width='55'><div class='label'>drip dry</div></td>
+            </tr>
+            <tr>
+                <td><img src='img/modules/laundry/dry%20flat.png' width='55'><div class='label'>dry flat</div></td>
+                <td><img src='img/modules/laundry/dry%20in%20the%20shade.png' width='55'><div class='label'>dry<br>in the shade</div></td>
+                <td><img src='img/modules/laundry/do%20not%20dry.png' width='55'><div class='label'>do not dry</div></td>
+                <td><img src='img/modules/laundry/do%20not%20tumble%20dry.png' width='55'><div class='label'>do not<br>tumble dry</div></td>
+                <td><img src='img/modules/laundry/dry.png' width='55'><div class='label'>dry</div></td>
+                <td><img src='img/modules/laundry/iron.png' width='55'><div class='label'>iron</div></td>
+                <td><img src='img/modules/laundry/do%20not%20iron.png' width='55'><div class='label'>do not iron</div></td>
+                <td><img src='img/modules/laundry/iron%20at%20110°C%20230°F.png' width='55'><div class='label'>110°C<br>230°F</div></td>
+            </tr>
+            <tr>
+                <td><img src='img/modules/laundry/iron%20at%20150°C%20300°F.png' width='55'><div class='label'>150°C<br>300°F</div></td>
+                <td><img src='img/modules/laundry/iron%20at%20200°C%20390°F.png' width='55'><div class='label'>200°C<br>390°F</div></td>
+                <td><img src='img/modules/laundry/no%20steam.png' width='55'><div class='label'>no steam</div></td>
+                <td><img src='img/modules/laundry/bleach.png' width='55'><div class='label'>bleach</div></td>
+                <td><img src='img/modules/laundry/do%20not%20bleach.png' width='55'><div class='label'>do not<br>bleach</div></td>
+                <td><img src='img/modules/laundry/non-chlorine%20bleach.png' width='55'><div class='label'>non-chlorine<br>bleach</div></td>
+                <td><img src='img/modules/laundry/dryclean.png' width='55'><div class='label'>dryclean</div></td>
+                <td><img src='img/modules/laundry/any%20solvent.png' width='55'><div class='label'>any solvent</div></td>
+            </tr>
+            <tr>
+                <td><img src='img/modules/laundry/any%20solvent%20except%20tetrachlorethylene.png' width='55'><div class='label'>any solvent<br>except<br>tetrachlor&shy;ethylene</div></td>
+                <td><img src='img/modules/laundry/petroleum%20solvent%20only.png' width='55'><div class='label'>petroleum<br>solvent<br>only</div></td>
+                <td><img src='img/modules/laundry/wet%20cleaning.png' width='55'><div class='label'>wet cleaning</div></td>
+                <td><img src='img/modules/laundry/do%20not%20dryclean.png' width='55'><div class='label'>do not<br>dryclean</div></td>
+                <td><img src='img/modules/laundry/short%20cycle.png' width='55'><div class='label'>short cycle</div></td>
+                <td><img src='img/modules/laundry/reduced%20moisture.png' width='55'><div class='label'>reduced<br>moisture</div></td>
+                <td><img src='img/modules/laundry/low%20heat.png' width='55'><div class='label'>low heat</div></td>
+                <td><img src='img/modules/laundry/no%20steam%20finishing.png' width='55'><div class='label'>no steam<br>finishing</div></td>
+            </tr>
+        </table>
+
+    </div>
+</div>
