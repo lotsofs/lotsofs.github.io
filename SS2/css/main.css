@@ -125,6 +125,11 @@ th, td {
 	margin: 20px;
 }
 
+.weapons {
+	float: right;
+	color: #4849A5;
+}
+
 .toc {
 	border: solid 2px;
 	float: right;
@@ -173,7 +178,7 @@ th, td {
 	width: 100%;
 }
 
-.unknown strong {
+.unknown strong, td.unknown {
 	color:#E5001F;
 }
 
