@@ -1,0 +1,242 @@
+* {
+	box-sizing: border-box;
+}
+
+/* Style the body */
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 0;
+}
+
+table {
+	border-collapse: collapse;
+	margin: 5px;
+	background-color: #F9F7F8
+}
+
+th, td {
+	border: 1px solid;
+	padding: 5px;
+}
+
+.thicktop {
+	border-top: solid 2px;
+}
+
+/* Header/logo Title */
+.header {
+	padding: 40px;
+	text-align: center;
+	background: #000000;
+	color: white;
+}	
+
+/* Increase the font size of the heading */
+.header h1, .header a {
+	text-decoration: none;
+	font-size: 80px;
+	margin: 0;
+	color: #FCDD2B;
+	text-shadow: -3px -3px 0 #E5001F, 3px -3px 0 #E5001F, -3px 3px 0 #E5001F, 3px 3px 0 #E5001F, 
+	-6px -6px 0 #CBC2BD, 6px -6px 0 #CBC2BD, -6px 6px 0 #CBC2BD, 6px 6px 0 #CBC2BD,
+	-6px 0 0 #CBC2BD, 6px 0 0 #CBC2BD, -6px 0 0 #CBC2BD, 6px 0 0 #CBC2BD,
+	0 -6px 0 #CBC2BD, 0 -6px 0 #CBC2BD, 0 6px 0 #CBC2BD, 0 6px 0 #CBC2BD
+}
+
+/* Style the top navigation bar */
+.navbar {
+	overflow: hidden;
+	background-color: #081420;
+}
+
+/* Style the top navigation bar */
+.subnavbar {
+	overflow: hidden;
+	background-color: #0F1F2F;
+	padding: 0px 20px;
+}
+
+/* Style the navigation bar links */
+.navbar a {
+	color: #7B807A;
+	text-shadow: -1px -1px 0 #272264, 1px -1px 0 #272264, -1px 1px 0 #272264, 1px 1px 0 #272264;
+	float: left;
+	display: block;
+	text-align: center;
+	padding: 7px 14px;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+/* Style the navigation bar links */
+.subnavbar a {
+	color: #7B807A;
+	text-shadow: -1px -1px 0 #272264, 1px -1px 0 #272264, -1px 1px 0 #272264, 1px 1px 0 #272264;
+	float: left;
+	display: block;
+	text-align: center;
+	padding: 6px 12px;
+	text-decoration: none;
+}
+
+.navbar a.current, .subnavbar a.current {
+	color: #F9F7F8
+}
+
+/* Right-aligned link */
+.navbar a.right, .subnavbar a.right {
+	float: right;
+}
+
+/* Change color on hover */
+.navbar a:hover, .subnavbar a:hover {
+	color: #F9F7F8;
+	text-shadow: -1px -1px 0 #4849A5, 1px -1px 0 #4849A5, -1px 1px 0 #4849A5, 1px 1px 0 #4849A5;
+}
+
+/* Column container */
+.row {	
+	display: -ms-flexbox; 
+	display: flex;
+	-ms-flex-wrap: wrap; 
+	flex-wrap: wrap;
+}
+
+/* Create two unequal columns that sits next to each other */
+/* Sidebar/left column */
+.side {
+	-ms-flex: 45%; 
+	flex: 45%;
+	/* background-color: #F9F7F8; */
+	padding-left: 1%;
+}
+
+/* Main column */
+.main {	 
+	-ms-flex: 55%; 
+	flex: 55%;
+	background-color: white;
+	padding: 20px;
+}
+
+.map img {
+	max-width: 300px;
+	max-height: 300px;
+	margin: 20px;
+}
+
+.weapons {
+	float: right;
+	color: #4849A5;
+}
+
+.toc {
+	border: solid 2px;
+	float: right;
+	padding: 5px;
+}
+
+.toc a {
+	/* text-decoration: none; */
+	color: #0F1F2F;
+	font-weight: bold;
+}
+
+.toc a:hover {
+	color: #4849A5;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.clear {
+	clear: both;
+}
+
+.appendix {
+	font-size: 11pt;
+	max-width: 49%;
+	margin: 2px;
+	color: #F9F7F8;
+	background-color: #0F1F2F;
+	border: 2px #081420;
+	border-style: solid;
+}
+
+.appendix table {
+	color: black;
+	outline-color: red;
+	background-color: #F9F7F8;
+}
+
+.appendix img {
+	width: 100%;
+}
+
+.unknown strong, td.unknown {
+	color:#E5001F;
+}
+
+h2 {
+	color: #4849A5;
+	padding-bottom: 0;
+	margin-bottom: 0;
+}
+
+h3 {
+	margin-bottom: 0.5em;
+	font-size: 16pt;
+	color: #272264;
+}
+
+h4 {
+	margin: 0;
+}
+
+p {
+	margin-top: 8px;
+}
+
+p, li {
+	max-width: 780px;
+}
+
+img.icon {
+	max-height: 20px;
+	float: right;
+	padding: 0px;
+	margin: 0px;
+}
+
+table.optional {
+	color: #272264;
+}
+
+/* Footer */
+.footer {
+	padding: 2px;
+	font-size: 8px;
+	text-align: center;
+	background: #0F1F2F;
+	color: #7B807A;
+}
+
+/* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
+/* @media screen and (max-width: 700px) {
+	.row {	 
+		flex-direction: column;
+	}
+} */
+
+/* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
+@media screen and (max-width: 400px) {
+	.navbar a {
+		float: none;
+		width: 100%;
+	}
+}
