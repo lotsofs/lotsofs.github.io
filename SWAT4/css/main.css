@@ -1,0 +1,205 @@
+/* Style the body */
+body {
+	background-color: black;
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 0;
+	color: #fffbff;
+}
+
+::selection {
+	color: black;
+	background: #fffbff;
+  }
+
+table {
+	border-collapse: collapse;
+	margin: 5px;
+}
+
+th, td {
+	border: 1px solid;
+	padding: 5px;
+}
+
+.thicktop {
+	border-top: solid 2px;
+}
+
+/* Header/logo Title */
+.header {
+	padding: 40px;
+	text-align: center;
+	background: #000000;
+	color: white;
+}	
+
+/* Increase the font size of the heading */
+.header h1, .header a {
+	text-decoration: none;
+	font-size: 80px;
+	margin: 0;
+	color: #0C1A7D;
+	text-shadow:  
+	-2px -2px 0 #A3A2A7, 2px -2px 0 #A3A2A7, -2px 2px 0 #A3A2A7, 2px 2px 0 #A3A2A7,
+	-2px 0 0 #A3A2A7, 2px 0 0 #A3A2A7, -2px 0 0 #A3A2A7, 2px 0 0 #A3A2A7,
+	0 -2px 0 #A3A2A7, 0 -2px 0 #A3A2A7, 0 2px 0 #A3A2A7, 0 2px 0 #A3A2A7
+}
+
+/* Style the top navigation bar */
+.navbar {
+	overflow: hidden;
+	background-color: black;
+	border-style: solid;
+	border-width: 2px 0;
+	border-color: white;
+}
+
+/* Style the top navigation bar */
+.subnavbar {
+	overflow: hidden;
+	background-color: black;
+	border-style: double;
+	border-width: 4px 0;
+	border-color: white;
+	padding: 0px 20px;
+}
+
+/* Style the navigation bar links */
+.navbar a {
+	color: #fffbff;
+	/* text-shadow: -1px -1px 0 #272264, 1px -1px 0 #272264, -1px 1px 0 #272264, 1px 1px 0 #272264; */
+	float: left;
+	display: block;
+	text-align: center;
+	padding: 6px 14px;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+/* Style the navigation bar links */
+.subnavbar a {
+	color: #fffbff;
+	/* text-shadow: -1px -1px 0 #272264, 1px -1px 0 #272264, -1px 1px 0 #272264, 1px 1px 0 #272264; */
+	float: left;
+	display: block;
+	text-align: center;
+	padding: 6px 12px;
+	text-decoration: none;
+}
+
+.navbar a.current, .subnavbar a.current {
+	/* color: #666466 */
+	background-color: #fffbff;
+	color:#000000;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+
+/* Right-aligned link */
+.navbar a.right, .subnavbar a.right {
+	float: right;
+}
+
+/* Change color on hover */
+.navbar a:hover, .subnavbar a:hover {
+	color: #ffc200;
+	/* text-shadow: -1px -1px 0 #4849A5, 1px -1px 0 #4849A5, -1px 1px 0 #4849A5, 1px 1px 0 #4849A5; */
+}
+
+/* Main column */
+.main {	 
+	-ms-flex: 55%; 
+	flex: 55%;
+	padding: 20px;
+}
+
+.mapcontainer {
+	display: grid;
+	height: 100%;
+	position: relative;
+}
+
+.map {
+	background-color: #222122;
+}
+
+.mapoverlay {
+	max-width: 100%;
+	max-height: 100vh;
+	margin: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.hiddenbydefault {
+	visibility: hidden;
+}
+
+.maplegend td {
+	border: none;
+	padding: 1px;
+}
+
+td.nopatrol {
+	padding-left: 2em;
+}
+
+td.subheader {
+	font-weight: bold;
+}
+
+.portraitgallery {
+	float: left;
+	text-align: center;
+	width: 15%;
+}
+
+.portraitgallery > img {
+	width: 100%;
+}
+
+h1 {
+	color: #fffbff;
+}
+
+h2 {
+	color: #ffc200;
+	padding-bottom: 0;
+	margin-bottom: 0;
+	clear: left;
+}
+
+h3 {
+	margin-bottom: 0.5em;
+	font-size: 16pt;
+	color: #fffbff;
+}
+
+h4 {
+	margin: 0;
+}
+
+p {
+	margin-top: 8px;
+}
+
+p, li {
+	color: #fffbff;
+	max-width: 780px;
+}
+
+input[type="checkbox"] {
+	filter: invert() hue-rotate(18deg) brightness(1.3);
+}
+
+/* Footer */
+.footer {
+	padding: 2px;
+	font-size: 8px;
+	text-align: center;
+	background: #0F1F2F;
+	color: #7B807A;
+}
