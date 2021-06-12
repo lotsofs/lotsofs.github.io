@@ -166,7 +166,12 @@ h1 {
 }
 
 h2 {
-	color: #ffc200;
+	width: 25%;
+	border-color: black;
+	border-style: double;
+	border-width: 5px;
+	background-color: #fffbff;
+	color: black;
 	padding-bottom: 0;
 	margin-bottom: 0;
 	clear: left;
