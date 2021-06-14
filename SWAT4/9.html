@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>SWAT4 Routing - 9 Children of Taronne Tenement</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="css/main.css">
+
+<script>
+	function show_img(button, name){
+		img = document.getElementById(name);
+		if (button.checked){
+			img.style.visibility = "visible";
+		}
+		else{
+			img.style.visibility = "hidden";
+		}
+	}
+</script>
+
+</head>
+<body>
+
+<div class="header">
+	<h1><a href="index.html">SWAT4 Speedrun Dissect</a></h1>
+	<!-- <p>A website created by me.</p> -->
+</div>
+
+<div class="navbar">	
+	<a href="./general.html">General</a>
+	<a class="current" href="./base.html">Base Game Levels</a>
+	<a href="./tss.html">The Stetchkov Syndicate Levels</a>
+	<!-- <a href="#" class="right">Link</a> -->
+</div>
+
+<div class="subnavbar">
+	<a href="./1.html">SP-FoodWall</a>
+	<a href="./2.html">SP-FairfaxResidence</a>
+	<a href="./3.html">SP-ConvenienceStore</a>
+	<a href="./4.html">SP-ABomb</a>
+	<a href="./5.html">SP-AutoGarage</a>
+	<a href="./6.html">SP-RedLibrary</a>
+	<a href="./7.html">SP-Casino</a>
+	<a href="./8.html">SP-JewelryHeist</a>
+	<a class="current" href="./9.html">SP-Tenement</a>
+	<a href="./10.html">SP-Hospital</a>
+	<a href="./11.html">SP-ArmsDeal</a>
+	<a href="./12.html">SP-Hotel</a>
+	<a href="./13.html">SP-DNA</a>
+	<!-- <a href="#" class="right">Link</a> -->
+</div>
+
+<div class="row">
+
+	<div class="main">
+		<h1>Children of Taronne Tenement</h1>
+
+		<h2>Portrait Gallery:</h2>
+		<div class="portraitgallery">
+			<h3>Bad Guy, Vault Guy, Patrols</h3>
+			<img src="./img/9/people/badguy.png"></img>
+		</div>
+		<div class="portraitgallery">
+			<h3>Bad Guy, Vault Guy, Patrols (Masked)</h3>
+			<img src="./img/9/people/badguymask.png"></img>
+		</div>
+		<div class="portraitgallery">
+			<h3><br>Insider</h3>
+			<img src="./img/9/people/insider.png"></img>
+		</div>
+		<div class="portraitgallery">
+			<h3><br>Security</h3>
+			<img src="./img/9/people/security.png"></img>
+		</div>
+		<div class="portraitgallery">
+			<h3><br>Victim</h3>
+			<img src="./img/9/people/victim.png"></img>
+		</div>
+
+		<h2>Slave Spawns:</h2>
+		<p>
+			Many insiders spawn together with an additional civvy. This is a biconditional, so if the civvy is there, the insider is too.
+			Certain other suspects also get accompanied by a hostage. Most of these civvies cannot spawn without the suspect, so if you see one, you know the other's there as well.
+		</p>
+		<p><strong>Exceptions:</strong></p> 
+		<ul>
+			<li>The civvy on the ground floor by the stairwell can also spawn independently.</li>
+			<li>The civvy in the meeting ground can also spawn independently. If the suspect's there, the other two will be there as well.</li>
+		</ul>
+
+		<h2>Map:</h2>
+		<p>
+			Possible spawn points are marked with an O. These will typically remain stationary.<br>
+			Patrol spawns are marked with a P. These spawnees will immediately follow a predetermined path. <br>
+			Most spawns are investigator spawns, meaning they will walk towards you if you make any noise. Spawns that are not investigators are marked by filling in the hole of their letter.<br>
+			Dots marked with a small 2 are spawns that can only appear if you use the secondary entry.<br>
+			Slave indicators: Solid lines = slave. Dotted line = antislave (not present on this map).
+		</p>
+		
+		<table class="maplegend">
+			<tr>
+				<th>Possible Spawnpoints</th>
+				<th>Patrol Routes</th>
+				<td rowspan="999" width="30"></td>
+				<th>Potential Route</th>
+			</tr>
+			<tr>
+				<td class="subheader">Baddies</td>
+				<td></td>
+				<!-- <td class="subheader">2 Players</td> -->
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_badguys')" checked><span style="color: yellow;">⬤</span> Bad Guys (4-5 / 10-13)</input></td>
+				<td><input type="checkbox" onclick="show_img(this, 'patrols_badguys')">Bad Guys</input></td>
+				<!-- <td><input type="checkbox" onclick="show_img(this, 'route_2a')">Player 1</input></td> -->
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_vaultguys')" checked><span style="color: magenta;">⬤</span>Vault Guys (1-2 / 8)</input></td>
+				<td class="nopatrol">-</td>
+				<!-- <td><input type="checkbox" onclick="show_img(this, 'route_2b')">Player 2</input></td> -->
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_insiders')" checked><span style="color: red;">⬤</span>Insiders (2 / 9)</input></td>
+				<td><input type="checkbox" onclick="show_img(this, 'patrols_insiders')">Insiders</input></td>
+				<!-- <td class="subheader">3 Players</td> -->
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_upperpatrol')" checked><span style="color: #ff007f;">⬤</span>Upper Patrol (2 / 7)</input></td>
+				<td><input type="checkbox" onclick="show_img(this, 'patrols_upper')">Upper Patrol</input></td>
+				<!-- <td><input type="checkbox" onclick="show_img(this, 'route_3a')">Player 1</input></td> -->
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_lowerpatrols')" checked><span style="color: #ff7f00;">⬤</span>Lower Patrol (2 / 4)</input></td>
+				<td><input type="checkbox" onclick="show_img(this, 'patrols_lower')">Lower Patrol</input></td>
+				<!-- <td><input type="checkbox" onclick="show_img(this, 'route_3b')">Player 2</input></td> -->
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_vaultpatrols')" checked><span style="color: #7f00ff;">⬤</span>Vault Patrol (1 / 4)</input></td>
+				<td><input type="checkbox" onclick="show_img(this, 'patrols_vault')">Vault Patrol</input></td>
+				<!-- <td><input type="checkbox" onclick="show_img(this, 'route_3c')">Player 3</input></td> -->
+			</tr>
+
+			<tr>
+				<td class="subheader">Civvies</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_patrons')" checked><span style="color: #00ff7f;">⬤</span>Security (1-2 / 2)</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_chef')" checked><span style="color: cyan;">⬤</span>Victims (2-3 / 11)</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+
+
+			<tr>
+				<td class="subheader">Misc</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_slaves')">Slave Spawns</input></td>
+				<td><input type="checkbox" onclick="show_img(this, 'patrols_slaves')">Slave Patrols</input></td>
+			</tr>
+
+			<tr>
+				<td class="subheader">Injured</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>
+					<span style="color: blue;">⬤</span>Wounded Security:<br>
+					<input type="checkbox" onclick="show_img(this, 'spawn_woundedsecurity')">A (1-2 / 6-7)</input>
+					<input type="checkbox" onclick="show_img(this, 'spawn_woundedsecurity2')">B (1 / 1-2)</input>
+					<input type="checkbox" onclick="show_img(this, 'spawn_woundedsecurity3')">C (1 / 1)</input>
+
+				</td>
+				<td class="nopatrol">-</td>
+			</tr>
+			<tr>
+				<td>
+					<span style="color: #007fff;">⬤</span>Wounded Victims:<br>
+					<input type="checkbox" onclick="show_img(this, 'spawn_woundedvictims')">A (0-1 / 14)</input>
+					<input type="checkbox" onclick="show_img(this, 'spawn_woundedvictims2')">B (0-1 / 1)</input>
+
+				</td>
+				<td class="nopatrol">-</td>
+			</tr>
+
+		</table>
+
+		<div class="mapcontainer">
+			<img class="mapoverlay map" id="img" src="./img/9/map.png"></img>
+
+			<img class="mapoverlay hiddenbydefault" id="route_2a" src="./img/9/route_2a.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="route_2b" src="./img/9/route_2b.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="route_3a" src="./img/9/route_3a.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="route_3b" src="./img/9/route_3b.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="route_3c" src="./img/9/route_3c.png"></img>
+
+			<img class="mapoverlay hiddenbydefault" id="patrols_badguys" src="./img/9/patrols_badguys.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="patrols_insiders" src="./img/9/patrols_insiders.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="patrols_upper" src="./img/9/patrols_upper.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="patrols_lower" src="./img/9/patrols_lower.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="patrols_vault" src="./img/9/patrols_vault.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="patrols_slaves" src="./img/9/patrols_slaves.png"></img>
+			
+
+			<img class="mapoverlay" id="spawn_upperpatrol" src="./img/9/spawn_upperpatrol.png"></img>
+			<img class="mapoverlay" id="spawn_lowerpatrols" src="./img/9/spawn_lowerpatrols.png"></img>
+			<img class="mapoverlay" id="spawn_badguys" src="./img/9/spawn_badguys.png"></img>
+			<img class="mapoverlay" id="spawn_vaultguys" src="./img/9/spawn_vaultguys.png"></img>
+			<img class="mapoverlay" id="spawn_vaultpatrols" src="./img/9/spawn_vaultpatrols.png"></img>
+			<img class="mapoverlay" id="spawn_insiders" src="./img/9/spawn_insiders.png"></img>
+
+			<img class="mapoverlay" id="spawn_victims" src="./img/9/spawn_victims.png"></img>
+			<img class="mapoverlay" id="spawn_security" src="./img/9/spawn_security.png"></img>
+
+			<img class="mapoverlay hiddenbydefault" id="spawn_woundedsecurity" src="./img/9/spawn_woundedsecurity.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="spawn_woundedsecurity2" src="./img/9/spawn_woundedsecurity2.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="spawn_woundedsecurity3" src="./img/9/spawn_woundedsecurity3.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="spawn_woundedvictims" src="./img/9/spawn_woundedvictims.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="spawn_woundedvictims2" src="./img/9/spawn_woundedvictims2.png"></img>
+
+			<img class="mapoverlay hiddenbydefault" id="spawn_slaves" src="./img/9/spawn_slaves.png"></img>
+
+		</div>
+
+		<!-- <p class="caption"><strong>Video of Chapter 11 skip:</strong> (4:58:40)</p>
+		<iframe class="embed" width="560" height="315" src="https://www.youtube.com/embed/-5d6Rqm6AVQ?start=17927" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+
+	</div>
+
+
+</div>
+
+</body>
+</html>
