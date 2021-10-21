@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>SWAT4 Routing - 13 Mt. Threshold Research Center</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="css/main.css">
+
+<script>
+	function show_img(button, name){
+		img = document.getElementById(name);
+		if (button.checked){
+			img.style.visibility = "visible";
+		}
+		else{
+			img.style.visibility = "hidden";
+		}
+	}
+</script>
+
+</head>
+<body>
+
+<div class="header">
+	<h1><a href="index.html">SWAT4 Speedrun Dissect</a></h1>
+	<!-- <p>A website created by me.</p> -->
+</div>
+
+<div class="navbar">	
+	<a href="./general.html">General</a>
+	<a class="current" href="./base.html">Base Game Levels</a>
+	<a href="./tss.html">The Stetchkov Syndicate Levels</a>
+	<!-- <a href="#" class="right">Link</a> -->
+</div>
+
+<div class="subnavbar">
+	<a href="./1.html">SP-FoodWall</a>
+	<a href="./2.html">SP-FairfaxResidence</a>
+	<a href="./3.html">SP-ConvenienceStore</a>
+	<a href="./4.html">SP-ABomb</a>
+	<a href="./5.html">SP-AutoGarage</a>
+	<a href="./6.html">SP-RedLibrary</a>
+	<a href="./7.html">SP-Casino</a>
+	<a href="./8.html">SP-JewelryHeist</a>
+	<a href="./9.html">SP-Tenement</a>
+	<a href="./10.html">SP-Hospital</a>
+	<a href="./11.html">SP-ArmsDeal</a>
+	<a href="./12.html">SP-Hotel</a>
+	<a class="current" href="./13.html">SP-DNA</a>
+	<!-- <a href="#" class="right">Link</a> -->
+</div>
+
+<div class="row">
+
+	<div class="main">
+		<h1>Mt. Threshold Research Center</h1>
+
+		<h2>Video:</h2>
+		<iframe width="560" height="315" src="https://www.youtube.com/embed/sCrtO3Sniv0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+		<h2>Fixed/Slave Spawns:</h2>
+		<p>
+			A lot of slave spawns exist, and a lot of broken spawns exist where if they are not selected randomly, they will spawn someone anyway. This means that they are sometimes counted towards the total count, and sometimes not.
+		</p>
+
+		<h2>Map:</h2>
+		<p>
+			A circle denotes a potential spawnpoint (O)<br>
+			Patrol spawns are marked with a line coming out the bottom left of the circle. (P)<br>
+			Some spawns are investigator spawns, meaning they will walk towards you if you make any noise. These spawns have a line coming out the bottom right of the circle. (Q)<br>
+			A line coming from both sides means both patrol and investigators (R)<br>
+			Slave indicators: Circled = slave. Antislaves: A gradient arrow from master to antislave.<br>
+			A cross denotes incapacitated spawns (X).<br>
+			A filled in circle means a fixed spawn.<br>
+			Superscript 1 = only used when entering from primary. Superscript 2 = same, but for secondary.
+		</p>
+		
+		<table class="maplegend" style="float: left;">
+			<tr>
+				<th>Possible Spawnpoints</th>
+				<th>Patrol Routes</th>
+			</tr>
+			<tr>
+				<td class="subheader">Baddies</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_terrorleader')" checked><span style="color: #ff0000;">⬤</span>Terror Leader (1 / 7)</input></td>
+				<td><input type="checkbox" onclick="show_img(this, 'patrol_terrorleader')">Terror Leader</input></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_dnabadguys')" checked><span style="color: #ff7f00;">⬤</span>DNA Bad Guys (5-8 / 22)</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_badguyspatroldownstairs')" checked><span style="color: yellow;">⬤</span>Bad Guys Patrol Downstairs (3-4 / 7-9)</input></td>
+				<td><input type="checkbox" onclick="show_img(this, 'patrol_downstairs')">Bad Guys Patrol Downstairs</input></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_badguyspatrolupstairs')" checked><span style="color: #7f00ff;">⬤</span>Bad Guys Patrol Upstairs (2-4 / 6)</input></td>
+				<td><input type="checkbox" onclick="show_img(this, 'patrol_upstairs')">Bad Guys Patrol Upstairs</input></td>
+			</tr>
+
+			<tr>
+				<td class="subheader">Civvies</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_sterling')" checked><span style="color: #00ff00;">⬤</span>Sterling (1 / 5)</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'spawn_janitor')" checked><span style="color: #007fff;">⬤</span>Janitor (1 / 8)</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'potential_gradstudents')" checked><span style="color: cyan;">⬤</span>Grad Students (Potential) (2-3 / 4)</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'fixed_gradstudents')" checked><span style="color: cyan;">⬤</span>Grad Students (Fixed) (13)</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+
+			<tr>
+				<td class="subheader">Injured</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'potential_woundedstudents1')" ><span style="color: magenta;">⬤</span>Potential: Group One (1-2 / 4)</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'fixed_woundedstudents1')" ><span style="color: magenta;">⬤</span>Fixed: Group One (6)</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'fixed_woundedstudents2')" ><span style="color: magenta;">⬤</span>Fixed: Group Two (2)</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'fixed_woundedstudents3')" ><span style="color: magenta;">⬤</span>Fixed: Group Three (1)</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+
+			<tr>
+				<td class="subheader">Misc</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'slaves')" checked><span style="color: #ff007f;">⬤</span><span style="color: #0000ff;">⬤</span>Slaves</input></td>
+				<td class="nopatrol">-</td>
+			</tr>
+		</table>
+
+		<table class="maplegend" style="float: left;">
+			<tr>
+				<th>Potential Route</th>
+			</tr>
+			<tr>
+				<td class="subheader">4 Players</td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'route_4a')">Player 1</input></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'route_4b')">Player 2</input></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'route_4c')">Player 3</input></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" onclick="show_img(this, 'route_4d')">Player 4</input></td>
+			</tr>
+		</table>
+
+		<div class="mapcontainer" style="clear: left;">
+			<img class="mapoverlay map" id="img" src="./img/13/map.png"></img>
+
+			<img class="mapoverlay hiddenbydefault" id="route_4a" src="./img/13/route_4a.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="route_4b" src="./img/13/route_4b.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="route_4c" src="./img/13/route_4c.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="route_4d" src="./img/13/route_4d.png"></img>
+
+			<img class="mapoverlay hiddenbydefault" id="patrol_terrorleader" src="./img/13/patrol_terrorleader.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="patrol_downstairs" src="./img/13/patrol_downstairs.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="patrol_upstairs" src="./img/13/patrol_upstairs.png"></img>
+
+			<img class="mapoverlay" id="spawn_terrorleader" src="./img/13/spawn_terrorleader.png"></img>
+			<img class="mapoverlay" id="spawn_dnabadguys" src="./img/13/spawn_dnabadguys.png"></img>
+			<img class="mapoverlay" id="spawn_badguyspatroldownstairs" src="./img/13/spawn_badguyspatroldownstairs.png"></img>
+			<img class="mapoverlay" id="spawn_badguyspatrolupstairs" src="./img/13/spawn_badguyspatrolupstairs.png"></img>
+			<img class="mapoverlay" id="spawn_sterling" src="./img/13/spawn_sterling.png"></img>
+			<img class="mapoverlay" id="spawn_janitor" src="./img/13/spawn_janitor.png"></img>
+			<img class="mapoverlay" id="potential_gradstudents" src="./img/13/potential_gradstudents.png"></img>
+			<img class="mapoverlay" id="fixed_gradstudents" src="./img/13/fixed_gradstudents.png"></img>
+			
+			<img class="mapoverlay hiddenbydefault" id="potential_woundedstudents1" src="./img/13/potential_woundedstudents1.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="fixed_woundedstudents1" src="./img/13/fixed_woundedstudents1.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="fixed_woundedstudents2" src="./img/13/fixed_woundedstudents2.png"></img>
+			<img class="mapoverlay hiddenbydefault" id="fixed_woundedstudents3" src="./img/13/fixed_woundedstudents3.png"></img>
+
+			<img class="mapoverlay" id="slaves" src="./img/13/slaves.png"></img>
+		</div>
+
+
+	</div>
+
+
+</div>
+
+</body>
+</html>

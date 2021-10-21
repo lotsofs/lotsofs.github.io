@@ -196,6 +196,12 @@ p, li {
 	max-width: 780px;
 }
 
+iframe {
+	border-style: solid;
+	border-color: #fffbff;
+	border-width: 2pt;
+}
+
 input[type="checkbox"] {
 	filter: invert() hue-rotate(18deg) brightness(1.3);
 }
