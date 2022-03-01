@@ -8,9 +8,9 @@
     <meta name="description" content="Bomb Defusal Manual for the video game Keep Talking and Nobody Explodes">
     <title>Keep Talking and Nobody Explodes - Bomb Defusal Manual - Expanded mod version</title>
     <meta name="viewport" content="initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="css/font.css">
-    <link rel="stylesheet" type="text/css" href="css/normalize.css">
-    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="../../css/font.css">
+    <link rel="stylesheet" type="text/css" href="../../css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css">
     <!-- <link rel="stylesheet" type="text/css" href="css/en.css" id="languageCSS"> -->
     <link rel="icon" href="favicon.ico" type="image/png">
     <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
@@ -62,13 +62,15 @@
             background-image: url("./img/background/page-bg-noise-07.png");
         }     
     </style>
+   <script>
+	function autoRefresh_div()
+	{
+		  $("#result").load("2_015_HexToDecimal.html");// a function which will load data from other file after x seconds
+	 }
+	
+	  setInterval('autoRefresh_div()', 5000); // refresh div after 5 secs
+				</script>
 </head>
-
-
-<body dir="ltr">
-    <div id="ManualContent">
-
-
-
-
-
+	<body>
+		<div id="result"></div>
+	</body></html>
