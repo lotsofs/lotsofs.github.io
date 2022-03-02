@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html class="no-js">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Bomb Defusal Manual for the video game Keep Talking and Nobody Explodes">
+    <title>(WIP) Keep Talking and Nobody Explodes - Bomb Defusal Manual - Expanded mod version</title>
+    <meta name="viewport" content="initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <!-- <link rel="stylesheet" type="text/css" href="css/en.css" id="languageCSS"> -->
+    <link rel="icon" href="favicon.ico" type="image/png">
+    <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
+    <style>
+        .corner { border: none; }
+        body .page:nth-of-type(7n+1) {
+            background-image: url("./img/background/page-bg-noise-01.png");
+        }
+        body .page:nth-of-type(7n+2) {
+            background-image: url("./img/background/page-bg-noise-02.png");
+        }
+        body .page:nth-of-type(7n+3) {
+            background-image: url("./img/background/page-bg-noise-03.png");
+        }
+        body .page:nth-of-type(7n+4) {
+            background-image: url("./img/background/page-bg-noise-04.png");
+        }
+        body .page:nth-of-type(7n+5) {
+            background-image: url("./img/background/page-bg-noise-05.png");
+        }
+        body .page:nth-of-type(7n+6) {
+            background-image: url("./img/background/page-bg-noise-06.png");
+        }
+        body .page:nth-of-type(7n+7) {
+            background-image: url("./img/background/page-bg-noise-07.png");
+        }     
+
+        img {
+            filter: grayscale(100%);
+        }
+    </style>
+    <script type="text/javascript">
+        function changeTopLeftHeaders() {
+            phdt = document.getElementsByClassName("page-header-doc-title");
+            for(var i = 0; i < phdt.length; i++){
+                phdt[i].innerText="Keep Talking and Nobody Explodes (Modded)";
+            }
+
+            af = document.getElementsByClassName("mainpages");
+            for(var i = 0; i < af.length; i++){
+                j = i + 2;
+                af[i].innerText="Page " + j;
+            }
+            af = document.getElementsByClassName("solvablepagecount");
+            for(var i = 0; i < af.length; i++){
+                j = i + 1;
+                af[i].innerText="Page 1." + j;
+            }
+            af = document.getElementsByClassName("neediespagecount");
+            for(var i = 0; i < af.length; i++){
+                j = i + 1;
+                af[i].innerText="Page 2." + j;
+            }
+            af = document.getElementsByClassName("translationpagecount");
+            for(var i = 0; i < af.length; i++){
+                j = i + 1;
+                af[i].innerText="Page 3." + j;
+            }
+            af = document.getElementsByClassName("appendixpagecount");
+            for(var i = 0; i < af.length; i++){
+                j = i + 1;
+                af[i].innerText="Page 4." + j;
+            }
+        }
+    </script>
+</head>
+
+
+<body dir="ltr" onload="changeTopLeftHeaders();">
+    <div id="ManualContent">
+        
+
+        
+
+
+
+
+
+
+
+        <div class="page " id="ColourFlash">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Colour Flash</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <img class="diagram" src="img/Component/Colour Flash.svg">
+                <h2>On the Subject of Colour Flash</h2>
+                <p class="flavour-text">
+                    It’s easy to identify colours. Red, Blue, Green, etc. Turns out it's a bit harder when you display a word colour in a different colour though...
+                </p>
+
+                <ul>
+                    <li><strong>Souvenir</strong>: Last colour.</li>
+                </ul>
+
+                <table style="clear: right">
+                    <tbody><tr>
+                            <td>
+                                <div><u><b>Red:</u></b></div>
+                                <div>Green word at least three times: Yes on third Green word or colour.</div>
+                                <div>Otherwise, blue colour exactly once: No on any Magenta word.</div>
+                                <div>Otherwise: Yes on last White word or colour.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div><u><b>Yellow:</u></b></div>
+                                <div>Blue in Green: Yes on first Green colour.</div>
+                                <div>Otherwise, White in White or Red: Yes on second mismatch.</div>
+                                <div>Otherwise: Count Magenta, press No on its count's position.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                        <td>
+                                <div><u><b>Green:</u></b></div>
+                                <div>Word consecutively with different colours: No on 5.</div>
+                                <div>Otherwise, Magenta word at least three times: No on first Yellow word or colour.</div>
+                                <div>Otherwise: Yes on any match.</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div><u><b>Blue:</u></b></div>
+                            <div>Three or more mismatches: Yes on first mismatch.</div>
+                            <div>Otherwise, Red in Yellow, or Yellow in White: No on White in Red.</div>
+                            <div>Otherwise: Yes on last green word or colour.</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div><u><b>Magenta:</u></b></div>
+                            <div>Colour consecutively with different words: Yes on 3.</div>
+                            <div>Otherwise, word Yellow greater than Blue colour: No on last Yellow word.</div>
+                            <div>Otherwise: No on first colour matching word 7.</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div><u><b>White:</u></b></div>
+                            <div>If colour 3 matches word 4 or 5: No on first Blue word or colour.</div>
+                            <div>Otherwise, Yellow in Red: Yes on last Blue colour.</div>
+                            <div>Otherwise: No at any time.</div>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </div>
+        </div>
+    
+		<div class="page " id="PianoKeys">
+			<div class="page-header">
+				<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+				<span class="page-header-section-title">Piano Keys</span>
+			</div>
+			<div class="page-footer absolute-footer solvablepagecount"></div>
+			<div class="page-content">
+				<img src="img/Component/Piano Keys.svg" class="diagram" />
+				<h2>On the Subject of Piano Keys</h2>
+				<p class="flavour-text">
+					What do you get when you drop a piano down a mine shaft? A flat minor.
+				</p>
+				
+				<style>
+					@font-face {
+						font-family: 'OpusStd';
+						src: url('font/OpusStd.otf');
+					}
+		
+					@font-face {
+						font-family: 'OpusChordsSansStd';
+						src: url('font/OpusChordsSansStd.otf');
+					}
+		
+					.pianokeysmusic-symbol {
+						font-family: 'OpusStd';
+						font-size: 1.6em;
+						position: relative;
+						top: -0.2em;
+					}
+		
+					.pianokeysmusic-chord {
+						font-family: 'OpusChordsSansStd';
+						word-spacing: 0.3em;
+					}
+		
+				</style>
+				<img style="height: 10em; margin-left: 5em; margin-bottom: 2em" src="img/appendix/piano/Piano.png">
+		
+				<table style="clear: right">
+					<thead>
+						<tr>
+							<td width="15%"><strong><em>Required Symbol(s)</em></strong></td>
+							<td width="40%"><strong><em>Further Requirements</em></strong></td>
+							<td width="45%"><strong><em>Note Sequence</em></strong></td>
+						</tr>
+					</thead>
+					<tr>
+						<td><span class="pianokeysmusic-symbol">b</span></td>
+						<td>Last digit of serial number is even</td>
+						<td><span class="pianokeysmusic-chord">Bb Bb Bb Bb Gb Ab Bb Ab Bb</span></td>
+					</tr>
+					<tr>
+						<td><span class="pianokeysmusic-symbol">c</span> or <span class="pianokeysmusic-symbol">#</span></td>
+						<td>2 or more battery holders</td>
+						<td><span class="pianokeysmusic-chord">Eb Eb D D Eb Eb D Eb Eb D D Eb</span></td>
+					</tr>
+					<tr>
+						<td><span class="pianokeysmusic-symbol">n</span> <strong>and</strong> <span class="pianokeysmusic-symbol">U</span></td>
+						<td><i>(No other requirements)</i></td>
+						<td><span class="pianokeysmusic-chord">E F# F# F# F# E E E</span></td>
+					</tr>
+					<tr>
+						<td><span class="pianokeysmusic-symbol">C</span> or <span class="pianokeysmusic-symbol">T</span></td>
+						<td>RCA port is present</td>
+						<td><span class="pianokeysmusic-chord">Bb A Bb F Eb Bb A Bb F Eb</span></td>
+					</tr>
+					<tr>
+						<td><span class="pianokeysmusic-symbol">B</span></td>
+						<td>SND indicator is present and lit</td>
+						<td><span class="pianokeysmusic-chord">E E E C E G G</span></td>
+					</tr>
+					<tr>
+						<td><span class="pianokeysmusic-symbol">m</span> or <span class="pianokeysmusic-symbol">U</span> or <span class="pianokeysmusic-symbol">c</span></td>
+						<td>3 or more batteries</td>
+						<td><span class="pianokeysmusic-chord">C# D E F C# D E F Bb A</span></td>
+					</tr>
+					<tr>
+						<td><span class="pianokeysmusic-symbol">b</span> <strong>and</strong> <span class="pianokeysmusic-symbol">#</span></td>
+						<td><i>(No other requirements)</i></td>
+						<td><span class="pianokeysmusic-chord">G G C G G C G C</span></td>
+					</tr>
+					<tr>
+						<td><span class="pianokeysmusic-symbol">C</span> or <span class="pianokeysmusic-symbol">m</span></td>
+						<td>Serial number contains a 3, 7 or 8</td>
+						<td><span class="pianokeysmusic-chord">A E F G F E D D F A</span></td>
+					</tr>
+					<tr>
+						<td><span class="pianokeysmusic-symbol">n</span> or <span class="pianokeysmusic-symbol">T</span> or <span class="pianokeysmusic-symbol">B</span></td>
+						<td><i>(No other requirements)</i></td>
+						<td><span class="pianokeysmusic-chord">G G G Eb Bb G Eb Bb G</span></td>
+					</tr>
+					<tr>
+						<td><i>(No requirement)</i></td>
+						<td><i>(No other requirements)</i></td>
+						<td><span class="pianokeysmusic-chord">B D A G A B D A</span></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div class="page " id="Semaphore">
+			<div class="page-header">
+				<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+				<span class="page-header-section-title">Semaphore</span>
+			</div>
+			<div class="page-footer absolute-footer solvablepagecount"></div>
+			<div class="page-content">
+				<img src="img/Component/Semaphore.svg" class="diagram" />
+				<h2>On the Subject of Semaphore</h2>
+				<p class="flavour-text">
+					This module demands attention from the sea - unlucky for you the bomb's bone dry.
+				</p>
+				<p>
+					<style>
+						table.semaphoretable {
+							width: 100%;
+						}
+						table.semaphoretable td {
+							width: 14%;
+							text-align: center;
+							font-weight: bold;
+							padding-right: 0;
+							padding-left: 0;
+						}
+						img.semaphoreimg {
+							width: 4em;
+							margin: 0;
+						}
+					</style>
+					<p>Use the semaphore table below to decode semaphore to letters. The table is sorted by rotation of the flags.</p>
+					<p>J and Y are at different positions than the alphabet would suggest. Submit the character that isn't in the serial number.</p>
+					<table class="semaphoretable corner" style="position: relative;">
+						<tr>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Alpha.svg" alt="A or 1" /><br />A or 1</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Bravo.svg" alt="B or 2" /><br />B or 2</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Charlie.svg" alt="C or 3" /><br />C or 3</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Delta.svg" alt="D or 4" /><br />D or 4</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Echo.svg" alt="E or 5" /><br />E or 5</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Foxtrot.svg" alt="F or 6" /><br />F or 6</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Golf.svg" alt="G or 7" /><br />G or 7</td>
+						</tr>
+						<tr>
+							<td class="corner"></td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Hotel.svg" alt="H or 8" /><br />H or 8</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_India.svg" alt="I or 9" /><br />I or 9</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Kilo.svg" alt="K or 0"/><br />K or 0</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Lima.svg" alt="L" /><br />L</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Mike.svg" alt="M" /><br />M</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_November.svg" alt="N" /><br />N</td>
+						</tr>
+						<tr>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Oscar.svg" alt="O" /><br />O</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Papa.svg" alt="P" /><br />P</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Quebec.svg" alt="Q" /><br />Q</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Romeo.svg" alt="R" /><br />R</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Sierra.svg" alt="S" /><br />S</td>
+						</tr>
+						<tr>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Tango.svg" alt="T" /><br />T</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Uniform.svg" alt="U" /><br />U</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Yankee.svg" alt="Y" /><br />Y</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Cancel.svg" alt="Cancel / Annul" /><br />Cancel / Annul</td>
+						</tr>
+						<tr>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Numeric.svg" alt="Numerals" /><br />Numerals</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Juliet.svg" alt="J or Letters" /><br />J or Letters</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Victor.svg" alt="V" /><br />V</td>
+						</tr>
+						<tr>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Ready.svg" alt="Rest / Space" /><br />Rest / Space</td>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Whiskey.svg" alt="W" /><br />W</td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_X-ray.svg" alt="X" /><br />X</td>						
+						</tr>
+						<tr>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Error.svg" alt="Error / Attention" /><br />Error / Attention</td>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td class="corner"></td>
+							<td><img class="semaphoreimg" src="img/modules/semaphore/Semaphore_Zulu.svg" alt="Z" /><br />Z</td>
+						</tr>
+					</table>
+				</p>
+				<!-- <p>
+					(All images by <a href="https://commons.wikimedia.org/wiki/User:Denelson83">Denelson83</a>, used under <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA-3.0</a>, via <a href="https://commons.wikimedia.org/">Wikimedia Commons</a>)
+				</p> -->
+			</div>
+		</div>
+
+        
+    </div>
+</body>
+
+</html>
