@@ -86,139 +86,62 @@
         
 
 
-
-
-
-
-        <div class="page " id="PianoKeys">
+        <div class="page " id="ForeignExchangeRates">
             <div class="page-header">
                 <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
-                <span class="page-header-section-title">Piano Keys</span>
+                <span class="page-header-section-title">Foreign Exchange Rates</span>
             </div>
             <div class="page-footer absolute-footer solvablepagecount"></div>
             <div class="page-content">
-                <img src="img/Component/Piano Keys.svg" class="diagram" />
-                <h2>On the Subject of Piano Keys</h2>
-                <p class="flavour-text">
-                    What do you get when you drop a piano down a mine shaft? A flat minor.
+                <img class="diagram" src="img/Component/Foreign Exchange Rates.svg">
+                <h2>On the Subject of Foreign Exchange Rates</h2>
+        
+                <p class="flavour-text">If bombs were stock brokers...
+        
+                </p><p style="margin-bottom: 0.2em;"><u>Defusing this module requires the expert to have a device
+                that can connect to the World Wide Web.</u></p>
+                <p style="margin-bottom: 0.2em;">This module has the ability to connect to the internet and query the state of foreign exchange rates. There should be a three times three grid of keys, each with a light emitting diode. <u>DO NOT PRESS ANY KEY ON THIS MODULE WHILE THE LIGHT EMITTING DIODES ARE FLASHING IN SEQUENCE.</u></p>
+                <p style="margin: 0em;">The keys are grouped by rows:</p>
+                <table style="margin: 0em;">
+                    <tbody style="margin: 0em;"><tr>
+                        <td>Top row: ISO 4217 alphabetic code for the base currency.<span style="vertical-align: super; font-size: .83em;">[1][2]</span></td>
+                    </tr>
+                    <tr>
+                        <td>Middle row: ISO 4217 alphabetic code for the target currency.<span style="vertical-align: super; font-size: .83em;">[1][2]</span></td>
+                    </tr>
+                    <tr>
+                        <td>Bottom row: Value of currency to convert.</td>
+                    </tr>
+                </tbody></table>
+        
+                <h3>All light emitting diodes have turned green:</h3>
+                <p style="margin: 0em;">Enter the following uniform resource locator into your internet capable device:<br>
+                    <u>https://api.exchangerate.host/latest?base=XXX&symbols=YYY</u>
+                    <br>
+                    Replace <u>XXX</u> with the ISO 4217 alphabetic code for the base currency.<br>
+                    Replace <u>YYY</u> with the ISO 4217 alphabetic code for the target currency.<br>
+                    You will receive data in a Javascript object notation format, look for <u>{"YYY": NUMBER}</u>, where <u>NUMBER</u> will be the exchange rate. Using the exchange rate,
+                convert the number in the bottom row to the target currency, round that number
+                    down and take note of the 2nd digit from the left<span style="vertical-align: super; font-size: .83em;">[4]</span>. Press the Nth key where N is
+                    the noted number (count keys from left to right, top to bottom)<span style="vertical-align: super; font-size: .83em;">[5]</span>.</p>
+                <h3 style="margin-top: 0.4em;">All light emitting diodes have turned red:</h3>
+                <p style="margin: 0em;">In this case the module failed to query today's currency rates. Get the ISO 4217
+                numeric code for the target currency's country and take note the 2nd digit from
+                the right. Press the Nth key where N is the noted number (count keys from left to
+                right, top to bottom)<span style="vertical-align: super; font-size: .83em;">[5]</span>.</p>
+                <p style="margin-bottom: 0">
+                    [1]: If there is more than one battery on the bomb, the base currency code and target currency code is swapped.<br>
+                    [2]: This may instead be the ISO 4217 numeric code.<br>
+                    [3]: Note the currency rates are updated around 4PM CET.<br>
+                    [4]: In the case the converted currency is less than 10, the noted number is 0.<br>
+                    [5]: In the case the noted number is 0, press the top left key.
                 </p>
-                <p class="appendix-reference">
-                    See Appendix A for indicator identification reference.<br />
-                    See Appendix B for battery identification reference.<br />
-                    See Appendix C for port identification reference.<br />
-                    See the next page for piano/keyboard reference.
-                </p>
-                <ul>
-                    <li>A piano keys module will present with 3 musical symbols in the top indicator and a 12-note keyboard to input with.</li>
-                    <li>Each rule consists of one or more required symbol(s) and optional further requirements based on the bomb casing.</li>
-                    <li>Follow the list of rules down until one matches the criteria for the module; then execute the sequence of notes listed.</li>
-                    <li>A failed attempt will require re-entry of the entire note sequence.</li>
-                </ul>
-                
-                <style>
-                    @font-face {
-                        font-family: 'OpusStd';
-                        src: url('font/OpusStd.otf');
-                    }
-        
-                    @font-face {
-                        font-family: 'OpusChordsSansStd';
-                        src: url('font/OpusChordsSansStd.otf');
-                    }
-        
-                    .pianokeysmusic-symbol {
-                        font-family: 'OpusStd';
-                        font-size: 1.6em;
-                        position: relative;
-                        top: -0.2em;
-                    }
-        
-                    .pianokeysmusic-chord {
-                        font-family: 'OpusChordsSansStd';
-                        word-spacing: 0.3em;
-                    }
-        
-                </style>
-        
-                <table>
-                    <thead>
-                        <tr>
-                            <td width="15%"><strong><em>Required Symbol(s)</em></strong></td>
-                            <td width="40%"><strong><em>Further Requirements</em></strong></td>
-                            <td width="45%"><strong><em>Note Sequence</em></strong></td>
-                        </tr>
-                    </thead>
-                    <tr>
-                        <td><span class="pianokeysmusic-symbol">b</span></td>
-                        <td>Last digit of serial number is even</td>
-                        <td><span class="pianokeysmusic-chord">Bb Bb Bb Bb Gb Ab Bb Ab Bb</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="pianokeysmusic-symbol">c</span> or <span class="pianokeysmusic-symbol">#</span></td>
-                        <td>2 or more battery holders</td>
-                        <td><span class="pianokeysmusic-chord">Eb Eb D D Eb Eb D Eb Eb D D Eb</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="pianokeysmusic-symbol">n</span> <strong>and</strong> <span class="pianokeysmusic-symbol">U</span></td>
-                        <td><i>(No other requirements)</i></td>
-                        <td><span class="pianokeysmusic-chord">E F# F# F# F# E E E</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="pianokeysmusic-symbol">C</span> or <span class="pianokeysmusic-symbol">T</span></td>
-                        <td>RCA port is present</td>
-                        <td><span class="pianokeysmusic-chord">Bb A Bb F Eb Bb A Bb F Eb</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="pianokeysmusic-symbol">B</span></td>
-                        <td>SND indicator is present and lit</td>
-                        <td><span class="pianokeysmusic-chord">E E E C E G G</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="pianokeysmusic-symbol">m</span> or <span class="pianokeysmusic-symbol">U</span> or <span class="pianokeysmusic-symbol">c</span></td>
-                        <td>3 or more batteries</td>
-                        <td><span class="pianokeysmusic-chord">C# D E F C# D E F Bb A</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="pianokeysmusic-symbol">b</span> <strong>and</strong> <span class="pianokeysmusic-symbol">#</span></td>
-                        <td><i>(No other requirements)</i></td>
-                        <td><span class="pianokeysmusic-chord">G G C G G C G C</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="pianokeysmusic-symbol">C</span> or <span class="pianokeysmusic-symbol">m</span></td>
-                        <td>Serial number contains a 3, 7 or 8</td>
-                        <td><span class="pianokeysmusic-chord">A E F G F E D D F A</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="pianokeysmusic-symbol">n</span> or <span class="pianokeysmusic-symbol">T</span> or <span class="pianokeysmusic-symbol">B</span></td>
-                        <td><i>(No other requirements)</i></td>
-                        <td><span class="pianokeysmusic-chord">G G G Eb Bb G Eb Bb G</span></td>
-                    </tr>
-                    <tr>
-                        <td><i>(No requirement)</i></td>
-                        <td><i>(No other requirements)</i></td>
-                        <td><span class="pianokeysmusic-chord">B D A G A B D A</span></td>
-                    </tr>
-                </table>
+                <p class="appendix-reference"><span>See Appendix ISO 4217 for currency codes reference.</span></p>
             </div>
         </div>
-        
-        <div class="page " id="AppendixPiano">
-            <!-- Referenced by: Piano Keys -->
-            <div class="page-header">
-                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
-                <span class="page-header-section-title">Piano Keys</span>
-            </div>
-            <div class="page-footer absolute-footer solvablepagecount"></div>
-            <div class="page-content">
-                <h3>Piano/Keyboard Reference</h3>
-                    
-                <p>
-                    Use the following graphic as a reference to how tones are mapped onto a standard 12-note piano/keyboard.
-                </p>
-                <img src="img/appendix/piano/Piano.png"><p class="appendix-reference" style="margin-top: 2em">This graphic can also be found in Appendix Piano</p>
-            </div>
-        </div>
-    
+
+
+
 
 
 
