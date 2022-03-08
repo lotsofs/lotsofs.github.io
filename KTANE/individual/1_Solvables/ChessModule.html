@@ -12,7 +12,7 @@
         <p style="margin: 0;">The chess module will present with a display and two rows of six buttons each.</p>
         <ul style="margin: 0;">
             <li>There are six unique coordinates that represent six positions on the chessboard.</li>
-            <li>Use the numbered keys in the bottom row to browse through the different coordinates. A green LED below the button will indicate the position of the currently selected coordinate.</li>
+            <li>Use the numbered buttons in the bottom row to browse through the different coordinates. A green LED below the button will indicate the position of the currently selected coordinate.</li>
             <li>Using the reference table below, each position can be assigned a certain chess figure.</li>
             <li>The chess figures will cover 35 of the 36 possible fields with their combined movesets.</li>
             <li>All chess figures are colorless but can block each other's movement.</li>
@@ -21,8 +21,29 @@
         </ul>
         <p style="margin: 0;">Use this table as reference to determine the correct figure for each position:</p>
         <style>
-            table.chesstable h4 { margin: -0.1em; }
-            table.chesstable p { margin: -0.1em; }
+            table.chesstable h4 { margin: 0; }
+            table.chesstable p { margin: 0; }
+            .chess-horizontal {
+                padding-left: 100px;
+                clear: both;
+                display: grid;
+                grid-auto-flow: column;
+                grid-auto-columns: 62px;
+                grid-gap: 5px;
+                padding-top: 10px;
+            }
+            .chess-vertical {
+                display:grid;
+                grid-auto-flow: row;
+                grid-auto-rows: 62px;
+                grid-gap: 5px;
+                padding-left: 30px;
+                padding-top: 45px;
+            }
+            .chess-chessboard {
+                float:right;
+                margin: 20px 200px 0 0;
+            }
         </style>
         <table class='chesstable'>
             <tr>
@@ -77,8 +98,24 @@
     </div>
     <div class="page-footer absolute-footer solvablepagecount"></div>
     <div class="page-content">
-        <h3>Chess Board Reference</h3>
-        <p style="margin: 0;">Use the following graphic as a reference for the chess board layout.</p>
-        <p style="margin: 0;"><img src="img/modules/chess/ChessBoard.png"></p>
+        <h4>Chess Board Reference</h4>
+        <p style="margin: 0;">Use the following graphic as a reference for the chess board layout</p>
+        <img src="img/modules/chess/Chessboard.png"  class="chess-chessboard">
+        <div class="chess-vertical">
+            <span>6</span>
+            <span>5</span>
+            <span>4</span>
+            <span>3</span>
+            <span>2</span>
+            <span>1</span>
+        </div>
+        <div class="chess-horizontal">
+            <span>a</span>
+            <span>b</span>
+            <span>c</span>
+            <span>d</span>
+            <span>e</span>
+            <span>f</span>
+        </div>
     </div>
 </div>
