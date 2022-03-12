@@ -46,6 +46,15 @@
     src: url('../font/Agency FB Bold.ttf');
 }
 
+/* Greek */
+@font-face { 
+  font-family: 'Vollkorn'; 
+  font-weight: normal; 
+  font-style: normal; 
+  src: url('../font/Vollkorn-Regular.ttf') format('truetype'); 
+}
+
+
 /* Japanese */
 @font-face {
   font-family: "Noto Serif JP";
