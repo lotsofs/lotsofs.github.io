@@ -1,0 +1,86 @@
+<div class="page " id="AppendixLogic">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Appendix LOGIC</span>
+    </div>
+    <div class="page-footer absolute-footer appendixpagecount"></div>
+    <div class="page-content">
+        <h2>Appendix LOGIC: Logical Connectives Reference</h2>
+        <h3>Binary Connectives</h3>
+        <table>
+            <tr>
+                <th rowspan=2>Sym.</th>
+                <th rowspan=2>Logical Gate</th>
+                <th>Connective</th>
+                <th rowspan=2>Venn Diagram</th>
+                <th rowspan=2>Meaning</th>
+            </tr>
+            <tr><th>Math</th></tr>
+            <tr>
+                <td rowspan=2 style="font-size: 125%; text-align: center;">&#x2227;</td>
+                <td rowspan=2 style="text-align: center;">AND</td>
+                <td>Conjunction</td>
+                <td rowspan=2><img style="width: 100px" src="img/appendix/logic/AND.svg"></td>
+                <td rowspan=2>True if all inputs are true. Else returns false.</td>
+            </tr>
+            <tr><td>P && Q</td></tr>
+            <tr>
+                <td rowspan=2 style="font-size: 125%; text-align: center;">&#x2228;</td>
+                <td rowspan=2 style="text-align: center;">OR</td>
+                <td>Disjunction</td>
+                <td rowspan=2><img style="width: 100px" src="img/appendix/logic/OR.svg"></td>
+                <td rowspan=2>True if any input is true. Else returns false.</td>
+            </tr>
+            <tr><td>P || Q</td></tr>
+            <tr>
+                <td rowspan=2 style="font-size: 125%; text-align: center;">&#x22BB;</td>
+                <td rowspan=2 style="text-align: center;">XOR</td>
+                <td>Exclusive Disjunction</td>
+                <td rowspan=2><img style="width: 100px" src="img/appendix/logic/XOR.svg"></td>
+                <td rowspan=2>True if exactly one input is true. Else returns false.</td>
+            </tr>
+            <tr><td><span style="white-space: nowrap">(P && !Q)</span> || <span style="white-space: nowrap">(!P && Q)</span></td></tr>
+            <tr>
+                <td rowspan=2 style="text-align: center;"><span style="font-size: 150%;">&#x2191;</span><br><span style="font-size: 125%;">|</span></td>
+                <td rowspan=2 style="text-align: center;">NAND</td>
+                <td>Alternative Denial</td>
+                <td rowspan=2><img style="width: 100px" src="img/appendix/logic/NAND.svg"></td>
+                <td rowspan=2>False if both inputs are true. Else returns true.</td>
+            </tr>
+            <tr><td>!(P && Q)</td></tr>
+            <tr>
+                <td rowspan=2 style="font-size: 125%; text-align: center;">&#x2193;</td>
+                <td rowspan=2 style="text-align: center;">NOR</td>
+                <td>Joint Denial</td>
+                <td rowspan=2><img style="width: 100px" src="img/appendix/logic/NOR.svg"></td>
+                <td rowspan=2>False if any input is true. Else returns true.</td>
+            </tr>
+            <tr><td>!(P || Q)</td></tr>
+            <tr>
+                <td rowspan=2 style="font-size: 125%; text-align: center;">&#x2194;</td>
+                <td rowspan=2 style="text-align: center;">XNOR</td>
+                <td>Biconditional</td>
+                <td rowspan=2><img style="width: 100px" src="img/appendix/logic/XNOR.svg"></td>
+                <td rowspan=2>False if exactly one input is true. Else returns true.</td>
+            </tr>
+            <tr><td><span style="white-space: nowrap">(P && Q)</span> || <span style="white-space: nowrap">(!P && !Q)</span></td></tr>
+            <tr>
+                <td rowspan=2 style="font-size: 125%; text-align: center;">&#x2192;</td>
+                <td rowspan=2 style="text-align: center;">IMPLY</td>
+                <td>Material Implication</td>
+                <td rowspan=2><img style="width: 100px" src="img/appendix/logic/IMPLYL.svg"></td>
+                <td rowspan=2>False when left input is true and right input is false. Else returns true.</td>
+            </tr>
+            <tr><td>!P || (P && Q)</td></tr>
+            <tr>
+                <td rowspan=2 style="font-size: 125%; text-align: center;">&#x2190;</td>
+                <td rowspan=2 style="text-align: center;">IMPLY BY</td>
+                <td>Converse Implication</td>
+                <td rowspan=2><img style="width: 100px" src="img/appendix/logic/IMPLYR.svg"></td>
+                <td rowspan=2>False when left input is false and right input is true. Else returns true.</td>
+            </tr>
+            <tr><td>(P && Q) || !Q</td></tr>
+        </table>
+
+    </div>
+</div>

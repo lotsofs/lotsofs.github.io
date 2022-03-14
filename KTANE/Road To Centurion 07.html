@@ -14,27 +14,50 @@
     <!-- <link rel="stylesheet" type="text/css" href="css/en.css" id="languageCSS"> -->
     <link rel="icon" href="favicon.ico" type="image/png">
     <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
+    <script type="text/javascript">
+        function changeData() {
+            phdt = document.getElementsByClassName("page-header-doc-title");
+            for(var i = 0; i < phdt.length; i++){
+                phdt[i].innerText="Keep Talking and Nobody Explodes (Modded)";
+            }
+
+            af = document.getElementsByClassName("absolute-footer");
+            for(var i = 0; i < af.length; i++) {
+                if (!af[i].classList.contains("frontpage")) {
+                    j = i + 1;
+                    af[i].innerText="Page " + j + " of " + af.length;
+                }
+            }
+            // af = document.getElementsByClassName("mainpages");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 2;
+            //     af[i].innerText="Page " + j;
+            // }
+            // af = document.getElementsByClassName("solvablepagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 1." + j;
+            // }
+            // af = document.getElementsByClassName("neediespagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 2." + j;
+            // }
+            // af = document.getElementsByClassName("translationpagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 3." + j;
+            // }
+            // af = document.getElementsByClassName("appendixpagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 4." + j;
+            // }
+        }
+    </script>
     <style>
         .corner { border: none; }
-        body { 
-            counter-reset: mainpagescounter 1 solvablescounter 0 neediescounter 0 appendixcounter 0;
-        }
-        .mainpages::before { 
-            counter-increment: mainpagescounter;
-            content: "Page " counter(mainpagescounter);
-        }
-        .solvablepagecount::before { 
-            counter-increment: solvablescounter;
-            content: "Page 1." counter(solvablescounter);
-        }
-        .neediespagecount::before { 
-            counter-increment: neediescounter;
-            content: "Page 2." counter(neediescounter);
-        }
-        .appendixpagecount::before { 
-            counter-increment: appendixcounter;
-            content: "Page " counter(appendixcounter, upper-roman);
-        }
+
 
         body .page:nth-of-type(7n+1) {
             background-image: url("./img/background/page-bg-noise-01.png");
@@ -61,7 +84,7 @@
 </head>
 
 
-<body dir="ltr">
+<body dir="ltr" onload="changeData();">
     <div id="ManualContent">
             <div class="page section-title " id="TitlePage">
                 <div class="page-footer absolute-footer" data-args="pageNum=1;pageCount=23"><span class="gamedisclaimer">Video game companion manual. Find out more at www.keeptalkinggame.com</span></div>

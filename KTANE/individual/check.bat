@@ -1,0 +1,1 @@
+FOR /F "usebackqdelims=" %%f IN ("dir.txt") DO (IF EXIST "%%f" (ECHO %%f exists) ELSE (pause ))

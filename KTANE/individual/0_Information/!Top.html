@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Bomb Defusal Manual for the video game Keep Talking and Nobody Explodes">
-    <title>(WIP) Keep Talking and Nobody Explodes - Bomb Defusal Manual - Expanded mod version</title>
+    <title>Keep Talking and Nobody Explodes - Bomb Defusal Manual - Expanded Mod Version</title>
     <meta name="viewport" content="initial-scale=1">
     <link rel="stylesheet" type="text/css" href="css/font.css">
     <link rel="stylesheet" type="text/css" href="css/normalize.css">
@@ -37,43 +37,54 @@
         body .page:nth-of-type(7n+7) {
             background-image: url("./img/background/page-bg-noise-07.png");
         }     
+
+        body {
+            filter: grayscale(100%);
+        }
     </style>
     <script type="text/javascript">
-        function changeTopLeftHeaders() {
+        function changeData() {
             phdt = document.getElementsByClassName("page-header-doc-title");
             for(var i = 0; i < phdt.length; i++){
                 phdt[i].innerText="Keep Talking and Nobody Explodes (Modded)";
             }
 
-            af = document.getElementsByClassName("mainpages");
-            for(var i = 0; i < af.length; i++){
-                j = i + 2;
-                af[i].innerText="Page " + j;
+            af = document.getElementsByClassName("absolute-footer");
+            for(var i = 0; i < af.length; i++) {
+                if (!af[i].classList.contains("frontpage")) {
+                    j = i + 1;
+                    af[i].innerText="Page " + j + " of " + af.length;
+                }
             }
-            af = document.getElementsByClassName("solvablepagecount");
-            for(var i = 0; i < af.length; i++){
-                j = i + 1;
-                af[i].innerText="Page 1." + j;
-            }
-            af = document.getElementsByClassName("neediespagecount");
-            for(var i = 0; i < af.length; i++){
-                j = i + 1;
-                af[i].innerText="Page 2." + j;
-            }
-            af = document.getElementsByClassName("translationpagecount");
-            for(var i = 0; i < af.length; i++){
-                j = i + 1;
-                af[i].innerText="Page 3." + j;
-            }
-            af = document.getElementsByClassName("appendixpagecount");
-            for(var i = 0; i < af.length; i++){
-                j = i + 1;
-                af[i].innerText="Page 4." + j;
-            }
+            // af = document.getElementsByClassName("mainpages");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 2;
+            //     af[i].innerText="Page " + j;
+            // }
+            // af = document.getElementsByClassName("solvablepagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 1." + j;
+            // }
+            // af = document.getElementsByClassName("neediespagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 2." + j;
+            // }
+            // af = document.getElementsByClassName("translationpagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 3." + j;
+            // }
+            // af = document.getElementsByClassName("appendixpagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 4." + j;
+            // }
         }
     </script>
 </head>
 
 
-<body dir="ltr" onload="changeTopLeftHeaders();">
+<body dir="ltr" onload="changeData();">
     <div id="ManualContent">

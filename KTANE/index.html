@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Bomb Defusal Manual for the video game Keep Talking and Nobody Explodes">
-    <title>Keep Talking and Nobody Explodes - Bomb Defusal Manual - Expanded mod version</title>
+    <title>Keep Talking and Nobody Explodes - Bomb Defusal Manual - Expanded Mod Version</title>
     <meta name="viewport" content="initial-scale=1">
     <link rel="stylesheet" type="text/css" href="css/font.css">
     <link rel="stylesheet" type="text/css" href="css/normalize.css">
@@ -15,69 +15,81 @@
     <link rel="icon" href="favicon.ico" type="image/png">
     <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
     <style>
-        .corner {
-            border: none;
-        }
-
-        body {
-            counter-reset: mainpagescounter 1 solvablescounter 0 neediescounter 0 appendixcounter 0;
-        }
-
-        .mainpages::before {
-            counter-increment: mainpagescounter;
-            content: "Page "counter(mainpagescounter);
-        }
-
-        .solvablepagecount::before {
-            counter-increment: solvablescounter;
-            content: "Page 1."counter(solvablescounter);
-        }
-
-        .neediespagecount::before {
-            counter-increment: neediescounter;
-            content: "Page 2."counter(neediescounter);
-        }
-
-        .appendixpagecount::before {
-            counter-increment: appendixcounter;
-            content: "Page "counter(appendixcounter, upper-roman);
-        }
-
+        .corner { border: none; }
         body .page:nth-of-type(7n+1) {
             background-image: url("./img/background/page-bg-noise-01.png");
         }
-
         body .page:nth-of-type(7n+2) {
             background-image: url("./img/background/page-bg-noise-02.png");
         }
-
         body .page:nth-of-type(7n+3) {
             background-image: url("./img/background/page-bg-noise-03.png");
         }
-
         body .page:nth-of-type(7n+4) {
             background-image: url("./img/background/page-bg-noise-04.png");
         }
-
         body .page:nth-of-type(7n+5) {
             background-image: url("./img/background/page-bg-noise-05.png");
         }
-
         body .page:nth-of-type(7n+6) {
             background-image: url("./img/background/page-bg-noise-06.png");
         }
-
         body .page:nth-of-type(7n+7) {
             background-image: url("./img/background/page-bg-noise-07.png");
+        }     
+
+        body {
+            filter: grayscale(0%);
         }
     </style>
+    <script type="text/javascript">
+        function changeData() {
+            phdt = document.getElementsByClassName("page-header-doc-title");
+            for(var i = 0; i < phdt.length; i++){
+                phdt[i].innerText="Keep Talking and Nobody Explodes Manuals Hub";
+            }
+
+            af = document.getElementsByClassName("absolute-footer");
+            for(var i = 0; i < af.length; i++) {
+                if (!af[i].classList.contains("frontpage")) {
+                    j = i + 1;
+                    af[i].innerText="Page " + j + " of " + af.length;
+                }
+            }
+            // af = document.getElementsByClassName("mainpages");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 2;
+            //     af[i].innerText="Page " + j;
+            // }
+            // af = document.getElementsByClassName("solvablepagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 1." + j;
+            // }
+            // af = document.getElementsByClassName("neediespagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 2." + j;
+            // }
+            // af = document.getElementsByClassName("translationpagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 3." + j;
+            // }
+            // af = document.getElementsByClassName("appendixpagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 4." + j;
+            // }
+        }
+    </script>
 </head>
 
 
-<body dir="ltr">
+<body dir="ltr" onload="changeData();">
     <div id="ManualContent">
         <div class="page section-title " id="TitlePage">
-            <div class="page-footer absolute-footer" data-args="pageNum=1;pageCount=23"><span class="gamedisclaimer">Video game companion manual, not suitable for print. Find out more at www.keeptalkinggame.com</span></div>
+            <div class="page-footer absolute-footer frontpage" data-args="pageNum=1;pageCount=23"><span class="gamedisclaimer">Video game companion manual, not suitable for print. Find out more at www.keeptalkinggame.com</span></div>
             <div class="page-content">
                 <img src="img/ktane-logo.png" class="logo" alt="Keep Talking and Nobody Explodes">
 
@@ -108,7 +120,7 @@
                 <span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
                 <span class="page-header-section-title">Introduction</span>
             </div>
-            <div class="page-footer absolute-footer mainpages"></div>
+            <div class="page-footer absolute-footer mainpages frontpage"></div>
             <div class="page-content">
                 <div class="vertical-spacer"></div>
 
@@ -128,6 +140,9 @@
                     </p>
                     <p>
                         I wanted a manual with everything in one place that I could simply link to people and it would have everything they'd need, and nothing more. The <a href="http://ktane.timwi.de">Timwi repo</a> is great, but it can give a bit of a sensory overload if you're new.
+                    </p>
+                    <p>
+                        However, since then this has turned into a more personal pet project where I just want a manual to use for myself that I am happy with.
                     </p>
                     <p>
                         See the Changes section for more information on my mission statement with these manuals. Should you need to contact me: <a href="http://twitch.tv/lotsofs">Twitch</a>, <a href="http://twitter.com/lotsofs">Twitter</a>, <a href="http://discord.gg/lotsofs">Discord</a>.
@@ -150,14 +165,14 @@
                 <p><b><a href="./Vanilla.html">Original</a></b>
                     <br>This is the same as the vanilla manual. It is identical to the <a href="http://bombmanual.com">original</a> except for some behind the scenes stuff.
                 </p>
-                <p><b><a href="./Vanilla Alternative Numbering.html">w/ Alternative page numbering</a></b>
+                <!-- <p><b><a href="./Vanilla Alternative Numbering.html">w/ Alternative page numbering</a></b>
                     <br>This is the vanilla manual, but with an alternative page numbering. For more info, refer to the Changes section ahead.
-                </p>
+                </p> -->
 
 				<h3 id="Centurion">Centurion manual</h3>
 				<p>
 					Manual for the <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=952828429">Centurion</a> bomb: <br>
-					<b><a href="./Centurion.html">Alphabetized, no page numbering</a></b>
+					<b><a href="./Centurion.html">Alphabetized, with page numbering</a></b>
 				</p>
 
                 <h3 id="RoadToCenturion">Road To Centurion manuals</h3>
@@ -202,7 +217,10 @@
                 <h3>Miscellaneous</h3>
                 <p><b>Vanilla Translated Modules Only</b>
                     <br>A manual including only the translated vanilla modules' condensed manuals for English speakers.
-                    <br>Select page numbering: <a href="./Translated Vanilla Alternative Numbering.html">Alternative</a> - <a href="./Translated Vanilla Classic Numbering.html">Classic</a> - <a href="./Translated Vanilla No Numbering.html">None</a>
+                    <br>Select page numbering: 
+                    <!--<a href="./Translated Vanilla Alternative Numbering.html">Alternative</a> - -->
+                    <a href="./Translated Vanilla Classic Numbering.html">Classic</a> - 
+                    <a href="./Translated Vanilla No Numbering.html">None</a>
                 </p>
                 
                 <h3>_</h3>
@@ -335,13 +353,13 @@
                 <p>An effort is made to keep all manuals as close to their creator's original as possible, unless any of the above points apply or a different exception takes place. Any custom changes made to a manual will be listed here.</p>
                 <p>Special thanks for Timwi and crew for providing these manuals in the first place.</p>
 
-                <h3>Alternative Page Numbering</h3>
+                <!-- <h3>Alternative Page Numbering</h3>
                 <p>With the alternative page numbering pages are numbered in a more future proof way, allowing for easy adding of new modules:</p>
                 <ul>
                     <li>Introductory pages are still numbered as normal, but without the 'of 23', eg. "Page 2".</li>
                     <li>Solvable module pages have their numbering prefixed with "1.", starting at "Page 1.1" for the title page.</li>
                     <li>Needy module pages have their numbering prefixed with "2.", starting at "Page 2.1" for the title page.</li>
-                </ul>
+                </ul> -->
                 
                 
             </div>
@@ -357,12 +375,12 @@
             </div>
             <div class="page-footer absolute-footer mainpages"></div>
             <div class="page-content">
-                <ul>
+                <!-- <ul>
                     <li>Any additional sections are numbered in the same way.</li>
                     <li>Appendices have roman numeral page numbering, eg. "Page III".</li>
-                </ul>
-                <h3>Ordering</h3>
-                <p>By default, besides distinction between solvable, needy & appendix, page ordering will be determined by the module's release date, and not alphabetical, as the vanilla manual doesn't have its modules listed alphabetically either. This also ensures ease of updating.</p>
+                </ul> -->
+                <!-- <h3>Ordering</h3>
+                <p>By default, besides distinction between solvable, needy & appendix, page ordering will be determined by the module's release date, and not alphabetical, as the vanilla manual doesn't have its modules listed alphabetically either. This also ensures ease of updating.</p> -->
 
                 <h3>Introduction Pages</h3>
                 <p>Several changes are made to the 3 introduction pages of the manual.</p>
@@ -386,6 +404,8 @@
                 <h3>Translated Modules</h3>
                 <p>Translated modules will have their own section due to many of them being page-hungry: Section 3.</p>
                 <p>Instead of providing the translated manual pages, their manual pages will be rewritten for an English speaking target audience. As a result, and also to save printer ink, manuals for modules translated into multiple languages can be severely condensed.</p>
+                <p>The manuals will still refer to their base counterpart's original manual for instructions, so that translated module manuals provide new information only. This new information also includes information to help tell the modules apart.</p>
+                <p>Languages that use non-Latin script may have tiny changes made to them in favor of compatibility and readability for an English speaker. The Cyrillic font was changed entirely for something more readable because the original one was frankly horrible. The new one doesn't look pretty, but at least it's consistent and easy to read.</p>
             </div>
         </div>
 
@@ -396,8 +416,6 @@
             </div>
             <div class="page-footer absolute-footer mainpages"></div>
             <div class="page-content">
-                <p>The manuals will still refer to their base counterpart's original manual for instructions, so that translated module manuals provide new information only. This new information also includes information to help tell the modules apart.</p>
-                <p>Languages that use non-Latin script may have tiny changes made to them in favor of compatibility and readability for an English speaker. The Cyrillic font was changed entirely for something more readable because the original one was frankly horrible. The new one doesn't look pretty, but at least it's consistent and easy to read.</p>
 
                 <h3>Appendices</h3>
                 <p>Appendices may be removed, merged, or added for various reasons.</p>
@@ -417,9 +435,15 @@
                     <li>⬤ <b>Appendix B</b></li>
                     <li>⬤ <b>Appendix C</b></li>
                     <li>⇛ <b>Appendix Piano</b>: The Piano keys reference, which is also used by Cruel & Festive Piano Keys.</li>
-                    <li>✽ <b>Appendix 1819</b>: Solution table for Anagrams & Word Scramble, because the manual should really be providing these.</li>
+                    <li>✽ <b>Appendix Sword</b>: Solution table for Anagrams & Word Scramble, because the manual should really be providing these.</li>
                     <li>⬤ <b>Appendix Two Factor</b></li>
                     <li>⇛ <b>Appendix BombMfg#AF</b>: The configuration help for Filibuster. This info belongs in a readme.txt for the mod or in the workshop information. Not in a defusal manual; what is a defuser going to do with this information other than find out that they're going to blow up and die? However it isn't provided elsewhere, so here we are...</li>
+                    <li>✽ <b>Appendix ISO 4217</b>: Lookup table for Foreign Exchange Rates currency codes. Removes the need for Wikipedia.</li>
+                    <li>⬤ <b>Appendix M</b>: Morse Code reference. First referenced by Morsematics but really it's for Translated Modules, but helpful for all.</li>
+                    <!-- <li>⬤ <b>Appendix LOGIC</b>: For Logic modules.</li> // I'm not sure how to phrase this one to apply for both logical boolean and binary operations. To me they are the same but apparently there's a difference?. Will postpone until more modules throw this stuff at me. --> 
+                    <li>🡄 <b><s>Appendix CD43</s></b>: Cryptography</li>
+                    <li>🡄 <b><s>Appendix CD44</s></b>: Cryptography</li>
+                    <li>⬤ <b>Appendix Math</b>: From Skewed Slots. Future Math appendices (like The Gamepad's released soon after) will be merged into this.</li>
                     
                 </ul>
             </div>
@@ -433,11 +457,6 @@
             <div class="page-footer absolute-footer mainpages"></div>
             <div class="page-content">           
                 <ul style="list-style-type: none; text-indent: -19px">
-                    <li>✽ <b>Appendix ISO 4217</b>: Lookup table for Foreign Exchange Rates currency codes. Removes the need for Wikipedia.</li>
-                    <li>⇛ <b>Appendix M</b>: Morse Code reference. First referenced by Morsematics but really it's for Translated Modules, but helpful for all.</li>
-                    <li>🡄 <b><s>Appendix CD43</s></b>: Cryptography</li>
-                    <li>🡄 <b><s>Appendix CD44</s></b>: Cryptography</li>
-                    <li>⬤ <b>Appendix Math</b>: From Skewed Slots. Future Math appendices (like The Gamepad's released soon after) will be merged into this.</li>
                     <li>🡅 <b><s>Appendix MathConcepts</s></b>: From Gamepad, into Appendix Math.</li>
                     <li>⬤ <b>Appendix BLANK</b>: From Blind Alley, identifying blank modules.</li>
                     <li>⬤ <b><s>Appendix Grammar</s></b>: From English Test. Didn't even have a name. Upgraded appendix to list all words.</li>
@@ -464,7 +483,7 @@
             <div class="page-content">                    
                 <ul>
                     <li><b>Wires</b></li>
-                    <li><b>The Button</b>: Reinstated a comma that Timwi for some reason removed from the original.</li>
+                    <li><b>The Button</b></li>
                     <li><b>Keypad</b>: Original top right label is in plural, but the in-game name is singular. Timwi changed this to match. So will I.</li>
                     <li><b>Simon Says</b>: Change the '2 strikes' to '2+ strikes' like Timwi did, since the original does not account for mods.</li>
                     <li><b>Who's on First</b></li>
@@ -474,22 +493,21 @@
                     <li><b>Wire Sequence</b>: Original top right label is in plural, but the in-game name is singular. Timwi changed this to match. So will I.</li>
                     <li><b>Mazes</b>: Original top right label is in plural, but the in-game name is singular. Timwi changed this to match. So will I.</li>
                     <li><b>Passwords</b>: Original top right label is in plural, but the in-game name is singular. Timwi changed this to match. So will I.</li>
-                    <li><b>Needy Venting Gas</b></li>
-                    <li><b>Needy Capacitor Discharge</b></li>
-                    <li><b>Needy Knob</b></li>
+                    <li><b>Needy Vent Gas</b>: Official manual calls it 'Venting Gas'. Timwi calls it 'Needy Vent Gas'. The latter matches its ingame name, so I'm using that.</li>
+                    <li><b>Needy Capacitor</b>: Official manual calls it 'Capacitor Discharge'. Timwi calls it 'Needy Capacitor'. The latter matches its ingame name, so I'm using that.</li>
+                    <li><b>Needy Knob</b>: Timwi's manual doesn't match the official one at all. I'm sticking with the official, except I will call it 'Needy Knob' like Timwi, instead of 'Knobs'.</li>
+                    <li><b>Widget: Indicators</b></li>
+                    <li><b>Widget: Batteries</b></li>
+                    <li><b>Widget: Ports</b></li>
                     <li><b>Colour Flash</b></li>
                     <li><b>Piano Keys</b>: Move the piano reference to the appendices as it is applicable to multiple modules. Made it and its reference look like an apppendix.</li>
                     <li><b>Semaphore</b>: Attribution moved to a separate colophon page.</li>
                     <li><b>Emoji Math</b></li>
-                    <li><b>Needy Math</b></li>
-                    <li><b>Needy Lights Out</b></li>
+                    <li><b>Needy Math</b>: Show correct name in the top-right.</li>
+                    <li><b>(Needy) Lights Out</b></li>
                     <li><b>Switches</b></li>
                     <li><b>Two Bits</b></li>
                     <li><b>Anagrams</b>: Added a lookup table in the appendices together with Word Scramble. Not on the main page because it is my own contribution. What good is a manual if you have to go on the internet anyway.</li>
-                    <li><b>Word Scramble</b>: Added a lookup table in the appendices together with Anagrams. Not on the main page because it is my own contribution. Also changed the title to just say 'Word Scramble' instead of 'Sword' which it did for some reason.</li>
-                    <li><b>Widget: Two Factor</b></li>
-                    <li><b>Combination Lock</b>: ⇖</li>
-                    
                 </ul>
             </div>
         </div>
@@ -502,11 +520,14 @@
             <div class="page-footer absolute-footer mainpages"></div>
             <div class="page-content">
                 <ul>
-                    <li><b>Needy Filibuster</b>: Configuration instructions go in the readme.txt or the workshop description, not in the defusal manual. Due to lack of these instructions in either, it has been moved to the appendices, with a reference. It has also been reworded a little to not break the fourth wall. A mention that the module requires a microphone still exists on the main page.</li>
+                    <li><b>Word Scramble</b>: Added a lookup table in the appendices together with Anagrams. Not on the main page because it is my own contribution. Also changed the title to just say 'Word Scramble' instead of 'Sword' which it did for some reason. I named the appendix that instead.</li>
+                    <li><b>Widget: Two Factor</b></li>
+                    <li><b>Combination Lock</b>: ⇖</li>
+                    <li><b>(Needy) Filibuster</b>: Configuration instructions go in the readme.txt or the workshop description, not in the defusal manual. Due to lack of these instructions in either, it has been moved to the appendices, with a reference. It has also been reworded a little to not break the fourth wall. A mention that the module requires a microphone still exists on the main page.</li>
                     <li><b>Round Keypad</b></li>
                     <li><b>Needy Quiz</b>: This module has an identity crisis, and I fixed it by naming it Needy Quiz once and for all.</li>
                     <li><b>Foreign Exchange Rates</b>: ⇖ Adding a table of ISO 4217 codes in the appendices, for printed copy friendliness.</li>
-                    <li><b>Needy Motion Sense</b></li>
+                    <li><b>(Needy) Motion Sense</b></li>
                     <li><b>Listening</b></li>
                     <li><b>Morsematics</b>: Get rid of the red line. Page 2 appendified.</li>
                     <li><b>Orientation Cube</b></li>
@@ -514,8 +535,8 @@
                     <li><b>Forget Me Not</b>: Rid the red line.</li>
                     <li><b>Letter Keys</b></li>
                     <li><b>Astrology</b></li>
-                    <li><b>Needy Rotary Phone</b></li>
-                    <li><b>Logic</b>: Move the Appendix references to the next page, as it didn't fit on the first.</li>
+                    <li><b>Needy Rotary Phone</b>: Changed the top right name to be correct.</li>
+                    <li><b>Logic</b>: ⇖</li>
                     <li><b>Mystic Square</b></li>
                     <li><b>Crazy Talk</b></li>
                     <li><b>Adventure Game</b></li>
@@ -523,8 +544,6 @@
                     <li><b>Plumbing</b>: Rid the red line.</li>
                     <li><b>Safety Safe</b>: ⇖</li>
                     <li><b>Needy Tetris</b></li>
-                    <li><b>Cryptography</b>: Removed appendices and made them part of the solvable modules section, since these pages are actually required for disarming this module, and this module only. They don't provide useless backstory or optional tips. The top right also said 'Cryptography' indicating that placing these in the appendices was a rushed decision by the creator to begin with. Removing the appendix header also made the excerpt text fit on the page.</li>
-                    <li><b>Turn The Keys</b>: ⇖ References to modules not present in sub-manuals may be removed. Bugged modules are still shown, but parenthesize the cube part of Orientation Cube to make the manual apply too when this module is paired with an actual Orientation module.</li>
                 </ul>
             </div>
         </div>
@@ -538,6 +557,8 @@
             <div class="page-content">
                 <ul>
                     
+                    <li><b>Cryptography</b>: Removed appendices and made them part of the solvable modules section, since these pages are actually required for disarming this module, and this module only. They don't provide useless backstory or optional tips. The top right also said 'Cryptography' indicating that placing these in the appendices was a rushed decision by the creator to begin with. Removing the appendix header also made the excerpt text fit on the page.</li>
+                    <li><b>Turn The Keys</b>: ⇖ References to modules not present in sub-manuals may be removed. Bugged modules are still shown, but parenthesize the cube part of Orientation Cube to make the manual apply too when this module is paired with an actual Orientation module.</li>
                     <li><b>3D Maze</b></li>
                     <li><b>Mouse In The Maze</b>: ⇖</li>
                     <li><b>Chess</b>: ⇖</li>
@@ -561,10 +582,6 @@
                     <li><b>Follow The Leader</b></li>
                     <li><b>Friendship</b>: ⇖ Decreased the squish of 'conscientiousness' as it now fits more due to the shrunk text size to fit the page.</li>
                     <li><b>The Bulb</b></li>
-                    <li><b>Blind Alley</b>: Appendix to the appendices. Appendices do not get a flavor text, and remove the reference to 'the first page'.</li>
-                    <li><b>English Test</b>: The appendix refers to this module, red flag that that appendix is exclusive to this one module only. Deappendifying it. Also it mentions 'lack of space', but the extra space needed is only two pages. So the original appendix remains with those two pages added. Removed the non-belonging flavor text. Rewrote some lines to stop mentioning the table's appendix-being. Also what the hell is the needy english test? Table is big now, sorting alphabetically.</li>
-                    <li><b>Sea Shells</b></li>
-                    <li><b>Rock-Paper-Scissors-Lizard-Spock</b></li>
                 </ul>
             </div>
         </div>
@@ -577,13 +594,17 @@
             <div class="page-footer absolute-footer mainpages"></div>
             <div class="page-content">
                 <ul>
+                    <li><b>Blind Alley</b>: Appendix to the appendices. Appendices do not get a flavor text, and remove the reference to 'the first page'.</li>
+                    <li><b>English Test</b>: The appendix refers to this module, red flag that that appendix is exclusive to this one module only. Deappendifying it. Also it mentions 'lack of space', but the extra space needed is only two pages. So the original appendix remains with those two pages added. Removed the non-belonging flavor text. Rewrote some lines to stop mentioning the table's appendix-being. Also what the hell is the needy english test? Table is big now, sorting alphabetically.</li>
+                    <li><b>Sea Shells</b></li>
+                    <li><b>Rock-Paper-Scissors-Lizard-Spock</b></li>
                     <li><b>Square Button</b>: Got rid of the red line and gave it the ink blots instead.</li>
                     <li><b>Hexamaze</b></li>
                     <li><b>Bitmaps</b></li>
                     <li><b>Adjacent Letters</b></li>
                     <li><b>Colored Squares</b>: Appendix removed or stripped of modules not present on the manual. Removed the reference to it on the main page where needed. Also, the appendix is in the appendices. Not 'below'.</li>
                     <li><b>Third Base</b></li>
-                    <li><b>Who's On First (Translated)</b>: Merged step 1 tables to be 3 languages on 1 page (more didn't fit on the page, but would also ramp up the difficulty too much). Shrunk most step 2 tables down to fit two on one page. The look is vastly different from the original, but the gameplay experience should be close enough to the original for it to be okay. Condensed 42 pages to 22 (Step 1: 21 to 8, step 2: 21 to 14)</li>
+                    <li><b>Who's On First Translated</b>: Merged step 1 tables to be 3 languages on 1 page (more didn't fit on the page, but would also ramp up the difficulty too much). Shrunk most step 2 tables down to fit two on one page. The look is vastly different from the original, but the gameplay experience should be close enough to the original for it to be okay. Condensed 42 pages to 22 (Step 1: 21 to 8, step 2: 21 to 14)</li>
                     <li><b>Souvenir</b>: Added some blank pages to futureproof the manual. Remove questions for modules not mentioned in the printed manual.</li>
                     <li><b>Word Search</b></li>
                     <li><b>Broken Buttons</b></li>
@@ -596,12 +617,6 @@
                     <li><b>Battleship</b></li>
                     <li><b>Double-Oh</b>: Made the title size congruent with the entire manual.</li>
                     <li><b>Coordinates</b></li>
-                    <li><b>Light Cycle</b></li>
-                    <li><b>Needy HTTP Response</b></li>
-                    <li><b>Cheap Checkout</b>: ⇖ The defuser has a computer? Where? I only see a bomb and an alarm clock. Changed the text accordingly. Leaving the poor table sorting intact as I dont know what the author's intent was.</li>
-                    <li><b>The Button (Translated)</b>: Put a big table with translations for all four labels. Condensed 21 pages to 1.</li>
-                    <li><b>Morse Code (Translated)</b>: Put all the solutions into one table. Use Appendix M for the morse code decoding. Condensed 21 pages to 7 (3 solution table pages, 4 morse code interpretation pages).</li>
-                    <li><b>Passwords (Translated)</b>: Fit 6 tables on one page! Condensed 21 pages to 4.</li>
                 </ul>
                 
             </div>
@@ -615,7 +630,13 @@
             <div class="page-footer absolute-footer mainpages"></div>
             <div class="page-content">
                 <ul>
-                    <li><b>Needy Vent Gas (Translated)</b>: Put a big table with the translations for the two buttons and the two questions. Condensed 21 pages to 1.</li>
+                    <li><b>Light Cycle</b></li>
+                    <li><b>(Needy) HTTP response</b>: Fix the top right capitalization to match the game's.</li>
+                    <li><b>Cheap Checkout</b>: ⇖ The defuser has a computer? Where? I only see a bomb and an alarm clock. Changed the text accordingly. Leaving the poor table sorting intact as I dont know what the author's intent was.</li>
+                    <li><b>The Button Translated</b>: Put a big table with translations for all four labels. Condensed 21 pages to 1.</li>
+                    <li><b>Morse Code Translated</b>: Put all the solutions into one table. Use Appendix M for the morse code decoding. Condensed 21 pages to 7 (3 solution table pages, 4 morse code interpretation pages).</li>
+                    <li><b>Passwords Translated</b>: Fit 6 tables on one page! Condensed 21 pages to 4.</li>
+                    <li><b>Needy Vent Gas Translated</b>: Put a big table with the translations for the two buttons and the two questions. Condensed 21 pages to 1.</li>
                     <li><b>Color Math</b></li>
                     <li><b>Rhythms</b>: ⇖</li>
                     <li><b>Only Connect</b>: This whole manual was a mess. In cleaning it up, some of the tables' columns got shifted a few pixels to one side. Close enough.</li>
@@ -628,15 +649,15 @@
                     <li><b>LED Encryption</b></li>
                     <li><b>The Clock</b></li>
                     <li><b>Bitwise Operations</b></li>
-                    <li><b>Needy Edgework</b></li>
-                    <li><b>Fast Math</b></li>
+                    <li><b>(Needy) Edgework</b></li>
+                    <li><b>Fast Math</b>: ⇖</li>
                     <li><b>Minesweeper</b></li>
                     <li><b>Zoo</b></li>
                     <li><b>Binary LEDs</b></li>
                     <li><b>Boolean Venn Diagram</b>: ⇖</li>
                     <li><b>Point of Order</b></li>
                     <li><b>Ice Cream</b></li>
-                    <li><b>Needy Hex To Decimal</b>: A game session? This is a bomb defusal manual. No bomb expert would refer to this as a 'game'.</li>
+                    <li><b>(Needy) Hex To Decimal</b>: A game session? This is a bomb defusal manual. No bomb expert would refer to this as a 'game'.</li>
                     <li><b>The Screw</b>: ⇖</li>
                     <li><b>Yahtzee</b>: ⇖</li>
                 </ul>

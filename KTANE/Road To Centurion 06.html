@@ -15,9 +15,56 @@
     <link rel="icon" href="favicon.ico" type="image/png">
     <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
     <style>.corner { border: none; }</style>
-</head>
+    <script type="text/javascript">
+        function changeData() {
+            phdt = document.getElementsByClassName("page-header-doc-title");
+            for(var i = 0; i < phdt.length; i++){
+                phdt[i].innerText="Keep Talking and Nobody Explodes (Modded)";
+            }
 
-<body dir="ltr">
+            af = document.getElementsByClassName("absolute-footer");
+            for(var i = 0; i < af.length; i++) {
+                if (!af[i].classList.contains("frontpage")) {
+                    j = i + 1;
+                    af[i].innerText="Page " + j + " of " + af.length;
+                }
+            }
+            rf = document.getElementsByClassName("relative-footer");
+            for(var i = 0; i < rf.length; i++) {
+                if (!rf[i].classList.contains("frontpage")) {
+                    rf[i].innerText="";
+                }
+            }
+            // af = document.getElementsByClassName("mainpages");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 2;
+            //     af[i].innerText="Page " + j;
+            // }
+            // af = document.getElementsByClassName("solvablepagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 1." + j;
+            // }
+            // af = document.getElementsByClassName("neediespagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 2." + j;
+            // }
+            // af = document.getElementsByClassName("translationpagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 3." + j;
+            // }
+            // af = document.getElementsByClassName("appendixpagecount");
+            // for(var i = 0; i < af.length; i++){
+            //     j = i + 1;
+            //     af[i].innerText="Page 4." + j;
+            // }
+        }
+    </script>
+    </head>
+
+<body dir="ltr" onload="changeData();">
     <div id="ManualContent">
         <div class="section" id="TitlePage">
 
