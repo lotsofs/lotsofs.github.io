@@ -49,6 +49,14 @@
                 phdt[i].innerText="Keep Talking and Nobody Explodes (Modded)";
             }
 
+            rf = document.getElementsByClassName("relative-footer");
+            for(var i = rf.length - 1; i >= 0; i--) {
+                // rf[i].innerText=rf.length;
+                rf[i].parentNode.insertBefore(rf[i], rf[i].parentNode.childNodes[2]);
+                rf[i].classList.add('absolute-footer');
+                rf[i].classList.remove('relative-footer');
+            }
+
             af = document.getElementsByClassName("absolute-footer");
             for(var i = 0; i < af.length; i++) {
                 if (!af[i].classList.contains("frontpage")) {
@@ -153,6 +161,7 @@
                     <div class="module"><div class="name">Big Circle</div><ul class="questions"><li>Which colors were in the solution?</li></ul></div>
                     <div class="module"><div class="name">Binary LEDs</div><ul class="questions"><li>At which numeric value did you cut the correct wire?</li></ul></div>
                     <div class="module"><div class="name">Bitmaps</div><ul class="questions"><li>How many pixels were black/white in each quadrant?</li></ul></div>
+                    <div class="module"><div class="name">Braille</div><ul class="questions"><li>What was the solution word?</li></ul></div>
                     <div class="module"><div class="name">Broken Buttons</div><ul class="questions"><li>What were the correct buttons you pressed?</li></ul></div>
                     <div class="module"><div class="name">Bulb<span class="the">&nbsp;(The)</span></div><ul class="questions"><li>What were the correct button presses?</li></ul></div>
                     <div class="module"><div class="name">Button<span class="the">&nbsp;(The)</span></div><ul class="questions"><li>What color did the light glow?</li></ul></div>
@@ -167,12 +176,16 @@
                     <div class="module"><div class="name">Creation</div><ul class="questions"><li>What were the weather conditions on each day?</li></ul></div>
                     <div class="module"><div class="name">Double-Oh</div><ul class="questions"><li>Which button was the submit button?</li></ul></div>
                     <div class="module"><div class="name">Fast Math</div><ul class="questions"><li>What was the last pair of letters?</li></ul></div>
+                    <div class="module"><div class="name">Flags</div><ul class="questions"><li>What were the country flags, the main flag, and the displayed number?</li></ul></div>
+                    <div class="module"><div class="name">Game Of Life Cruel</div><ul class="questions"><li>Which color combinations occurred?</li></ul></div>
                     <div class="module"><div class="name">Gamepad<span class="the">&nbsp;(The)</span></div><ul class="questions"><li>What were the numbers?</li></ul></div>
                     <div class="module"><div class="name">Gridlock</div><ul class="questions"><li>What was the starting color?</li><li>What were the starting and ending location?</li></ul></div>
                     <div class="module"><div class="name">Hexamaze</div><ul class="questions"><li>What was the color of the pawn?</li></ul></div>
+                    <div class="module"><div class="name">Hunting</div><ul class="questions"><li>Which stages had the column or row symbol first?</li></ul></div>
                     <div class="module"><div class="name">Ice Cream</div><ul class="questions"><li>Who were the customers?</li><li>Which flavors were on offer to each customer?</li></ul></div>
                     <div class="module"><div class="name">LED Encryption</div><ul class="questions"><li>What were the correct button presses?</li></ul></div>
                     <div class="module"><div class="name">Listening</div><ul class="questions"><li>What was the correct code you entered?</li></ul></div>
+                    <div class="module"><div class="name">Mafia</div><ul class="questions"><li>Who was a player, but not the Godfather?</li></ul></div>
                     <div class="module"><div class="name">Maze</div><ul class="questions"><li>What was the starting position?</li></ul></div>
                     <div class="module"><div class="name">Memory</div><ul class="questions"><li>What was the display in each stage?</li><li>What were the positions and labels of the buttons you pressed?</li></ul></div>
                     <div class="module"><div class="name">Microcontroller</div><ul class="questions"><li>In which order did the LEDs light up?</li></ul></div>
@@ -180,10 +193,6 @@
                     <div class="module"><div class="name">Monsplode, Fight!</div><ul class="questions"><li>Which creature was displayed?</li><li>Which moves were selectable?</li></ul></div>
                     <div class="module"><div class="name">Monsplode Trading Cards</div><ul class="questions"><li>What were the names and print versions of the three cards in your hand and the card on offer before the final trade/keep?</li></ul></div>
                     <div class="module"><div class="name">Morse-A-Maze</div><ul class="questions"><li>What were the starting and ending location?</li><li>What was the morse code word played?</li></ul></div>
-                    <div class="module"><div class="name">Morsematics</div><ul class="questions"><li>What were the received letters?</li></ul></div>
-                    <div class="module"><div class="name">Mouse in the Maze</div><ul class="questions"><li>What color was the torus?</li><li>Which color sphere was the goal?</li></ul></div>
-                    <div class="module"><div class="name">Murder</div><ul class="questions"><li>Which were the suspects and weapons?</li><li>Where was the body found?</li></ul></div>
-                    <div class="module"><div class="name">Mystic Square</div><ul class="questions"><li>What was the position of the skull?</li></ul></div>
                 </div>
                 <p class='souvenircontinued'>continued on next page...</p>
                 
@@ -193,7 +202,6 @@
         
         
         <div class="page " id="AppendixSouvenir">
-            <!-- Referenced by: Souvenir -->
             <div class="page-header">
                 <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
                 <span class="page-header-section-title">Souvenir</span>
@@ -205,6 +213,10 @@
                 
                 
                 <div class="souvenirtable">
+                    <div class="module"><div class="name">Morsematics</div><ul class="questions"><li>What were the received letters?</li></ul></div>
+                    <div class="module"><div class="name">Mouse in the Maze</div><ul class="questions"><li>What color was the torus?</li><li>Which color sphere was the goal?</li></ul></div>
+                    <div class="module"><div class="name">Murder</div><ul class="questions"><li>Which were the suspects and weapons?</li><li>Where was the body found?</li></ul></div>
+                    <div class="module"><div class="name">Mystic Square</div><ul class="questions"><li>What was the position of the skull?</li></ul></div>
                     <div class="module"><div class="name">Neutralization</div><ul class="questions"><li>What was the acid’s color/volume?</li></ul></div>
                     <div class="module"><div class="name">Only Connect</div><ul class="questions"><li>What were the positions of the Egyptian hieroglyphs?</li></ul></div>
                     <div class="module"><div class="name">Orientation Cube</div><ul class="questions"><li>What was the observer’s initial position?</li></ul></div>
@@ -220,6 +232,7 @@
                     <div class="module"><div class="name">Skewed Slots</div><ul class="questions"><li>What were the original numbers?</li></ul></div>
                     <div class="module"><div class="name">Souvenir</div><ul class="questions"><li>What was the first module the other Souvenir asked a question about?</li></ul></div>
                     <div class="module"><div class="name">Switches</div><ul class="questions"><li>What was the initial position of the switches?</li></ul></div>
+                    <div class="module"><div class="name">Symbol Cycle</div><ul class="questions"><li>How many symbols were cycling on each screen?</li></ul></div>
                     <div class="module"><div class="name">Text Field</div><ul class="questions"><li>What was the displayed letter?</li></ul></div>
                     <div class="module"><div class="name">Third Base</div><ul class="questions"><li>What were the display words?</li></ul></div>
                     <div class="module"><div class="name">Tic Tac Toe</div><ul class="questions"><li>What was the initial state of the field?</li></ul></div>
@@ -232,7 +245,6 @@
         
             </div>
         </div>
-
 
 
 

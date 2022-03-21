@@ -1,0 +1,140 @@
+<div class="page page-bg-01">
+	<div class="page-header">
+		<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+		<span class="page-header-section-title">Festive Piano Keys</span>
+	</div>
+	<div class="page-content">
+		<img src="img/Component/Piano Keys.svg" class="diagram" />
+		<h2>On the Subject of Festive Piano Keys</h2>
+		<p class="flavour-text" style="margin: 0">
+			Let's all gather round for a family sing-a-long!
+		</p>
+
+		<style>
+			@font-face {
+				font-family: 'OpusStd';
+				src: url('font/OpusStd.otf');
+			}
+	
+			@font-face {
+				font-family: 'OpusChordsSansStd';
+				src: url('font/OpusChordsSansStd.otf');
+			}
+	
+			.festivepianokeys-musicsymbol {
+				font-family: 'OpusStd';
+				font-size: 1.6em;
+				position: relative;
+				top: -0.2em;
+			}
+	
+			.festivepianokeys-musicsymbolunshifted {
+				font-family: 'OpusStd';
+				font-size: 1.6em;
+				position: relative;
+				top: 0.0em;
+			}
+	
+			.festivepianokeys-musicsymbolshifted {
+				font-family: 'OpusStd';
+				font-size: 1.6em;
+				position: relative;
+				top: 0.2em;
+			}
+	
+			.festivepianokeys-musicchord {
+				font-family: 'OpusChordsSansStd';
+				word-spacing: 0.3em;
+			}
+			img.festivepianokeys-music {
+				width: 10px;
+				margin-bottom: 5px;
+			}
+			img.festivepianokeys-music.festivepianokeys-big {
+				width: 20px;
+			}
+			img.festivepianokeys-music.festivepianokeys-small {
+				width: 8px;
+			}
+			img.festivepianokeys-music.festivepianokeys-above {
+				margin-bottom: 15px;
+			}
+	
+			.festivepianokeys-norequirement {
+				font-style: italic;
+			}
+		</style>
+
+		<p class="appendix-reference" style="margin-top: 0.5em; line-height: 1.2em; ">
+			See Appendix A for indicator identification reference.<br />
+			See Appendix B for battery identification reference.<br />
+			See Appendix C for port identification reference.<br />
+			See Appendix Piano for piano/keyboard reference.
+		</p>
+		<ul style="margin-top: 0.5em">
+			<li>A festive piano keys module will present with 3 musical symbols in the top indicator and a 12-note keyboard to input with; This will be different to the regular piano keys module by a different backing color.</li>
+			<li>Each rule consists of one or more required symbol(s) and optional further requirements based on the bomb casing.</li>
+			<li>Follow the list of rules down until one matches the criteria for the module; then execute the sequence of notes listed.</li>
+			<li>A failed attempt will require re-entry of the entire note sequence.</li>
+		</ul>
+
+		<table>
+			<tr>
+				<th style="width: 15%"><em>Required Symbol(s)</em></th>
+				<th style="width: 40%"><em>Further Requirements</em></th>
+				<th style="width: 45%"><em>Note Sequence</em></th>
+			</tr>
+			<tr>
+				<td><span class="festivepianokeys-musicsymbolunshifted">"</span></td>
+				<td>More even digits in the serial number than odd</td>
+				<td><span class="festivepianokeys-musicchord">Eb F Eb C Ab F Eb</span></td>
+			</tr>
+			<tr>
+				<td><span class="festivepianokeys-musicsymbolshifted">%</span> or <span class="festivepianokeys-musicsymbolshifted">x</span></td>
+				<td>Any duplicate characters or digits in serial number</td>
+				<td><span class="festivepianokeys-musicchord">C# B A F# G# A G# F#</span></td>
+			</tr>
+			<tr>
+				<td><span class="festivepianokeys-musicsymbol">m</span> <strong>and</strong> <span class="festivepianokeys-musicsymbol">*</span></td>
+				<td><span class="festivepianokeys-norequirement">(No other requirements)</span></td>
+				<td><span class="festivepianokeys-musicchord">G A G E G A G E</span></td>
+			</tr>
+			<tr>
+				<td><span class="festivepianokeys-musicsymbol">v</span> or <img src="img/modules/cruelpianokeys/down bow.svg" class="festivepianokeys-music festivepianokeys-above"></td>
+				<td>At most 2 types of port</td>
+				<td><span class="festivepianokeys-musicchord">Eb Eb Db Ab Eb Eb F Db</span></td>
+			</tr>
+			<tr>
+				<td><span class="festivepianokeys-musicsymbol">^</span></td>
+				<td>Lit indicator with vowel</td>
+				<td><span class="festivepianokeys-musicchord">B A G Eb D A B A G</span></td>
+			</tr>
+			<tr>
+				<td><img src="img/modules/cruelpianokeys/16th rest.svg" class="festivepianokeys-music"> or <span class="festivepianokeys-musicsymbolshifted">x</span></td>
+				<td>3 or more AA batteries</td>
+				<td><span class="festivepianokeys-musicchord">F# G A A D B A G E D</span></td>
+			</tr>
+			<tr>
+				<td><span class="festivepianokeys-musicsymbol">w</span> <strong>and</strong> <img src="img/modules/cruelpianokeys/breve.svg" class="festivepianokeys-music festivepianokeys-big"></td>
+				<td><span class="festivepianokeys-norequirement">(No other requirements)</span></td>
+				<td><span class="festivepianokeys-musicchord">G E F G C B C D C B A G</span></td>
+			</tr>
+			<tr>
+				<td><span class="festivepianokeys-musicsymbol">></span> or <span class="festivepianokeys-musicsymbol">^</span> or <span class="festivepianokeys-musicsymbol">v</span></td>
+				<td>Serial number contains 1 or 9</td>
+				<td><span class="festivepianokeys-musicchord">G G G G G G G Bb Eb F G</span></td>
+			</tr>
+			<tr>
+				<td><span class="festivepianokeys-musicsymbolshifted">%</span> or <span class="festivepianokeys-musicsymbol">B</span> or <span class="festivepianokeys-musicsymbolunshifted">"</span></td>
+				<td><span class="festivepianokeys-norequirement">(No other requirements)</span></td>
+				<td><span class="festivepianokeys-musicchord">D D D C# C# C# B C# B F#</span></td>
+			</tr>
+			<tr>
+				<td><span class="festivepianokeys-norequirement">(No requirement)</span></td>
+				<td><span class="festivepianokeys-norequirement">(No other requirements)</span></td>
+				<td><span class="festivepianokeys-musicchord">Bb A Bb G</span><br /><span style="font-size:0.8em">(Play sequence <em>x</em> times, where <em>x</em> equals largest digit in serial + 1)</span></td>
+			</tr>
+		</table>
+	</div>
+	<div class="page-footer relative-footer">Page 1 of 1</div>
+</div>
