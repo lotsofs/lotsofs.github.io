@@ -46,7 +46,14 @@
         function changeData() {
             phdt = document.getElementsByClassName("page-header-doc-title");
             for(var i = 0; i < phdt.length; i++){
-                phdt[i].innerText="Keep Talking and Nobody Explodes (Modded)";
+                phdt[i].innerText="Keep Talking and Nobody Explodes Modded";
+            }
+
+            rf = document.getElementsByClassName("relative-footer");
+            for(var i = rf.length - 1; i >= 0; i--) {
+                rf[i].parentNode.insertBefore(rf[i], rf[i].parentNode.childNodes[2]);
+                rf[i].classList.add('absolute-footer');
+                rf[i].classList.remove('relative-footer');
             }
 
             af = document.getElementsByClassName("absolute-footer");
@@ -56,31 +63,6 @@
                     af[i].innerText="Page " + j + " of " + af.length;
                 }
             }
-            // af = document.getElementsByClassName("mainpages");
-            // for(var i = 0; i < af.length; i++){
-            //     j = i + 2;
-            //     af[i].innerText="Page " + j;
-            // }
-            // af = document.getElementsByClassName("solvablepagecount");
-            // for(var i = 0; i < af.length; i++){
-            //     j = i + 1;
-            //     af[i].innerText="Page 1." + j;
-            // }
-            // af = document.getElementsByClassName("neediespagecount");
-            // for(var i = 0; i < af.length; i++){
-            //     j = i + 1;
-            //     af[i].innerText="Page 2." + j;
-            // }
-            // af = document.getElementsByClassName("translationpagecount");
-            // for(var i = 0; i < af.length; i++){
-            //     j = i + 1;
-            //     af[i].innerText="Page 3." + j;
-            // }
-            // af = document.getElementsByClassName("appendixpagecount");
-            // for(var i = 0; i < af.length; i++){
-            //     j = i + 1;
-            //     af[i].innerText="Page 4." + j;
-            // }
         }
     </script>
 </head>
