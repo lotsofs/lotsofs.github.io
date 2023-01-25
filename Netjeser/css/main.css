@@ -148,6 +148,13 @@ a:visited {
 
 p {
 	margin-top: 8px;
+	font-size: 12pt;
+}
+
+@media (max-width: 540px) {
+	p {
+		font-size: 8pt;
+	}
 }
 
 p, li {
