@@ -15,8 +15,8 @@
     <link rel="icon" href="favicon.ico" type="image/png">
     <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
     <style>
-        .corner { border: none; }
-        body .page:nth-of-type(7n+1) {
+        /* .corner { border: none; } */
+        /* body .page:nth-of-type(7n+1) {
             background-image: url("./img/background/page-bg-noise-01.png");
         }
         body .page:nth-of-type(7n+2) {
@@ -36,10 +36,13 @@
         }
         body .page:nth-of-type(7n+7) {
             background-image: url("./img/background/page-bg-noise-07.png");
-        }     
+        }      */
 
         body {
             filter: grayscale(100%);
+        }
+        .appendix-reference {
+            opacity: 0%;
         }
     </style>
     <script type="text/javascript">
@@ -71,110 +74,171 @@
 
 <body dir="ltr" onload="changeData();">
     <div id="ManualContent">
+
+        <div id="BigButton"></div>
         
 
+
         
-
-
-
-
-        <div class="page page-bg-02" >
+        <div class="page " id="BigButtonTranslated">
+            <!-- <div id="BigButton"></div> -->
             <div class="page-header">
-                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
-                <span class="page-header-section-title">The Swan</span>
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+                <span class="page-header-section-title">The Button (Translated)</span>
             </div>
+            <div class="page-footer absolute-footer translationpagecount"></div>
             <div class="page-content">
-                <img src="img/Component/The Swan.svg" class="diagram">
-                <h2>On the Subject of The Swan</h2>
-                <p style="margin-bottom: 0.5em" class="flavour-text">Every 108 <s>minutes</s> seconds, the button must be pushed...</p>
+                <img src="img/module-icons/ButtonComponent.svg" class="diagram">
+                <h2>On the Subject of The Button (Translated)</h2>
+                <p class="flavour-text">You might think that a button telling you to... What does it say, exactly?</p>
+                <!-- <p>This module is identical to The Button, but the label is in a different language. Check if there is a barcode sticker on the module with label "XX V#", where XX is a two or three letter language code, and # is a digit. If there is no sticker, you are not looking at a translated The Button module.</p> -->
+                <p>Use the table to help translate the button's label.</p>
+                <p>Use the language sticker on the module to help identify the correct language.</p>
+                <p class="BigButtonTranslated_originalmanualpresent">Refer to the original manual of The Button for instructions on how to disarm the module.</p>
         
-                <p style="font-size: 10pt; margin-top: 1em; margin-bottom: 0.5em" class='appendix-reference'>SEE THE NEXT PAGE FOR THE ORIENTATION MANUAL OF STATION 3.</p>
+                <style>
+                    .BigButtonTranslated-jpan td {
+                        font-family: Special Elite, Noto Serif JP, Yu Gothic; 
+                        font-size: 1.2em; 
+                        line-height: 1em; 
+                        height: 1em
+                    }
+                    .BigButtonTranslated-cyrl td {
+                        font-family: Pangolin; 
+                        font-size: 1.1em; 
+                        line-height: 1em; 
+                        height: 1em;
+                    }
+                    .BigButtonTranslated-hebr td {
+                        font-family: Alef; 
+                        font-size: 1.2em; 
+                        line-height: 1em; 
+                        height: 1em
+                    }
+                    .bigButtonTranslated-armn td {
+                        font-family: Montserratarm;
+                        font-size: 1.2em;
+                        line-height: 1em;
+                        height: 1em
+                    }
+                    .bigButtonTranslated-hang td {
+                        font-family: Nanum, Special Elite;
+                        font-size: 1.1em;
+                        line-height: 1em;
+                        height: 1em
+                    }
+                    .bigButtonTranslated-thai td {
+                        font-size: 1.1em;
+                        line-height: 1em;
+                        height: 1em
+                    }
+                    .bigButtonTranslated-hans td {
+                        font-family: AaRoundLi;
+                        font-size: 1.1em;
+                        line-height: 1em;
+                        height: 1em
+                    }
+                </style>
         
-                <ul style="font-size: 10pt; margin-top: 0em">
-                    <li>The module consists of twelve keypads, an 'Execute' button, a computer screen and a countdown timer.</li>
-                    <li>Every 108 seconds, the button must be pushed. From the moment the alarm sounds, you will have 40 seconds to enter the code and push the execute button.</li>
-                    <li>The code is always the same: <strong>4, 8, 15, 16, 23, 42.</strong></li>
-                    <li>Entering the wrong code will clear the screen and cause a strike.</li>
-                    <li>Failing to push the button will cause a system failure and a strike.</li>
-                    <li>Each time you enter the code and push the button, a system reset will be initiated and the timer will restart.</li>
-                    <li>It is vital that you keep track of the number of times the system has been reset, as this information is used to disarm the module.</li>
-                    <li>Only entering the numbers and pushing the button in a timely fashion will constitute a system reset.</li>
-                </ul>
-        
-                <ul style="font-size: 10pt; margin: 0">
-                    <li>Some time after 40% of the bomb's modules are solved (or when the bomb timer has three minutes remaining), alternative input commands will appear after a system reset.</li>
-                    <li>Please note, if the bomb timer reaches three minutes, the timer may reset to 108 mid-cycle. This DOES NOT constitute a system reset.</li>
-                    <li>Once the alternative input commands have appeared, you will have 108 seconds to calculate and enter the correct disarm code, which can be determined using the rules, exceptions and number sequences below.</li>
-                    <li>Exceptions take priority over all other rules, with exception three taking highest priority. Ensure you have read and understood them.</li>
-                </ul>
-                <h4 style="font-size: 10pt; margin-top: 0.5em">Rules</h4>
-                <ul style="font-size: 10pt; margin: 0">
-                    <li>If the number of resets does not appear on any sequence, enter DHARMA.</li>
-                    <li>If the number of resets multiplied by eight is within two of any number in Radzinsky's Binomial Spiral, enter HATCH.</li>
-                    <li>If the third number of each sequence, when added to the number of resets, yields a composite number, enter SWN.</li>
-                    <li>If the number of resets appears on more than one sequence, enter DARMA.</li>
-                </ul>
-                <h4 style="font-size: 10pt; margin-top: 0.5em">Exceptions</h4>
-                <ul style="font-size: 10pt; margin: 0">
-                    <li>If no rules apply, enter SWAN.</li>
-                    <li>If more than one rule applies, enter HTCH.</li>
-                    <li>If the number of resets is 25 or greater, enter 77.</li>
-                </ul>
-        
-                <h4 style="font-size: 10pt; margin-top: 0.5em">Sequences</h4>
-                <table style="font-size: 10pt">
-                    <tr>
-                        <th>Name</th>
-                        <th>First Twelve Integers</th>
-                    </tr>
-                    <tr>
-                        <td>Radzinsky's Binomial Spiral</td>
-                        <td>7, 15, 27, 39, 59, 75, 87, 107, 123, 143, 159, 179...</td>
-                    </tr>
-                    <tr>
-                        <td>Bakunin's Constants</td>
-                        <td>2, 3, 6, 7, 12, 13, 18, 22, 27, 30, 31, 35...</td>
-                    </tr>
-                    <tr>
-                        <td>DeGroot's Sequence</td>
-                        <td>0, 1, 5, 13, 20, 23, 29, 31, 32, 46, 52, 75...</td>
-                    </tr>
-                    <tr>
-                        <td>Minkowski's Cyclic Quadratics</td>
-                        <td>4, 9, 11, 15, 17, 22, 30, 35, 41, 49, 56, 63...</td>
-                    </tr>
-                </table>
-                <p style="font-size: 10pt; margin-top: 0.25em; margin-bottom: 0.5em" class='appendix-reference'>SEE APPENDIX SW FOR PRE-CALCULATIONS REFERENCE.</p>
+                <table style="margin-top: 4em; margin-left:auto; margin-right: auto; width: 100%">
+                    <tr><th>Language</th>                           <th>Press</th>      <th>Hold</th>           <th>Abort</th>          <th>Detonate</th></tr>
+                    <tr class="BigButtonTranslated-cyrl"><th>BG</th><td>Натисни</td>    <td>Задържи</td>        <td>Абортирай</td>      <td>Детонирай</td></tr>
+                    <tr><th>CS</th>                                 <td>Stisknout</td>  <td>Držet</td>          <td>Zrušit</td>         <td>Odpálit</td></tr>
+                    <tr><th>DA</th>                                 <td>Tryk</td>       <td>Hold</td>           <td>Afbryd</td>         <td>Spræng</td></tr>
+                    <tr><th>DE</th>                                 <td>Drücken</td>    <td>Gedrückt halten</td><td>Abbrechen</td>      <td>Zünden</td></tr>
+
+                    <tr><th>EN</th>                                 <td>Press</td>      <td>Hold</td>           <td>Abort</td>          <td>Detonate</td></tr>
+                    <tr><th>EO</th>                                 <td>Puŝu</td>       <td>Tenu</td>           <td>Haltu</td>          <td>Eksplodigu</td></tr>
+                    <tr><th>ES</th>                                 <td>Presionar</td>  <td>Mantener</td>       <td>Abortar</td>        <td>Detonar</td></tr>
+                    <tr><th>ET</th>                                 <td>Vajuta</td>     <td>Hoia</td>           <td>Katkesta</td>       <td>Õhka</td></tr>
+                    <tr><th>FI</th>                                 <td>Paina</td>      <td>Pidä</td>           <td>Keskeytä</td>       <td>Räjäytä</td></tr>
+
+                    <tr><th>FR</th>                                 <td>Pousser</td>    <td>Maintenir</td>      <td>Arrêter</td>        <td>Déclencher</td></tr>
+                    <tr><th>FY</th>                                 <td>Yndrukke</td>   <td>Fêsthâlde</td>      <td>Ôfbrekke</td>       <td>Ûntstekke</td></tr>
+                    <tr><th>GA</th>                                 <td>Brúigh</td>     <td>Coinnigh</td>       <td>Tobscoir</td>       <td>Maidhm</td></tr>
+                    <tr class="BigButtonTranslated-hebr"><th>HE</th><td>לחץ</td>        <td>החזק</td>          <td>בטל</td>            <td>פוצץ</td></tr>
+                    <tr class="bigButtonTranslated-armn"><th>HY</th><td>Սեղմել</td>     <td>Պահել</td>          <td>Ձգել</td>           <td>Պայթել</td></tr>
+
+                    <tr><th>IT</th>                                 <td>Premi</td>      <td>Tieni premuto</td>  <td>Annulla</td>        <td>Detona</td></tr>
+                    <tr class="BigButtonTranslated-jpan"><th>JA</th><td>押す</td>        <td>長押し</td>         <td>中止</td>           <td>爆破</td></tr>
+                    <tr class="BigButtonTranslated-hang"><th>KO</th><td >누르시오</td>   <td>누른채 유지</td>     <td>접근금지</td>       <td>폭파</td></tr>
+                    <tr><th>LT</th>                                 <td>Spausti</td>    <td>Laikyti</td>        <td>nutraukti</td>      <td>Sprogdinti</td></tr>     
+                </table> 
             </div>
-            <div class="page-footer relative-footer">Page 1 of 2</div>
         </div>
-        <div class="page page-bg-04">
+        
+        <div class="page " id="BigButtonTranslated">
+            <!-- <div id="BigButton"></div> -->
             <div class="page-header">
-                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
-                <span class="page-header-section-title">The Swan</span>
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+                <span class="page-header-section-title">The Button (Translated)</span>
             </div>
+            <div class="page-footer absolute-footer translationpagecount"></div>
             <div class="page-content">
-                <img src="img/modules/theswan/Swan.jpg" class="diagram">
-                <!-- <h3>SW74</h2> -->
-                <h3 style="text-align: center;">
-                    Orientation Manual for<br>
-                    DHARMA Initiative: Station 3<br>
-                    The Swan
-                </h3>
-                <p style="font-size: 11pt">Welcome, I'm Dr. Marvin Candle, and this is the orientation manual for Station 3 of the DHARMA Initiative. In a moment you'll be given a simple set of instructions for how you will fulfill the responsibilities associated with the station. But first, a little history.</p>
-                <p style="font-size: 11pt">The DHARMA Initiative was created in 1970, and it is the brainchild of Gerald and Karen DeGroot - two doctoral candidates at the University of Michigan. Following in the footsteps of visionaries such as B.F. Skinner, they imagined a large scale communal research compound where scientists and free thinkers from around the globe could pursue research in meteorology, psychology, parapsychology, zoology, electromagnetism; a Utopian social experiment, supported by Danish industrialist and munitions magnate Alvar Hanso, whose financial backing made their dream of a multi-purpose social science research facility a reality.</p>
-                <p style="font-size: 11pt">You and your partner are currently located in Station 3, or the Swan, and will be for the next 540 days. Station 3 was originally constructed as a laboratory where scientists could work to understand the unique electromagnetic fluctuations emanating from this part of the Island.</p>
-                <p style="font-size: 11pt">Not long after the experiments began, however, there was an incident. And since that time the following protocol has been observed: every 108 minutes the button must be pushed. From the moment the alarm sounds you will have four minutes to enter the code into the microcomputer processor. When the alarm sounds, either you or your partner must input the code. It is highly recommended that you and your partner take alternating shifts. In this manner you will both stay fresh and alert. It is of the utmost importance that when the alarm sounds the code be entered correctly, and in a timely fashion.</p>
-                <p style="font-size: 11pt">Do not attempt to use the computer for anything else other than the entering of the code. This is its only function. The isolation associated with Station 3 may tempt you to try and utilise the computer for communication with the outside world. This is strictly forbidden. Attempting to use the computer in this manner will compromise the integrity of the project or worse, could lead to another incident. I repeat, do not use the computer for anything other than entering the code.</p>
-                <p style="font-size: 11pt">Congratulations, until your replacements arrive, the future of the project is in your hands. On behalf of the DeGroots, Alvar Hanso and all of us at the DHARMA Initiative, thank you. Namaste. And good luck.</p>
+                
+                <table style="margin-top: 4em; margin-left:auto; margin-right: auto; width: 100%">
+                    <tr><th>Language</th>                           <th>Press</th>      <th>Hold</th>           <th>Abort</th>          <th>Detonate</th></tr>
+                    
+                    <tr><th>NL</th>                                 <td>Indrukken</td>  <td>Vasthouden</td>     <td>Afbreken</td>       <td>Ontsteken</td></tr>
+                    <tr><th>NO</th>                                 <td>Trykk</td>      <td>Hold inne</td>      <td>Avbryt</td>         <td>Detoner</td></tr>
+                    <tr><th>PL</th>                                 <td>Przyciśnij</td> <td>Przytrzymaj</td>    <td>Anuluj</td>         <td>Zdetonuj</td></tr>
+                    <tr><th>PT</th>                                 <td>Apertar</td>    <td>Segurar</td>        <td>Abortar</td>        <td>Detonar</td></tr>
+                    <tr class="BigButtonTranslated-cyrl"><th>RU</th><td >нажать</td>    <td>Держать</td>        <td>Стоп</td>           <td>Взорвать</td></tr>
+                    <tr><th>SV</th>                                 <td>Tryck</td>      <td>Håll ned</td>       <td>Avbryt</td>         <td>Detonera</td></tr>
+                    
+                    <tr class="BigButtonTranslated-thai"><th>TH</th><td>กด</td>         <td>กดค้าง</td>          <td>ยกเลิก</td>          <td>จุดชนวน</td></tr>
+                    <tr><th>TR</th>                                 <td>Bas</td>        <td>Tut</td>            <td>İptal et</td>       <td>Patlat</td></tr>
+                    <tr class="BigButtonTranslated-hans"><th>ZH</th><td>按下</td>       <td>按住</td>            <td>解除</td>           <td>引爆</td></tr>
+                </table> 
             </div>
-            <div class="page-footer relative-footer">Page 2 of 2</div>
         </div>
 
+        <div class="page BigButtonTranslated_originalmanualabsent">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes</span>
+                <span class="page-header-section-title">The Button</span>
+            </div>
+            <div class="page-footer absolute-footer solvablepagecount"></div>
+            <div class="page-content">
+                <p>Follow these rules in the order they are listed. Perform the first action that applies:</p>
+                <ol>
+                    <li>If the button is blue and the button says "Abort", hold the button and refer to "Releasing a Held Button".</li>
+                    <li>If there is more than 1 battery on the bomb and the button says "Detonate", press and immediately release the button.</li>
+                    <li>If the button is white and there is a lit indicator with label CAR, hold the button and refer to "Releasing a Held Button".</li>
+                    <li>If there are more than 2 batteries on the bomb and there is a lit indicator with label FRK, press and immediately release the button.</li>
+                    <li>If the button is yellow, hold the button and refer to "Releasing a Held Button".</li>
+                    <li>If the button is red and the button says "Hold", press and immediately release the button.</li>
+                    <li>If none of the above apply, hold the button and refer to "Releasing a Held Button".</li>
+                </ol>
+                <h3>Releasing a Held Button</h3>
+                <p>If you start holding the button down, a colored strip will light up on the right side of the module. Based on its color, you must release the button at a specific point in time:</p>
+                <ul>
+                    <li><em><span>Blue strip:</span></em> <span>release when the countdown timer has a 4 in any position.</span></li>
+                    <li><em><span>White strip:</span></em> <span>release when the countdown timer has a 1 in any position.</span></li>
+                    <li><em><span>Yellow strip:</span></em> <span>release when the countdown timer has a 5 in any position.</span></li>
+                    <li><em><span>Any other color strip:</span></em> <span>release when the countdown timer has a 1 in any position.</span></li>
+                </ul>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var orig = document.getElementById("BigButton");
+            console.log(orig);
+            if (orig != null) {
+                var toss = document.getElementsByClassName("BigButtonTranslated_originalmanualabsent");
+                for(var i = toss.length - 1; i >= 0; i--) {
+                    toss[i].remove();
+                }  
+            }
+            else {
+                var toss = document.getElementsByClassName("BigButtonTranslated_originalmanualpresent");
+                for(var i = toss.length - 1; i >= 0; i--) {
+                    toss[i].remove();
+                }  
+            }
+        </script>
 
 
 
-        
     </div>
 </body>
 
