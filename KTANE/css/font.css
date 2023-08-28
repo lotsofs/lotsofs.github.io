@@ -46,6 +46,14 @@
     src: url('../font/Agency FB Bold.ttf');
 }
 
+/* Armenian */
+@font-face {
+  font-family: 'Montserratarm';
+  font-weight: normal;
+  font-style: normal;
+  src: url('../font/Montserratarm-Regular.ttf');
+}
+
 /* Greek */
 @font-face { 
   font-family: 'Vollkorn'; 
