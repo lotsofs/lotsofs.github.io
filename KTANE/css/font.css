@@ -16,9 +16,13 @@
     font-style: normal; 
     src: url('../font/AaRoundLi.ttf') format('truetype'); 
 }
-@font-face { 
+/* @font-face { 
     font-family: 'Pangolin'; 
     src: url('../font/Pangolin-Regular.ttf') format('truetype'); 
+} */
+@font-face {
+    font-family: 'Roboto Slab';
+    src: url('../font/RobotoSlab-VariableFont_wght.ttf') format('truetype');
 }
 @font-face { 
     font-family: "Yu Gothic"; 
@@ -44,6 +48,11 @@
     font-family: 'Agency FB';
     font-weight: bold;
     src: url('../font/Agency FB Bold.ttf');
+}
+
+@font-face {
+  font-family: "Logic-round";
+  src: local("Logic-round"), url(../font/Logic-round.otf)
 }
 
 /* Armenian */

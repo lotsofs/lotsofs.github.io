@@ -1,0 +1,132 @@
+<div class="page" id="adjacentLettersModule">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Adjacent Letters</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <img src="img/Component/Adjacent Letters.svg" class="diagram">
+        <h2>On the Subject of Adjacent Letters <span class="adjacentLettersModule_cheat">(Cheatsheet Version)</span></h2>
+        <p class="flavour-text">UP, down, left, right, UP, down, left, right...!</p>
+        
+        <ul class="adjacentLettersModule_legit">
+            <li>Every button will have a different letter on it.</li>
+            <li>Check the table to determine which buttons to press.</li>
+            <li>Each letter in the “letter” column that has one of the letters in the “left/right” column directly left or right of it on the keypad must be pressed.</li>
+            <li>Each letter in the “letter” column that has one of the letters in the “above/below” column directly above or below it on the keypad must be pressed.</li>
+            <li>Press Submit to submit your answer. <strong>Note:</strong> Multiple buttons can be pressed and they can be in <strong>any</strong> order.</li>
+        </ul>
+        
+        <ul class="adjacentLettersModule_cheat">
+            <li>Every button will have a different letter on it.</li>
+            <li>Check the table to determine which buttons to press.</li>
+            <li>Each letter in the “key” column that has one of the letters in the “press if L/R (left/right)” column directly left or right of it on the keypad must be pressed.</li>
+            <li>Each letter in the “key” column that has one of the letters in the “press if A/B (above/below)” column directly above or below it on the keypad must be pressed.</li>
+            <li>The columns “press L/R if” and “press A/B if” indicate the letters that should be pressed if adjacent to the letter in the “key” column.</li>
+            <li>Press Submit to submit your answer. <strong>Note:</strong> Multiple buttons can be pressed and they can be in <strong>any</strong> order.</li>
+        </ul>
+
+        <style>
+            .adjacentLettersModule_tablewrapper {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+            
+            table.adjacentLettersModule_table td {
+                text-align: center;
+            }
+    
+            table.adjacentLettersModule_table {
+                width: 49%;
+                margin: .7em 0;
+            }
+        </style>
+        <div class="adjacentLettersModule_tablewrapper adjacentLettersModule_legit">
+            <table class="adjacentLettersModule_table">
+                <tr><th>Letter</th><th>Left/right</th><th>Above/below</th></tr>
+                <tr><th>A</th><td>GJMOY</td><td>HKPRW</td></tr>
+                <tr><th>B</th><td>IKLRT</td><td>CDFYZ</td></tr>
+                <tr><th>C</th><td>BHIJW</td><td>DEMTU</td></tr>
+                <tr><th>D</th><td>IKOPQ</td><td>CJTUW</td></tr>
+                <tr><th>E</th><td>ACGIJ</td><td>KSUWZ</td></tr>
+                <tr><th>F</th><td>CERVY</td><td>AGJPQ</td></tr>
+                <tr><th>G</th><td>ACFNS</td><td>HOQYZ</td></tr>
+                <tr><th>H</th><td>LRTUX</td><td>DKMPS</td></tr>
+                <tr><th>I</th><td>DLOWZ</td><td>EFNUV</td></tr>
+                <tr><th>J</th><td>BQTUW</td><td>EHIOS</td></tr>
+                <tr><th>K</th><td>AFPXY</td><td>DIORZ</td></tr>
+                <tr><th>L</th><td>GKPTZ</td><td>ABRVX</td></tr>
+                <tr><th>M</th><td>EILQT</td><td>BFPWX</td></tr>
+            </table>
+            <table class="adjacentLettersModule_table">
+                <tr><th>Letter</th><th>Left/right</th><th>Above/below</th></tr>
+                <tr><th>N</th><td>PQRSV</td><td>AFGHL</td></tr>
+                <tr><th>O</th><td>HJLUZ</td><td>IQSTX</td></tr>
+                <tr><th>P</th><td>DMNOX</td><td>CFHKR</td></tr>
+                <tr><th>Q</th><td>CEOPV</td><td>BDIKN</td></tr>
+                <tr><th>R</th><td>AEGSU</td><td>BNOXY</td></tr>
+                <tr><th>S</th><td>ABEKQ</td><td>GMVYZ</td></tr>
+                <tr><th>T</th><td>GVXYZ</td><td>CJLSU</td></tr>
+                <tr><th>U</th><td>FMVXZ</td><td>BILNY</td></tr>
+                <tr><th>V</th><td>DHMNW</td><td>AEJQX</td></tr>
+                <tr><th>W</th><td>DFHMN</td><td>GLQRT</td></tr>
+                <tr><th>X</th><td>BDFKW</td><td>AJNOV</td></tr>
+                <tr><th>Y</th><td>BCHSU</td><td>EGMTW</td></tr>
+                <tr><th>Z</th><td>JNRSY</td><td>CLMPV</td></tr>
+            </table>
+        </div>
+        <div class="adjacentLettersModule_tablewrapper adjacentLettersModule_cheat">
+            <table class="adjacentLettersModule_table">
+                <tr><th>Key</th><th>Press if&nbsp;L/R</th><th>Press L/R&nbsp;if</th>    <th>Press if&nbsp;A/B</th><th>Press A/B&nbsp;if</th></tr>
+                <tr><th>A</th><td>GJMOY</td><td>EGKRS</td>   <td>HKPRW</td><td>FLNVX</td></tr>
+                <tr><th>B</th><td>IKLRT</td><td>CJSXY</td>   <td>CDFYZ</td><td>LMQRU</td></tr>
+                <tr><th>C</th><td>BHIJW</td><td>EFGQY</td>   <td>DEMTU</td><td>BDPTZ</td></tr>
+                <tr><th>D</th><td>IKOPQ</td><td>IPVWX</td>   <td>CJTUW</td><td>BCHKQ</td></tr>
+                <tr><th>E</th><td>ACGIJ</td><td>FMQRS</td>   <td>KSUWZ</td><td>CIJVY</td></tr>
+                <tr><th>F</th><td>CERVY</td><td>GKUWX</td>   <td>AGJPQ</td><td>BIMNP</td></tr>
+                <tr><th>G</th><td>ACFNS</td><td>AELRT</td>   <td>HOQYZ</td><td>FNSWY</td></tr>
+                <tr><th>H</th><td>LRTUX</td><td>COVWY</td>   <td>DKMPS</td><td>AGJNP</td></tr>
+                <tr><th>I</th><td>DLOWZ</td><td>BCDEM</td>   <td>EFNUV</td><td>JKOQU</td></tr>
+                <tr><th>J</th><td>BQTUW</td><td>ACEOZ</td>   <td>EHIOS</td><td>DFTVX</td></tr>
+                <tr><th>K</th><td>AFPXY</td><td>BDLSX</td>   <td>DIORZ</td><td>AEHPQ</td></tr>
+                <tr><th>L</th><td>GKPTZ</td><td>BHIMO</td>   <td>ABRVX</td><td>NTUWZ</td></tr>
+                <tr><th>M</th><td>EILQT</td><td>APUVW</td>   <td>BFPWX</td><td>CHSYZ</td></tr>
+            </table>
+            
+            <table class="adjacentLettersModule_table">
+                <tr><th>Key</th><th>Press if&nbsp;L/R</th><th>Press L/R&nbsp;if</th>    <th>Press if&nbsp;A/B</th><th>Press A/B&nbsp;if</th></tr>
+                <tr><th>N</th><td>PQRSV</td><td>GPVWZ</td>      <td>AFGHL</td><td>AFGHL</td></tr>
+                <tr><th>O</th><td>HJLUZ</td><td>ADIPQ</td>      <td>IQSTX</td><td>IQSTX</td></tr>
+                <tr><th>P</th><td>DMNOX</td><td>DKLNQ</td>      <td>CFHKR</td><td>CFHKR</td></tr>
+                <tr><th>Q</th><td>CEOPV</td><td>DJMNS</td>      <td>BDIKN</td><td>BDIKN</td></tr>
+                <tr><th>R</th><td>AEGSU</td><td>BFHNZ</td>      <td>BNOXY</td><td>BNOXY</td></tr>
+                <tr><th>S</th><td>ABEKQ</td><td>GNRYZ</td>      <td>GMVYZ</td><td>GMVYZ</td></tr>
+                <tr><th>T</th><td>GVXYZ</td><td>BHJLM</td>      <td>CJLSU</td><td>CJLSU</td></tr>
+                <tr><th>U</th><td>FMVXZ</td><td>HJORY</td>      <td>BILNY</td><td>BILNY</td></tr>
+                <tr><th>V</th><td>DHMNW</td><td>FNQTU</td>      <td>AEJQX</td><td>AEJQX</td></tr>
+                <tr><th>W</th><td>DFHMN</td><td>CIJVX</td>      <td>GLQRT</td><td>GLQRT</td></tr>
+                <tr><th>X</th><td>BDFKW</td><td>HKPTU</td>      <td>AJNOV</td><td>AJNOV</td></tr>
+                <tr><th>Y</th><td>BCHSU</td><td>AFKTZ</td>      <td>EGMTW</td><td>EGMTW</td></tr>
+                <tr><th>Z</th><td>JNRSY</td><td>ILOTU</td>      <td>CLMPV</td><td>CLMPV</td></tr>
+            </table>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var queryString = window.location.search;
+        var urlParams = new URLSearchParams(queryString);
+        if (urlParams.has('adjacentLettersModule-cheatsheet')) {
+            var c = document.getElementsByClassName("adjacentLettersModule_legit");
+            for(var i = c.length - 1; i >= 0; i--) {
+                c[i].remove();
+            }   
+        }
+        else {
+            var c = document.getElementsByClassName("adjacentLettersModule_cheat");
+            for(var i = c.length - 1; i >= 0; i--) {
+                c[i].remove();
+            }
+        }
+    </script>
+</div>

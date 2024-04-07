@@ -1,0 +1,116 @@
+
+<div class="page " id="ChordQualities">
+	<div class="page-header">
+		<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+		<span class="page-header-section-title">Chord Qualities</span>
+	</div>
+	<div class="page-footer absolute-footer solvablepagecount"></div>
+	<div class="page-content">
+		<img src="img/Component/Chord Qualities.svg" class="diagram">
+		<h2>On the Subject of Chord Qualities</h2>
+		<p class="flavour-text">
+			They say that anything goes in jazz, but I didn't know that includes long boring tables!
+		</p>
+
+		<p class="appendix-reference">See the next page for chord quality lookup.</p>
+		<ol>
+			<li>This module consists of a wheel with twelve notes on it, ordered chromatically.</li>
+			<li>Four of those notes are selected with a triangle pointing towards them. These notes make up the <em>given chord</em>.</li>
+			<li>Every chord consists of two parts: The <em>root</em> and the <em>quality</em>. For example, the root of the chord C-7 is the note C, and the quality is ‘-7’. Use the table on the next page (or music theory knowledge) to determine the root and quality of the given chord.</li>
+			<li>Look up the root and quality of the <em>answer chord</em> in the tables below using the given chord’s quality and root respectively.</li>
+			<li>Reverse the process in step #3 to find the notes of the answer chord, and select the notes of the answer chord by rotating the wheel and pressing the button labelled ◈.</li>
+			<li>Press the other button to submit the answer chord. There is only one correct answer.</li>
+		</ol>        
+
+		<div style="justify-content: space-between" class="hstack" >
+			<table style="width: 100%;" >
+				<tr><th colspan="2" style="text-align: center; background-color: #222222; color: #ffffff; border-color: #000000">Root to Quality</th></tr>
+				<tr><td>A</td><td>-Δ7♯5</td></tr>
+				<tr><td>A♯</td><td>Δ7♯5</td></tr>
+				<tr><td>B</td><td>-7</td></tr>
+				<tr><td>C</td><td>ø</td></tr>
+				<tr><td>C♯</td><td>-add9</td></tr>
+				<tr><td>D</td><td>Δ7</td></tr>
+				<tr><td>D♯</td><td>7♯9</td></tr>
+				<tr><td>E</td><td>7sus</td></tr>
+				<tr><td>F</td><td>add9</td></tr>
+				<tr><td>F♯</td><td>7</td></tr>
+				<tr><td>G</td><td>-Δ7</td></tr>
+				<tr><td>G♯</td><td>7♯5</td></tr>
+			</table>
+			<table style="width: 100%;" >
+				<tr><th colspan="2" style="text-align: center; background-color: #222222; color: #ffffff; border-color: #000000">Quality to Root</th></tr>
+				<tr><td>7</td><td>G</td></tr>
+				<tr><td>-7</td><td>G♯</td></tr>
+				<tr><td>Δ7</td><td>A♯</td></tr>
+				<tr><td>-Δ7</td><td>F</td></tr>
+				<tr><td>7♯9</td><td>A</td></tr>
+				<tr><td>ø</td><td>C♯</td></tr>
+				<tr><td>add9</td><td>D♯</td></tr>
+				<tr><td>-add9</td><td>E</td></tr>
+				<tr><td>7♯5</td><td>F♯</td></tr>
+				<tr><td>Δ7♯5</td><td>C</td></tr>
+				<tr><td>7sus</td><td>D</td></tr>
+				<tr><td>-Δ7♯5</td><td>B</td></tr>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="page">
+	<div class="page-header">
+		<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+		<span class="page-header-section-title">Chord Qualities</span>
+	</div>
+	<div class="page-footer absolute-footer solvablepagecount"></div>
+	<div class="page-content">
+
+		<h2>Chord Quality Lookup Table</h2>
+		<p>Use the following table to look up which notes are in a chord of a particular quality. Each note in the chord is represented by an “<img style="width: 18px; height: 18px; margin-bottom: 5px" src="img/modules/chordqualities/X.svg" width="16px" height="16px" alt="X">” in the row of its interval. The offset from the root (in semitones) of each row is provided in the left-most column. Note that an offset of +12 is the same as an offset as +0.</p>
+		
+		<style>
+			.chordqualities_qualitysheet {
+				border: none;
+				width: 110%;
+				margin: auto -5%;
+				table-layout: fixed;
+			}
+
+			.chordqualities_qualitysheet tr {
+				height: 3.5em;
+			}
+
+			.chordqualities_selected {
+				background-color: rgba(0, 0, 0, 0.3); /*Without alpha, #bbbbbb is a great value!  */
+				background-image: url("img/modules/chordqualities/X.svg");
+				background-repeat: no-repeat;
+				background-size: 55%;
+				background-position: 50%;
+			}
+			
+			.chordqualities_header {
+				text-align: center;
+				background-color: #222222;
+				color: #ffffff;
+				border-color: #000000;
+			}
+		</style>
+		
+		<table class="chordqualities_qualitysheet">
+			<tr class="chordqualities_header"><th>Off.</th><th>7 </th><th>‑7 </th><th>Δ7 </th><th>‑Δ7 </th><th>7♯9* </th><th>ø </th><th>add9 </th><th><span style="position: relative; left: -5px;">‑add9 </span></th><th>7♯5 </th><th>Δ7♯5 </th><th>7sus </th><th><span style="position: relative; left: -5px;">‑Δ7♯5 </span></th></tr>
+			<tr><th>+0</th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th></tr>
+			<tr><th>+1</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr>
+			<tr><th>+2</th><th></th><th></th><th></th><th></th><th></th><th></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th></th><th></th><th></th><th></th></tr>
+			<tr><th>+3</th><th></th><th class="chordqualities_selected"></th><th></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th></th><th class="chordqualities_selected"></th><th></th><th></th><th></th><th class="chordqualities_selected"></th></tr>
+			<tr><th>+4</th><th class="chordqualities_selected"></th><th></th><th class="chordqualities_selected"></th><th></th><th class="chordqualities_selected"></th><th></th><th class="chordqualities_selected"></th><th></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th></th><th></th></tr>
+			<tr><th>+5</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th class="chordqualities_selected"></th><th></th></tr>
+			<tr><th>+6</th><th></th><th></th><th></th><th></th><th></th><th class="chordqualities_selected"></th><th></th><th></th><th></th><th></th><th></th><th></th></tr>
+			<tr><th>+7</th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th></th><th></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th></th><th></th><th class="chordqualities_selected"></th><th></th></tr>
+			<tr><th>+8</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th></th><th class="chordqualities_selected"></th></tr>
+			<tr><th>+9</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr>
+			<tr><th>+10</th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th></th><th></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th></th><th></th><th class="chordqualities_selected"></th><th></th><th class="chordqualities_selected"></th><th></th></tr>
+			<tr><th>+11</th><th></th><th></th><th class="chordqualities_selected"></th><th class="chordqualities_selected"></th><th></th><th></th><th></th><th></th><th></th><th class="chordqualities_selected"></th><th></th><th class="chordqualities_selected"></th></tr>
+		</table>
+		
+		<p>*Omit the 5th note of this chord at +7</p>
+	</div>
+</div>

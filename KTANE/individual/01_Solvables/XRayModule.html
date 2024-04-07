@@ -1,0 +1,194 @@
+<div class="page page-bg-03" id="XRayModule">
+	<div class="page-header">
+		<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+		<span class="page-header-section-title">X-Ray</span>
+	</div>
+	<div class="page-footer absolute-footer"></div>
+	<div class="page-content">
+		<img src="img/Component/X-Ray.svg" class="diagram">
+
+		<style>
+			.xray-table-1 {
+				float: right;
+				margin-left: 1em;
+			}
+			.xray-table-1 td {
+				text-align: center;
+				line-height: 0;
+				padding: .05em .25em;
+			}
+			.xray-table-2 {
+				width: 100%;
+				clear: both;
+				border: none;
+				font-family: 'Special Elite', 'Courier New', monospace;
+			}
+			.xray-table-2 th {
+				text-align: center;
+				line-height: 0;
+				padding: .25em .4em;
+			}
+			.xray-table-2 td {
+				text-align: center;
+				padding: .2em .1em 0;
+				font-size: 20pt;
+			}
+			.xray-table th {
+				border-width: 3px;
+			}
+			.icon {
+				display: inline-block;
+				width: .9cm;
+				height: .9cm;
+				background-size: 9.9cm 9cm;
+				background-repeat: no-repeat;
+				background-image: url('img/modules/xray/icons.svg')
+			}
+			.icon.flipped { transform: scaleY(-1); }
+			.xray-table .icon.a1 { background-position: 0cm 0cm; }
+			.xray-table .icon.b1 { background-position: -0.9cm 0cm; }
+			.xray-table .icon.c1 { background-position: -1.8cm 0cm; }
+			.xray-table .icon.d1 { background-position: -2.7cm 0cm; }
+			.xray-table .icon.e1 { background-position: -3.6cm 0cm; }
+			.xray-table .icon.f1 { background-position: -4.5cm 0cm; }
+			.xray-table .icon.g1 { background-position: -5.4cm 0cm; }
+			.xray-table .icon.h1 { background-position: -6.3cm 0cm; }
+			.xray-table .icon.i1 { background-position: -7.2cm 0cm; }
+			.xray-table .icon.j1 { background-position: -8.1cm 0cm; }
+			.xray-table .icon.k1 { background-position: -9cm 0cm; }
+			.xray-table .icon.a2 { background-position: 0cm -0.9cm; }
+			.xray-table .icon.b2 { background-position: -0.9cm -0.9cm; }
+			.xray-table .icon.c2 { background-position: -1.8cm -0.9cm; }
+			.xray-table .icon.d2 { background-position: -2.7cm -0.9cm; }
+			.xray-table .icon.e2 { background-position: -3.6cm -0.9cm; }
+			.xray-table .icon.f2 { background-position: -4.5cm -0.9cm; }
+			.xray-table .icon.g2 { background-position: -5.4cm -0.9cm; }
+			.xray-table .icon.h2 { background-position: -6.3cm -0.9cm; }
+			.xray-table .icon.i2 { background-position: -7.2cm -0.9cm; }
+			.xray-table .icon.j2 { background-position: -8.1cm -0.9cm; }
+			.xray-table .icon.k2 { background-position: -9cm -0.9cm; }
+			.xray-table .icon.a3 { background-position: 0cm -1.8cm; }
+			.xray-table .icon.b3 { background-position: -0.9cm -1.8cm; }
+			.xray-table .icon.c3 { background-position: -1.8cm -1.8cm; }
+			.xray-table .icon.d3 { background-position: -2.7cm -1.8cm; }
+			.xray-table .icon.e3 { background-position: -3.6cm -1.8cm; }
+			.xray-table .icon.f3 { background-position: -4.5cm -1.8cm; }
+			.xray-table .icon.g3 { background-position: -5.4cm -1.8cm; }
+			.xray-table .icon.h3 { background-position: -6.3cm -1.8cm; }
+			.xray-table .icon.i3 { background-position: -7.2cm -1.8cm; }
+			.xray-table .icon.j3 { background-position: -8.1cm -1.8cm; }
+			.xray-table .icon.k3 { background-position: -9cm -1.8cm; }
+			.xray-table .icon.a4 { background-position: 0cm -2.7cm; }
+			.xray-table .icon.b4 { background-position: -0.9cm -2.7cm; }
+			.xray-table .icon.c4 { background-position: -1.8cm -2.7cm; }
+			.xray-table .icon.d4 { background-position: -2.7cm -2.7cm; }
+			.xray-table .icon.e4 { background-position: -3.6cm -2.7cm; }
+			.xray-table .icon.f4 { background-position: -4.5cm -2.7cm; }
+			.xray-table .icon.g4 { background-position: -5.4cm -2.7cm; }
+			.xray-table .icon.h4 { background-position: -6.3cm -2.7cm; }
+			.xray-table .icon.i4 { background-position: -7.2cm -2.7cm; }
+			.xray-table .icon.j4 { background-position: -8.1cm -2.7cm; }
+			.xray-table .icon.k4 { background-position: -9cm -2.7cm; }
+			.xray-table .icon.a5 { background-position: 0cm -3.6cm; }
+			.xray-table .icon.b5 { background-position: -0.9cm -3.6cm; }
+			.xray-table .icon.c5 { background-position: -1.8cm -3.6cm; }
+			.xray-table .icon.d5 { background-position: -2.7cm -3.6cm; }
+			.xray-table .icon.e5 { background-position: -3.6cm -3.6cm; }
+			.xray-table .icon.f5 { background-position: -4.5cm -3.6cm; }
+			.xray-table .icon.g5 { background-position: -5.4cm -3.6cm; }
+			.xray-table .icon.h5 { background-position: -6.3cm -3.6cm; }
+			.xray-table .icon.i5 { background-position: -7.2cm -3.6cm; }
+			.xray-table .icon.j5 { background-position: -8.1cm -3.6cm; }
+			.xray-table .icon.k5 { background-position: -9cm -3.6cm; }
+			.xray-table .icon.a6 { background-position: 0cm -4.5cm; }
+			.xray-table .icon.b6 { background-position: -0.9cm -4.5cm; }
+			.xray-table .icon.c6 { background-position: -1.8cm -4.5cm; }
+			.xray-table .icon.d6 { background-position: -2.7cm -4.5cm; }
+			.xray-table .icon.e6 { background-position: -3.6cm -4.5cm; }
+			.xray-table .icon.f6 { background-position: -4.5cm -4.5cm; }
+			.xray-table .icon.g6 { background-position: -5.4cm -4.5cm; }
+			.xray-table .icon.h6 { background-position: -6.3cm -4.5cm; }
+			.xray-table .icon.i6 { background-position: -7.2cm -4.5cm; }
+			.xray-table .icon.j6 { background-position: -8.1cm -4.5cm; }
+			.xray-table .icon.k6 { background-position: -9cm -4.5cm; }
+			.xray-table .icon.a7 { background-position: 0cm -5.4cm; }
+			.xray-table .icon.b7 { background-position: -0.9cm -5.4cm; }
+			.xray-table .icon.c7 { background-position: -1.8cm -5.4cm; }
+			.xray-table .icon.d7 { background-position: -2.7cm -5.4cm; }
+			.xray-table .icon.e7 { background-position: -3.6cm -5.4cm; }
+			.xray-table .icon.f7 { background-position: -4.5cm -5.4cm; }
+			.xray-table .icon.g7 { background-position: -5.4cm -5.4cm; }
+			.xray-table .icon.h7 { background-position: -6.3cm -5.4cm; }
+			.xray-table .icon.i7 { background-position: -7.2cm -5.4cm; }
+			.xray-table .icon.j7 { background-position: -8.1cm -5.4cm; }
+			.xray-table .icon.k7 { background-position: -9cm -5.4cm; }
+			.xray-table .icon.a8 { background-position: 0cm -6.3cm; }
+			.xray-table .icon.b8 { background-position: -0.9cm -6.3cm; }
+			.xray-table .icon.c8 { background-position: -1.8cm -6.3cm; }
+			.xray-table .icon.d8 { background-position: -2.7cm -6.3cm; }
+			.xray-table .icon.e8 { background-position: -3.6cm -6.3cm; }
+			.xray-table .icon.f8 { background-position: -4.5cm -6.3cm; }
+			.xray-table .icon.g8 { background-position: -5.4cm -6.3cm; }
+			.xray-table .icon.h8 { background-position: -6.3cm -6.3cm; }
+			.xray-table .icon.i8 { background-position: -7.2cm -6.3cm; }
+			.xray-table .icon.j8 { background-position: -8.1cm -6.3cm; }
+			.xray-table .icon.k8 { background-position: -9cm -6.3cm; }
+			.xray-table .icon.a9 { background-position: 0cm -7.2cm; }
+			.xray-table .icon.b9 { background-position: -0.9cm -7.2cm; }
+			.xray-table .icon.c9 { background-position: -1.8cm -7.2cm; }
+			.xray-table .icon.d9 { background-position: -2.7cm -7.2cm; }
+			.xray-table .icon.e9 { background-position: -3.6cm -7.2cm; }
+			.xray-table .icon.f9 { background-position: -4.5cm -7.2cm; }
+			.xray-table .icon.g9 { background-position: -5.4cm -7.2cm; }
+			.xray-table .icon.h9 { background-position: -6.3cm -7.2cm; }
+			.xray-table .icon.i9 { background-position: -7.2cm -7.2cm; }
+			.xray-table .icon.j9 { background-position: -8.1cm -7.2cm; }
+			.xray-table .icon.k9 { background-position: -9cm -7.2cm; }
+			.xray-table .icon.a10 { background-position: 0cm -8.1cm; }
+			.xray-table .icon.b10 { background-position: -0.9cm -8.1cm; }
+			.xray-table .icon.c10 { background-position: -1.8cm -8.1cm; }
+			.xray-table .icon.d10 { background-position: -2.7cm -8.1cm; }
+			.xray-table .icon.e10 { background-position: -3.6cm -8.1cm; }
+			.xray-table .icon.f10 { background-position: -4.5cm -8.1cm; }
+			.xray-table .icon.g10 { background-position: -5.4cm -8.1cm; }
+			.xray-table .icon.h10 { background-position: -6.3cm -8.1cm; }
+			.xray-table .icon.i10 { background-position: -7.2cm -8.1cm; }
+			.xray-table .icon.j10 { background-position: -8.1cm -8.1cm; }
+			.xray-table .icon.k10 { background-position: -9cm -8.1cm; }
+		</style>
+
+		<!--%%--><table class="xray-table xray-table-1"><tbody><tr><td><div class="icon a10"></div></td><td><div class="icon b10"></div></td><td><div class="icon c10"></div></td></tr><tr><td><div class="icon d10"></div></td><td><div class="icon e10"></div></td><td><div class="icon f10"></div></td></tr><tr><td><div class="icon i10"></div></td><td><div class="icon h9"></div></td><td><div class="icon i9"></div></td></tr></tbody></table>
+		<!--%%%-->
+
+		<h2>On the Subject of X-Rays</h2>
+		<p class="flavour-text">I can see right through you.</p>
+
+		<ul style="padding-left: 1em; line-height: 1.2;">
+			<li>Three symbols are revealed in the window by an x-ray scanner, which shows a thin section of each symbol at a time. If there are not exactly three symbols, you are looking at a different module.</li>
+			<li>The scan progresses in one of three ways: from top to bottom, from bottom to top, or alternating back and forth.</li>
+			<li>Two of the three symbols identify a row and a column in the big table below. Find the intersection of the relevant row and column.</li>
+			<li>Stay there or move to an adjacent cell as indicated by the third symbol’s location in the small table above. The center of the table corresponds to your current location. Push the button with the number you moved to.</li>
+		</ul>
+
+		<table class="xray-table xray-table-2">
+			<tbody><tr>
+				<td class="corner"></td><th><div class="icon a1"></div></th><th><div class="icon a1 flipped"></div></th><th><div class="icon b1"></div></th>
+				<th><div class="icon b1 flipped"></div></th><th><div class="icon c1"></div></th><th><div class="icon c1 flipped"></div></th>
+				<th><div class="icon d1"></div></th><th><div class="icon d1 flipped"></div></th><th><div class="icon e1"></div></th>
+				<th><div class="icon e1 flipped"></div></th><th><div class="icon h2 flipped"></div></th><th><div class="icon h2"></div></th>
+			</tr>
+			<tr><th><div class="icon d7"></div></th><td>2</td><td>1</td><td>5</td><td>2</td><td>5</td><td>2</td><td>5</td><td>3</td><td>5</td><td>2</td><td>5</td><td>3</td></tr>
+			<tr><th><div class="icon j1"></div></th><td>4</td><td>5</td><td>4</td><td>3</td><td>4</td><td>3</td><td>4</td><td>2</td><td>1</td><td>4</td><td>3</td><td>2</td></tr>
+			<tr><th><div class="icon h6"></div></th><td>2</td><td>3</td><td>1</td><td>5</td><td>2</td><td>1</td><td>5</td><td>1</td><td>3</td><td>2</td><td>1</td><td>4</td></tr>
+			<tr><th><div class="icon g1"></div></th><td>4</td><td>1</td><td>4</td><td>3</td><td>4</td><td>3</td><td>2</td><td>4</td><td>2</td><td>1</td><td>3</td><td>5</td></tr>
+			<tr><th><div class="icon a6"></div></th><td>3</td><td>2</td><td>5</td><td>2</td><td>1</td><td>2</td><td>5</td><td>1</td><td>5</td><td>4</td><td>5</td><td>2</td></tr>
+			<tr><th><div class="icon a2"></div></th><td>4</td><td>5</td><td>1</td><td>4</td><td>3</td><td>5</td><td>3</td><td>2</td><td>3</td><td>2</td><td>3</td><td>4</td></tr>
+			<tr><th><div class="icon k2"></div></th><td>2</td><td>3</td><td>2</td><td>3</td><td>5</td><td>4</td><td>2</td><td>1</td><td>4</td><td>1</td><td>4</td><td>2</td></tr>
+			<tr><th><div class="icon h1"></div></th><td>4</td><td>5</td><td>1</td><td>4</td><td>2</td><td>3</td><td>5</td><td>4</td><td>3</td><td>5</td><td>2</td><td>1</td></tr>
+			<tr><th><div class="icon a7"></div></th><td>5</td><td>2</td><td>3</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>1</td><td>2</td><td>4</td><td>5</td></tr>
+			<tr><th><div class="icon e2"></div></th><td>2</td><td>4</td><td>1</td><td>5</td><td>1</td><td>2</td><td>5</td><td>3</td><td>4</td><td>3</td><td>5</td><td>1</td></tr>
+			<tr><th><div class="icon d6"></div></th><td>5</td><td>3</td><td>5</td><td>3</td><td>2</td><td>3</td><td>1</td><td>4</td><td>2</td><td>5</td><td>2</td><td>4</td></tr>
+			<tr><th><div class="icon b3"></div></th><td>2</td><td>4</td><td>1</td><td>2</td><td>1</td><td>5</td><td>4</td><td>3</td><td>5</td><td>4</td><td>3</td><td>5</td></tr>
+		</tbody></table>
+	</div>
+</div>

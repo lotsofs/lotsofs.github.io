@@ -1,0 +1,68 @@
+<div class="page " id="DoubleOhModule">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Double-Oh</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <style>
+            .doubleoh-strike {
+                text-decoration: line-through;
+            }
+            table.doubleohtable {
+                margin: 0 auto 1em;
+                margin-bottom: 0;
+                border: 2mm solid black;
+                font-size: 90%;
+            }
+            table.doubleohtable col {
+                width: 25%;
+            }
+            table.doubleohtable td {
+                text-align: center;
+                height: 35px;
+                width: 35px;
+                white-space: nowrap;
+                border-right: .5mm dotted black;
+                border-bottom: .5mm dotted black;
+            }
+            table.doubleohtable tr:nth-child(3n) td {
+                border-bottom: 1.5mm solid black;
+            }
+            table.doubleohtable td:nth-child(3n) {
+                border-right: 1.5mm solid black;
+            }                        
+        </style>
+
+        <h2>On the Subject of Double-Oh</h2>
+        <img class='diagram' src='img/Component/Double-Oh.svg' style="font-size: 90%;">
+        <p class='flavour-text' style="font-size: 67.5%;">
+            <span class="doubleoh-strike">A module, please.  Shaken, not stirred.</span> <b>Stupid piece of junk; broken display, broken buttons...</b></p>
+        <ul style="font-size: 90%;">
+            <li>A display is shown with a two digit number, as well as five buttons.  Using the buttons, toggle the display to 00 (located in the center of the below table), then hit the submit button.</li>
+            <li>Four of the five buttons toggle the number in the display.  Based on the table below, consisting of a 3×3 grid of smaller 3×3 grids, the buttons will behave in the following fashion:</li>
+            <li>The “↕” button moves to the next position up or down within the current smaller grid, looping if reaching the edge (example: 00 to 85 to 14 to 00)</li>
+            <li>The “↔” button moves to the next position left or right within the current smaller grid, looping if reaching the edge (example: 00 to 56 to 21 to 00)</li>
+            <li>The “⇕” button moves to the same position in the next large 3×3 grid up or down, looping if reaching the edge (example: 00 to 22 to 58 to 00)</li>
+            <li>The “⇔” button moves to the same position in the next large 3×3 grid left or right, looping if reaching the edge (example: 00 to 44 to 65 to 00)</li>
+            <li>The “▣” button is the submit button.  Pressing it will disarm the module if 00 is displayed and cause a strike otherwise.</li>
+        </ul>
+        <p style="font-size: 90%;"><b>NOTE: This module is old, and the last digit glitches out when the first digit is zero.
+            In addition, the wiring for the buttons is acting up, so the functions of the buttons may be swapped.
+            Fortunately, the strikes from the submit button are only registered by the bomb if the displayed number
+            is less than 10.</b></p>
+
+
+        <table class='doubleohtable'>
+            <tr><td>60</td><td>02</td><td>15</td><td>57</td><td>36</td>         <td>83</td><td>48</td><td>71</td><td>24</td></tr>
+            <tr><td>88</td><td>46</td><td>31</td><td>70</td><td>22</td>         <td>64</td><td>07</td><td>55</td><td>13</td></tr>
+            <tr><td>74</td><td>27</td><td>53</td><td>05</td><td>41</td>         <td>18</td><td>86</td><td>30</td><td>62</td></tr>
+            <tr><td>52</td><td>10</td><td>04</td><td>43</td><td>85</td>         <td>37</td><td>61</td><td>28</td><td>76</td></tr>
+            <tr><td>33</td><td>65</td><td>78</td><td>21</td><td><b>00</b></td>  <td>56</td><td>12</td><td>44</td><td>87</td></tr>
+            <tr><td>47</td><td>81</td><td>26</td><td>68</td><td>14</td>         <td>72</td><td>50</td><td>03</td><td>35</td></tr>
+            <tr><td>06</td><td>38</td><td>42</td><td>84</td><td>63</td>         <td>20</td><td>75</td><td>17</td><td>51</td></tr>
+            <tr><td>25</td><td>73</td><td>67</td><td>16</td><td>58</td>         <td>01</td><td>34</td><td>82</td><td>40</td></tr>
+            <tr><td>11</td><td>54</td><td>80</td><td>32</td><td>77</td>         <td>45</td><td>23</td><td>66</td><td>08</td></tr>
+        </table>
+    </div>
+</div>

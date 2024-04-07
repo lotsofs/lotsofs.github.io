@@ -1,0 +1,171 @@
+<div class="page venn-wires " id="Venn">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes</span>
+        <span class="page-header-section-title">Complicated Wires</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <img src="img/module-icons/VennWireComponent.svg" class="diagram">
+        <h2>On the Subject of Complicated Wires</h2>
+        <p class="flavour-text">These wires aren't like the others. Some have stripes! That makes them completely different. The good news is that we've found a concise set of instructions on what to do about it! Maybe too concise...</p>
+        <ul>
+            <li>Look at each wire: there is an LED above the wire and a space for a "&#9733;" symbol below the wire.</li>
+            <li>For <b>each</b> wire/LED/symbol combination, use the Venn diagram below to decide whether or not to cut the wire.</li>
+            <li>Each wire may be striped with multiple colors.</li>
+        </ul>
+        <div class="venndiagram">
+            <?xml version="1.0" encoding="utf-8"?>
+                <svg width="100%" height="100%" viewbox="0 0 800 650" preserveaspectratio="xMidYMid meet" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="0" cy="0" rx="300" ry="160" stroke="black" fill="none" stroke-width="5" stroke-dasharray="20,10,5,10" transform="translate(350, 300) rotate(45)"></ellipse>
+                    <ellipse cx="0" cy="0" rx="300" ry="160" stroke="black" fill="none" stroke-width="6" stroke-dasharray="" transform="translate(450, 300) rotate(-45)"></ellipse>
+                    <ellipse cx="0" cy="0" rx="300" ry="160" stroke="black" fill="none" stroke-width="4" stroke-dasharray="4,7" transform="translate(250, 400) rotate(45)"></ellipse>
+                    <ellipse cx="0" cy="0" rx="300" ry="160" stroke="black" fill="none" stroke-width="10" stroke-dasharray="10,4" transform="translate(550, 400) rotate(-45)"></ellipse>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="225" y="150" font-size="48px">
+                        <tspan>S</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="575" y="150" font-size="48px">
+                        <tspan>S</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="100" y="350" font-size="48px">
+                        <tspan>C</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="700" y="350" font-size="48px">
+                        <tspan>D</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="185" y="250" font-size="32px">
+                        <tspan>C</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="400" y="225" font-size="32px">
+                        <tspan>S</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="615" y="250" font-size="32px">
+                        <tspan>P</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="400" y="590" font-size="32px">
+                        <tspan>B</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="260" y="495" font-size="32px">
+                        <tspan>D</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="530" y="495" font-size="32px">
+                        <tspan>B</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="305" y="350" font-size="32px">
+                        <tspan>P</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="500" y="350" font-size="32px">
+                        <tspan>S</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="335" y="530" font-size="32px">
+                        <tspan>P</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="465" y="530" font-size="32px">
+                        <tspan>B</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="400" y="450" font-size="32px">
+                        <tspan>D</tspan>
+                    </text>
+                    <text font-family="Special Elite, sans-serif" text-anchor="middle" x="400" y="80" font-size="48px">
+                        <tspan>C</tspan>
+                    </text>
+                </svg>
+        </div>
+        <style>
+            .venndiagram {
+                display: block;
+                width: 70%;
+                position: relative;
+                top: -2em;
+                margin-bottom: 0;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .venn_legendtable th, .venn_instructionstable th {
+                font-size: 1.2em;
+                font-weight: bold;
+            }
+            .venn_legendtable td, .venn_instructionstable td  {
+                text-align: center;
+                font-size: 0.85em;
+            }
+            .venn_legendtable td.venn-legend-text {
+                text-align: left;
+            }
+            .venn_legendtable {
+                width: 18em;
+                float: left;
+                position: relative;
+                margin-right: 1em;
+                top: -1.2em;
+            }
+            .venn_legendtable td img {
+                text-align: center;
+            }
+            .venn_legendtable td {
+                border: none;
+                padding-top: 0.75em;
+                padding-bottom: 0.75em;
+            }
+            .venn_instructionstable {
+                position: relative;
+                top: -1.2em;
+            }
+            .venn-legend-line {
+                margin: 1em 0;
+                width: 10em;
+            }
+            .venn_legendtable, .venn_instructionstable {
+                border: solid;
+                border-width: 0.2em;
+            }
+        </style>
+        <div class="clearfix">
+            <table class="venn_legendtable">
+                <tr>
+                    <td><img class="venn-legend-line" src="img/modules/venn/venn_red.svg"></td>
+                    <td class="venn-legend-text">Wire has red coloring</td>
+                </tr>
+                <tr>
+                    <td><img class="venn-legend-line" src="img/modules/venn/venn_blue.svg"></td>
+                    <td class="venn-legend-text">Wire has blue coloring</td>
+                </tr>
+                <tr>
+                    <td><img class="venn-legend-line" src="img/modules/venn/venn_symbol.svg"></td>
+                    <td class="venn-legend-text">Has &#9733; symbol</td>
+                </tr>
+                <tr>
+                    <td><img class="venn-legend-line" src="img/modules/venn/venn_led.svg"></td>
+                    <td class="venn-legend-text">LED is on</td>
+                </tr>
+            </table>
+            <table class="venn_instructionstable">
+                <tr>
+                    <th>Letter</th>
+                    <th>Instruction</th>
+                </tr>
+                <tr>
+                    <td>C</td>
+                    <td>Cut the wire</td>
+                </tr>
+                <tr>
+                    <td>D</td>
+                    <td>Do not cut the wire</td>
+                </tr>
+                <tr>
+                    <td>S</td>
+                    <td>Cut the wire if the last digit of the serial number is even</td>
+                </tr>
+                <tr>
+                    <td>P</td>
+                    <td>Cut the wire if the bomb has a parallel port</td>
+                </tr>
+                <tr>
+                    <td>B</td>
+                    <td>Cut the wire if the bomb has two or more batteries</td>
+                </tr>
+            </table>
+        </div>
+        <p class="appendix-reference"><span>See Appendix B for battery identification reference.</span>
+            <br><span>See Appendix C for port identification reference.</span></p>
+    </div>
+</div>

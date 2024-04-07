@@ -1,0 +1,903 @@
+<div class="page morse-code " id="MorseCodeTranslated">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+        <span class="page-header-section-title">Morse Code (Translated)</span>
+    </div>
+    <div class="page-footer absolute-footer translationpagecount"></div>
+    <style>
+        .translatedmorsecodefrequencytable td, .translatedmorsecodefrequencytable th { padding-bottom: 0; padding-top: 0.17em;}
+
+        .translatedmorsecodekoreanchart { width: 370px; float: left; }
+        .translatedmorsecodekoreanchart>tbody>tr>th { font-size: 1.3em; font-weight: bold; margin-bottom: 0; border: none; }
+        .translatedmorsecodekoreanchart ol { font-size: .85em; margin-top: 0;}
+        .translatedmorsecodekoreantable { width: 100%; margin-bottom: 20px; }
+        .translatedmorsecodekoreantable, .translatedmorsecodekoreantable td { vertical-align: top; line-height: .8; border: none;}
+        .translatedmorsecodekoreantable th { width: 5%; padding-right: 0; border: none; text-align: right; font-size: 1.1em;}
+        .translatedmorsecodekoreantable td { width: 45%; padding-left: 10px; padding-right: 0; }
+
+        .translatedmorsecodedash { font-size: 1.3em; vertical-align: baseline; position: relative; top: -.285em;}
+        .translatedmorsecodedot { font-size: 1.2em; }
+
+        .translatedmorsecodethaichart { width: 420px; float: left;}
+        .translatedmorsecodethaichart>tbody>tr>th { font-size: 1.3em; font-weight: bold; margin-bottom: 0; border: none; }
+        .translatedmorsecodethaichart ol { font-size: .85em; margin-top: 0;}
+        .translatedmorsecodethaitable { width: 100%; margin-bottom: 20px; }
+        .translatedmorsecodethaitable, .translatedmorsecodethaitable td { vertical-align: top; line-height: .8em; border: none;}
+        .translatedmorsecodethaitable th { width: 5%; padding-right: 0; border: none; text-align: right; font-size: 1.2em;}
+        .translatedmorsecodethaitable td { width: 45%; padding-left: 10px; padding-right: 0; }
+
+        .translatedmorsecodehebrewchart { width: 240px; float: right;}
+        .translatedmorsecodehebrewchart>tbody>tr>th { font-size: 1.3em; font-weight: bold; margin-bottom: 0; border: none; }
+        .translatedmorsecodehebrewchart ol { font-size: .85em; margin-top: 0;}
+        .translatedmorsecodehebrewtable { width: 100%; margin-bottom: 20px; direction: rtl;}
+        .translatedmorsecodehebrewtable, .translatedmorsecodehebrewtable td { vertical-align: top; line-height: 0.8em; border: none;}
+        .translatedmorsecodehebrewtable th { width: 5%; padding-right: 0; border: none; text-align: right; font-size: 1.3em;}
+        .translatedmorsecodehebrewtable td { width: 95%; padding-left: 10px; padding-right: 0; }
+        /* @font-face { font-family: 'Alef'; font-weight: normal; font-style: normal; src: url('fonts/Alef-Regular.ttf') format('truetype'); } */
+        .translatedmorsecodehebrewtable th { font-family: 'Alef'; vertical-align: baseline; position: relative; top: -.285em;}
+
+        .translatedmorsecodenumeralchart { width: 80%; float: left;}
+        .translatedmorsecodenumeralchart>tbody>tr>th { font-size: 1.3em; font-weight: bold; margin-bottom: 0; border: none; }
+        .translatedmorsecodenumeralchart ol { font-size: .85em; margin-top: 0;}
+        .translatedmorsecodenumeraltable { width: 100%; margin-bottom: 20px; }
+        .translatedmorsecodenumeraltable, .translatedmorsecodenumeraltable td { vertical-align: top; line-height: .8em; border: none;}
+        .translatedmorsecodenumeraltable th { width: 2.5%; padding-right: 0; border: none; text-align: right; font-size: 1em;}
+        .translatedmorsecodenumeraltable td { width: 22.5%; padding-left: 10px; padding-right: 0; }
+
+        .translatedmorsecodecyrillicchart { width: 250px; float: left;}
+        .translatedmorsecodecyrillicchart>tbody>tr>th { font-size: 1.3em; font-weight: bold; margin-bottom: 0; border: none; }
+        .translatedmorsecodecyrillicchart ol { font-size: .85em; margin-top: 0;}
+        .translatedmorsecodecyrillictable { width: 100%; margin-bottom: 20px; }
+        .translatedmorsecodecyrillictable, .translatedmorsecodecyrillictable td { vertical-align: top; line-height: .8em; border: none;}
+        .translatedmorsecodecyrillictable th { width: 5%; padding-right: 0; border: none; text-align: right; font-size: 1.2em;}
+        .translatedmorsecodecyrillictable td { width: 45%; padding-left: 10px; padding-right: 0; }
+        .translatedmorsecodecyrillictable th { font-family: 'Roboto Slab'; vertical-align: baseline; position: relative; top: -.135em;}
+
+        .translatedmorsecodejapanesechart { width: 100%; float: left;}
+        .translatedmorsecodejapanesechart>tbody>tr>th { font-size: 1.3em; font-weight: bold; margin-bottom: 0; border: none; }
+        .translatedmorsecodejapanesechart ol { font-size: .85em; margin-top: 0;}
+        .translatedmorsecodejapanesetable { width: 100%; margin-bottom: 20px; }
+        .translatedmorsecodejapanesetable, .translatedmorsecodejapanesetable td { vertical-align: top; line-height: .8em; border: none;}
+        .translatedmorsecodejapanesetable th { width: 5%; padding-right: 0; border: none; text-align: right; font-size: 1.2em;}
+        .translatedmorsecodejapanesetable td { width: 30%; padding-left: 10px; padding-right: 0; }
+        .translatedmorsecodejapanesetable th { font-family: Special Elite, Noto Serif JP, Yu Gothic; }
+
+        .translatedmorsecodechinesechart { width: 100%; float: left;}
+        .translatedmorsecodechinesechart>tbody>tr>th { font-size: 1.3em; font-weight: bold; margin-bottom: 0; border: none; }
+        .translatedmorsecodechinesechart ol { font-size: .85em; margin-top: 0;}
+        .translatedmorsecodechinesetable { width: 100%; margin-bottom: 20px; }
+        .translatedmorsecodechinesetable, .translatedmorsecodechinesetable td { vertical-align: top; line-height: .8em; border: none;}
+        .translatedmorsecodechinesetable th { width: 5%; padding-right: 0; border: none; text-align: right; font-size: 1.2em;}
+        .translatedmorsecodechinesetable td { width: 45%; padding-left: 7px; padding-right: 0; }
+        .translatedmorsecodechinesetable th { font-family: AaRoundLi; vertical-align: baseline; position: relative; top: -.135em;}
+
+        .translatedmorsecodelatinchart { width: 380px; float: right;}
+        .translatedmorsecodelatinchart>tbody>tr>th { font-size: 1.3em; font-weight: bold; margin-bottom: 0; border: none; }
+        .translatedmorsecodelatinchart ol { font-size: .85em; margin-top: 0;}
+        .translatedmorsecodelatintable { width: 100%; margin-bottom: 20px; }
+        .translatedmorsecodelatintable, .translatedmorsecodelatintable td { vertical-align: top; line-height: .8em; border: none;}
+        .translatedmorsecodelatintable th { width: 5%; padding-right: 0; border: none; text-align: right; font-size: 1em;}
+        .translatedmorsecodelatintable td { width: 45%; padding-left: 10px; padding-right: 0; }
+    </style>
+    <div class="page-content">
+        <img src="img/module-icons/MorseCodeComponent.svg" class="diagram">
+        <h2>On the Subject of Morse Code (Translated)</h2>
+        <p class="flavour-text">It turns out an antiquated form of naval communication in a foreign language is next. At least it's still genuine Morse Code, so keep paying attention.</p>
+        <!-- <p>This module is identical to Morse Code, except it is in a different language. Check if there is a barcode sticker on the module with label "XX V#", where XX is a two or three letter language code, and # is a digit. If there is no sticker, you are not looking at a translated Morse Code module.</p> -->
+        <p>
+            Use the tables to find the correct frequency, and pressing the transmit button.
+            Use the language sticker on the module to help identify the correct language.
+        </p>
+        <p class="MorseCodeTranslated_originalmanualpresent" style="margin-bottom: -.3em">Refer to the original manual of Morse Code for instructions on how to disarm the module.</p>
+        <h3 style="text-align: left; margin-top: 0em;">'TX' button translations</h3>
+        <table style="float: left; margin-left: 1.5em;">
+            <tr><th>Language</th>  <th>Button</th>  </tr>
+            <tr><th>CS</th>           <td>TX</td></tr>
+            <tr><th>DA</th>           <td>TX</td></tr>
+            <tr><th>DE</th>          <td>SENDEN</td></tr>
+            <tr><th>EN</th>           <td>TX</td></tr>
+            <tr><th>EO</th>           <td>SENDI</td> </tr>
+            <tr><th>ES</th>           <td>TX</td> </tr>
+            <tr><th>ET</th>           <td>TX</td></tr>
+            <tr><th>FI</th>           <td>LÄHETÄ</td></tr>
+            <tr><th>FR</th>           <td>TX</td> </tr>
+            <tr><th>FY</th>           <td>TX</td> </tr>
+            <tr><th>HE</th>          <td style="font-family: Alef; font-size: 1.2em; line-height: 1em; height: 1em">שלח</td></tr>
+            <tr><th>IT</th>           <td>INVIA</td></tr>
+            <tr><th>JA</th>         <td>TX</td></tr>
+            <tr><th>KO</th>        <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em">전송</td></tr>
+            <tr><th>NL</th>       <td>TX</td></tr>
+            <tr><th>NO</th>       <td>TX</td></tr>
+            <tr><th>PL</th>       <td>TX</td></tr>
+            <tr><th>PT</th>       <td>TX</td></tr>
+            <tr><th>RU</th>          <td>TX</td></tr>
+            <tr><th>SV</th>          <td>SÄND</td></tr>
+            <tr><th>TH</th>          <td style="font-size: 1.3em; line-height: 1em; height: 1em;">ส่ง</td></tr>
+            <tr><th>ZH</th>         <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">发送</td></tr>
+        </table>
+
+        <table class="translatedmorsecodekoreanchart"  style="float: right; margin-right: 2em; margin-top: -1em;"><tbody>
+            <tr><th>Korean Morse Code Interpretation</th></tr>
+            <tr><td style="border: none">
+                <ol style="list-style: none; padding-left: 0; padding-right: 0; text-align: center">
+                    <li>Morse code for the Korean alphabet (SKATS) used by modules translated into Korean (KO).</li>
+                </ol>
+                <table class="translatedmorsecodekoreantable"><tbody>
+                    <tr><th>ㄱ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ㅏ</th><td><span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ㄴ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ㅑ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ㄷ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ㅓ</th><td><span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ㄹ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td><th>ㅕ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ㅁ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th>ㅗ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ㅂ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th>ㅛ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ㅅ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ㅜ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ㅇ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td><th>ㅠ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ㅈ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ㅡ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ㅊ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ㅣ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ㅋ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td><th>ㅐ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ㅌ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ㅔ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ㅍ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th> </th><td></td></tr>
+                    <tr><th>ㅎ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th> </th><td></td></tr>
+                </tbody></table>
+            </td></tr>
+        </tbody></table>        
+
+        <table class="translatedmorsecodenumeralchart" style="float: right; margin-top: 0.5em; margin-right: 0em; width: 64%"><tbody>
+            <tr><th>Numerals Morse Code Interpretation</th></tr>
+            <tr><td style="border: none">
+                <ol style="list-style: none; padding-left: 0; padding-right: 0; text-align: center">
+                    <li>Morse code for the digits 0 - 9, used by most languages.</li>
+                </ol>
+                <table class="translatedmorsecodenumeraltable" style="margin: 0em; margin-bottom: 0.5em;"><tbody>
+                    <tr>
+                        <th>1</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>6</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>2</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>7</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>3</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>8</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>4</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>9</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>5</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>0</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+        </tbody></table>
+
+    </div>
+</div>
+<div class="page morse-code ">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+        <span class="page-header-section-title">Morse Code (Translated)</span>
+    </div>
+    <div class="page-footer absolute-footer translationpagecount"></div>
+    <div class="page-content">
+
+        <table class="translatedmorsecodethaichart"><tbody>
+            <tr><th>Thai Morse Code Interpretation​</th></tr>
+            <tr><td style="border: none; padding-left: 0;">
+                <ol style="list-style: none; padding-left: 0; padding-right: 0; text-align: center;">
+                    <li>Morse code for the Thai abugida used by modules translated into Thai (TH).</li>
+                </ol>
+                <table class="translatedmorsecodethaitable"><tbody>
+                    <tr><th>ก</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ะ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ข&nbsp;ฃ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>า</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ค&nbsp;ฅ&nbsp;ฆ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td><th>ิ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ง</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ี</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>จ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ึ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ฉ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th>ื</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ช</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td><th>ุ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ซ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ู</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ญ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th>เ</th><td><span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ด&nbsp;ฎ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>แ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ต&nbsp;ฏ</th><td><span class="translatedmorsecodedash">&#9603;</span> </td><th>ไ&nbsp;ใ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ถ&nbsp;ฐ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>โ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ท&nbsp;ธ&nbsp;ฑ&nbsp;ฒ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th>ำ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>น&nbsp;ณ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th> </th><td></td></tr>
+                    <tr><th>บ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th> </th><td></td></tr>
+                    <tr><th>ป</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>่</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ผ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td><th>้</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ฝ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td><th>๊</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>พ&nbsp;ภ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>๋</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ฟ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th> </th><td></td></tr>
+                    <tr><th>ม</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th> </th><td></td></tr>
+                    <tr><th>ย</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th>ั</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ร</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>็</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ล&nbsp;ฬ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>์</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ว</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th>ๆ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>ศ&nbsp;ษ&nbsp;ส</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th>ฯ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>ห</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td><th> </th><td></td></tr>
+                    <tr><th>อ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td><th> </th><td></td></tr>
+                    <tr><th>ฮ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th> </th><td></td></tr>
+                    <tr><th>ฤ&nbsp;ฤๅ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th> </th><td></td></tr>
+                </tbody></table>
+            </td></tr>
+        </tbody></table>
+            
+
+        <table class="translatedmorsecodehebrewchart">
+            <tbody>
+                <tr><th>Hebrew Morse Code Interpretation</th></tr>
+                <tr><td style="border: none; ">
+                    <ol style="list-style: none; padding-left: 0; padding-right: 0; text-align: center;">
+                        <li>Morse Code for the Hebrew alphabet used by modules translated into Hebrew (HE).</li><li>Keep in mind Hebrew is read from right to left.</li>
+                    </ol>
+                    <table class='translatedmorsecodehebrewtable'><tbody>
+                        <tr><th>א</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> </td></tr>
+                        <tr><th>ב</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td></tr>
+                        <tr><th>ג</th><td><span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td></tr>
+                        <tr><th>ד</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td></tr>
+                        <tr><th>ה</th><td><span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> </td></tr>
+                        <tr><th>ו</th><td><span class='translatedmorsecodedot'>&#9679;</span> </td><th> </th><td></td></tr>
+                        <tr><th>ז</th><td><span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td><th> </th><td></td></tr>
+                        <tr><th>ח</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td></tr>
+                        <tr><th>ט</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> </td></tr>
+                        <tr><th>י</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td></tr>
+                        <tr><th>כ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> </td></tr>
+                        <tr><th>ל</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td></tr>
+                        <tr><th>מ</th><td><span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> </td></tr>
+                        <tr><th>נ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td></tr>
+                        <tr><th>ס</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td></tr>
+                        <tr><th>ע</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> </td></tr>
+                        <tr><th>פ</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td></tr>
+                        <tr><th>צ</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> </td></tr>
+                        <tr><th>ק</th><td><span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> </td></tr>
+                        <tr><th>ר</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td></tr>
+                        <tr><th>ש</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td></tr>
+                        <tr><th>ת</th><td><span class='translatedmorsecodedash'>&#9603;</span> </td></tr>
+                    </tbody></table>
+                </td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="page morse-code ">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+        <span class="page-header-section-title">Morse Code (Translated)</span>
+    </div>
+    <div class="page-footer absolute-footer translationpagecount"></div>
+    <div class="page-content">
+
+        <table class="translatedmorsecodejapanesechart" style="float: right; margin-left: 0em;"><tbody>
+            <tr><th>Hiragana Morse Code Interpretation</th></tr>
+            <tr><td style="border: none; ">
+                <ol style="list-style: none; padding-left: 0; padding-right: 0; text-align: center;">
+                    <li>Morse Code for Hiragana, used by modules translated into Japanese (JA).</li>
+                </ol>
+                <table class='translatedmorsecodejapanesetable'><tbody>
+                    <tr>
+                        <th>あ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>た</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>ま</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                    </tr>
+                    <tr>
+                        <th>い</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>ち</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>み</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                    </tr>
+                    <tr>
+                        <th>う</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>つ</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>む</th><td><span class='translatedmorsecodedash'>&#9603;</span></td>
+                    </tr>
+                    <tr>
+                        <th>え</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>て</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>め</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                    </tr>
+                    <tr>
+                        <th>お</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>と</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>も</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                    </tr>
+                    <tr>
+                        <th>か</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>な</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>や</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                    </tr>
+                    <tr>
+                        <th>き</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>に</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>ゆ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                    </tr>
+                    <tr>
+                        <th>く</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>ぬ</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>よ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                    </tr>
+                    <tr>
+                        <th>け</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>ね</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>ら</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                    </tr>
+                    <tr>
+                        <th>こ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>の</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>り</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                    </tr>
+                    <tr>
+                        <th>さ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>は</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>る</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                    </tr>
+                    <tr>
+                        <th>し</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>ひ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>れ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                    </tr>
+                    <tr>
+                        <th>す</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                        <th>ふ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>ろ</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                    </tr>
+                    <tr>
+                        <th>せ</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>へ</th><td><span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>わ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                    </tr>
+                    <tr>
+                        <th>そ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>ほ</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>を</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span></td>
+                    </tr>
+                    <tr>
+                        <th></th><td></td>
+                        <th></th><td></td>
+                        <th>ん</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                    </tr>
+                    <tr>
+                        <th>゛</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                        <th>゜</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span></td>
+                    </tr>
+                </tbody></table>
+            </td></tr>                    
+        </tbody></table>
+        
+
+        <table class="translatedmorsecodechinesechart" style="float: right; margin-left: 0em; margin-top: 0.5em;"><tbody>
+            <tr><th>Chinese Morse Code Interpretation</th></tr>
+            <tr><td style="border: none; ">
+                <ol style="list-style: none; padding-left: 0; padding-right: 0; text-align: center;">
+                    <li>Chinese (ZH) has thousands of characters. Only the following characters, represented by their unique code for international transmission, may occur on a Morse Code module translated into Chinese.</li>
+                </ol>
+                <table class='translatedmorsecodechinesetable'><tbody>
+                    <tr>
+                        <th>了</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>狼</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>今</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>看</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>凶</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>穿</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>吃</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> </td>
+                        <th>网</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>吗</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>华</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>宁</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>贝</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>心</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>还</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>手</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>录</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>放</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>门</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>杀</th><td><span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>关</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>乌</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>鱼</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>片</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>鸡</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>狗</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>鳄</th><td><span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> &nbsp;&nbsp;&nbsp; <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>                    
+        </tbody></table>
+
+    </div>
+</div>
+<div class="page morse-code ">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+        <span class="page-header-section-title">Morse Code (Translated)</span>
+    </div>
+    <div class="page-footer absolute-footer translationpagecount"></div>
+    <div class="page-content">
+        <table class="translatedmorsecodecyrillicchart" style="float: left; "><tbody>
+            <tr><th>Cyrillic Morse Code Interpretation</th></tr>
+            <tr>
+                <td style="border: none; list-style: none;">
+                <ol style="list-style: none; padding-left: 0; padding-right: 0; text-align: center">
+                    <li>Morse code for the Cyrillic alphabet used by modules translated into Russian (RU).</li>
+                </ol>
+                <table class="translatedmorsecodecyrillictable"><tbody>
+                    <tr>
+                        <th>A</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Б</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>В</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Г</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Д</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Е</th><td><span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ж</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>З</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>И</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Й</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    <tr>
+                        <th>К</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Л</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>М</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>H</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>О</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>П</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>P</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>С</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Т</th><td><span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>У</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ф</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Х</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ц</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ч</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr><th>Ш</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>Щ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>Ъ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>Ы</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>Ь</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td></tr>
+                    <tr><th>Э</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td></tr>
+                    <tr><th>Ю</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td></tr></tr>
+                    <tr><th>Я</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+        </tbody></table>
+
+        <table class="translatedmorsecodelatinchart" style="float: right; margin-left: 2em;"><tbody>
+            <tr><th>Latin Morse Code Interpretation</th></tr>
+            <tr><td style="border: none">
+                <ol style="list-style: none; padding-left: 0; padding-right: 0; text-align: center">
+                    <li>Morse code for the Latin alphabet used by modules translated into any other language.</li>
+                    <li>Certain languages use additional characters. These can be found below.</li>
+                </ol>
+                <table class="translatedmorsecodelatintable" style="margin: 0em; margin-bottom: 0.5em;"><tbody>
+                    <tr>
+                        <th>A</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>N</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>B</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>O</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>C</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>P</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>D</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>Q</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>E</th><td><span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>R</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>F</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>S</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>G</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>T</th><td><span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>H</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>U</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>I</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>V</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>J</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>W</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>K</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>X</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>L</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>Y</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                        <tr>
+                        <th>M</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>Z</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+
+            <tr><th>Czech (CS)</th></tr>
+            <tr><td style="border: none">
+                <table class="translatedmorsecodelatintable" style="margin: 0em; margin-bottom: 0.5em;"><tbody>
+                    <tr>
+                        <th>CH</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td><th> </th><td></td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+
+            <tr><th>German (DE)</th></tr>
+            <tr><td style="border: none">
+                <table class="translatedmorsecodelatintable" style="margin: 0em; margin-bottom: 0.5em;"><tbody>
+                    <tr>
+                        <th>Ä</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>ß</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ö</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>CH</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ü</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+
+            <tr><th>Esperanto (EO)</th></tr>
+            <tr><td style="border: none">
+                <table class="translatedmorsecodelatintable" style="margin: 0em; margin-bottom: 0.5em;"><tbody>
+                    <tr>
+                        <th>Ĉ</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>Ĵ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ĝ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>Ŝ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ĥ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>Ŭ</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+
+            <tr><th>Estonian (ET)</th></tr>
+            <tr><td style="border: none">
+                <table class="translatedmorsecodelatintable" style="margin: 0em; margin-bottom: 0.5em;"><tbody>
+                    <tr>
+                        <th>Ä</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>Ü</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ö</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+
+
+        </tbody></table>
+    </div>
+</div>
+<div class="page morse-code ">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+        <span class="page-header-section-title">Morse Code (Translated)</span>
+    </div>
+    <div class="page-footer absolute-footer translationpagecount"></div>
+    <div class="page-content">
+
+        <table class="translatedmorsecodelatinchart" style="float: left; margin-left: 0em;"><tbody>
+            <tr><th>Finnish (FI)</th></tr>
+            <tr><td style="border: none">
+                <table class="translatedmorsecodelatintable" style="margin: 0em; margin-bottom: 1em;"><tbody>
+                    <tr>
+                        <th>Å</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>Ä</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+            
+            <tr><th>French (FR)</th></tr>
+            <tr><td style="border: none">
+                <table class="translatedmorsecodelatintable" style="margin: 0em; margin-bottom: 0.5em;"><tbody>
+                    <tr>
+                        <th>Ê</th><td><span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>Ô</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Î&nbsp;Ï</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>Û</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th style="height: 5px;"></th>
+                    </tr>
+                    <tr>
+                        <th>À</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>Ñ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ç</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>Œ</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;&nbsp;&nbsp; <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>É</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>Ö</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>È</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>Ü</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+
+            <tr><th>Western Frisian (FY)</th></tr>
+            <tr><td style="border: none">
+                <table class="translatedmorsecodelatintable" style="margin: 0em; margin-bottom: 0.5em;"><tbody>
+                    <tr>
+                        <th>Â</th><td><span class="translatedmorsecodedot">&#9679;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span></td>
+                        <th>Ê&nbsp;É</th><td><span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ô</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>Û&nbsp;Ú</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+
+            <tr><th>Norwegian (NO)</th></tr>
+            <tr><td style="border: none">
+                <table class="translatedmorsecodelatintable" style="margin: 0em; margin-bottom: 0.5em;"><tbody>
+                    <tr>
+                        <th>È&nbsp;É</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                        <th>Ø</th><td><span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Æ</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> </td>
+                        <th>Å</th><td><span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> &nbsp;<span class='translatedmorsecodedash'>&#9603;</span> <span class='translatedmorsecodedot'>&#9679;</span> <span class='translatedmorsecodedash'>&#9603;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+
+            <tr><th>Polish (PL)</th></tr>
+            <tr><td style="border: none">
+                <table class="translatedmorsecodelatintable" style="margin: 0em; margin-bottom: 1em;"><tbody>
+                    <tr>
+                        <th>Ą</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>Ń</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ć</th><td><span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>Ó</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>CH</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>Ś</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ę&nbsp;É</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                        <th>Ź</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> </td>
+                    </tr>
+                    <tr>
+                        <th>Ł</th><td><span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                        <th>Ż</th><td><span class="translatedmorsecodedash">&#9603;</span> &nbsp;<span class="translatedmorsecodedash">&#9603;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedot">&#9679;</span> <span class="translatedmorsecodedash">&#9603;</span> </td>
+                    </tr>
+                </tbody></table>
+            </td></tr>
+        </tbody></table>
+        
+    </div>
+</div>
+<div class="page morse-code ">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+        <span class="page-header-section-title">Morse Code (Translated)</span>
+    </div>
+    <div class="page-footer absolute-footer translationpagecount"></div>
+    <div class="page-content">
+            <table class="translatedmorsecodefrequencytable" style="margin-left: auto; margin-right: auto;"><tbody>
+                <tr>    <th>CS:</th>        <th>DA:</th>        <th>DE:</th>        <th>EN:</th>        <th>EO:</th>         <th>ES:</th>        <th>ET:</th>       <th>Frequency:</th>     </tr>
+                <tr>    <td>strach</td>     <td>afvis</td>      <td>hölle</td>      <td>shell</td>      <td>kontraŭ</td>     <td>biela</td>      <td>parras</td>    <th>3.505 MHz</th>      </tr>
+                <tr>    <td>plomba</td>     <td>blandt</td>     <td>halle</td>      <td>halls</td>      <td>raŭka</td>       <td>broma</td>      <td>varras</td>    <th>3.515 MHz</th>      </tr>
+                <tr>    <td>bronz</td>      <td>bomber</td>     <td>hülle</td>      <td>slick</td>      <td>ŝtono</td>       <td>ratas</td>      <td>varas</td>     <th>3.522 MHz</th>      </tr>
+                <tr>    <td>sklep</td>      <td>brugt</td>      <td>heiß</td>       <td>trick</td>      <td>ĵetono</td>      <td>resma</td>      <td>emake</td>     <th>3.532 MHz</th>      </tr>
+                <tr>    <td>houby</td>      <td>firma</td>      <td>siehe</td>      <td>boxes</td>      <td>risko</td>       <td>resta</td>      <td>kenake</td>    <th>3.535 MHz</th>      </tr>
+                <tr>    <td>klouby</td>     <td>kalder</td>     <td>sichel</td>     <td>leaks</td>      <td>barako</td>      <td>brisa</td>      <td>nupud</td>     <th>3.542 MHz</th>      </tr>
+                <tr>    <td>chleba</td>     <td>klart</td>      <td>leiche</td>     <td>strobe</td>     <td>rompi</td>       <td>trenes</td>     <td>taimer</td>    <th>3.545 MHz</th>      </tr>
+                <tr>    <td>prach</td>      <td>klasse</td>     <td>eichel</td>     <td>bistro</td>     <td>piroj</td>       <td>tabla</td>      <td>vaikne</td>    <th>3.552 MHz</th>      </tr>
+                <tr>    <td>shluk</td>      <td>klippe</td>     <td>fischer</td>    <td>flick</td>      <td>butono</td>      <td>senso</td>      <td>paigal</td>    <th>3.555 MHz</th>      </tr>
+                <tr>    <td>strop</td>      <td>rekord</td>     <td>sicher</td>     <td>bombs</td>      <td>bombo</td>       <td>santos</td>     <td>puskar</td>    <th>3.565 MHz</th>      </tr>
+                <tr>    <td>bomba</td>      <td>sidst</td>      <td>sicht</td>      <td>break</td>      <td>batalo</td>      <td>trato</td>      <td>ääres</td>     <th>3.572 MHz</th>      </tr>
+                <tr>    <td>klenba</td>     <td>skarp</td>      <td>sticht</td>     <td>brick</td>      <td>betono</td>      <td>braile</td>     <td>ämblik</td>    <th>3.575 MHz</th>      </tr>
+                <tr>    <td>brach</td>      <td>skifte</td>     <td>ventil</td>     <td>steak</td>      <td>radaro</td>      <td>bomba</td>      <td>kallis</td>    <th>3.582 MHz</th>      </tr>
+                <tr>    <td>strup</td>      <td>skole</td>      <td>steak</td>      <td>sting</td>      <td>regulo</td>      <td>tronco</td>     <td>juurde</td>    <th>3.592 MHz</th>      </tr>
+                <tr>    <td>papouch</td>    <td>slippe</td>     <td>brücke</td>     <td>vector</td>     <td>brilas</td>      <td>brinco</td>     <td>kuular</td>    <th>3.595 MHz</th>      </tr>
+                <tr>    <td>klacek</td>     <td>vinder</td>     <td>rücken</td>     <td>beats</td>      <td>pulsi</td>       <td>mambo</td>      <td>öösel</td>     <th>3.600 MHz</th>      </tr>
+            </tbody></table>
+        
+        
+            <table class="translatedmorsecodefrequencytable" style="margin-left: auto; margin-right: auto; margin-top: 1em"><tbody>
+                <tr>      <th>FI:</th>        <th>FR:</th>       <th>FY:</th>           <th>HE:</th>                                                                                     <th>IT:</th>        <th>JA:</th>                                                                          <th>KO:</th>                                                                                                                                    <th>Frequency:</th>     </tr>
+                <tr>      <td>kenttä</td>     <td>coque</td>     <td>noard</td>         <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">סיסמה</td>        <td>daino</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">しそうか</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">김밥</td>                  <th>3.505 MHz</th>        </tr>
+                <tr>      <td>potku</td>      <td>salle</td>     <td>doarp</td>         <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">מהירות</td>       <td>attico</td>     <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">かんそう</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">긴장</td>                  <th>3.515 MHz</th>       </tr>
+                <tr>      <td>kettu</td>      <td>folie</td>     <td>stekt</td>         <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">אורות</td>        <td>antico</td>     <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">じてん</td>         <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">간장</td>                <th>3.522 MHz</th>        </tr>
+                <tr>      <td>hissi</td>      <td>piège</td>     <td>trekt</td>         <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">תיאור</td>        <td>attesa</td>     <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">あかてん</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">공장</td>                  <th>3.532 MHz</th>        </tr>
+                <tr>      <td>katko</td>      <td>boîte</td>     <td>stean</td>         <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">רמזור</td>        <td>esame</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">かたいれ</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">궁정</td>                  <th>3.535 MHz</th>        </tr>
+                <tr>      <td>takoi</td>      <td>fuite</td>     <td>wykein</td>         <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">רמאות</td>        <td>saldi</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">えしやく</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">집밥</td>                  <th>3.542 MHz</th>        </tr>
+                <tr>      <td>rikos</td>      <td>flash</td>     <td>keamer</td>        <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">אותיות</td>       <td>salmo</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">とうざい</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">잡담</td>                 <th>3.545 MHz</th>       </tr>
+                <tr>      <td>pirinä</td>     <td>resto</td>     <td>ammerke</td>       <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">הפלמח</td>        <td>salame</td>     <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">がいとう</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">적당</td>                 <th>3.552 MHz</th>        </tr>
+                <tr>      <td>pentti</td>     <td>films</td>     <td>krekt</td>         <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">ההגנה</td>        <td>soldi</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">そうてん</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">직장</td>                  <th>3.555 MHz</th>        </tr>
+                <tr>      <td>heheh</td>      <td>bombe</td>     <td>stien</td>         <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">עכביש</td>        <td>suono</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">かおいろ</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">족장</td>                  <th>3.565 MHz</th>        </tr>
+                <tr>      <td>pihdit</td>     <td>casse</td>     <td>fabryk</td>        <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">ישראל</td>        <td>tazza</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">かつしや</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">안장</td>                  <th>3.572 MHz</th>        </tr>
+                <tr>      <td>koita</td>      <td>brique</td>    <td>brekt</td>         <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">אלפים</td>        <td>tassa</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">かいてん</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">영장</td>                  <th>3.575 MHz</th>        </tr>
+                <tr>      <td>tulos</td>      <td>foudre</td>    <td>hoecht</td>        <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">קופים</td>        <td>tatto</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">しんしや</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">억장</td>                  <th>3.582 MHz</th>        </tr>
+                <tr>      <td>pommi</td>      <td>fusée</td>     <td>hoanne</td>        <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">פיצוץ</td>        <td>zaino</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">しつかん</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">인장</td>                  <th>3.592 MHz</th>        </tr>
+                <tr>      <td>passi</td>      <td>bouton</td>    <td>brêge</td>         <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">גולני</td>        <td>tuono</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">ぶんかい</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">인정</td>                 <th>3.595 MHz</th>        </tr>
+                <tr>      <td>lahti</td>      <td>bruit</td>     <td>slope</td>         <td style="font-family: Alef; font-size: 1.1em; line-height: 1em; height: 1em">גבעתי</td>        <td>trono</td>      <td style="font-family: Special Elite, Noto Serif JP, Yu Gothic;">かくさん</td>       <td style="font-family: Nanum, Special Elite; font-size: 1.1em; line-height: 1em; height: 1em; vertical-align: center">안정</td>                  <th>3.600 MHz</th>        </tr>
+            </tbody></table>
+    </div>
+</div>
+<div class="page morse-code ">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+        <span class="page-header-section-title">Morse Code (Translated)</span>
+    </div>
+    <div class="page-footer absolute-footer translationpagecount"></div>
+    <div class="page-content">
+
+            
+
+            <table class="translatedmorsecodefrequencytable" style="margin-left: auto; margin-right: auto;"><tbody>
+                <tr>      <th>NL:</th>        <th>NO:</th>        <th>PL:</th>        <th>PT:</th>           <th>Frequency:</th></tr>
+                <tr>      <td>stuur</td>      <td>morse</td>      <td>muszla</td>     <td>bossa</td>         <th>3.505 MHz</th></tr>
+                <tr>      <td>buurt</td>      <td>økning</td>     <td>świnka</td>     <td>bomba</td>         <th>3.515 MHz</th></tr>
+                <tr>      <td>truus</td>      <td>åpning</td>     <td>mamut</td>      <td>batom</td>         <th>3.522 MHz</th></tr>
+                <tr>      <td>uurtje</td>     <td>signal</td>     <td>szprot</td>     <td>bombom</td>        <th>3.532 MHz</th></tr>
+                <tr>      <td>trucs</td>      <td>pokal</td>      <td>skrzynki</td>   <td>burro</td>         <th>3.535 MHz</th></tr>
+                <tr>      <td>broek</td>      <td>sterk</td>      <td>krzesło</td>    <td>dados</td>         <th>3.542 MHz</th></tr>
+                <tr>      <td>bruin</td>      <td>stopp</td>      <td>praca</td>      <td>dossiê</td>        <th>3.545 MHz</th></tr>
+                <tr>      <td>bruis</td>      <td>vondt</td>      <td>myszka</td>     <td>doido</td>         <th>3.552 MHz</th></tr>
+                <tr>      <td>bruist</td>     <td>banan</td>      <td>katalog</td>    <td>morse</td>         <th>3.555 MHz</th></tr>
+                <tr>      <td>ruist</td>      <td>start</td>      <td>bomba</td>      <td>módulo</td>        <th>3.565 MHz</th></tr>
+                <tr>      <td>ruiste</td>     <td>vandre</td>     <td>przerwa</td>    <td>senha</td>         <th>3.572 MHz</th></tr>
+                <tr>      <td>suist</td>      <td>andre</td>      <td>kostka</td>     <td>serial</td>        <th>3.575 MHz</th></tr>
+                <tr>      <td>suiste</td>     <td>bombe</td>      <td>cegła</td>      <td>samba</td>         <th>3.582 MHz</th></tr>
+                <tr>      <td>rijst</td>      <td>varsom</td>     <td>mięso</td>      <td>chave</td>         <th>3.592 MHz</th></tr>
+                <tr>      <td>prijs</td>      <td>liksom</td>     <td>obszar</td>     <td>código</td>        <th>3.595 MHz</th></tr>
+                <tr>      <td>prijst</td>     <td>sommer</td>     <td>bestia</td>     <td>conta</td>         <th>3.600 MHz</th></tr>
+            </tbody></table>
+
+
+            <table class="translatedmorsecodefrequencytable" style="margin-left: auto; margin-right: auto; margin-top: 1em"><tbody>
+                <tr>      <th>RU:</th>                                                                                    <th>SV:</th>           <th>TH:</th>        <th>ZH:</th>         <th>Frequency:</th>     </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">брать</td>   <td>skala</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">ระเบิด</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">看关</td>        <th>3.505 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">брала</td>   <td>kalas</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">ระเหิด</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">关门</td>        <th>3.515 MHz</th>       </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">борис</td>   <td>blick</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">ไข่ไก่</td>       <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">鱼吃</td>        <th>3.522 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">крала</td>   <td>stick</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">ไก่ไข่</td>       <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">狼吃</td>        <th>3.532 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">клара</td>   <td>dimma</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">บริการ</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">还宁</td>        <th>3.535 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">поток</td>   <td>dekal</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">บริบาล</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">穿贝</td>        <th>3.542 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">порог</td>   <td>ordlek</td>        <td style="font-size: 1.2em; line-height: 1em; height: 1em;">บริหาร</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">手今</td>       <th>3.545 MHz</th>       </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">порок</td>   <td>rekord</td>        <td style="font-size: 1.2em; line-height: 1em; height: 1em;">บริบท</td>       <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">杀手</td>       <th>3.552 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">покой</td>   <td>klick</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">สะสาง</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">鳄吃</td>        <th>3.555 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">помой</td>   <td>dejta</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">เพิ่มพูน</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">还片</td>        <th>3.565 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">попей</td>   <td>stark</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">ภาคภูมิ</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">狗穿</td>        <th>3.572 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">рокер</td>   <td>drick</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">โอกาส</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">狗吃</td>        <th>3.575 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">койка</td>   <td>steka</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">อากาศ</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">鸡穿</td>        <th>3.582 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">росток</td>  <td>stiga</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">สัญญา</td>       <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">鸡心</td>        <th>3.592 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">мостик</td>  <td>riktig</td>        <td style="font-size: 1.2em; line-height: 1em; height: 1em;">สัญญาณ</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">凶了</td>       <th>3.595 MHz</th>        </tr>
+                <tr>      <td style="font-family: Roboto Slab; line-height: 1em; height: 1em; vertical-align: top;">токарь</td>  <td>bleka</td>         <td style="font-size: 1.2em; line-height: 1em; height: 1em;">สงสาร</td>      <td style="font-family: AaRoundLi; font-size: 1.1em; line-height: 1em; height: 1em">网乌</td>        <th>3.600 MHz</th>        </tr>
+            </tbody></table>
+
+    </div>
+</div>
+<div class="page MorseCodeTranslated_originalmanualabsent">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes</span>
+        <span class="page-header-section-title">Morse Code (Translated)</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <ul>
+            <li>Interpret the signal from the flashing light using the Morse Code charts to spell one of the words in the tables.</li>
+            <li>The signal will loop, with a long gap between repetitions.</li>
+            <li>Once the word is identified, set the corresponding frequency and press the transmit (TX) button.</li>
+        </ul>
+        <h3>How to Interpret</h3>
+        <ol>
+            <li>A short flash represents a dot.</li>
+            <li>A long flash represents a dash.</li>
+            <li>There is a long gap between letters.</li>
+            <li>There is a very long gap before the word repeats.</li>
+        </ol>
+    </div>
+</div>
+<script type="text/javascript">
+    var orig = document.getElementById("Morse");
+    console.log(orig);
+    if (orig != null) {
+        var toss = document.getElementsByClassName("MorseCodeTranslated_originalmanualabsent");
+        for(var i = toss.length - 1; i >= 0; i--) {
+            toss[i].remove();
+        }  
+    }
+    else {
+        var toss = document.getElementsByClassName("MorseCodeTranslated_originalmanualpresent");
+        for(var i = toss.length - 1; i >= 0; i--) {
+            toss[i].remove();
+        }  
+    }
+</script>
+

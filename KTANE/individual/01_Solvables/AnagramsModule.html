@@ -1,0 +1,79 @@
+<div class="page" id="AnagramsModule">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Anagrams</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <img src="img/Component/Anagrams.svg" class="diagram">
+        <h2>On the Subject of Anagrams</h2>
+        <p class="flavour-text">Randomly punching in the letters will eventually give me another word. One of the arrangements must work, right?</p>
+        The display shows a word. Rearrange the letters to form another word. It’s got to work. It just has to. Note that the status light is on the top left of the module.
+        <p class="appendix-reference appendix-reference-Sword"  style="margin-top: 0;"><br>
+            See Appendix Sword for an anagrams reference table.
+        </p>
+
+
+        <style>
+            .Anagrams_lookuptable td { border-right: none; border-top: none; border-bottom: none; }
+            .Anagrams_lookuptable th { border-left: none; border-top: none; border-bottom: none; }
+            .Anagrams_lookuptable { border: none; float: left; width: 50%; margin-top: 1em;}
+        </style>
+    
+        <table class="Anagrams_lookuptable" id="lookuptableAnagramsTableOne">
+            
+        </table>
+        
+        <table class="Anagrams_lookuptable" id="lookuptableAnagramsTableTwo">
+            
+        </table>
+        
+        <table id="Anagrams_lookuptableinput" style="border: none; float: left; width: 50%; margin-top: 1em;">
+            <tbody>
+                <tr class="Anagrams_item"><th>ABELRY</th><td>BARELY, BARLEY, BLEARY</td></tr>
+                <tr class="Anagrams_junk Anagrams_item"><th>ACEHRS</th><td>ARCHES, CHASER, SEARCH</td></tr> 
+                <tr class="Anagrams_item"><th>ACELLR</th><td>CALLER, CELLAR, RECALL</td></tr>
+                <tr class="Anagrams_junk Anagrams_item"><th>CEORST</th><td>CORSET, ESCORT, SECTOR</td></tr> 
+                <tr class="Anagrams_item"><th>ADEEST</th><td>SEATED, SEDATE, TEASED</td></tr>
+                <tr class="Anagrams_junk Anagrams_item"><th>AEELPS</th><td>ASLEEP, ELAPSE, PLEASE</td></tr> 
+                <tr class="Anagrams_item"><th>AEHRSS</th><td>RASHES, SHARES, SHEARS</td></tr>
+                <tr class="Anagrams_junk Anagrams_item"><th>AELNRT</th><td>ANTLER, LEARNT, RENTAL</td></tr>
+                <tr class="Anagrams_item"><th>AEMRST</th><td>MASTER, STREAM, TAMERS</td></tr>
+                <tr class="Anagrams_item Anagrams_item"><th>CEERSU</th><td>RECUSE, RESCUE, SECURE</td></tr>
+                <tr class="Anagrams_junk Anagrams_item"><th>DEERST</th><td>DESERT, DETERS, RESTED</td></tr>  
+                <tr class="Anagrams_junk Anagrams_item"><th>DEIRST</th><td>DIREST, DRIEST, STRIDE</td></tr> 
+                <tr class="Anagrams_item"><th>DELOOP</th><td>LOOPED, POODLE, POOLED</td></tr>
+                <tr class="Anagrams_item"><th>DERSTU</th><td>DUSTER, RUDEST, RUSTED</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<script type="text/javascript">
+    var Anagrams_tableInput = document.getElementById("Anagrams_lookuptableinput");
+    var Anagrams_tableOne = document.getElementById("lookuptableAnagramsTableOne");
+    var Anagrams_tableTwo = document.getElementById("lookuptableAnagramsTableTwo");
+    if (urlParams.has('Anagrams-inmanuallookuptable')) {
+    
+        if (!urlParams.has('Anagrams-junkdata')) {
+            var junk = document.getElementsByClassName("Anagrams_junk");
+            for(var i = junk.length - 1; i >= 0; i--) {
+                junk[i].remove();
+            }   
+        }
+        for (var i = 0, row; row = Anagrams_tableInput.rows[i]; i++) {
+            var clone = Anagrams_tableInput.rows[i].cloneNode(true);
+            if (i < Anagrams_tableInput.rows.length / 2) {
+                Anagrams_tableOne.appendChild(clone);
+            }
+            else {
+                Anagrams_tableTwo.appendChild(clone);
+            }
+        }
+    }
+    else {
+        Anagrams_tableOne.remove();
+        Anagrams_tableTwo.remove();
+    }
+    Anagrams_tableInput.remove();
+</script>

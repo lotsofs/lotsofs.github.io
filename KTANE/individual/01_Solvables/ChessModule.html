@@ -1,0 +1,133 @@
+<div class="page" id="ChessModule">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Chess</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount">Page 1 of 2</div>
+    <div class="page-content">
+        <img src="img/Component/Chess.svg" class="diagram">
+        <h2 style="margin-bottom: 6px">On the Subject of Chess</h2>
+        <p class="flavour-text" style="margin: 0;">Under pressure, chess can feel more like a game of battleships.</p>
+        
+        <p style="margin: 0;">This module is based on a <strong>6×6 chessboard</strong> <i>(referenced on the following page)</i> and all pieces follow the standard FIDE movement rules.</p>
+        <p style="margin: 0;">The module will present a display and two rows of six buttons each.</p>
+        
+        <ul style="font-size: 0.9em; margin: 0;">
+            <li>There are six unique coordinates that represent six positions on the chessboard.</li>
+            <li>Use the numbered buttons in the bottom row to browse through the different coordinates. A green LED below the button will indicate the position of the currently selected coordinate.</li>
+            <li>Using the reference table below, each position can be assigned a certain chess figure.</li>
+            <li>The chess figures will cover 35 of the 36 possible fields with their combined movesets.</li>
+            <li>All chess figures are colorless but can block each other’s movement.</li>
+            <li>Find the one field that isn’t covered by any of the chess figures and enter the coordinate to defuse the module.</li>
+            <li>To enter the coordinate, press the letter first, then the number. The LEDs will turn red to confirm the input of a solution.</li>
+        </ul>
+        
+        <span>Use this table as reference to determine the correct figure for each position:</span>
+        <table class="chess">
+            <tr>
+                <td id = "rule1">
+                    <h4 style="margin: 0;">Position #1: Monarchy vs Theocracy</h4>
+                    <p style="margin: 0;">Occupied by a king if Position #5 is occupied by a queen.</p>
+                    <p style="margin: 0;">Otherwise, the field is occupied by a bishop.</p>
+                </td>
+            </tr>
+            <tr>
+                <td id = "rule2">
+                    <h4 style="margin: 0;">Position #2: Commander of the Army</h4>
+                    <p style="margin: 0;">Occupied by a rook if the last digit of the serial number is odd.</p>
+                    <p style="margin: 0;">Otherwise, the field is occupied by a knight.</p>
+                </td>
+            </tr>
+            <tr>
+                <td id = "rule3">
+                    <h4 style="margin: 0;">Position #3: A Matter of Regents</h4>
+                    <p style="margin: 0;">Occupied by a queen if there are less than two rooks on the board.</p>
+                    <p style="margin: 0;">Otherwise, the field is occupied by a king.</p>
+                </td>
+            </tr>
+            <tr>
+                <td id = "rule4">
+                    <h4 style="margin: 0;">Position #4: The Iron Tower</h4>
+                    <p style="margin: 0;">Always occupied by a rook.</p>
+                </td>
+            </tr>
+            <tr>
+                <td id = "rule5">
+                    <h4 style="margin: 0;">Position #5: Conflict between Good and Evil</h4>
+                    <p style="margin: 0;">Occupied by a queen if the field is white.</p>
+                    <p style="margin: 0;">Otherwise, the field is occupied by a rook.</p>
+                </td>
+            </tr>
+            <tr>
+                <td id = "rule6">
+                    <h4 style="margin: 0;">Position #6: The Scepter, the Sword, and the Crosier</h4>
+                    <p style="margin: 0;">Occupied by a queen if there are no other queens on the board.</p>
+                    <p style="margin: 0;">Otherwise, occupied by a knight if there are no other knights on the board.</p>
+                    <p style="margin: 0;">Otherwise, the field is occupied by a bishop.</p>
+                </td>
+            </tr>
+        </table>
+        
+    </div>
+</div>
+
+<div class="page page-bg-02">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Chess</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount">Page 2 offsaddafs 2</div>
+    <div class="page-content">
+        <h4>Chess Board Reference</h4>
+        <p style="margin: 0;">Use the following graphic as a reference for the chess board layout</p>
+        <style>
+            #chess-chessboard {
+                display: block;
+                margin: 0.5em;
+                width: 80%;
+            }
+
+            #chess-chessboard rect.white {
+                fill: #fffd
+            }
+
+            #chess-chessboard rect.black {
+                fill: #000d
+            }
+
+            #chess-chessboard rect.border {
+                fill: none;
+                stroke: #666;
+                stroke-width: 10px;
+            }
+
+            #chess-chessboard text {
+                font-size: 30px;
+                text-anchor: middle;
+                dominant-baseline: middle;
+                user-select: none;
+            }
+        </style>
+        <svg id="chess-chessboard" viewBox="-110 -10 720 720"><rect class="border" x="-5" y="-5" width="610" height="610"></rect><rect class="white highlightable" x="0" y="0" width="100" height="100"></rect><rect class="black highlightable" x="100" y="0" width="100" height="100"></rect><rect class="white highlightable" x="200" y="0" width="100" height="100"></rect><rect class="black highlightable" x="300" y="0" width="100" height="100"></rect><rect class="white highlightable" x="400" y="0" width="100" height="100"></rect><rect class="black highlightable" x="500" y="0" width="100" height="100"></rect><rect class="black highlightable" x="0" y="100" width="100" height="100"></rect><rect class="white highlightable" x="100" y="100" width="100" height="100"></rect><rect class="black highlightable" x="200" y="100" width="100" height="100"></rect><rect class="white highlightable" x="300" y="100" width="100" height="100"></rect><rect class="black highlightable" x="400" y="100" width="100" height="100"></rect><rect class="white highlightable" x="500" y="100" width="100" height="100"></rect><rect class="white highlightable" x="0" y="200" width="100" height="100"></rect><rect class="black highlightable" x="100" y="200" width="100" height="100"></rect><rect class="white highlightable" x="200" y="200" width="100" height="100"></rect><rect class="black highlightable" x="300" y="200" width="100" height="100"></rect><rect class="white highlightable" x="400" y="200" width="100" height="100"></rect><rect class="black highlightable" x="500" y="200" width="100" height="100"></rect><rect class="black highlightable" x="0" y="300" width="100" height="100"></rect><rect class="white highlightable" x="100" y="300" width="100" height="100"></rect><rect class="black highlightable" x="200" y="300" width="100" height="100"></rect><rect class="white highlightable" x="300" y="300" width="100" height="100"></rect><rect class="black highlightable" x="400" y="300" width="100" height="100"></rect><rect class="white highlightable" x="500" y="300" width="100" height="100"></rect><rect class="white highlightable" x="0" y="400" width="100" height="100"></rect><rect class="black highlightable" x="100" y="400" width="100" height="100"></rect><rect class="white highlightable" x="200" y="400" width="100" height="100"></rect><rect class="black highlightable" x="300" y="400" width="100" height="100"></rect><rect class="white highlightable" x="400" y="400" width="100" height="100"></rect><rect class="black highlightable" x="500" y="400" width="100" height="100"></rect><rect class="black highlightable" x="0" y="500" width="100" height="100"></rect><rect class="white highlightable" x="100" y="500" width="100" height="100"></rect><rect class="black highlightable" x="200" y="500" width="100" height="100"></rect><rect class="white highlightable" x="300" y="500" width="100" height="100"></rect><rect class="black highlightable" x="400" y="500" width="100" height="100"></rect><rect class="white highlightable" x="500" y="500" width="100" height="100"></rect><text x="-50" y="550" class="coordinate">1</text><text x="50" y="670" class="coordinate">a</text><text x="-50" y="450" class="coordinate">2</text><text x="150" y="670" class="coordinate">b</text><text x="-50" y="350" class="coordinate">3</text><text x="250" y="670" class="coordinate">c</text><text x="-50" y="250" class="coordinate">4</text><text x="350" y="670" class="coordinate">d</text><text x="-50" y="150" class="coordinate">5</text><text x="450" y="670" class="coordinate">e</text><text x="-50" y="50" class="coordinate">6</text><text x="550" y="670" class="coordinate">f</text></svg>
+
+        <div id="chess-movementrules">
+            <h4>Standard FIDE movement rules</h4>
+            <p style="margin: 0;">Use the following paraphrase from article 3 of the FIDE 2018 Laws of Chess to determine the possible movements for each piece</p>
+            <ul style="font-size: 0.9em; margin: 0;">
+                <li>It is not permitted to move a piece to a square occupied by another piece.</li>
+                <li>The bishop may move to any square along a diagonal on which it stands.</li>
+                <li>The rook may move to any square along the column or row on which it stands.</li>
+                <li>The queen may move to any square along the column, the row or a diagonal on which it stands.</li>
+                <li>When making these moves, the bishop, rook or queen may not move over any intervening pieces.</li>
+                <li>The knight may move to one of the squares nearest to that on which it stands but not on the same row, column or diagonal.</li>
+                <li>The king may move to an adjoining square.</li>
+            </ul>
+        </div>
+        <script>
+            if (!urlParams.has('ChessModule-movementrules')) {
+                var chessmodule_movementrules = document.getElementById("chess-movementrules");
+                chessmodule_movementrules.remove(); 
+            }
+        </script>
+    </div>
+</div>

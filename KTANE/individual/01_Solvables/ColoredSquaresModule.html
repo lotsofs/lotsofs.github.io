@@ -1,0 +1,57 @@
+<div class="page " id="ColoredSquaresModule">
+    <div class="page-header">
+        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+        <span class="page-header-section-title">Colored Squares</span>
+    </div>
+    <div class="page-footer absolute-footer solvablepagecount"></div>
+    <div class="page-content">
+        <img class="diagram" src="img/Component/Colored Squares.svg">
+        <h2>On the Subject of Colored Squares</h2>
+        <p class="flavour-text">There is order in chaos. A pattern in the colors. Find it, and all will become clear.</p>
+        <p class="appendix-reference appendix-reference-CSq" id="appendix-reference">See Appendix CSq for identifying modules in Colored Squares family.</p>
+
+        <ul >
+            <li>Press all squares in the correct group to progress the module.</li>
+            <li>Pressing a square will cause it to light up white. Make all squares white to disarm the module.</li>
+            <li>
+                To begin, press the color group containing the fewest squares. 
+                If there is a tie, you are looking at a different module. 
+                <span class=appendix-reference-CSq style="opacity: 0%">Refer to the appendix.</span>
+            </li>
+            <li>Then use the table to determine the next group to press in each stage.</li>
+            <li>“Group” refers to all squares of a particular color, or all non-white squares in the topmost row or leftmost column containing non-white squares.</li>
+            <li>Pressing an incorrect square will result in a strike and reset the module.</li>
+            <li>White squares will remain white for the duration of the module, but non-white squares may change color in each stage.</li>
+        </ul>
+
+        <style>
+            .coloredsquares-table {
+                font-size: 10pt;
+            }
+        
+        </style>
+
+        <table class="coloredsquares-table">
+            <tr>
+                <th rowspan="2">Currently White Squares</th>
+                <th colspan="7">Previous Group of Squares Pressed</th>
+            </tr>
+            <tr><th>Red</th><th>Blue</th><th>Green</th><th>Yellow</th><th>Magenta</th><th>Row</th><th>Column</th></tr>
+            <tr><th>1</th><td>Blue</td><td>Column</td><td>Red</td><td>Yellow</td><td>Row</td><td>Green</td><td>Magenta</td></tr>
+            <tr><th>2</th><td>Row</td><td>Green</td><td>Blue</td><td>Magenta</td><td>Red</td><td>Column</td><td>Yellow</td></tr>
+            <tr><th>3</th><td>Yellow</td><td>Magenta</td><td>Green</td><td>Row</td><td>Blue</td><td>Red</td><td>Column</td></tr>
+            <tr><th>4</th><td>Blue</td><td>Green</td><td>Yellow</td><td>Column</td><td>Red</td><td>Row</td><td>Magenta</td></tr>
+            <tr><th>5</th><td>Yellow</td><td>Row</td><td>Blue</td><td>Magenta</td><td>Column</td><td>Red</td><td>Green</td></tr>
+            <tr><th>6</th><td>Magenta</td><td>Red</td><td>Yellow</td><td>Green</td><td>Column</td><td>Blue</td><td>Row</td></tr>
+            <tr><th>7</th><td>Green</td><td>Row</td><td>Column</td><td>Blue</td><td>Magenta</td><td>Yellow</td><td>Red</td></tr>
+            <tr><th>8</th><td>Magenta</td><td>Red</td><td>Green</td><td>Blue</td><td>Yellow</td><td>Column</td><td>Row</td></tr>
+            <tr><th>9</th><td>Column</td><td>Yellow</td><td>Red</td><td>Green</td><td>Row</td><td>Magenta</td><td>Blue</td></tr>
+            <tr><th>10</th><td>Green</td><td>Column</td><td>Row</td><td>Red</td><td>Magenta</td><td>Blue</td><td>Yellow</td></tr>
+            <tr><th>11</th><td>Red</td><td>Yellow</td><td>Row</td><td>Column</td><td>Green</td><td>Magenta</td><td>Blue</td></tr>
+            <tr><th>12</th><td>Column</td><td>Blue</td><td>Magenta</td><td>Red</td><td>Yellow</td><td>Row</td><td>Green</td></tr>
+            <tr><th>13</th><td>Row</td><td>Magenta</td><td>Column</td><td>Yellow</td><td>Blue</td><td>Green</td><td>Red</td></tr>
+            <tr><th>14</th><td>Red</td><td>Blue</td><td>Magenta</td><td>Row</td><td>Green</td><td>Yellow</td><td>Column</td></tr>
+            <tr><th>15</th><td>Column</td><td>Row</td><td>Column</td><td>Row</td><td>Column</td><td>Row</td><td>Column</td></tr>
+        </table>
+    </div>
+</div>

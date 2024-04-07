@@ -344,17 +344,29 @@ q {
 }
 
 [dir='ltr'] .page-header-section-title {
-    float: right;
+    /* float: right; */
+    float: left;
 }
 
 [dir='rtl'] .page-header-section-title {
-    float: left;
+    /* float: left; */
+    float: right;
 }
 
 .page-header-doc-title {
     position: relative;
     height: 0;
     top: 0;
+}
+
+[dir='ltr'] .page-header-doc-title {
+    float: right;
+    /* float: left; */
+}
+
+[dir='rtl'] .page-header-doc-title {
+    float: left;
+    /* float: right; */
 }
 
 .page-footer {
@@ -390,6 +402,18 @@ q {
 
 .appendix-reference {
     font-style: italic;
+}
+
+/* ==========================================================================
+   Custom
+   ========================================================================== */
+
+table {
+    border: none;
+}
+
+.corner {
+    border: none;
 }
 
 /* ==========================================================================
@@ -993,7 +1017,7 @@ q {
     border: 0;
     overflow: hidden;
     /* IE 6/7 fallback */
-    *text-indent: -9999px;
+    /* *text-indent: -9999px; */
 }
 
 .ir:before {
@@ -1102,9 +1126,9 @@ q {
  * Include this rule to trigger hasLayout and contain floats.
  */
 
-.clearfix {
+/* .clearfix {
     *zoom: 1;
-}
+} */
 
 /* ==========================================================================
    EXAMPLE Media Queries for Responsive Design.
@@ -1195,3 +1219,45 @@ q {
         page-break-after: avoid;
     }
 }
+
+/* my stuff */
+.ColophonEntryThere {
+    display: none;
+}
+
+/* ==========================================================================
+   Timwi Specific Stuff
+   ========================================================================== */
+
+/* stacks up in the center with no spacing by default */
+.hstack {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.vstack {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+/* elements stack up on the left (top for a vstack) */
+.hstack.left, .vstack.top { justify-content: start; }
+/* stack up on the right (or bottom for a vstack) */
+.hstack.right, .vstack.bottom { justify-content: end; }
+/* fill available space by putting space between elements */
+:is(.hstack, .vstack).full { justify-content: space-between; }
+/* fill available space by putting space between elements and around them */
+:is(.hstack, .vstack).even { justify-content: space-evenly; }
+/* elements can wrap if space is too small */
+:is(.hstack, .vstack).wrap { flex-wrap: wrap; }
+/* align the centers of each element in the stack */
+:is(.hstack, .vstack).alignc { align-items: center; }
+/* align the top edges of each element (or left edges for a vstack) */
+.hstack.top, .vstack.left { align-items: flex-start; }
+/* align the bottom edges of each element (or right edges for a vstack) */
+.hstack.bottom, .vstack.right { align-items: flex-end; }
+/* put extra space between elements */
+:is(.hstack, .vstack).gap { gap: 5px; }
+:is(.hstack, .vstack).gap1 { gap: 10px; }
+:is(.hstack, .vstack).gap2 { gap: 20px; }
+:is(.hstack, .vstack).gap3 { gap: 30px; }
