@@ -1,0 +1,99 @@
+<section id="TicTacToeModule">
+	<div class="page ">
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+			<span class="page-header-section-title">Tic Tac Toe</span>
+		</div>
+		<div class="page-footer absolute-footer solvablepagecount"></div>
+		<div class="page-content">
+			<img src="img/Component/Tic Tac Toe.svg" class="diagram">
+			<h2>On the Subject of Tic Tac Toe</h2>
+			<p class="flavour-text">All those years of getting ties in Tic Tac Toe might finally pay off.</p>
+	
+			<p>To defuse this module, all nine buttons must be filled with “X”s and “O”s.</p>
+			<p>The display labeled “Up Next:” shows either an “X” or an “O”.  The keypad displays some numbers between 1 and 9 and some already placed “X”s and “O”s. After placing a piece, the displays go blank.</p>
+			<p>The numbers in the chart on the following page indicate the location on the keypad where each piece should be placed.</p>
+			<p>Use the rules below to determine the starting row:</p>
+			<ol>
+				<li>If the last digit of the serial number is even, the starting row is either 5,&nbsp;6,&nbsp;7,&nbsp;8,&nbsp;or&nbsp;9.  Otherwise, the starting row is either 1,&nbsp;2,&nbsp;3,&nbsp;or&nbsp;4.</li>
+				<li>If there is at least one parallel port, use the even values.  Otherwise, use the odd values.</li>
+				<li>If there are more unlit indicators than lit indicators, the starting row is the lowest remaining value from rule&nbsp;2.</li>
+				<li>If there are more lit indicators than unlit indicators, the starting row is the highest value remaining from rule&nbsp;2.</li>
+				<li>If there are an equal number of lit and unlit indicators, the starting row is the average of the remaining values from rule&nbsp;2.</li>
+			</ol>
+	
+			<p>
+				In the chart, determine the appropriate placement column based on the relative
+				number of “X”s and “O”s already on the board. Begin at the starting row and move down
+				your selected column until you reach a number that corresponds to an unfilled spot on the
+				keypad. If you pass row&nbsp;9, continue at row&nbsp;1.
+			</p>
+	
+			<p>
+				If placing the piece in this location would result in a tic-tac-toe, you MUST press “PASS”
+				and continue in the <u>same</u> row; otherwise, place the piece by pressing the location on the
+				keypad and then move to the <u>next</u> row in the chart.
+			</p>
+	
+			<p>
+				Two consecutive passes will result in a piece being placed (and displayed)
+				in one of the available spaces. This may result in a tic-tac-toe but will not
+				incur a strike. In such a case, move to the <u>next</u> row in the chart.
+			</p>
+	
+			<p>
+				Upon a strike, the row resets to the initial starting row and the keypad displays the
+				placed pieces and remaining numbers.  All previous placements remain until the module is defused.
+			</p>
+		</div>
+	</div>
+	<div class="page ">
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+			<span class="page-header-section-title">Tic Tac Toe</span>
+		</div>
+		<div class="page-footer absolute-footer solvablepagecount"></div>
+		<div class="page-content">
+			<p><strong>Table 1</strong></p>
+	
+			<style>
+				.tictactoetable td {
+					text-align: center;
+				}
+			</style>
+	
+			<table class='tictactoetable' style="border: none; width: 100%;">
+				<tr>
+					<td class='corner'></td>
+					<td colspan=2>More “X”s</td>
+					<td colspan=2>“X”s = “O”s</td>
+					<td colspan=2>More “O”s</td>
+				</tr>
+				<tr>
+					<td class='corner'></td>
+					<td colspan=2>Placing An:</td>
+					<td colspan=2>Placing An:</td>
+					<td colspan=2>Placing An:</td>
+				</tr>
+				<tr>
+					<th>ROW</th>
+					<th>“X”</th>
+					<th>“O”</th>
+					<th>“X”</th>
+					<th>“O”</th>
+					<th>“X”</th>
+					<th>“O”</th>
+				</tr>
+				<tr class='number-row'><th>1</th><td>9</td><td>3</td><td>3</td><td>9</td><td>8</td><td>1</td></tr>
+				<tr class='number-row'><th>2</th><td>5</td><td>6</td><td>6</td><td>7</td><td>1</td><td>2</td></tr>
+				<tr class='number-row'><th>3</th><td>7</td><td>8</td><td>2</td><td>1</td><td>5</td><td>8</td></tr>
+				<tr class='number-row'><th>4</th><td>4</td><td>5</td><td>7</td><td>8</td><td>9</td><td>6</td></tr>
+				<tr class='number-row'><th>5</th><td>1</td><td>4</td><td>1</td><td>6</td><td>7</td><td>3</td></tr>
+				<tr class='number-row'><th>6</th><td>8</td><td>7</td><td>5</td><td>2</td><td>4</td><td>4</td></tr>
+				<tr class='number-row'><th>7</th><td>6</td><td>1</td><td>8</td><td>4</td><td>3</td><td>9</td></tr>
+				<tr class='number-row'><th>8</th><td>2</td><td>2</td><td>9</td><td>5</td><td>2</td><td>5</td></tr>
+				<tr class='number-row'><th>9</th><td>3</td><td>9</td><td>4</td><td>3</td><td>6</td><td>7</td></tr>
+			</table>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,35 @@
+body {
+	font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;
+	margin:0;
+}
+table {
+	table-layout:fixed;
+	width:0;
+}
+.freezebar-cell {
+	background:#dadfe8;
+	border-color:#dadfe8;
+	border-width:0;
+	width:4px;
+}
+td,th {
+	border:solid 1px rgba(0,0,0,0.15);
+	border-width:0 1px 1px 0;
+}
+th {
+	background:#f8f9fa;
+	color:#5f6368;
+	font-size:8pt;
+	font-weight:normal;
+	height:23px;
+	width:45px;
+}
+th.row-header {
+	background:#eee;
+}
+td:hover,td:active {
+	overflow:visible!important;
+}
+td:not(:empty):hover ~ td,td:not(:empty):active ~ td {
+	color:transparent!important;
+}

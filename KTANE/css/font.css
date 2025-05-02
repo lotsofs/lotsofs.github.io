@@ -24,6 +24,10 @@
     font-family: 'Roboto Slab';
     src: url('../font/RobotoSlab-VariableFont_wght.ttf') format('truetype');
 }
+@font-face {
+    font-family: 'Roboto Mono';
+    src: url('../font/RobotoMono-VariableFont_wght.ttf');
+}
 @font-face { 
     font-family: "Yu Gothic"; 
     font-weight: 500; 

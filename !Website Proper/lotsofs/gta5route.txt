@@ -1,0 +1,392 @@
+Map of collectibles and other crap:
+https://ehgames.com/gta/map/fyqgbrhuw2h
+PNG version (big): https://lotsofs.com/gta5map.png
+Written version: https://lotsofs.com/gta5collectibles.html
+
+Plan for next stream:
+- Can The Good Husband be done after Trevor
+- Can Murder clues be discovered by not-Michael and during a mission?
+
+Future notes:
+Quick early money if needed for that darn golf course:
+* Animal Ark stock from Random Event (100k from instant cashout)
+* Some random event that gives 60k
+None of these are big cashouts compared to the endgame, and abusing stock market is needed regardless.
+
+
+Watching Riol's run to gain basic strat knowledge: https://www.youtube.com/watch?v=YPSkEht9ZKI
+
+==================================
+Mission 1: Prologue
+- Shoot first 4 cars + foot soldiers.
+- The next two regular cop cars can be ignored.
+- Shoot the third one again, then upon getting to the car shoot the ones approaching.
+
+- Prologue skip:
+1) Make car leak fuel by shooting back tire gas tank
+2) Throw car into trigger zone by jumping out
+3) Light fuel trail on fire
+4) Enter car and hope it gets destroyed during the cutscene.
+
+GOLD MEDAL:
+- Mission skips possible. No restrictions.
+
+100%#
+Nothing
+
+-------------------
+Mission 2: Franklin & Lamar
+- Slowing down on the first downhill bit into the canal area to let Lamar catch up
+- Seems to be using the character switch menu to abort/prevent dialogue in Simeon's store
+
+GOLD MEDAL
+- No DMG
+- Ability for 7 seconds (which is 14 in real time?)
+- Dont hit the aliens
+- Beat Lamar to the race
+
+100%#
+Potential Collectibles:
+MM #5
+-- During initial race. Lord knows
+MM #29
+-- During initial race. Lord knows
+USJ #7
+-- Done in all USJs, but tight timing to win the race for Gold
+MM #30
+-- Probably gets swarmed with cops because you need to stand on a car iirc
+USJ #16
+-- While waiting for the cops to disappear
+USJ #6
+-- While waiting for the cops to disappear
+MM #1
+-- While waiting for the cops to disappear
+MM #3
+-- While waiting for the cops to disappear, but likely too far out of the way with better options available.
+
+
+-----------------------
+Mission 3: Repossession
+- Park car backwards against the fence
+- Use car for quicker hop
+- Hug the fence, all the way left, and then you can first person push Lamar
+- Push him well enough it skips him punching the dude.
+- Leaving the garage, climb the small brick wall on the left, seems to spawn all the enemies
+- Shooting the pistol to spook Lamar makes him move faster?
+- Alley on right, quick Bagger steal.
+- Jump off bike at the end to skip something?
+
+
+GOLD MEDAL:
+- 6m30
+- 70% accuracy
+- 6 headshots
+- Shoot the gasoline trail
+
+100%#
+Potential Collectibles:
+USJ #44
+-- Even the any% route does this
+MM #50
+-- A bit out of the way, and it yields you with not enough speed to do the shortcut jump
+
+
+---------------
+Side Mission 1: Pulling Favors
+- Approach junker from the east.
+- Return along the west
+
+GOLD MEDAL:
+- 5m00
+- Dont accidentally unhook
+
+100%#
+USJ #17
+- Shortest on the route, but an awkward 180 turn required after landing
+USJ #25
+- out of the way, lines you up faster for end destination, but a bit far
+MM #27
+- one block further than you're supposed to drive. All of these are awkward, but getting one might be doable. Definitely not two.
+
+----------------------
+If you can get the Packie event to spawn? But it's at the cost of doing the stunt over the fence. 
+Also should this be completed properly? The destination isn't far (just behind Franklin's house), but it yields 2 stars that must be lost first.
+
+-------------------
+Mission 4: Chop
+- Push a cart to block Lamar's door (a bit further back) and it teleports him and Chop inside.
+- Goes one road further east on the way south for the chase
+- Then go straight one further before turning left.
+- At the start of the chase, shooting does something? Also later on?
+- Cut diagonal northeast over the train tracks. Climb between blue containers.
+- Chop can be pushed
+- Just cut diagonal and wait for the dude where he falls
+- Drive back: right immediately, past Legion Square's tunnel. 
+
+
+GOLD MEDAL:
+- No Van DMG
+- Chop POV 10 seconds
+- Ability 7 seconds
+
+
+100%#
+LS #16
+-- Suboptimal because of the van's slow acceleration
+LS #19
+-- Suboptimal because of the van's slow acceleration
+MM #16
+-- Puts you on foot nearby. Tight timing to not lose the chasee
+MM #23
+-- Puts you on foot practically next to it, while Chop does his thing
+USJ #16
+-- On a route back, but not on the optimal route. Bottlenecked by dialogue.
+
+----------------------
+It might be worth to squash a random event here, each with a minor 1-block detour:
+* Security Van 1 (mission ends too close to this, but...)... can take a nearby Peyote plant
+* ATM Robbery Sanchez (spawns everywhere, so low priority)
+* Mugging 3 (havent been able to get this to spawn yet)
+* Getaway Driver, especially if doing it properly
+
+
+---------------------
+Mission 5: Complications
+- Take the right car in Simeon's parking lot
+- North one block, then west, then onto the main road.
+- FPV for running and indoors
+- Sneak until out of the bathroom, then just jog in FPV. TPV jump in the little hallway to the garage
+- Enter/exit to immediately trigger Michael
+- Same route back
+- 9 righthanders, 1 kick?
+
+
+GOLD MEDAL:
+- 5m00s
+- No damage during Simeon fight
+- Knock out the gardener (stealthily)
+
+
+100%#
+USJ #46
+-- Somewhat en-route to Michael's.
+MM #10
+-- To go with the above USJ? 
+USJ #7
+-- On the way back. Does this work with Michael in the back?
+USJ #8
+-- Very unlikely
+USJ #44
+-- Already done, likely.
+
+----------------------
+Quick save and load glitch to Michael's house
+Alternatively squish a ? or Random Event before doing this.
+Hold the phone open and walk left to avoid a cutscene trigger
+
+---------------------
+Mission 6: Father/Son
+- Franklin hops on the boat after entering the tunnel
+- Shoot a guy on the turn right?
+- Slow down a LOT now
+- Jimmy gets poled before an underpass. 
+- Caught Jimmy and shot before the end of an onramp
+- Franklin caught before the last drop
+- Dialogue is bottlenecking the garage
+
+
+GOLD MEDAL:
+- Rescue Jimmy in 10s
+- No damage (after pay n spray?)
+
+100%#
+MM #40
+-- Out of the way
+MM #44
+-- On the way but access to the graveyard is awkward
+LS #18
+-- On the way but access to the graveyard is awkward
+USJ #28
+-- Likely not ideal with the boat spawn
+USJ #9
+-- Likely not ideal with the boat spawn
+MM #46
+-- Alternative route from any%
+MM #43
+-- Alternative route from any%
+MM #29
+-- Detour from alternative route, good for setup to USJ 9
+MM #19
+-- While waiting for dialogue to end. There's a PP nearby, so not ideal for om1
+MM #50
+-- Out of the way
+USJ #46
+-- Seems like a bigger detour than the previous mission
+MM #10
+-- See above
+
+------------------
+Does some weird wallcover warp setup
+Also some weird phonecall thing
+Drive off and warp back to the house
+Potentially get MM #17 and warp back from there
+Or maybe even a side mission, like Paparazzo, though it is much further away
+
+------------------
+Mission 7: Marriage Counseling
+- Holding the phone open prevents call & enemies?
+
+GOLD MEDAL:
+- No damage
+- 5m30s
+- Kill 3 enemies from inside the car
+
+100%#
+MM #17
+-- On the way? Not really
+
+--------------------
+This drops you in a random park with no vehicle.
+Options: 
+Follow the highway to Lester's house ala any%
+Along the way is MM #24
+Maybe USJ #24 followed by Security Van 10, Luring GIrl Into Alley, or LS #13
+LS #16 in the nearby construction site
+LS #19 followed by Mugging 2
+Humans of Los Santos - Mani
+MM #2 but it's behind a wall I think
+Gang Intimidations random event is right next to Lester's house. Small detour. No luck at spawning
+Murder Mystery Clue #3
+This unlocks the timer for Amanda's The Good Husband. It probably needs to be taken before Trevor
+What is Franklin up to?
+
+------------------
+Mission 8: Friend Request
+- Jump off into marker
+- No longer commits sudok
+- Rapid FP-TPV switching does something??
+- Store vehicle in garage?
+
+GOLD MEDAL:
+- 8m30s
+- 32 seconds for the popups
+
+100%#
+Gold medal only allows for about 1 minute of detouring on this mission.
+-- Might wanna do stock market stuff with this
+MM #2
+-- Behind a wall?
+LS #19
+-- On the way??
+LS #21
+-- On the way??
+MM #48
+-- On the way??
+USJ #48
+-- On the way pretty much
+MM #46
+-- A bit detour I think?
+
+----------------------------
+This unlocks Chaos
+Next mission is unlocked simply by running past the swimming pool into the hedge
+
+----------------------------
+Mission 9: Daddy's Little Girl
+- Push Jimmy a bit off the stairs
+- Then lure him into the car, enter passenger
+- Push red bike out of the way
+- There is some sort of bhop strat? If not, take yellow bike
+- No need to dive without the waves?
+
+GOLD MEDAL:
+- Top speed on seashark
+- Dont fall off bike
+- 1m00 to swim to the boat
+
+100%#
+LS #11
+-- Under the road, probably bad. Might wanna do it when you can deathwarp or something
+MM #45
+-- Seems good
+LS #9
+-- Requires getting off the bike, voiding the gold medal
+
+------------------------------
+Any% QS warps at this point, grabs the suit, then hangwarps franklin to drive to Lester in sleep mode.
+Need to do Chaos at this point to not miss it. If it's even required.
+Get LS 12 and MM 18on the pier.
+The underwater PP doesn't seem worth it. It spawns next to a nuclear barrel.
+Jesse spawns down the pier, but no car to get there.
+Also need to ride the coasters etc?
+Can take USJ 9 on the way to chaos, and maybe MM 39 and 5 (both bit out of the way)
+Will want to get Good Husband out of the way too at some point. This puts you at Michael's house -> No need for QS warp.
+
+----------------------------
+Mission 10: Casing the Jewel Store
+- Run FPS to the store, hug the left wall. One hop then in TPS.
+- TPS out of the shop, FPS to the car
+- Block car door upon exit
+- Ladders're done TPS. Roof FPS, upper roof TPS too.
+- Vent FPS. Jump down TPS before the round building on right side
+- Way back goes highway drop into tunnel, then the train tracks sewer. 
+- Jump out into marker
+- Any% picks Eddie Toh, Gustavo Mota, Paige Harris (all defaults)
+
+GOLD MEDAL:
+- 8m00
+- All three thigns in one picture
+
+100%#
+LS #13
+-- On the way, but maybe better opportunity later with faster car
+USJ #46
+-- This drive is done like hundreds of times
+MM #10
+-- This drive is done like hundreds of times already
+USJ #18
+on the way back, parallel road. Awkward with bridge at the end to get to Lester's
+
+-----------------------------------
+Mission 11: Carbine Rifles
+- Through the parking tunnel
+- Past Pay N Spray onto tracks
+- Grass hill on left
+- Keep left wall, camp by home in barrier on the road
+- Lester's text means go. Franklin call?
+- Park between 2 bridges near each other, then run back. SHoot floor?
+- Shoot floro in front of FBI car.
+- Let driver get out and shoot him last
+- Same route back. Go GO GO.
+- Wait at end tunnel, hug right wall
+
+GOLD MEDAL:
+- 2m00 to lose wanted level
+
+100%#
+Nothing
+
+--------------------------------------
+Mission 12: The Jewel Store Job
+- Sanchez: Sharp left
+- Don't go over the overpass. Keep left, big'ish road.
+- Drop down onto highway by that park, they will enter tunnels. Keep your sights on them with the camera button.
+- Drive blindly. At some point turn left and hop into the drain.
+- Hitting the trigger fails the mission. Is this ok for gold?
+- Truck: After second underpass cross river. Keep driving diagonally or curb boosting.
+- Ignore everything.
+
+GOLD MEDAL:
+- 0m50s to leave store
+- Don't die during the sewer chase
+- Steal EVERYTHING
+
+100%#
+Same initial drive as always. Van now. Not worth shit.
+Nothing in the tunnel it seems.
+Truck's slow
+
+-----------------------------------
+This drops you at the porn club. Exit FPS.
+Might wanna do a random event.
+Otherwise, Drive to Long Stretch.

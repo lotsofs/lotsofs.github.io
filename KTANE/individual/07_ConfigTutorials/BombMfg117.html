@@ -1,0 +1,52 @@
+<section id="AppendixBombMfg117">
+	<div class="page ">
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+			<span class="page-header-section-title">Appendix BombMfg#117</span>
+		</div>
+		<div class="page-footer absolute-footer appendixpagecount"></div>
+		<div class="page-content">
+			<h2>Appendix BombMfg#117: Morse-A-Maze Configuration Reference</h2>
+			<p>These are the instructions about Morse-A-Maze given to the bomb makers, who configure the module before the bomb is armed. This information can not be used to disarm the bomb.</p>
+			
+			<p>
+				<em>Configuration Options for <strong>MorseAMaze-settings.txt</strong></em><br>
+				It is possible to change the colors of the status light for the various states of the module.
+				The following colors are possible.
+			</p>
+			<ul>
+				<li>0 - Off</li>
+				<li>1 - Green</li>
+				<li>2 - Red</li>
+				<li>3 - Random</li>
+			</ul>
+			<p>These are the options that can be configured, and their default values.</p>
+			<ul>
+				<li>
+					<strong>SolvedState</strong> - The state the status light changes to once the module is solved.
+					(default: <b>Off</b>)
+				</li>
+				<li>
+					<strong>StrikeState</strong> - The state the status light changes to for one second when a strike is earned.
+					(default: <b>Off</b>)
+				</li>
+				<li>
+					<strong>OffState</strong> - The off state of the status light while morse code is being transmitted.
+					(default: <b>Green</b>)
+				</li>
+				<li>
+					<strong>MorseXmitState</strong> - The on state of the status light while morse code is being transmitted.
+					(default: <b>Red</b>)
+				</li>
+			</ul>
+			<p>
+				Finally, if you wish to reset everything back to default, just change "<b>ResetToDefault</b>"
+				from <b><em>false</em></b> to <b><em>true</em></b>
+			</p>
+			<p>
+				*If Colorblind mode is enabled, the module will ensure that at least the <strong>OffState</strong> or the <strong>MorseXmitState</strong>
+				is set to Off, regardless of current configuration options.
+			</p>
+		</div>
+	</div>
+</section>
