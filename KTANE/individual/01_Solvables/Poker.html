@@ -1,0 +1,277 @@
+<section id="Poker">
+	<style>
+		#Poker div.compact p { margin: .1em }
+
+		#Poker svg.flowchart { scale: 125%; }
+
+		#Poker svg.flowchart text {
+			font-size: 2.5px;
+			text-anchor: middle;
+			pointer-events: none;
+			user-select: none;
+		}
+
+		#Poker svg.flowchart rect {
+			fill: #DDD;
+			stroke-width: 0.2;
+			stroke: #000;
+		}
+
+		#Poker svg.flowchart .pointer {
+			stroke: #000;
+			stroke-width: 0.5;
+		}
+
+		#Poker table.bluff-or-truth { border: none; }
+		#Poker table.bluff-or-truth th.response { text-align: left; }
+		#Poker table.bluff-or-truth th.vert {
+			width: 22px;
+			padding: .3em .2em 0;
+			writing-mode: vertical-lr;
+			text-orientation: upright;
+			letter-spacing: -1px;
+		}
+
+		#Poker h3 { margin-top: 1em; }
+
+	</style>
+		<div class="page page-bg-01">
+			<div class="page-header">
+				<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+				<span class="page-header-section-title">Poker</span>
+			</div>
+			<div class="page-content">
+				<img src="img/Component/Poker.svg" class="diagram">
+				<h2>On the Subject of Poker</h2>
+				<p class="flavour-text">
+					Usually in poker, the wrong call means losing a lot of money. Here, it means death.
+				</p>
+
+				<p style="margin-bottom: 0.5em;"><i>SEE TABLE PK71 FOR POKER HAND RANKINGS.</i></p>
+
+				<div class="compact">
+					<p>The module will display a single face-up card.</p>
+					<p>You must push two of the buttons and one of the face-down cards in order to disarm it.</p>
+					<p>Use the given card to determine which of the four flow charts you should use.</p>
+					<p>Use the flow charts to determine your 5-card poker hand and press the appropriate button.</p>
+					<p>Your opponent will then respond. Use the two-way table to determine whether the response is the “truth” or a “bluff”.</p>
+					<p>Your opponent will then make a bet. Use the betting rules to determine which of the four final cards you should press.</p>
+				</div>
+				<ul style="margin-top: 0.2em">
+					<li>If you have NO HAND, press FOLD.</li>
+					<li>If you have A PAIR or TWO PAIR, press CHECK.</li>
+					<li>If you have THREE OF A KIND or A STRAIGHT, press MIN RAISE.</li>
+					<li>If you have A FLUSH or A FULL HOUSE, press MAX RAISE.</li>
+					<li>If you have FOUR OF A KIND or A STRAIGHT FLUSH, press ALL-IN.</li>
+				</ul>
+				<h3 style="margin-top: 0.2em">Flow Charts</h3>
+				<h4 style="margin-top: 0.2em; margin-bottom: 0em">Ace of Spades:</h4>
+				<svg style="margin-top: -2em;" id="ace" viewBox="-20 -25 210 150" class="flowchart">
+					<marker id="arrow" class="pointer" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="3" markerHeight="3" orient="auto-start-reverse">
+						<path d="M 0 0 L 10 5 L 0 10 L 3 5 z"></path> 
+					</marker> 
+				<text x="159.85" y="3" text-decoration="underline">FIFTH CARD</text><rect class="highlightable" x="148.1" y="7" height="3" width="23.5"></rect><text x="159.85" y="9.2">Four of Spades</text><line x1="113.6" y1="10.1" x2="147.9" y2="8.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="8.8">YES</text><rect class="highlightable" x="148.1" y="13" height="3" width="23.5"></rect><text x="159.85" y="15.2">Eight of Spades</text><line x1="113.6" y1="12.899999999999999" x2="147.9" y2="14.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="16.2">NO</text><rect class="highlightable" x="148.1" y="19" height="3" width="23.5"></rect><text x="159.85" y="21.2">Three of Clubs</text><line x1="113.6" y1="22.1" x2="147.9" y2="20.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="20.8">YES</text><rect class="highlightable" x="148.1" y="25" height="3" width="23.5"></rect><text x="159.85" y="27.2">Ace of Clubs</text><line x1="113.6" y1="24.900000000000002" x2="147.9" y2="26.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="28.2">NO</text><rect class="highlightable" x="148.1" y="31" height="3" width="23.5"></rect><text x="159.85" y="33.2">Jack of Diamonds</text><line x1="113.6" y1="34.1" x2="147.9" y2="32.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="32.8">YES</text><rect class="highlightable" x="148.1" y="37" height="3" width="23.5"></rect><text x="159.85" y="39.2">Three of Diamonds</text><line x1="113.6" y1="36.9" x2="147.9" y2="38.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="40.2">NO</text><rect class="highlightable" x="148.1" y="43" height="3" width="23.5"></rect><text x="159.85" y="45.2">Ace of Clubs</text><line x1="113.6" y1="46.1" x2="147.9" y2="44.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="44.8">YES</text><rect class="highlightable" x="148.1" y="49" height="3" width="23.5"></rect><text x="159.85" y="51.2">Six of Hearts</text><line x1="113.6" y1="48.9" x2="147.9" y2="50.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="52.2">NO</text><rect class="highlightable" x="148.1" y="55" height="3" width="23.5"></rect><text x="159.85" y="57.2">Jack of Hearts</text><line x1="113.6" y1="58.1" x2="147.9" y2="56.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="56.8">YES</text><rect class="highlightable" x="148.1" y="61" height="3" width="23.5"></rect><text x="159.85" y="63.2">Ace of Hearts</text><line x1="113.6" y1="60.9" x2="147.9" y2="62.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="64.2">NO</text><rect class="highlightable" x="148.1" y="67" height="3" width="23.5"></rect><text x="159.85" y="69.2">Two of Clubs</text><line x1="113.6" y1="70.1" x2="147.9" y2="68.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="68.8">YES</text><rect class="highlightable" x="148.1" y="73" height="3" width="23.5"></rect><text x="159.85" y="75.2">Ace of Clubs</text><line x1="113.6" y1="72.89999999999999" x2="147.9" y2="74.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="76.2">NO</text><rect class="highlightable" x="148.1" y="79" height="3" width="23.5"></rect><text x="159.85" y="81.2">Three of Clubs</text><line x1="113.6" y1="82.1" x2="147.9" y2="80.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="80.8">YES</text><rect class="highlightable" x="148.1" y="85" height="3" width="23.5"></rect><text x="159.85" y="87.2">Four of Spades</text><line x1="113.6" y1="84.89999999999999" x2="147.9" y2="86.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="88.2">NO</text><rect class="highlightable" x="148.1" y="91" height="3" width="23.5"></rect><text x="159.85" y="93.2">Ten of Spades</text><line x1="113.6" y1="94.1" x2="147.9" y2="92.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="92.8">YES</text><rect class="highlightable" x="148.1" y="97" height="3" width="23.5"></rect><text x="159.85" y="99.2">Ace of Clubs</text><line x1="113.6" y1="96.89999999999999" x2="147.9" y2="98.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="100.2">NO</text><text x="101.85" y="3" text-decoration="underline">FOURTH CARD</text><rect class="highlightable" x="90.1" y="10" height="3" width="23.5"></rect><text x="101.85" y="12.2">Two of Spades</text><line x1="83.6" y1="16.1" x2="89.89999999999999" y2="11.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="12.5">YES</text><text x="143.1" y="12.2">Is there an RJ-45 port?</text><rect class="highlightable" x="90.1" y="22" height="3" width="23.5"></rect><text x="101.85" y="24.2">Three of Diamonds</text><line x1="83.6" y1="18.900000000000002" x2="89.89999999999999" y2="23.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="24.5">NO</text><text x="143.1" y="24.2">Is there a PS/2 port?</text><rect class="highlightable" x="90.1" y="34" height="3" width="23.5"></rect><text x="101.85" y="36.2">Queen of Clubs</text><line x1="83.6" y1="40.1" x2="89.89999999999999" y2="35.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="36.5">YES</text><text x="143.1" y="36.2">Does the serial contain a vowel?</text><rect class="highlightable" x="90.1" y="46" height="3" width="23.5"></rect><text x="101.85" y="48.2">Ace of Diamonds</text><line x1="83.6" y1="42.9" x2="89.89999999999999" y2="47.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="48.5">NO</text><text x="143.1" y="48.2">Is the last digit of the serial even?</text><rect class="highlightable" x="90.1" y="58" height="3" width="23.5"></rect><text x="101.85" y="60.2">Jack of Spades</text><line x1="83.6" y1="64.1" x2="89.89999999999999" y2="59.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="60.5">YES</text><text x="143.1" y="60.2">Is there a DVI-D port?</text><rect class="highlightable" x="90.1" y="70" height="3" width="23.5"></rect><text x="101.85" y="72.2">Ace of Hearts</text><line x1="83.6" y1="66.89999999999999" x2="89.89999999999999" y2="71.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="72.5">NO</text><text x="143.1" y="72.2">Is there a parallel port?</text><rect class="highlightable" x="90.1" y="82" height="3" width="23.5"></rect><text x="101.85" y="84.2">Six of Diamonds</text><line x1="83.6" y1="88.1" x2="89.89999999999999" y2="83.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="84.5">YES</text><text x="143.1" y="84.2">Is there an unlit SND or TRN indicator?</text><rect class="highlightable" x="90.1" y="94" height="3" width="23.5"></rect><text x="101.85" y="96.2">Queen of Diamonds</text><line x1="83.6" y1="90.89999999999999" x2="89.89999999999999" y2="95.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="96.5">NO</text><text x="143.1" y="96.2">Is there a lit SIG or FRQ indicator?</text><text x="71.85" y="3" text-decoration="underline">THIRD CARD</text><rect class="highlightable" x="60.1" y="16" height="3" width="23.5"></rect><text x="71.85" y="18.2">Five of Spades</text><line x1="53.6" y1="28.1" x2="59.9" y2="17.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="21.5">YES</text><text x="103.1" y="16.45">Do the digits of the serial</text><text x="103.1" y="19.95">total an even number?</text><rect class="highlightable" x="60.1" y="40" height="3" width="23.5"></rect><text x="71.85" y="42.2">Nine of Hearts</text><line x1="53.6" y1="30.900000000000002" x2="59.9" y2="41.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="39.5">NO</text><text x="103.1" y="40.45">Are there more D batteries</text><text x="103.1" y="43.95">than AA batteries?</text><rect class="highlightable" x="60.1" y="64" height="3" width="23.5"></rect><text x="71.85" y="66.2">Jack of Clubs</text><line x1="53.6" y1="76.1" x2="59.9" y2="65.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="69.5">YES</text><text x="103.1" y="64.45">Is there an unlit CAR</text><text x="103.1" y="67.95">indicator?</text><rect class="highlightable" x="60.1" y="88" height="3" width="23.5"></rect><text x="71.85" y="90.2">Four of Clubs</text><line x1="53.6" y1="78.89999999999999" x2="59.9" y2="89.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="87.5">NO</text><text x="103.1" y="90.2">Is there a serial port?</text><text x="41.85" y="3" text-decoration="underline">SECOND CARD</text><rect class="highlightable" x="30.1" y="28" height="3" width="23.5"></rect><text x="41.85" y="30.2">Three of Spades</text><line x1="23.6" y1="52.1" x2="29.900000000000002" y2="29.5" class="pointer" marker-end="url(#arrow)"></line><text x="24.1" y="40.5">YES</text><text x="72.1" y="28.45">Is there a lit FRK</text><text x="72.1" y="31.95">or BOB indicator?</text><rect class="highlightable" x="30.1" y="76" height="3" width="23.5"></rect><text x="41.85" y="78.2">Jack of Diamonds</text><line x1="23.6" y1="54.9" x2="29.900000000000002" y2="77.5" class="pointer" marker-end="url(#arrow)"></line><text x="24.1" y="68.5">NO</text><text x="72.1" y="76.45">Does the serial</text><text x="72.1" y="79.95">contain a vowel?</text><text x="11.85" y="3" text-decoration="underline">FIRST CARD</text><rect class="highlightable" x="0.1" y="52" height="3" width="23.5"></rect><text x="11.85" y="54.2">Ace of Spades</text><text x="42.1" y="52.45">Are there three</text><text x="42.1" y="55.95">or more batteries?</text></svg>
+			</div>
+			<div class="page-footer relative-footer">Page 1 of 6</div>
+		</div>
+
+		<div class="page page-bg-01">
+			<div class="page-header">
+				<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+				<span class="page-header-section-title">Poker</span>
+			</div>
+			<div class="page-content">
+				<h4 style="margin-top: 0.2em; margin-bottom: 0em">King of Hearts:</h4>
+				<svg style="margin-top: -2em;" id="king" viewBox="-20 -25 210 150" class="flowchart"><text x="159.85" y="3" text-decoration="underline">FIFTH CARD</text><rect class="highlightable" x="148.1" y="7" height="3" width="23.5"></rect><text x="159.85" y="9.2">Four of Diamonds</text><line x1="113.6" y1="10.1" x2="147.9" y2="8.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="8.8">YES</text><rect class="highlightable" x="148.1" y="13" height="3" width="23.5"></rect><text x="159.85" y="15.2">King of Clubs</text><line x1="113.6" y1="12.899999999999999" x2="147.9" y2="14.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="16.2">NO</text><rect class="highlightable" x="148.1" y="19" height="3" width="23.5"></rect><text x="159.85" y="21.2">Three of Clubs</text><line x1="113.6" y1="22.1" x2="147.9" y2="20.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="20.8">YES</text><rect class="highlightable" x="148.1" y="25" height="3" width="23.5"></rect><text x="159.85" y="27.2">King of Clubs</text><line x1="113.6" y1="24.900000000000002" x2="147.9" y2="26.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="28.2">NO</text><rect class="highlightable" x="148.1" y="31" height="3" width="23.5"></rect><text x="159.85" y="33.2">Three of Spades</text><line x1="113.6" y1="34.1" x2="147.9" y2="32.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="32.8">YES</text><rect class="highlightable" x="148.1" y="37" height="3" width="23.5"></rect><text x="159.85" y="39.2">Four of Diamonds</text><line x1="113.6" y1="36.9" x2="147.9" y2="38.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="40.2">NO</text><rect class="highlightable" x="148.1" y="43" height="3" width="23.5"></rect><text x="159.85" y="45.2">Three of Clubs</text><line x1="113.6" y1="46.1" x2="147.9" y2="44.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="44.8">YES</text><rect class="highlightable" x="148.1" y="49" height="3" width="23.5"></rect><text x="159.85" y="51.2">Five of Clubs</text><line x1="113.6" y1="48.9" x2="147.9" y2="50.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="52.2">NO</text><rect class="highlightable" x="148.1" y="55" height="3" width="23.5"></rect><text x="159.85" y="57.2">Nine of Clubs</text><line x1="113.6" y1="58.1" x2="147.9" y2="56.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="56.8">YES</text><rect class="highlightable" x="148.1" y="61" height="3" width="23.5"></rect><text x="159.85" y="63.2">Three of Hearts</text><line x1="113.6" y1="60.9" x2="147.9" y2="62.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="64.2">NO</text><rect class="highlightable" x="148.1" y="67" height="3" width="23.5"></rect><text x="159.85" y="69.2">Two of Clubs</text><line x1="113.6" y1="70.1" x2="147.9" y2="68.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="68.8">YES</text><rect class="highlightable" x="148.1" y="73" height="3" width="23.5"></rect><text x="159.85" y="75.2">Seven of Diamonds</text><line x1="113.6" y1="72.89999999999999" x2="147.9" y2="74.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="76.2">NO</text><rect class="highlightable" x="148.1" y="79" height="3" width="23.5"></rect><text x="159.85" y="81.2">King of Clubs</text><line x1="113.6" y1="82.1" x2="147.9" y2="80.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="80.8">YES</text><rect class="highlightable" x="148.1" y="85" height="3" width="23.5"></rect><text x="159.85" y="87.2">Queen of Spades</text><line x1="113.6" y1="84.89999999999999" x2="147.9" y2="86.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="88.2">NO</text><rect class="highlightable" x="148.1" y="91" height="3" width="23.5"></rect><text x="159.85" y="93.2">Ace of Hearts</text><line x1="113.6" y1="94.1" x2="147.9" y2="92.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="92.8">YES</text><rect class="highlightable" x="148.1" y="97" height="3" width="23.5"></rect><text x="159.85" y="99.2">Nine of Clubs</text><line x1="113.6" y1="96.89999999999999" x2="147.9" y2="98.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="100.2">NO</text><text x="101.85" y="3" text-decoration="underline">FOURTH CARD</text><rect class="highlightable" x="90.1" y="10" height="3" width="23.5"></rect><text x="101.85" y="12.2">Four of Spades</text><line x1="83.6" y1="16.1" x2="89.89999999999999" y2="11.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="12.5">YES</text><text x="143.1" y="12.2">Is there a Stereo RCA port?</text><rect class="highlightable" x="90.1" y="22" height="3" width="23.5"></rect><text x="101.85" y="24.2">King of Spades</text><line x1="83.6" y1="18.900000000000002" x2="89.89999999999999" y2="23.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="24.5">NO</text><text x="143.1" y="24.2">Is there an RJ-45 and a Serial port?</text><rect class="highlightable" x="90.1" y="34" height="3" width="23.5"></rect><text x="101.85" y="36.2">Two of Clubs</text><line x1="83.6" y1="40.1" x2="89.89999999999999" y2="35.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="36.5">YES</text><text x="143.1" y="36.2">Is there a lit SND indicator?</text><rect class="highlightable" x="90.1" y="46" height="3" width="23.5"></rect><text x="101.85" y="48.2">Queen of Spades</text><line x1="83.6" y1="42.9" x2="89.89999999999999" y2="47.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="48.5">NO</text><text x="143.1" y="48.2">Is there an unlit TRN or FRK indicator?</text><rect class="highlightable" x="90.1" y="58" height="3" width="23.5"></rect><text x="101.85" y="60.2">Two of Diamonds</text><line x1="83.6" y1="64.1" x2="89.89999999999999" y2="59.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="60.5">YES</text><text x="143.1" y="60.2">Is there an unlit MSA or a lit NSA indicator?</text><rect class="highlightable" x="90.1" y="70" height="3" width="23.5"></rect><text x="101.85" y="72.2">Seven of Spades</text><line x1="83.6" y1="66.89999999999999" x2="89.89999999999999" y2="71.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="72.5">NO</text><text x="143.1" y="72.2">Is there a lit FRQ indicator?</text><rect class="highlightable" x="90.1" y="82" height="3" width="23.5"></rect><text x="101.85" y="84.2">Ten of Clubs</text><line x1="83.6" y1="88.1" x2="89.89999999999999" y2="83.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="84.5">YES</text><text x="143.1" y="84.2">Are there more AA than D batteries?</text><rect class="highlightable" x="90.1" y="94" height="3" width="23.5"></rect><text x="101.85" y="96.2">Two of Hearts</text><line x1="83.6" y1="90.89999999999999" x2="89.89999999999999" y2="95.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="96.5">NO</text><text x="143.1" y="96.2">Are there five or fewer batteries?</text><text x="71.85" y="3" text-decoration="underline">THIRD CARD</text><rect class="highlightable" x="60.1" y="16" height="3" width="23.5"></rect><text x="71.85" y="18.2">Four of Hearts</text><line x1="53.6" y1="28.1" x2="59.9" y2="17.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="21.5">YES</text><text x="103.1" y="16.45">Is there a lit IND, MSA</text><text x="103.1" y="19.95">or TRN indicator?</text><rect class="highlightable" x="60.1" y="40" height="3" width="23.5"></rect><text x="71.85" y="42.2">Ace of Hearts</text><line x1="53.6" y1="30.900000000000002" x2="59.9" y2="41.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="39.5">NO</text><text x="103.1" y="40.45">Is there a PS/2 or DVI-D</text><text x="103.1" y="43.95">port?</text><rect class="highlightable" x="60.1" y="64" height="3" width="23.5"></rect><text x="71.85" y="66.2">Three of Spades</text><line x1="53.6" y1="76.1" x2="59.9" y2="65.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="69.5">YES</text><text x="103.1" y="64.45">Are there three or</text><text x="103.1" y="67.95">fewer AA batteries?</text><rect class="highlightable" x="60.1" y="88" height="3" width="23.5"></rect><text x="71.85" y="90.2">Four of Hearts</text><line x1="53.6" y1="78.89999999999999" x2="59.9" y2="89.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="87.5">NO</text><text x="103.1" y="88.45">Is there an unlit BOB or</text><text x="103.1" y="91.95">FRQ indicator?</text><text x="41.85" y="3" text-decoration="underline">SECOND CARD</text><rect class="highlightable" x="30.1" y="28" height="3" width="23.5"></rect><text x="41.85" y="30.2">Four of Clubs</text><line x1="23.6" y1="52.1" x2="29.900000000000002" y2="29.5" class="pointer" marker-end="url(#arrow)"></line><text x="24.1" y="40.5">YES</text><text x="72.1" y="30.2">Are there any batteries?</text><rect class="highlightable" x="30.1" y="76" height="3" width="23.5"></rect><text x="41.85" y="78.2">Three of Diamonds</text><line x1="23.6" y1="54.9" x2="29.900000000000002" y2="77.5" class="pointer" marker-end="url(#arrow)"></line><text x="24.1" y="68.5">NO</text><text x="72.1" y="78.2">Is there a parallel port?</text><text x="11.85" y="3" text-decoration="underline">FIRST CARD</text><rect class="highlightable" x="0.1" y="52" height="3" width="23.5"></rect><text x="11.85" y="54.2">King of Hearts</text><text x="42.1" y="52.45">Do the digits of the serial</text><text x="42.1" y="55.95">total an odd number?</text></svg>
+
+				<h4 style="margin-top: 0.2em; margin-bottom: 0em">Five of Diamonds:</h4>
+				<svg style="margin-top: -2em;" id="five" viewBox="-20 -25 210 150" class="flowchart"><text x="159.85" y="3" text-decoration="underline">FIFTH CARD</text><rect class="highlightable" x="148.1" y="7" height="3" width="23.5"></rect><text x="159.85" y="9.2">Four of Diamonds</text><line x1="113.6" y1="10.1" x2="147.9" y2="8.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="8.8">YES</text><rect class="highlightable" x="148.1" y="13" height="3" width="23.5"></rect><text x="159.85" y="15.2">Six of Diamonds</text><line x1="113.6" y1="12.899999999999999" x2="147.9" y2="14.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="16.2">NO</text><rect class="highlightable" x="148.1" y="19" height="3" width="23.5"></rect><text x="159.85" y="21.2">Four of Spades</text><line x1="113.6" y1="22.1" x2="147.9" y2="20.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="20.8">YES</text><rect class="highlightable" x="148.1" y="25" height="3" width="23.5"></rect><text x="159.85" y="27.2">Three of Diamonds</text><line x1="113.6" y1="24.900000000000002" x2="147.9" y2="26.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="28.2">NO</text><rect class="highlightable" x="148.1" y="31" height="3" width="23.5"></rect><text x="159.85" y="33.2">Jack of Clubs</text><line x1="113.6" y1="34.1" x2="147.9" y2="32.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="32.8">YES</text><rect class="highlightable" x="148.1" y="37" height="3" width="23.5"></rect><text x="159.85" y="39.2">Nine of Spades</text><line x1="113.6" y1="36.9" x2="147.9" y2="38.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="40.2">NO</text><rect class="highlightable" x="148.1" y="43" height="3" width="23.5"></rect><text x="159.85" y="45.2">Queen of Hearts</text><line x1="113.6" y1="46.1" x2="147.9" y2="44.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="44.8">YES</text><rect class="highlightable" x="148.1" y="49" height="3" width="23.5"></rect><text x="159.85" y="51.2">Five of Hearts</text><line x1="113.6" y1="48.9" x2="147.9" y2="50.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="52.2">NO</text><rect class="highlightable" x="148.1" y="55" height="3" width="23.5"></rect><text x="159.85" y="57.2">King of Hearts</text><line x1="113.6" y1="58.1" x2="147.9" y2="56.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="56.8">YES</text><rect class="highlightable" x="148.1" y="61" height="3" width="23.5"></rect><text x="159.85" y="63.2">Queen of Diamonds</text><line x1="113.6" y1="60.9" x2="147.9" y2="62.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="64.2">NO</text><rect class="highlightable" x="148.1" y="67" height="3" width="23.5"></rect><text x="159.85" y="69.2">Two of Diamonds</text><line x1="113.6" y1="70.1" x2="147.9" y2="68.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="68.8">YES</text><rect class="highlightable" x="148.1" y="73" height="3" width="23.5"></rect><text x="159.85" y="75.2">Six of Spades</text><line x1="113.6" y1="72.89999999999999" x2="147.9" y2="74.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="76.2">NO</text><rect class="highlightable" x="148.1" y="79" height="3" width="23.5"></rect><text x="159.85" y="81.2">Eight of Diamonds</text><line x1="113.6" y1="82.1" x2="147.9" y2="80.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="80.8">YES</text><rect class="highlightable" x="148.1" y="85" height="3" width="23.5"></rect><text x="159.85" y="87.2">Eight of Hearts</text><line x1="113.6" y1="84.89999999999999" x2="147.9" y2="86.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="88.2">NO</text><rect class="highlightable" x="148.1" y="91" height="3" width="23.5"></rect><text x="159.85" y="93.2">Five of Spades</text><line x1="113.6" y1="94.1" x2="147.9" y2="92.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="92.8">YES</text><rect class="highlightable" x="148.1" y="97" height="3" width="23.5"></rect><text x="159.85" y="99.2">Six of Spades</text><line x1="113.6" y1="96.89999999999999" x2="147.9" y2="98.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="100.2">NO</text><text x="101.85" y="3" text-decoration="underline">FOURTH CARD</text><rect class="highlightable" x="90.1" y="10" height="3" width="23.5"></rect><text x="101.85" y="12.2">Ace of Hearts</text><line x1="83.6" y1="16.1" x2="89.89999999999999" y2="11.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="12.5">YES</text><text x="143.1" y="12.2">Is there an unlit CLR or a lit CAR indicator?</text><rect class="highlightable" x="90.1" y="22" height="3" width="23.5"></rect><text x="101.85" y="24.2">Six of Hearts</text><line x1="83.6" y1="18.900000000000002" x2="89.89999999999999" y2="23.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="24.5">NO</text><text x="143.1" y="24.2">Is there a lit MSA or unlit NSA indicator?</text><rect class="highlightable" x="90.1" y="34" height="3" width="23.5"></rect><text x="101.85" y="36.2">Ten of Spades</text><line x1="83.6" y1="40.1" x2="89.89999999999999" y2="35.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="36.5">YES</text><text x="143.1" y="36.2">Are there any unlit indicators?</text><rect class="highlightable" x="90.1" y="46" height="3" width="23.5"></rect><text x="101.85" y="48.2">Jack of Spades</text><line x1="83.6" y1="42.9" x2="89.89999999999999" y2="47.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="48.5">NO</text><text x="143.1" y="48.2">Is there an unlit CLR indicator?</text><rect class="highlightable" x="90.1" y="58" height="3" width="23.5"></rect><text x="101.85" y="60.2">King of Diamonds</text><line x1="83.6" y1="64.1" x2="89.89999999999999" y2="59.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="60.5">YES</text><text x="143.1" y="60.2">Are there any ports?</text><rect class="highlightable" x="90.1" y="70" height="3" width="23.5"></rect><text x="101.85" y="72.2">Ace of Diamonds</text><line x1="83.6" y1="66.89999999999999" x2="89.89999999999999" y2="71.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="72.5">NO</text><text x="143.1" y="72.2">Is there a parallel port?</text><rect class="highlightable" x="90.1" y="82" height="3" width="23.5"></rect><text x="101.85" y="84.2">Seven of Diamonds</text><line x1="83.6" y1="88.1" x2="89.89999999999999" y2="83.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="84.5">YES</text><text x="143.1" y="84.2">Are there fewer than three ports?</text><rect class="highlightable" x="90.1" y="94" height="3" width="23.5"></rect><text x="101.85" y="96.2">Five of Clubs</text><line x1="83.6" y1="90.89999999999999" x2="89.89999999999999" y2="95.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="96.5">NO</text><text x="143.1" y="96.2">Is there a Stereo RCA and a DVI-D port?</text><text x="71.85" y="3" text-decoration="underline">THIRD CARD</text><rect class="highlightable" x="60.1" y="16" height="3" width="23.5"></rect><text x="71.85" y="18.2">Two of Spades</text><line x1="53.6" y1="28.1" x2="59.9" y2="17.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="21.5">YES</text><text x="103.1" y="16.45">Is there more than</text><text x="103.1" y="19.95">one port?</text><rect class="highlightable" x="60.1" y="40" height="3" width="23.5"></rect><text x="71.85" y="42.2">Nine of Hearts</text><line x1="53.6" y1="30.900000000000002" x2="59.9" y2="41.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="39.5">NO</text><text x="103.1" y="40.45">Is there a PS/2</text><text x="103.1" y="43.95">or an RJ-45 port?</text><rect class="highlightable" x="60.1" y="64" height="3" width="23.5"></rect><text x="71.85" y="66.2">Four of Diamonds</text><line x1="53.6" y1="76.1" x2="59.9" y2="65.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="69.5">YES</text><text x="103.1" y="64.45">Is there a lit BOB or an</text><text x="103.1" y="67.95">unlit FRQ or SIG indicator?</text><rect class="highlightable" x="60.1" y="88" height="3" width="23.5"></rect><text x="71.85" y="90.2">Six of Diamonds</text><line x1="53.6" y1="78.89999999999999" x2="59.9" y2="89.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="87.5">NO</text><text x="103.1" y="88.45">Are there any lit</text><text x="103.1" y="91.95">indicators?</text><text x="41.85" y="3" text-decoration="underline">SECOND CARD</text><rect class="highlightable" x="30.1" y="28" height="3" width="23.5"></rect><text x="41.85" y="30.2">Three of Clubs</text><line x1="23.6" y1="52.1" x2="29.900000000000002" y2="29.5" class="pointer" marker-end="url(#arrow)"></line><text x="24.1" y="40.5">YES</text><text x="72.1" y="28.45">Does the serial</text><text x="72.1" y="31.95">contain a vowel?</text><rect class="highlightable" x="30.1" y="76" height="3" width="23.5"></rect><text x="41.85" y="78.2">Nine of Diamonds</text><line x1="23.6" y1="54.9" x2="29.900000000000002" y2="77.5" class="pointer" marker-end="url(#arrow)"></line><text x="24.1" y="68.5">NO</text><text x="72.1" y="76.45">Is the last digit of the</text><text x="72.1" y="79.95">serial an odd number?</text><text x="11.85" y="3" text-decoration="underline">FIRST CARD</text><rect class="highlightable" x="0.1" y="52" height="3" width="23.5"></rect><text x="11.85" y="54.2">Five of Diamonds</text><text x="42.1" y="52.45">Are there more AA</text><text x="42.1" y="55.95">batteries than D batteries?</text></svg>
+			</div>
+			<div class="page-footer relative-footer">Page 2 of 6</div>
+		</div>
+
+		<div class="page page-bg-01">
+			<div class="page-header">
+				<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+				<span class="page-header-section-title">Poker</span>
+			</div>
+			<div class="page-content">
+				<h4 style="margin-top: 0.2em; margin-bottom: 0em">Two of Clubs:</h4>
+				<svg style="margin-top: -2em;" id="two" viewBox="-20 -25 210 150" class="flowchart"><text x="159.85" y="3" text-decoration="underline">FIFTH CARD</text><rect class="highlightable" x="148.1" y="7" height="3" width="23.5"></rect><text x="159.85" y="9.2">Queen of Clubs</text><line x1="113.6" y1="10.1" x2="147.9" y2="8.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="8.8">YES</text><rect class="highlightable" x="148.1" y="13" height="3" width="23.5"></rect><text x="159.85" y="15.2">Two of Diamonds</text><line x1="113.6" y1="12.899999999999999" x2="147.9" y2="14.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="16.2">NO</text><rect class="highlightable" x="148.1" y="19" height="3" width="23.5"></rect><text x="159.85" y="21.2">Four of Clubs</text><line x1="113.6" y1="22.1" x2="147.9" y2="20.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="20.8">YES</text><rect class="highlightable" x="148.1" y="25" height="3" width="23.5"></rect><text x="159.85" y="27.2">King of Clubs</text><line x1="113.6" y1="24.900000000000002" x2="147.9" y2="26.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="28.2">NO</text><rect class="highlightable" x="148.1" y="31" height="3" width="23.5"></rect><text x="159.85" y="33.2">Six of Diamonds</text><line x1="113.6" y1="34.1" x2="147.9" y2="32.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="32.8">YES</text><rect class="highlightable" x="148.1" y="37" height="3" width="23.5"></rect><text x="159.85" y="39.2">Two of Hearts</text><line x1="113.6" y1="36.9" x2="147.9" y2="38.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="40.2">NO</text><rect class="highlightable" x="148.1" y="43" height="3" width="23.5"></rect><text x="159.85" y="45.2">Ace of Hearts</text><line x1="113.6" y1="46.1" x2="147.9" y2="44.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="44.8">YES</text><rect class="highlightable" x="148.1" y="49" height="3" width="23.5"></rect><text x="159.85" y="51.2">Seven of Spades</text><line x1="113.6" y1="48.9" x2="147.9" y2="50.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="52.2">NO</text><rect class="highlightable" x="148.1" y="55" height="3" width="23.5"></rect><text x="159.85" y="57.2">Six of Clubs</text><line x1="113.6" y1="58.1" x2="147.9" y2="56.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="56.8">YES</text><rect class="highlightable" x="148.1" y="61" height="3" width="23.5"></rect><text x="159.85" y="63.2">Five of Diamonds</text><line x1="113.6" y1="60.9" x2="147.9" y2="62.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="64.2">NO</text><rect class="highlightable" x="148.1" y="67" height="3" width="23.5"></rect><text x="159.85" y="69.2">Five of Hearts</text><line x1="113.6" y1="70.1" x2="147.9" y2="68.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="68.8">YES</text><rect class="highlightable" x="148.1" y="73" height="3" width="23.5"></rect><text x="159.85" y="75.2">King of Hearts</text><line x1="113.6" y1="72.89999999999999" x2="147.9" y2="74.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="76.2">NO</text><rect class="highlightable" x="148.1" y="79" height="3" width="23.5"></rect><text x="159.85" y="81.2">Three of Spades</text><line x1="113.6" y1="82.1" x2="147.9" y2="80.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="80.8">YES</text><rect class="highlightable" x="148.1" y="85" height="3" width="23.5"></rect><text x="159.85" y="87.2">King of Spades</text><line x1="113.6" y1="84.89999999999999" x2="147.9" y2="86.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="88.2">NO</text><rect class="highlightable" x="148.1" y="91" height="3" width="23.5"></rect><text x="159.85" y="93.2">Jack of Clubs</text><line x1="113.6" y1="94.1" x2="147.9" y2="92.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="92.8">YES</text><rect class="highlightable" x="148.1" y="97" height="3" width="23.5"></rect><text x="159.85" y="99.2">Two of Diamonds</text><line x1="113.6" y1="96.89999999999999" x2="147.9" y2="98.5" class="pointer" marker-end="url(#arrow)"></line><text x="123.6" y="100.2">NO</text><text x="101.85" y="3" text-decoration="underline">FOURTH CARD</text><rect class="highlightable" x="90.1" y="10" height="3" width="23.5"></rect><text x="101.85" y="12.2">Jack of Hearts</text><line x1="83.6" y1="16.1" x2="89.89999999999999" y2="11.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="12.5">YES</text><text x="143.1" y="12.2">Is the last letter of the serial a consonant?</text><rect class="highlightable" x="90.1" y="22" height="3" width="23.5"></rect><text x="101.85" y="24.2">Jack of Clubs</text><line x1="83.6" y1="18.900000000000002" x2="89.89999999999999" y2="23.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="24.5">NO</text><text x="143.1" y="24.2">Is the last digit of the serial odd?</text><rect class="highlightable" x="90.1" y="34" height="3" width="23.5"></rect><text x="101.85" y="36.2">Two of Diamonds</text><line x1="83.6" y1="40.1" x2="89.89999999999999" y2="35.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="36.5">YES</text><text x="143.1" y="36.2">Is there a PS/2 and a parallel port?</text><rect class="highlightable" x="90.1" y="46" height="3" width="23.5"></rect><text x="101.85" y="48.2">Six of Hearts</text><line x1="83.6" y1="42.9" x2="89.89999999999999" y2="47.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="48.5">NO</text><text x="143.1" y="48.2">Are there three or fewer ports?</text><rect class="highlightable" x="90.1" y="58" height="3" width="23.5"></rect><text x="101.85" y="60.2">Five of Spades</text><line x1="83.6" y1="64.1" x2="89.89999999999999" y2="59.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="60.5">YES</text><text x="143.1" y="60.2">Are there more AA than D batteries?</text><rect class="highlightable" x="90.1" y="70" height="3" width="23.5"></rect><text x="101.85" y="72.2">Six of Hearts</text><line x1="83.6" y1="66.89999999999999" x2="89.89999999999999" y2="71.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="72.5">NO</text><text x="143.1" y="72.2">Are there more D than AA batteries?</text><rect class="highlightable" x="90.1" y="82" height="3" width="23.5"></rect><text x="101.85" y="84.2">King of Clubs</text><line x1="83.6" y1="88.1" x2="89.89999999999999" y2="83.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="84.5">YES</text><text x="143.1" y="84.2">Are there more than two D batteries?</text><rect class="highlightable" x="90.1" y="94" height="3" width="23.5"></rect><text x="101.85" y="96.2">Four of Diamonds</text><line x1="83.6" y1="90.89999999999999" x2="89.89999999999999" y2="95.5" class="pointer" marker-end="url(#arrow)"></line><text x="86.1" y="96.5">NO</text><text x="143.1" y="96.2">Are there more than two batteries?</text><text x="71.85" y="3" text-decoration="underline">THIRD CARD</text><rect class="highlightable" x="60.1" y="16" height="3" width="23.5"></rect><text x="71.85" y="18.2">Ten of Clubs</text><line x1="53.6" y1="28.1" x2="59.9" y2="17.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="21.5">YES</text><text x="103.1" y="16.45">Is there a DVI-D or a Stereo</text><text x="103.1" y="19.95">RCA port?</text><rect class="highlightable" x="60.1" y="40" height="3" width="23.5"></rect><text x="71.85" y="42.2">Ace of Spades</text><line x1="53.6" y1="30.900000000000002" x2="59.9" y2="41.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="39.5">NO</text><text x="103.1" y="40.45">Do the digits of the serial</text><text x="103.1" y="43.95">add up to more than twelve?</text><rect class="highlightable" x="60.1" y="64" height="3" width="23.5"></rect><text x="71.85" y="66.2">Four of Hearts</text><line x1="53.6" y1="76.1" x2="59.9" y2="65.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="69.5">YES</text><text x="103.1" y="64.45">Is there a parallel port</text><text x="103.1" y="67.95">and a serial port?</text><rect class="highlightable" x="60.1" y="88" height="3" width="23.5"></rect><text x="71.85" y="90.2">King of Hearts</text><line x1="53.6" y1="78.89999999999999" x2="59.9" y2="89.5" class="pointer" marker-end="url(#arrow)"></line><text x="55.1" y="87.5">NO</text><text x="103.1" y="90.2">Is there an RJ-45 port?</text><text x="41.85" y="3" text-decoration="underline">SECOND CARD</text><rect class="highlightable" x="30.1" y="28" height="3" width="23.5"></rect><text x="41.85" y="30.2">Six of Clubs</text><line x1="23.6" y1="52.1" x2="29.900000000000002" y2="29.5" class="pointer" marker-end="url(#arrow)"></line><text x="24.1" y="40.5">YES</text><text x="72.1" y="28.45">Are there five or fewer</text><text x="72.1" y="31.95">batteries?</text><rect class="highlightable" x="30.1" y="76" height="3" width="23.5"></rect><text x="41.85" y="78.2">Three of Hearts</text><line x1="23.6" y1="54.9" x2="29.900000000000002" y2="77.5" class="pointer" marker-end="url(#arrow)"></line><text x="24.1" y="68.5">NO</text><text x="72.1" y="76.45">Does the serial contain</text><text x="72.1" y="79.95">an even number of letters?</text><text x="11.85" y="3" text-decoration="underline">FIRST CARD</text><rect class="highlightable" x="0.1" y="52" height="3" width="23.5"></rect><text x="11.85" y="54.2">Two of Clubs</text><text x="42.1" y="52.45">Is there a lit TRN, BOB</text><text x="42.1" y="55.95">or IND indicator?</text></svg>
+				<h3>Bluff or Truth?</h3>
+				<table class="bluff-or-truth">
+					<tbody><tr><th colspan="4">Starter card</th><td class="corner" colspan="2" rowspan="2"></td></tr>
+					<tr><th>Ace</th><th>King</th><th>Five</th><th>Two</th></tr>
+					<tr>
+						<td>Truth</td><td>Truth</td><td>Truth</td><td>Bluff</td><th class="response">“Terrible play!”</th>
+						<th rowspan="6" class="vert">Opponent Response</th>
+					</tr>
+					<tr><td>Bluff</td><td>Truth</td><td>Truth</td><td>Bluff</td><th class="response">“Awful play!”</th></tr>
+					<tr><td>Truth</td><td>Bluff</td><td>Bluff</td><td>Bluff</td><th class="response">“Really?”</th></tr>
+					<tr><td>Bluff</td><td>Bluff</td><td>Truth</td><td>Bluff</td><th class="response">“Really, really?”</th></tr>
+					<tr><td>Truth</td><td>Bluff</td><td>Bluff</td><td>Truth</td><th class="response">“Sure about that?”</th></tr>
+					<tr><td>Bluff</td><td>Truth</td><td>Truth</td><td>Truth</td><th class="response">“Are you sure?”</th></tr>
+				</tbody></table>
+			</div>
+			<div class="page-footer relative-footer">Page 3 of 6</div>
+		</div>
+
+		<div class="page page-bg-03">
+			<div class="page-header">
+				<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+				<span class="page-header-section-title">Poker</span>
+			</div>
+			<div class="page-content">
+
+				<h3>Betting Rules</h3>
+				<h4>$25 Bet:</h4>
+				<span class="highlightable">If the first card is red and there is a lit BOB indicator, press the fourth card.</span><br>
+				<span class="highlightable">Otherwise, if your opponent said “Awful play!” and the starter card was the Ace of Spades, press the first card.</span><br>
+				<span class="highlightable">Otherwise, if there is an unlit FRQ indicator and the fourth card is black, press the second card.</span><br>
+				<span class="highlightable">Otherwise, if there is at least one diamond and your opponent said “Really?” or “Really, really?”, press the third card.</span><br>
+				<span class="highlightable">Otherwise, if the fourth card is a spade and there are more than four batteries, press the third card.</span><br>
+				<span class="highlightable">Otherwise, if the third card is a diamond and the second card is not a club, press the second card.</span><br>
+				<span class="highlightable">Otherwise, if your opponent said “Are you sure?” and the starter card was the Two of Clubs, press the first card.</span><br>
+				<span class="highlightable">Otherwise, if the starter card was the Five of Diamonds, press the fourth card.</span><br>
+				<span class="highlightable">Otherwise, if the second card is a club and there is no RJ-45 port, press the second card.</span><br>
+				<span class="highlightable">Otherwise, press the first card.</span><br>
+				<h4>$50 Bet:</h4>
+				<span class="highlightable">If your opponent said “Sure about that?” and the fourth card is a heart, press the first card.</span><br>
+				<span class="highlightable">Otherwise, if there are no clubs and the starter card was the Two of Clubs, press the third card.</span><br>
+				<span class="highlightable">Otherwise, if a heart appears anywhere above a spade and there are no diamonds press the fourth card.</span><br>
+				<span class="highlightable">Otherwise, if the first card is a heart and the starter card was not the King of Hearts, press the second card.</span><br>
+				<span class="highlightable">Otherwise, if your opponent said “Really, really?” and the first or second card are hearts, press the fourth card.</span><br>
+				<span class="highlightable">Otherwise, if the starter card was the Five of Diamonds and there is a parallel port, press the first card.</span><br>
+				<span class="highlightable">Otherwise, if there is a lit TRN indicator and there is at least one black card, press the second card.</span><br>
+				<span class="highlightable">Otherwise, if your opponent said “Terrible play!”, press the third card.</span><br>
+				<span class="highlightable">Otherwise, if the digits of the serial number add up to less than ten press the first card.</span><br>
+				<span class="highlightable">Otherwise, press the third card.</span><br>
+			</div>
+			<div class="page-footer relative-footer">Page 4 of 6</div>
+		</div>
+
+		<div class="page page-bg-03">
+			<div class="page-header">
+				<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+				<span class="page-header-section-title">Poker</span>
+			</div>
+			<div class="page-content">
+
+				<h4>$100 Bet:</h4>
+				<span class="highlightable">If your opponent said “Really, really?”, press the second card.</span><br>
+				<span class="highlightable">Otherwise, if your opponent said, “Really?”, press the fourth card.</span><br>
+				<span class="highlightable">Otherwise, if there are no D batteries and the starter card was the Ace of Spades, press the first card.</span><br>
+				<span class="highlightable">Otherwise, if the digits of the serial number add up to a prime number and there is at least one heart, press the fourth card.</span><br>
+				<span class="highlightable">Otherwise, if a club and a spade appear and your opponent said “Sure about that?”, press the third card.</span><br>
+				<span class="highlightable">Otherwise, if a club and a spade appear next to each other, press the second card.</span><br>
+				<span class="highlightable">Otherwise, if there is an unlit MSA indicator, press the first card.</span><br>
+				<span class="highlightable">Otherwise, if there is at least one diamond, press the third card.</span><br>
+				<span class="highlightable">Otherwise, if your opponent said “Awful play!”, press the fourth card.</span><br>
+				<span class="highlightable">Otherwise, press the second card.</span><br>
+				<h4>$500 Bet:</h4>
+				<span class="highlightable">If there is more than one club, press the third card.</span><br>
+				<span class="highlightable">Otherwise, if the serial number contains a vowel and there is at least one spade, press the second card.</span><br>
+				<span class="highlightable">Otherwise, if there are no ports and there is at least one heart, press the first card.</span><br>
+				<span class="highlightable">Otherwise, if there are no red cards, press the fourth card.</span><br>
+				<span class="highlightable">Otherwise, if your opponent said “Are you sure?”, press the fourth card.</span><br>
+				<span class="highlightable">Otherwise, if there are no lit indicators and the first card is a heart, press the third card.</span><br>
+				<span class="highlightable">Otherwise, if there is at least one unlit indicator and the second card is a club, press the second card.</span><br>
+				<span class="highlightable">Otherwise, if your opponent said “Really?” and there are no black cards, press the first card.</span><br>
+				<span class="highlightable">Otherwise, if there is more than one D battery, press the third card.</span><br>
+				<span class="highlightable">Otherwise, press the fourth card.</span><br>
+			</div>
+			<div class="page-footer relative-footer">Page 5 of 6</div>
+		</div>
+
+		<div class="page page-bg-03">
+			<div class="page-header">
+				<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+				<span class="page-header-section-title">Poker</span>
+			</div>
+			<div class="page-content">
+				<h2>Table PK71</h2>
+				<p>
+					Poker hands are ranked (strongest to weakest) as follows:
+				</p>
+				<br>
+				<table>
+					<tbody><tr>
+						<td><img src="img/modules/poker/RoyalFlush.png" height="70" width="100"></td>
+						<td>
+							<u>Royal Flush</u><br>
+							Ten, Jack, Queen, King, Ace of the same suit.
+						</td>
+					</tr>
+					<tr>
+						<td><img src="img/modules/poker/StraightFlush.png" height="70" width="100"></td>
+						<td>
+							<u>Straight Flush</u><br>
+							Five consecutive values of the same suit.<br>
+							(N.B. Aces can be high or low but not both simultaneously).
+						</td>
+					</tr>
+					<tr>
+						<td><img src="img/modules/poker/Fours.png" height="70" width="100"></td>
+						<td>
+							<u>Four of a Kind (Quads)</u><br>
+							Four cards of the same value.<br>
+						</td>
+					</tr>
+					<tr>
+						<td><img src="img/modules/poker/FullHouse.png" height="70" width="100"></td>
+						<td>
+							<u>Full House</u><br>
+							Three cards of the same value and two cards of another value.<br>
+						</td>
+					</tr>
+					<tr>
+						<td><img src="img/modules/poker/Flush.png" height="70" width="100"></td>
+						<td>
+							<u>Flush</u><br>
+							Five cards of the same suit.<br>
+							(N.B. In the event two flushes are held, the highest card wins).<br>
+						</td>
+					</tr>
+					<tr>
+						<td><img src="img/modules/poker/Straight.png" height="70" width="100"></td>
+						<td>
+							<u>Straight</u><br>
+							Five consecutive values of any suit.<br>
+							(N.B. Aces can be high or low but not both simultaneously).<br>
+							(N.B. In the event two straights are held, the highest card wins).<br>
+						</td>
+					</tr>
+					<tr>
+						<td><img src="img/modules/poker/Trips.png" height="70" width="100"></td>
+						<td>
+							<u>Three of a Kind (Trips)</u><br>
+							Three cards of the same value.<br>
+						</td>
+					</tr>
+					<tr>
+						<td><img src="img/modules/poker/TwoPair.png" height="70" width="100"></td>
+						<td>
+							<u>Two Pair</u><br>
+							Two cards of the same value and two cards of another value.<br>
+						</td>
+					</tr>
+					<tr>
+						<td><img src="img/modules/poker/Pair.png" height="70" width="100"></td>
+						<td>
+							<u>Pair</u><br>
+							Two cards of the same value.<br>
+						</td>
+					</tr>
+					<tr>
+						<td><img src="img/modules/poker/NoHand.png" height="70" width="100"></td>
+						<td>
+							<u>No Hand</u><br>
+							No matching values.<br>
+							(N.B. In the event that two players have no hand, the highest card wins).<br>
+						</td>
+					</tr>
+				</tbody></table>
+			</div>
+			<div class="page-footer relative-footer">Page 6 of 6</div>
+		</div>
+</section>

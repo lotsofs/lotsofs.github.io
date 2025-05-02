@@ -1,999 +1,162 @@
-D:\Repositories\github_website\KTANE\individual\0_Information\!Top.html
-D:\Repositories\github_website\KTANE\individual\0_Information\TitlePage.html
-D:\Repositories\github_website\KTANE\individual\0_Information\Introduction.html
-D:\Repositories\github_website\KTANE\individual\0_Information\DefusingBombs.html
-D:\Repositories\github_website\KTANE\individual\0_Information\SectionHeader1Solvables.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\spwiz3DMaze.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\AdjacentLettersModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\spwizAdventureGame.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\algebra.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\alphabet.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\AnagramsModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\spwizAstrology.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Backgrounds.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\BattleshipModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\BigCircle.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\BinaryLeds.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\BitmapsModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\BitOps.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\BlindAlleyModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\BlindMaze.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\booleanVennModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\BrailleModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\BrokenButtonsModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\buttonSequencesModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\CaesarCipherModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\CheapCheckoutModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ChessModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ChordQualities.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ColourFlash.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Color Generator.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\colormath.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ColorMorseModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ColoredSquaresModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ColoredSwitchesModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\combinationLock.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\complicatedButtonsModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Venn.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\graphModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\CoordinatesModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\CrazyTalk.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\CreationModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\CruelPianoKeys.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\CryptModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\curriculum.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\DoubleOhModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Emoji Math.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\EnglishTest.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ExtendedPassword.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\fastMath.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\FaultyBackgrounds.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\FestivePianoKeys.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\fizzBuzzModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\FlagsModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\FollowTheLeaderModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ForeignExchangeRates.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\MemoryV2.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\FriendshipModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\GameOfLifeCruel.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\GameOfLifeSimple.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\GridlockModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\HexamazeModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\HumanResourcesModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\hunting.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\iceCreamModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\identityParade.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Keypad.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Laundry.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\LEDEnc.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ledGrid.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\LetterKeys.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\LightCycleModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Listening.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Logic.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\MafiaModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\maintenance.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\mashematics.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Mastermind Cruel.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Mastermind Simple.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Maze.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Memory.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Microcontroller.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\MinesweeperModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\modernCipher.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ModuleAgainstHumanity.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\monsplodeCards.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\monsplodeFight.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Morse.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\MorseAMaze.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\MorseV2.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\mortalKombat.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\MouseInTheMaze.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\murder.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\MysticSquareModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\neutralization.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\NonogramModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\NumberPad.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\OnlyConnectModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\OrientationCube.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Painting.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Password.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\PerplexingWiresModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\spwizPerspectivePegs.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\PianoKeys.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\MazeV2.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\poetry.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\PointOfOrderModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Poker.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\PolyhedralMazeModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Probing.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\radiator.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\resistors.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\MusicRhythms.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\RockPaperScissorsLizardSpockModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\KeypadV2.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\RubiksCubeModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\SetModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\PasswordV2.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\SeaShells.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Semaphore.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\shapeshift.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\SillySlots.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Simon.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\SimonScreamsModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\SimonV2.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Sink.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\SkewedSlotsModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\skyrim.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\sonic.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\SouvenirModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ButtonV2.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\switchModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\SymbolCycleModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\symbolicCoordinates.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\symbolicPasswordModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\TextField.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\TheBulbModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\BigButton.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\TheClockModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\TheGamepadModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\iPhone.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\jukebox.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\screw.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\theSwan.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ThirdBase.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\TicTacToeModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\timezone.html
-
-
-
-
-D:\Repositories\github_website\KTANE\individual\1_Solvables\TurnTheKey.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\TurnTheKeyAdvanced.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\TwoBits.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\visual_impairment.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\wastemanagement.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\webDesign.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\WhosOnFirst.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\WirePlacementModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\WireSequence.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\Wires.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\WordScrambleModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\WordSearchModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\XRayModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\YahtzeeModule.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\ZooModule.html
-D:\Repositories\github_website\KTANE\individual\0_Information\SectionHeader2Needies.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\NeedyBeer.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\buttonMasherNeedy.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\NeedyCapacitor.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\EdgeworkModule.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\Filibuster.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\EternitySDec.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\http.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\NeedyKnob.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\LightsOut.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\Needy Math.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\MotionSense.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\QRCode.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\NeedyVentV2.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\rng.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\NeedyKnobV2.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\needyShapeMemory.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\spwizTetris.html
-
-D:\Repositories\github_website\KTANE\individual\2_Needies\NeedyVentGas.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\monsplodeWho.html
-D:\Repositories\github_website\KTANE\individual\0_Information\SectionHeader3Translations.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\MorseCodeTranslated.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\PasswordsTranslated.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\BigButtonTranslated.html
-D:\Repositories\github_website\KTANE\individual\2_Needies\VentGasTranslated.html
-D:\Repositories\github_website\KTANE\individual\1_Solvables\WhosOnFirstTranslated.html
-D:\Repositories\github_website\KTANE\individual\0_Information\Colophon.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\A.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\B.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\BLANK.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\BombMfgAF.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\C.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\CSq.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\CSw.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\Grammar.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\I.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\ISO4217.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\KhoKhwai.html
-
-D:\Repositories\github_website\KTANE\individual\4_Appendices\M.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\MAH.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\Math.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\Multiple Widgets.html
-
-D:\Repositories\github_website\KTANE\individual\4_Appendices\Piano.html
-
-D:\Repositories\github_website\KTANE\individual\4_Appendices\Sword.html
-D:\Repositories\github_website\KTANE\individual\4_Appendices\Two Factor.html
-D:\Repositories\github_website\KTANE\individual\0_Information\!Bottom.html
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+D:\Repositories\Github Website\KTANE\individual\00_Information\!Top.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\AdjacentLettersModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\algebra.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\alphabet.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\AnagramsModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Backgrounds.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\BattleshipModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\BigButton.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\BigButtonTranslated.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\BigCircle.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\BinaryLeds.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\BitmapsModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\BitOps.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\BlindAlleyModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\BlindMaze.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\booleanVennModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\BrailleModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\BrokenButtonsModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\buttonSequencesModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ButtonV2.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\CaesarCipherModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\CheapCheckoutModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ChessModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ChordQualities.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Color Generator.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ColoredSquaresModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ColoredSwitchesModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\colormath.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ColorMorseModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ColourFlash.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\combinationLock.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\complicatedButtonsModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\CoordinatesModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\CrazyTalk.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\CreationModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\CruelPianoKeys.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\CryptModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\curriculum.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\DoubleOhModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Emoji Math.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\EnglishTest.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ExtendedPassword.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\fastMath.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\FaultyBackgrounds.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\FestivePianoKeys.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\fizzBuzzModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\FlagsModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\FollowTheLeaderModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ForeignExchangeRates.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\FriendshipModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\GameOfLifeCruel.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\GameOfLifeSimple.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\graphModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\GridlockModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\HexamazeModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\HumanResourcesModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\hunting.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\iceCreamModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\identityParade.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\iPhone.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\jukebox.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Keypad.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\KeypadV2.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Laundry.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\LEDEnc.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ledGrid.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\LetterKeys.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\LightCycleModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Listening.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Logic.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\MafiaModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\maintenance.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\mashematics.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Mastermind Cruel.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Mastermind Simple.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Maze.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\MazeV2.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Memory.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\MemoryV2.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Microcontroller.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\MinesweeperModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\modernCipher.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ModuleAgainstHumanity.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\monsplodeCards.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\monsplodeFight.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Morse.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\MorseAMaze.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\MorseCodeTranslated.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\MorseV2.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\mortalKombat.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\MouseInTheMaze.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\murder.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\MusicRhythms.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\MysticSquareModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\neutralization.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\NonogramModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\NumberPad.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\OnlyConnectModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\OrientationCube.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Painting.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Password.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\PasswordsTranslated.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\PasswordV2.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\PerplexingWiresModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\PianoKeys.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\poetry.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\PointOfOrderModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Poker.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\PolyhedralMazeModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Probing.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\radiator.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\resistors.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\RockPaperScissorsLizardSpockModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\RubiksCubeModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\screw.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\SeaShells.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Semaphore.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\SetModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\shapeshift.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\SillySlots.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Simon.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\SimonScreamsModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\SimonV2.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Sink.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\SkewedSlotsModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\skyrim.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\sonic.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\SouvenirModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\spwiz3DMaze.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\spwizAdventureGame.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\spwizAstrology.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\spwizPerspectivePegs.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\switchModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\SymbolCycleModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\symbolicCoordinates.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\symbolicPasswordModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\TextField.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\TheBulbModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\TheClockModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\TheGamepadModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\theSwan.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ThirdBase.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\TicTacToeModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\timezone.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\TurnTheKey.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\TurnTheKeyAdvanced.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\TwoBits.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Venn.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\visual_impairment.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\wastemanagement.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\webDesign.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\WhosOnFirst.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\WhosOnFirstTranslated.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\WirePlacementModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\Wires.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\WireSequence.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\WordScrambleModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\WordSearchModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\XRayModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\YahtzeeModule.html
+D:\Repositories\Github Website\KTANE\individual\01_Solvables\ZooModule.html
+D:\Repositories\Github Website\KTANE\individual\00_Information\!Bottom.html

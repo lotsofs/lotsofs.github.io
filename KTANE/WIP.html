@@ -51,13 +51,25 @@
     <script type="text/javascript">
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        
-        function changeData() {
-            phdt = document.getElementsByClassName("page-header-doc-title");
+			
+		function recountPages() {
+			af = document.getElementsByClassName("absolute-footer");
+            for(var i = 0; i < af.length; i++) {
+                if (!af[i].classList.contains("frontpage")) {
+                    j = i + 1;
+                    af[i].innerText="(WIP) Page " + j + " of " + af.length;
+                }
+            }
+		}
+
+		window.addEventListener("load", (event) => {
+			// change header text
+			phdt = document.getElementsByClassName("page-header-doc-title");
             for(var i = 0; i < phdt.length; i++){
                 phdt[i].innerText="Keep Talking and Nobody Explodes (Modded)";
             }
 
+			// change relative footers to absolute
             rf = document.getElementsByClassName("relative-footer");
             for(var i = rf.length - 1; i >= 0; i--) {
                 // rf[i].innerText=rf.length;
@@ -66,27 +78,33 @@
                 rf[i].classList.remove('relative-footer');
             }
 
-            af = document.getElementsByClassName("absolute-footer");
-            for(var i = 0; i < af.length; i++) {
-                if (!af[i].classList.contains("frontpage")) {
-                    j = i + 1;
-                    af[i].innerText="(WIP) Page " + j + " of " + af.length;
-                }
-            }
-        }
+            recountPages();
+        });
     </script>
 </head>
 
 
-<body dir="ltr" onload="changeData();">
+<body dir="ltr">
     <div id="ManualContent">
-        
+  
+
+		
 
 
 
-    
 
 
+
+
+
+
+
+
+
+
+
+
+		
 
 
     </div>

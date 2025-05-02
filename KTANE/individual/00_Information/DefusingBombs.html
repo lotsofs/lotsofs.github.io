@@ -1,0 +1,200 @@
+<section id="DefusingBombs">
+	<div class="page ">
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+			<span class="page-header-section-title">Defusing Bombs</span>
+		</div>
+		<div class="page-footer absolute-footer mainpages"></div>
+		<div class="page-content">
+			<h1>Defusing Bombs</h1>
+	
+			<p>A bomb will explode when its countdown timer reaches 0:00 or when too many strikes have been recorded. The only way to defuse a bomb is to disarm all of its modules before its countdown timer expires.</p>
+	
+			<div class="bomb-diagram">
+				<span class="diagram-label">Example Bomb</span>
+				<br>
+				<table>
+					<tr>
+						<td><img src="img/Bomb.svg" class="bomb-diagram-front">
+							<br><span>Front</span></td>
+						<td><img src="img/BombSide.svg" class="bomb-diagram-side">
+							<br><span>Side</span></td>
+					</tr>
+				</table>
+			</div>
+	
+			<h3>Modules</h3>
+			<p>
+				Each bomb will include a certain number of modules that must be disarmed. 
+				All modules must be disarmed to defuse the bomb. 
+				Modules can be identified by an LED in the corner, typically the top right.
+				When this LED is lit green, the module has been disarmed.
+			</p>
+			<p>
+				Most modules are discrete and can be disarmed in any order.
+				However, there are exceptions. 
+				Some modules require to be solved at a certain time or in a specific order. 
+				<!-- These "Indiscrete" modules are covered ahead.  -->
+			</p>
+			<p>
+				Another common module type are "Needy" modules, which present a special case: 
+				These cannot be disarmed, but pose a recurrent hazard.
+			<p>
+			</p> 
+				Needy modules can typically be identified as a module with a small 2-digit timer in the top center.
+				Interacting with the bomb may cause them to become activated.
+				Once activated, these needy modules must be tended to regularly before their timer expires in order to prevent a strike.
+				Stay observant: Needy modules may reactivate at any time.
+			</p>
+			<!-- <p>
+				Instructions for disarming modules can be found in Section 1. "Needy" modules are described in Section 2.
+			</p> -->
+	
+		</div>
+	</div>
+	<div class="page ">
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+			<span class="page-header-section-title">Defusing Bombs</span>
+		</div>
+		<div class="page-footer absolute-footer mainpages"></div>
+		<div class="page-content">
+			<h3>Strikes</h3>
+			<div class="timer-diagram"><span>Strike Indicator</span>
+				<br><img src="img/module-icons/TimerComponent.svg"></div>
+			<p>When the Defuser makes a mistake, the bomb will record a strike which will be displayed on the indicator above the countdown timer. Bombs with a strike indicator will typically explode upon the third strike. The timer will begin to count down faster after a strike has been recorded.</p>
+			<p>If no strike indicator is present above the countdown timer, the bomb will explode upon the first strike, leaving no room for error.</p>
+			<p>Some bombs might allow for more than three strikes, however it may be possible that the strike indicator can only display up to two strikes and not show any additional strikes.</p>
+			
+			<h3>Gathering Information</h3>
+			<p>
+				Some disarming instructions will require specific information about the bomb, such as the serial number or other widgets.
+				This type of information can typically be found on the top, bottom, or sides of the bomb casing.
+			</p> 
+			<p>
+				See the appendices for identification instructions on widgets and other information that will be useful in disarming certain modules.
+				The most common widgets are indicators, batteries, ports.
+				Due to how ubiquitous these are, information on these three types of widget has been redundantly included on the next page as well as in Appendix A, B, and C.
+			</p> 
+		</div>
+	</div>
+	<div class="page ">
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+			<span class="page-header-section-title">Defusing Bombs</span>
+		</div>
+		<div class="page-footer absolute-footer mainpages"></div>
+		<div class="page-content">
+			<h3>Common edgework</h3>
+			<p>
+				The following widgets are most commonly found on the edges of the bomb, alongside the serial number: Indicators, batteries, ports.
+			</p>
+			<style>
+				#DefusingBombs #appendix-indicator-img {
+					float: right; margin-right: 33%
+				}
+			</style>
+			<img src="img/appendix/indicators/IndicatorWidget.svg" id="appendix-indicator-img">
+			<h4>Indicators</h4>
+			<p>Labelled indicator lights. Most Common indicators:</p>
+			<ul style="columns: 5; ">
+				<li>SND</li>
+				<li>CLR</li>
+				<li>CAR</li>
+				<li>IND</li>
+				<li>FRQ</li>
+				<li>SIG</li>
+				<li>NSA</li>
+				<li>MSA</li>
+				<li>TRN</li>
+				<li>BOB</li>
+				<li>FRK</li>
+			</ul>
+
+			<table style="float: right; margin-left: 1em; margin-top: -8em;">
+				<tr>
+					<th>Battery</th>
+					<th>Type</th>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/batteries/Battery-AA.svg" id="appendix-battery-AA-img"></td>
+					<td>AA</td>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/batteries/Battery-D.svg" id="appendix-battery-D-img"></td>
+					<td>D</td>
+				</tr>
+			</table>
+			<h4>Batteries</h4>
+			<p>Common battery types can be found within enclosures.</p>
+
+			<h4>Ports</h4>
+			<p>
+				Digital and analog ports can be found on silver colored plates. 
+				Sometimes a port plates without any mounted ports may appear.<br>
+				Despite having two sockets, the Stereo RCA port counts as a single port.
+			</p>
+			<style>
+				#DefusingBombs .porttable {
+					margin-top: -1em;
+					margin-right: 2em;
+					float: left;
+				}
+				#DefusingBombs .porttable img {
+					height: 65px;
+					margin: -0.3em;
+				}
+				#DefusingBombs .porttable td {
+					text-align: center;
+				}
+			</style>
+			<table class="porttable">
+				<tr>
+					<th>Port</th>
+					<th>Name</th>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/DVI.svg" id="appendix-ports-dvi-img"></td>
+					<td>DVI-D</td>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/Parallel.svg" id="appendix-ports-parallel-img"></td>
+					<td>Parallel</td>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/PS2.svg" id="appendix-ports-ps2-img"></td>
+					<td>PS/2</td>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/RJ45.svg" id="appendix-ports-rj45-img"></td>
+					<td>RJ-45</td>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/Serial.svg" id="appendix-ports-serial-img"></td>
+					<td>Serial</td>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/StereoRCA.svg" id="appendix-ports-rca-img"></td>
+					<td>Stereo RCA</td>
+				</tr>
+			</table>
+			<div style="margin-left: 25em;">
+				<h4>Serial Number</h4>
+				<p>
+					There is always one serial number on the bomb, which consists of a combination of six digits and letters in the following format:
+				</p>
+				<p style="margin-bottom: 0em; margin-top: -12px; border: solid 6px; font-size: 59pt; line-height: 0.7em; padding-top: .32em; padding-left: 4px;">
+					??#XX#
+				</p>
+				<p>
+					<strong>?</strong> = any letter or digit<br>
+					<strong>#</strong> = any digit<br>
+					<strong>X</strong> = any letter
+				</p>
+				<p>
+					The letters O and Y will not occur.
+				</p>
+			</div>
+		</div>
+	</div>
+</section>

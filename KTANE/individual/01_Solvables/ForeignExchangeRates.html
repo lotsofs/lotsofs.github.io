@@ -1,0 +1,313 @@
+<section id="ForeignExchangeRates">
+	<style>
+		#ForeignExchangeRates p {
+			margin: 0.5em auto;
+		}
+		#ForeignExchangeRates .footnotes {
+			font-size: .8em;
+			color: #444;
+		}
+	</style>
+	<div class="page page-bg-01">
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+			<span class="page-header-section-title">Foreign Exchange Rates</span>
+		</div>
+		<div class="page-content">
+			<img class="diagram" src="img/Component/Foreign Exchange Rates.svg">
+			<h2>On the Subject of Foreign Exchange Rates</h2>
+
+			<p class="flavour-text">If bombs were stock brokers...</p>
+
+			<p><em>Defusing this module requires the expert to have a device that can connect to the World Wide Web.</em></p>
+			<p>
+				This module has the ability to connect to the internet and query the state of foreign exchange rates. There should be a three times three grid of keys, each with a light emitting diode.
+				<em>DO NOT PRESS ANY KEY ON THIS MODULE WHILE THE LIGHT EMITTING DIODES ARE FLASHING IN SEQUENCE.</em>
+			</p>
+			<p>The keys are grouped by rows:</p>
+			<table>
+				<tr><td>Top row: ISO 4217 alphabetic code for the base currency.<sup>[1][2]</sup></td></tr>
+				<tr><td>Middle row: ISO 4217 alphabetic code for the target currency.<sup>[1][2]</sup></td></tr>
+				<tr><td>Bottom row: Value of currency to convert.</td></tr>
+			</table>
+
+			<h3>All light emitting diodes have turned green:</h3>
+			<p>
+				Enter the following uniform resource locator into your internet capable device:<br>
+				<em>https://fer.eltrick.uk/latest?base=XXX&amp;symbols=YYY</em><br>
+				Replace <em>XXX</em> with the ISO 4217 alphabetic code for the base currency.<br>
+				Replace <em>YYY</em> with the ISO 4217 alphabetic code for the target currency.<br>
+				You will receive data in a Javascript object notation format, look for <em>{“YYY”: NUMBER}</em>, where <em>NUMBER</em> will be the exchange rate. Using the exchange rate,
+				convert the number in the bottom row to the target currency, round that number
+				down and take note of the 2nd digit from the left<sup>[4]</sup>. Press the Nth key where N is
+				the noted number (count keys from left to right, top to bottom)<sup>[5]</sup>.
+			</p>
+			<h3>All light emitting diodes have turned red:</h3>
+			<p>
+				In this case the module failed to query today’s currency rates. Get the ISO 4217
+				numeric code for the target currency’s country and take note the 2nd digit from
+				the right. Press the Nth key where N is the noted number (count keys from left to
+				right, top to bottom)<sup>[5]</sup>.
+			</p>
+			<p class="footnotes">
+				[1]: If there is more than one battery on the bomb, the base currency code and target currency code is swapped.<br>
+				[2]: This may instead be the ISO 4217 numeric code.<br>
+				[3]: Note the currency rates are updated around 4PM CET.<br>
+				[4]: In the case the converted currency is less than 10, the noted number is 0.<br>
+				[5]: In the case the noted number is 0, press the top left key.
+			</p>
+			<p class="appendix-reference appendix-reference-ISO4217">
+				See Appendix ISO 4217 for alphabetic and numeric currency code identification.
+			</p>
+		</div>
+		<div class="page-footer relative-footer">Page 1 of 1</div>
+	</div>
+	<div class="page ForeignExchangeRates_extrapage">
+		<!-- Referenced by: Foreign Exchange Rates -->
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+			<span class="page-header-section-title">Foreign Exchange Rates</span>
+		</div>
+		<div class="page-footer absolute-footer appendixpagecount"></div>
+		<div class="page-content">
+			<h3>Currency Codes Reference</h3>
+			<p>The following is a list of active ISO 4217 codes of currencies, excluding complementary currencies and funds codes.</p>
+			<style>.ISO4217-currencytable td { 
+				padding: .5em; 
+				padding-bottom: 0em;
+				vertical-align: middle; 
+				text-align: center;
+				}</style>
+			<table class="ISO4217-currencytable" style="border: none; float: left; width: 49%; padding: 0; font-size: 10pt;">
+				<tbody>
+					<tr><th>Alpha.</th><th>Num.</th><th>Currency</th></tr>
+					<tr><td>AED</td><td>784</td><td>United Arab Emirates dirham</td></tr>
+					<tr><td>AFN</td><td>971</td><td>Afghan afghani</td></tr>
+					<tr><td>ALL</td><td>008</td><td>Albanian lek</td></tr>
+					<tr><td>AMD</td><td>051</td><td>Armenian dram</td></tr>
+					<tr><td>ANG</td><td>532</td><td>Netherlands Antillean guilder</td></tr>
+					<tr><td>AOA</td><td>973</td><td>Angolan kwanza</td></tr>
+					<tr><td>ARS</td><td>032</td><td>Argentine peso</td></tr>
+					<tr><td>AUD</td><td>036</td><td>Australian dollar</td></tr>
+					<tr><td>AWG</td><td>533</td><td>Aruban florin</td></tr>
+					<tr><td>AZN</td><td>944</td><td>Azerbaijani manat</td></tr>
+					<tr><td>BAM</td><td>977</td><td>Bosnia and Herzegovina convertible mark</td></tr>
+					<tr><td>BBD</td><td>052</td><td>Barbados dollar</td></tr>
+					<tr><td>BDT</td><td>050</td><td>Bangladeshi taka</td></tr>
+					<tr><td>BGN</td><td>975</td><td>Bulgarian lev</td></tr>
+					<tr><td>BHD</td><td>048</td><td>Bahraini dinar</td></tr>
+					<tr><td>BIF</td><td>108</td><td>Burundian franc</td></tr>
+					<tr><td>BMD</td><td>060</td><td>Bermudian dollar</td></tr>
+					<tr><td>BND</td><td>096</td><td>Brunei dollar</td></tr>
+					<tr><td>BOB</td><td>068</td><td>Bolivian Boliviano</td></tr>
+					<!-- <tr><td>BOV</td><td>984</td><td>Bolivian Mvdol (funds code)</td></tr> -->
+					<tr><td>BRL</td><td>986</td><td>Brazilian real</td></tr>
+					<tr><td>BSD</td><td>044</td><td>Bahamian dollar</td></tr>
+					<tr><td>BTN</td><td>064</td><td>Bhutanese ngultrum</td></tr>
+					<tr><td>BWP</td><td>072</td><td>Botswana pula</td></tr>
+					<tr><td>BYN</td><td>933</td><td>Belarusian ruble</td></tr>
+					<tr><td>BZD</td><td>084</td><td>Belize dollar</td></tr>
+					<tr><td>CAD</td><td>124</td><td>Canadian dollar</td></tr>
+					<tr><td>CDF</td><td>976</td><td>Congolese franc</td></tr>
+					<!-- <tr><td>CHE</td><td>947</td><td>WIR euro (complementary currency)</td></tr> -->
+					<tr><td>CHF</td><td>756</td><td>Swiss franc</td></tr>
+					<!-- <tr><td>CHW</td><td>948</td><td>WIR franc (complementary currency)</td></tr> -->
+					<!-- <tr><td>CLF</td><td>990</td><td>Unidad de Fomento (funds code)</td> --></tr>
+					<tr><td>CLP</td><td>152</td><td>Chilean peso</td></tr>
+				</tbody>
+			</table>
+			<table class="ISO4217-currencytable" style="border: none; float: right; width: 49%; padding: 0; font-size: 10pt;">
+				<tbody>
+					<tr><th>Alpha.</th><th>Num.</th><th>Currency</th></tr>
+					<tr><td>CNY</td><td>156</td><td>Renminbi</td></tr>
+					<tr><td>COP</td><td>170</td><td>Colombian peso</td></tr>
+					<!-- <tr><td>COU</td><td>970</td><td>Unidad de Valor Real (UVR) (funds code)</td></tr> -->
+					<tr><td>CRC</td><td>188</td><td>Costa Rican colon</td></tr>
+					<tr><td>CUP</td><td>192</td><td>Cuban peso</td></tr>
+					<tr><td>CVE</td><td>132</td><td>Cape Verdean escudo</td></tr>
+					<tr><td>CZK</td><td>203</td><td>Czech koruna</td></tr>
+					<tr><td>DJF</td><td>262</td><td>Djiboutian franc</td></tr>
+					<tr><td>DKK</td><td>208</td><td>Danish krone</td></tr>
+					<tr><td>DOP</td><td>214</td><td>Dominican peso</td></tr>
+					<tr><td>DZD</td><td>012</td><td>Algerian dinar</td></tr>
+					<tr><td>EGP</td><td>818</td><td>Egyptian pound</td></tr>
+					<tr><td>ERN</td><td>232</td><td>Eritrean nakfa</td></tr>
+					<tr><td>ETB</td><td>230</td><td>Ethiopian birr</td></tr>
+					<tr><td>EUR</td><td>978</td><td>Euro</td></tr>
+					<tr><td>FJD</td><td>242</td><td>Fiji dollar</td></tr>
+					<tr><td>FKP</td><td>238</td><td>Falkland Islands pound</td></tr>
+					<tr><td>GBP</td><td>826</td><td>Pound sterling</td></tr>
+					<tr><td>GEL</td><td>981</td><td>Georgian lari</td></tr>
+					<tr><td>GHS</td><td>936</td><td>Ghanaian cedi</td></tr>
+					<tr><td>GIP</td><td>292</td><td>Gibraltar pound</td></tr>
+					<tr><td>GMD</td><td>270</td><td>Gambian dalasi</td></tr>
+					<tr><td>GNF</td><td>324</td><td>Guinean franc</td></tr>
+					<tr><td>GTQ</td><td>320</td><td>Guatemalan quetzal</td></tr>
+					<tr><td>GYD</td><td>328</td><td>Guyanese dollar</td></tr>
+					<tr><td>HKD</td><td>344</td><td>Hong Kong dollar</td></tr>
+					<tr><td>HNL</td><td>340</td><td>Honduran lempira</td></tr>
+					<tr><td>HTG</td><td>332</td><td>Haitian gourde</td></tr>
+					<tr><td>HUF</td><td>348</td><td>Hungarian forint</td></tr>
+					<tr><td>IDR</td><td>360</td><td>Indonesian rupiah</td></tr>
+					<tr><td>ILS</td><td>376</td><td>Israeli new shekel</td></tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="page ForeignExchangeRates_extrapage">
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+			<span class="page-header-section-title">Foreign Exchange Rates</span>
+		</div>
+		<div class="page-footer absolute-footer appendixpagecount"></div>
+		<div class="page-content">
+			<table class="ISO4217-currencytable" style="border: none; float: left; width: 49%; padding: 0; font-size: 10pt;">
+				<tbody>
+					<tr><th>Alpha.</th><th>Num.</th><th>Currency</th></tr>
+					<tr><td>INR</td><td>356</td><td>Indian rupee</td></tr>
+					<tr><td>IQD</td><td>368</td><td>Iraqi dinar</td></tr>
+					<tr><td>IRR</td><td>364</td><td>Iranian rial</td></tr>
+					<tr><td>ISK</td><td>352</td><td>Icelandic króna</td></tr>
+					<tr><td>JMD</td><td>388</td><td>Jamaican dollar</td></tr>
+					<tr><td>JOD</td><td>400</td><td>Jordanian dinar</td></tr>
+					<tr><td>JPY</td><td>392</td><td>Japanese yen</td></tr>
+					<tr><td>KES</td><td>404</td><td>Kenyan shilling</td></tr>
+					<tr><td>KGS</td><td>417</td><td>Kyrgyzstani som</td></tr>
+					<tr><td>KHR</td><td>116</td><td>Cambodian riel</td></tr>
+					<tr><td>KMF</td><td>174</td><td>Comoro franc</td></tr>
+					<tr><td>KPW</td><td>408</td><td>North Korean won</td></tr>
+					<tr><td>KRW</td><td>410</td><td>South Korean won</td></tr>
+					<tr><td>KWD</td><td>414</td><td>Kuwaiti dinar</td></tr>
+					<tr><td>KYD</td><td>136</td><td>Cayman Islands dollar</td></tr>
+					<tr><td>KZT</td><td>398</td><td>Kazakhstani tenge</td></tr>
+					<tr><td>LAK</td><td>418</td><td>Lao kip</td></tr>
+					<tr><td>LBP</td><td>422</td><td>Lebanese pound</td></tr>
+					<tr><td>LKR</td><td>144</td><td>Sri Lankan rupee</td></tr>
+					<tr><td>LRD</td><td>430</td><td>Liberian dollar</td></tr>
+					<tr><td>LSL</td><td>426</td><td>Lesotho loti</td></tr>
+					<tr><td>LYD</td><td>434</td><td>Libyan dinar</td></tr>
+					<tr><td>MAD</td><td>504</td><td>Moroccan dirham</td></tr>
+					<tr><td>MDL</td><td>498</td><td>Moldovan leu</td></tr>
+					<tr><td>MGA</td><td>969</td><td>Malagasy ariary</td></tr>
+					<tr><td>MKD</td><td>807</td><td>Macedonian denar</td></tr>
+					<tr><td>MMK</td><td>104</td><td>Myanmar kyat</td></tr>
+					<tr><td>MNT</td><td>496</td><td>Mongolian tögrög</td></tr>
+					<tr><td>MOP</td><td>446</td><td>Macanese pataca</td></tr>
+					<tr><td>MRU</td><td>929</td><td>Mauritanian ouguiya</td></tr>
+					<tr><td>MUR</td><td>480</td><td>Mauritian rupee</td></tr>
+					<tr><td>MVR</td><td>462</td><td>Maldivian rufiyaa</td></tr>
+					<tr><td>MWK</td><td>454</td><td>Malawian kwacha</td></tr>
+					<tr><td>MXN</td><td>484</td><td>Mexican peso</td></tr>
+					<!-- <tr><td>MXV</td><td>979</td><td>Mexican Unidad de Inversion (UDI) (funds code)</td></tr> -->
+				</tbody>
+			</table>
+			<table class="ISO4217-currencytable" style="border: none; float: right; width: 49%; padding: 0; font-size: 10pt;">
+				<tbody>
+					<tr><th>Alpha.</th><th>Num.</th><th>Currency</th></tr>
+					<tr><td>MYR</td><td>458</td><td>Malaysian ringgit</td></tr>
+					<tr><td>MZN</td><td>943</td><td>Mozambican metical</td></tr>
+					<tr><td>NAD</td><td>516</td><td>Namibian dollar</td></tr>
+					<tr><td>NGN</td><td>566</td><td>Nigerian naira</td></tr>
+					<tr><td>NIO</td><td>558</td><td>Nicaraguan córdoba</td></tr>
+					<tr><td>NOK</td><td>578</td><td>Norwegian krone</td></tr>
+					<tr><td>NPR</td><td>524</td><td>Nepalese rupee</td></tr>
+					<tr><td>NZD</td><td>554</td><td>New Zealand dollar</td></tr>
+					<tr><td>OMR</td><td>512</td><td>Omani rial</td></tr>
+					<tr><td>PAB</td><td>590</td><td>Panamanian balboa</td></tr>
+					<tr><td>PEN</td><td>604</td><td>Peruvian sol</td></tr>
+					<tr><td>PGK</td><td>598</td><td>Papua New Guinean kina</td></tr>
+					<tr><td>PHP</td><td>608</td><td>Philippine peso[11]</td></tr>
+					<tr><td>PKR</td><td>586</td><td>Pakistani rupee</td></tr>
+					<tr><td>PLN</td><td>985</td><td>Polish złoty</td></tr>
+					<tr><td>PYG</td><td>600</td><td>Paraguayan guaraní</td></tr>
+					<tr><td>QAR</td><td>634</td><td>Qatari riyal</td></tr>
+					<tr><td>RON</td><td>946</td><td>Romanian leu</td></tr>
+					<tr><td>RSD</td><td>941</td><td>Serbian dinar</td></tr>
+					<tr><td>RUB</td><td>643</td><td>Russian ruble</td></tr>
+					<tr><td>RWF</td><td>646</td><td>Rwandan franc</td></tr>
+					<tr><td>SAR</td><td>682</td><td>Saudi riyal</td></tr>
+					<tr><td>SBD</td><td>090</td><td>Solomon Islands dollar</td></tr>
+					<tr><td>SCR</td><td>690</td><td>Seychelles rupee</td></tr>
+					<tr><td>SDG</td><td>938</td><td>Sudanese pound</td></tr>
+					<tr><td>SEK</td><td>752</td><td>Swedish krona (plural: kronor)</td></tr>
+					<tr><td>SGD</td><td>702</td><td>Singapore dollar</td></tr>
+					<tr><td>SHP</td><td>654</td><td>Saint Helena pound</td></tr>
+					<!-- <tr><td>SLE</td><td>925</td><td>Sierra Leonean leone (new leone)</td></tr> -->
+					<tr><td>SLL</td><td>694</td><td>Sierra Leonean leone</td></tr>
+					<tr><td>SOS</td><td>706</td><td>Somalian shilling</td></tr>
+					<tr><td>SRD</td><td>968</td><td>Surinamese dollar</td></tr>
+					<tr><td>SSP</td><td>728</td><td>South Sudanese pound</td></tr>
+					<tr><td>STN</td><td>930</td><td>São Tomé and Príncipe dobra</td></tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="page ForeignExchangeRates_extrapage">
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+			<span class="page-header-section-title">Foreign Exchange Rates</span>
+		</div>
+		<div class="page-footer absolute-footer appendixpagecount"></div>
+		<div class="page-content">
+			<table class="ISO4217-currencytable" style="border: none; float: left; width: 49%; padding: 0; font-size: 10pt;">
+				<tbody>
+					<tr><th>Alpha.</th><th>Num.</th><th>Currency</th></tr>
+					<tr><td>SVC</td><td>222</td><td>Salvadoran colón</td></tr>
+					<tr><td>SYP</td><td>760</td><td>Syrian pound</td></tr>
+					<tr><td>SZL</td><td>748</td><td>Swazi lilangeni</td></tr>
+					<tr><td>THB</td><td>764</td><td>Thai baht</td></tr>
+					<tr><td>TJS</td><td>972</td><td>Tajikistani somoni</td></tr>
+					<tr><td>TMT</td><td>934</td><td>Turkmenistan manat</td></tr>
+					<tr><td>TND</td><td>788</td><td>Tunisian dinar</td></tr>
+					<tr><td>TOP</td><td>776</td><td>Tongan paʻanga</td></tr>
+					<tr><td>TRY</td><td>949</td><td>Turkish lira</td></tr>
+					<tr><td>TTD</td><td>780</td><td>Trinidad and Tobago dollar</td></tr>
+					<tr><td>TWD</td><td>901</td><td>New Taiwan dollar</td></tr>
+					<tr><td>TZS</td><td>834</td><td>Tanzanian shilling</td></tr>
+					<tr><td>UAH</td><td>980</td><td>Ukrainian hryvnia</td></tr>
+					<tr><td>UGX</td><td>800</td><td>Ugandan shilling</td></tr>
+					<tr><td>USD</td><td>840</td><td>United States dollar</td></tr>
+					<!-- <tr><td>USN</td><td>997</td><td>United States dollar (next day) (funds code)</td></tr> -->
+					<!-- <tr><td>UYI</td><td>940</td><td>Uruguay Peso en Unidades Indexadas (URUIURUI) (funds code)</td></tr> -->
+					<tr><td>UYU</td><td>858</td><td>Uruguayan peso</td></tr>
+					<!-- <tr><td>UYW</td><td>927</td><td>Unidad previsional</td></tr> -->
+					<tr><td>UZS</td><td>860</td><td>Uzbekistani sum</td></tr>
+					<!-- <tr><td>VED</td><td>926</td><td>Venezuelan digital bolívar</td></tr> -->
+					<tr><td>VES</td><td>928</td><td>Venezuelan sovereign bolívar</td></tr>
+					<tr><td>VND</td><td>704</td><td>Vietnamese đồng</td></tr>
+					<tr><td>VUV</td><td>548</td><td>Vanuatu vatu</td></tr>
+					<tr><td>WST</td><td>882</td><td>Samoan tala</td></tr>
+					<tr><td>XAF</td><td>950</td><td>CFA franc BEAC</td></tr>
+					<tr><td>XAG</td><td>961</td><td>Silver (one troy ounce)</td></tr>
+					<tr><td>XAU</td><td>959</td><td>Gold (one troy ounce)</td></tr>
+					<!-- <tr><td>XBA</td><td>955</td><td>European Composite Unit (EURCO) (bond market unit)</td></tr> -->
+					<!-- <tr><td>XBB</td><td>956</td><td>European Monetary Unit (E.M.U.-6) (bond market unit)</td></tr> -->
+					<!-- <tr><td>XBC</td><td>957</td><td>European Unit of Account 9 (E.U.A.-9) (bond market unit)</td></tr> -->
+					<!-- <tr><td>XBD</td><td>958</td><td>European Unit of Account 17 (E.U.A.-17) (bond market unit)</td></tr> -->
+					<tr><td>XCD</td><td>951</td><td>East Caribbean dollar</td></tr>
+					<tr><td>XDR</td><td>960</td><td>Special drawing rights</td></tr>
+					<tr><td>XOF</td><td>952</td><td>CFA franc BCEAO</td></tr>
+					<tr><td>XPD</td><td>964</td><td>Palladium (one troy ounce)</td></tr>
+					<tr><td>XPF</td><td>953</td><td>CFP franc</td></tr>
+					<tr><td>XPT</td><td>962</td><td>Platinum (one troy ounce)</td></tr>
+					<!-- <tr><td>XSU</td><td>994</td><td>SUCRE</td></tr> -->
+					<!-- <tr><td>XTS</td><td>963</td><td>Code reserved for testing</td></tr> -->
+					<!-- <tr><td>XUA</td><td>965</td><td>ADB Unit of Account</td></tr> -->
+					<!-- <tr><td>XXX</td><td>999</td><td>No currency</td></tr> -->
+					<tr><td>YER</td><td>886</td><td>Yemeni rial</td></tr>
+					<tr><td>ZAR</td><td>710</td><td>South African rand</td></tr>
+					<tr><td>ZMW</td><td>967</td><td>Zambian kwacha</td></tr>
+					<tr><td>ZWL</td><td>932</td><td>Zimbabwean dollar (fifth)</td></tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<script type="text/javascript">
+if (!urlParams.has('ForeignExchangeRates-inmanuallookuptable')) {
+	var ar = document.getElementsByClassName("ForeignExchangeRates_extrapage");
+	for(var i = ar.length - 1; i >= 0; i--) {
+		ar[i].remove();
+	}                   
+}
+	</script>
+</section>

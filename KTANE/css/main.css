@@ -345,12 +345,12 @@ q {
 
 [dir='ltr'] .page-header-section-title {
     /* float: right; */
-    float: left;
+    float: right;
 }
 
 [dir='rtl'] .page-header-section-title {
     /* float: left; */
-    float: right;
+    float: left;
 }
 
 .page-header-doc-title {
@@ -360,12 +360,12 @@ q {
 }
 
 [dir='ltr'] .page-header-doc-title {
-    float: right;
+    float: left;
     /* float: left; */
 }
 
 [dir='rtl'] .page-header-doc-title {
-    float: left;
+    float: right;
     /* float: right; */
 }
 
@@ -400,8 +400,18 @@ q {
     }
 }
 
-.appendix-reference {
+.appendix-reference, .appendix-reference-fake {
     font-style: italic;
+}
+
+.appendix-reference:not(
+	.appendix-reference-A, 
+	.appendix-reference-B, 
+	.appendix-reference-C, 
+	.appendix-reference-TwoFactor
+	.appendix-reference-fake) 
+	{
+	opacity: 0%;
 }
 
 /* ==========================================================================
@@ -1167,11 +1177,11 @@ table {
     }
 
     a[href]:after {
-        content: " (" attr(href) ")";
+        /* content: " (" attr(href) ")"; */
     }
 
     abbr[title]:after {
-        content: " (" attr(title) ")";
+        /* content: " (" attr(title) ")"; */
     }
 
     /*

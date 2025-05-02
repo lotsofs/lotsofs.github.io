@@ -1,69 +1,72 @@
-<div class="page page-bg-02" id="TurnTheKeyAdvanced">
-    <style>
-        #TurnTheKeyAdvanced em { font-style: normal; text-decoration: underline; }
-        #TurnTheKeyAdvanced h3 { margin: .1em 0; }
-        #TurnTheKeyAdvanced p, #TurnTheKeyAdvanced ul { margin: .4em 0; font-size: 11.3pt;}
-    </style>
-    <div class="page-header">
-        <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
-        <span class="page-header-section-title">Turn The Keys</span>
-    </div>
-    <div class="page-content">
-        <img src="img/Component/Turn The Keys.svg" class="diagram">
-        <h2>On the Subject of Turn The Keys</h2>
-        <p class="flavour-text">Order is everything.</p>
-        <p>This module has two keys and a display. The display indicates this module’s priority.</p>
-        <h3>LEFT KEY</h3>
-        <p>Turn the left key after you have done <em>all</em> of the following:</p>
-        <ul>
-            <li>Turned the right key on all ‘Turn the Keys’ modules.</li>
-            <li class="TTKA_nomods">Turned all lower priority left keys.</li>
-            <li>Solved all Password modules.</li>
-            <li>Solved all Who’s on First modules.</li>
-            <li class="TTKA_nomods">Solved all Crazy Talk modules.</li>
-            <li>Solved all Keypad modules.</li>
-            <li class="TTKA_nomods">Solved all Listening modules.</li>
-            <li class="TTKA_nomods">Solved all Orientation (Cube) modules.</li>
-        </ul>
-        <p>But before you have done <em>any</em> of the following:</p>
-        <ul>
-            <li>Turned any higher priority left keys.</li>
-            <li>Solved any Maze modules.</li>
-            <li>Solved any Memory modules.</li>
-            <li>Solved any Complicated Wires modules.</li>
-            <li>Solved any Wire Sequence modules.</li>
-            <li class="TTKA_nomods">Solved any Cryptography modules.</li>
-        </ul>
-        <h3>RIGHT KEY</h3>
-        <p>Turn the right key after you have done <em>all</em> of the following:</p>
-        <ul>
-            <li>Turned all higher priority right keys.</li>
-            <li>Solved all Morse Code modules.</li>
-            <li>Solved all Wires modules.</li>
-            <li>Solved all Two Bits modules.</li>
-            <li>Solved all The Button modules.</li>
-            <li class="TTKA_nomods">Solved all Colour Flash modules.</li>
-            <li class="TTKA_nomods">Solved all Round Keypad modules.</li>
-        </ul>
-        <p>But before you have done <em>any</em> of the following:</p>
-        <ul>
-            <li>Turned any left keys.</li>
-            <li>Turned any lower priority right keys.</li>
-            <li class="TTKA_nomods">Solved any Semaphore modules.</li>
-            <li class="TTKA_nomods">Solved any Combination Lock modules.</li>
-            <li>Solved any Simon Says modules.</li>
-            <li class="TTKA_nomods">Solved any Astrology modules.</li>
-            <li class="TTKA_nomods">Solved any Switches modules.</li>
-            <li class="TTKA_nomods">Solved any Plumbing modules.</li>
-        </ul>
-    </div>
-    <div class="page-footer relative-footer">Page 1 of 1</div>
-</div>
-<script type="text/javascript">
-    if (urlParams.has('TurnTheKeyAdvanced-nomods')) {
-        var junk = document.getElementsByClassName("TTKA_nomods");
-        for(var i = junk.length - 1; i >= 0; i--) {
-            junk[i].remove();
-        }   
-    }
-</script>
+<section id="TurnTheKeyAdvanced">
+	<div class="page page-bg-02">
+		<style>
+			#TurnTheKeyAdvanced em { font-style: normal; text-decoration: underline; }
+			#TurnTheKeyAdvanced h3 { margin: .1em 0; }
+			#TurnTheKeyAdvanced p:not(.flavour-text), #TurnTheKeyAdvanced ul { margin: .4em 0; font-size: 11.3pt;}
+			#TurnTheKeyAdvanced .flavour-text { margin-bottom: 0}
+		</style>
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+			<span class="page-header-section-title">Turn The Keys</span>
+		</div>
+		<div class="page-content">
+			<img src="img/Component/Turn The Keys.svg" class="diagram">
+			<h2>On the Subject of Turn The Keys</h2>
+			<p class="flavour-text">Order is everything.</p>
+			<p>This module has two keys and a display. The display indicates this module’s priority.</p>
+			<h3>LEFT KEY</h3>
+			<p>Turn the left key after you have done <em>all</em> of the following:</p>
+			<ul>
+				<li>Turned the right key on all ‘Turn the Keys’ modules.</li>
+				<li class="TTKA_nomods">Turned all lower priority left keys.</li>
+				<li>Solved all Password modules.</li>
+				<li>Solved all Who’s on First modules.</li>
+				<li class="TTKA_nomods">Solved all Crazy Talk modules.</li>
+				<li>Solved all Keypad modules.</li>
+				<li class="TTKA_nomods">Solved all Listening modules.</li>
+				<li class="TTKA_nomods">Solved all Orientation (Cube) modules.</li>
+			</ul>
+			<p>But before you have done <em>any</em> of the following:</p>
+			<ul>
+				<li>Turned any higher priority left keys.</li>
+				<li>Solved any Maze modules.</li>
+				<li>Solved any Memory modules.</li>
+				<li>Solved any Complicated Wires modules.</li>
+				<li>Solved any Wire Sequence modules.</li>
+				<li class="TTKA_nomods">Solved any Cryptography modules.</li>
+			</ul>
+			<h3>RIGHT KEY</h3>
+			<p>Turn the right key after you have done <em>all</em> of the following:</p>
+			<ul>
+				<li>Turned all higher priority right keys.</li>
+				<li>Solved all Morse Code modules.</li>
+				<li>Solved all Wires modules.</li>
+				<li>Solved all Two Bits modules.</li>
+				<li>Solved all The Button modules.</li>
+				<li class="TTKA_nomods">Solved all Colour Flash modules.</li>
+				<li class="TTKA_nomods">Solved all Round Keypad modules.</li>
+			</ul>
+			<p>But before you have done <em>any</em> of the following:</p>
+			<ul>
+				<li>Turned any left keys.</li>
+				<li>Turned any lower priority right keys.</li>
+				<li class="TTKA_nomods">Solved any Semaphore modules.</li>
+				<li class="TTKA_nomods">Solved any Combination Lock modules.</li>
+				<li>Solved any Simon Says modules.</li>
+				<li class="TTKA_nomods">Solved any Astrology modules.</li>
+				<li class="TTKA_nomods">Solved any Switches modules.</li>
+				<li class="TTKA_nomods">Solved any Plumbing modules.</li>
+			</ul>
+		</div>
+		<div class="page-footer relative-footer">Page 1 of 1</div>
+	</div>
+	<script type="text/javascript">
+		if (urlParams.has('TurnTheKeyAdvanced-nomods')) {
+			var junk = document.getElementsByClassName("TTKA_nomods");
+			for(var i = junk.length - 1; i >= 0; i--) {
+				junk[i].remove();
+			}   
+		}
+	</script>
+	</section>

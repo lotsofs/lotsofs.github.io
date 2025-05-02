@@ -1,0 +1,64 @@
+<section id="PortWidget">
+	<div class="page appendix-ports " id="AppendixC">
+		<div class="page-header">
+			<span class="page-header-doc-title">Keep Talking and Nobody Explodes v. 1</span>
+			<span class="page-header-section-title">Appendix C</span>
+		</div>
+		<div class="page-footer absolute-footer appendixpagecount"></div>
+		<div class="page-content">
+			<h2>Appendix C: Port Identification Reference</h2>
+			<p>Digital and analog ports can be found on sides of the bomb casing.</p>
+			<table>
+				<tr>
+					<th>Port</th>
+					<th>Name</th>
+					<th class="AppendixC_Bonus">Notes</th>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/DVI.svg" id="appendix-ports-dvi-img"></td>
+					<td>DVI-D</td>
+					<td class="AppendixC_Bonus"></td>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/Parallel.svg" id="appendix-ports-parallel-img"></td>
+					<td>Parallel</td>
+					<td class="AppendixC_Bonus"></td>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/PS2.svg" id="appendix-ports-ps2-img"></td>
+					<td>PS/2</td>
+					<td class="AppendixC_Bonus"></td>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/RJ45.svg" id="appendix-ports-rj45-img"></td>
+					<td>RJ-45</td>
+					<td class="AppendixC_Bonus"></td>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/Serial.svg" id="appendix-ports-serial-img"></td>
+					<td>Serial</td>
+					<td class="AppendixC_Bonus"></td>
+				</tr>
+				<tr>
+					<td><img src="img/appendix/ports/StereoRCA.svg" id="appendix-ports-rca-img"></td>
+					<td>Stereo RCA</td>
+					<td class="AppendixC_Bonus">This counts as one port despite having two sockets.</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<script>
+		if (!urlParams.has('C-norefs')) {
+			var ar = document.getElementsByClassName("appendix-reference-C");
+			for(var i = ar.length - 1; i >= 0; i--) {
+				ar[i].style.opacity = "100%";
+			} 
+		}   
+		if (!urlParams.has('C-includenotes')) {
+			var ar = document.getElementsByClassName("AppendixC_Bonus");
+			for(var i = ar.length - 1; i >= 0; i--) {
+				ar[i].remove()
+			} 
+		} 
+	</script>
+</section>

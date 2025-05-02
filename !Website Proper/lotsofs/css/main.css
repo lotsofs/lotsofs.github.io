@@ -1,0 +1,165 @@
+* {
+	box-sizing: border-box;
+}
+
+/* Style the body */
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 0;
+	background-color: #211111;
+}
+
+table {
+	border-collapse: collapse;
+	margin: 5px;
+	background-color: #F9F7F8
+}
+
+th, td {
+	border: 1px solid;
+	padding: 5px;
+}
+
+.thicktop {
+	border-top: solid 2px;
+}
+
+/* Header/logo Title */
+.header {
+	padding: 40px;
+	text-align: center;
+	background: #413131;
+}	
+
+/* Increase the font size of the heading */
+.header h1, .header a {
+	text-decoration: none;
+	font-size: 80px;
+	margin: 0;
+	color: #F9E7F8;
+	/* text-shadow: -3px -3px 0 #E5001F, 3px -3px 0 #E5001F, -3px 3px 0 #E5001F, 3px 3px 0 #E5001F,  */
+	/* -6px -6px 0 #CBC2BD, 6px -6px 0 #CBC2BD, -6px 6px 0 #CBC2BD, 6px 6px 0 #CBC2BD,
+	-6px 0 0 #CBC2BD, 6px 0 0 #CBC2BD, -6px 0 0 #CBC2BD, 6px 0 0 #CBC2BD,
+	0 -6px 0 #CBC2BD, 0 -6px 0 #CBC2BD, 0 6px 0 #CBC2BD, 0 6px 0 #CBC2BD */
+}
+
+/* Style the top navigation bar */
+.navbar {
+	overflow: hidden;
+	background-color: #817161;
+}
+
+/* Style the top navigation bar */
+.subnavbar {
+	overflow: hidden;
+	background-color: #0F1F2F;
+	padding: 0px 20px;
+}
+
+/* Style the navigation bar links */
+.navbar a {
+	color: #F9E7F8;
+	text-shadow: -1px -1px 0 #151111, 1px -1px 0 #151111, -1px 1px 0 #151111, 1px 1px 0 #151111;
+	float: left;
+	display: block;
+	text-align: center;
+	padding: 7px 14px;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+/* Style the navigation bar links */
+.subnavbar a {
+	color: #414141;
+	text-shadow: -1px -1px 0 #151111, 1px -1px 0 #151111, -1px 1px 0 #151111, 1px 1px 0 #151111;
+	float: left;
+	display: block;
+	text-align: center;
+	padding: 6px 12px;
+	text-decoration: none;
+}
+
+.navbar a.current, .subnavbar a.current {
+	color: #8B7A8A
+}
+
+/* Right-aligned link */
+.navbar a.right, .subnavbar a.right {
+	float: right;
+}
+
+/* Change color on hover */
+.navbar a:hover, .subnavbar a:hover {
+	color: #817161;
+	/* text-shadow: -1px -1px 0 #4849A5, 1px -1px 0 #4849A5, -1px 1px 0 #4849A5, 1px 1px 0 #4849A5; */
+}
+
+/* Column container */
+.row {	
+	display: -ms-flexbox; 
+	display: flex;
+	-ms-flex-wrap: wrap; 
+	flex-wrap: wrap;
+}
+
+/* Main column */
+.main {	 
+	-ms-flex: 55%; 
+	flex: 55%;
+	background-color: #211111;
+	padding: 20px;
+	color: #F9E7F8;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.clear {
+	clear: both;
+}
+
+div.links-body {
+	text-align: center;
+	font-size: 36pt;
+	line-height: 150%;
+}
+
+a.links-link {
+	color: #9999FF;
+}
+
+a.links-link:hover {
+	color: #817161;
+}
+
+/* Footer */
+.footer {
+	padding: 2px;
+	font-size: 8px;
+	text-align: center;
+	background: #0F1F2F;
+	color: #7B807A;
+}
+
+/* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
+/* @media screen and (max-width: 700px) {
+	.row {	 
+		flex-direction: column;
+	}
+} */
+
+/* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
+@media screen and (max-width: 400px) {
+	.navbar a {
+		float: none;
+		width: 100%;
+	}
+	div.links-body {
+		font-size: 12pt;
+	}
+}
