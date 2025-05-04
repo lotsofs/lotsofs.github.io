@@ -1,0 +1,29 @@
+table {
+	border-collapse: collapse;
+}
+
+nav .navCurrent {
+	color: black;
+}
+
+th, td {
+	border-width: 1px;
+	border-color: black;
+	border-style: solid;
+}
+
+div {
+	border: solid;
+	display: block;
+	width: auto;
+	float: right;
+	padding-inline: 0.5em;
+}
+
+#frontPage_exchangeRates td:nth-child(4),
+#frontPage_exchangeRates th:nth-child(4),
+#frontPage_exchangeRates td:nth-child(6),
+#frontPage_exchangeRates th:nth-child(6)
+{
+	display: none;
+}
