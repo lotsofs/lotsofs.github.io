@@ -27,6 +27,7 @@
 <p id="exchangeRateReadError">
 </p>
 
+<script src="js/exchangeRates.js"></script>
 <script>
 	processExchangeRates(<?= $exchangeRatesJson ?>)
 </script>

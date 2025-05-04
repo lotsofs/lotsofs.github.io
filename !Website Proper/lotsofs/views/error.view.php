@@ -3,11 +3,11 @@
 <?php require('views/partials/nav.php') ?>
 
 <h1>
-	404
+	<?= $responseCode ?>
 </h1>
 
 <p>
-	Not Found
+	<?= $errorMessage ?>
 </p>
 
 <?php require('views/partials/foot.php') ?>

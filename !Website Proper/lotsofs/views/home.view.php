@@ -32,19 +32,20 @@
 	<p id="exchangeRateReadError">
 	</p>
 	<p>
-		<a href="exchangeRates.php">More</a>
+		<a href="exchangeRates">More</a>
 	</p>
 </div>
 
 <p>
 	There currently isn't much here yet. Did you mean to do one of the following?:
 	<ul>
-		<li>Access my Keep Talking and Nobody Explodes <a class="links-link" href="ktane/translated.html">merged translated modules manuals w/ bonus languages</a>.</li>
+		<li>Access my Keep Talking and Nobody Explodes <a class="links-link" href="ktane">merged translated modules manuals w/ bonus languages</a>.</li>
 	</ul>
 </p>
 
+<script src="js/exchangeRates.js"></script>
 <script>
-	currencyWhiteList = ["CHF", "DKK", "EUR", "GBP", "IDR", "NOK", "SEK", "TRY", "USD", "VND"]
+	currencyWhiteList = ["CHF", "DKK", "EUR", "GBP", "IDR", "MYR", "NPR", "SEK", "TRY", "USD"]
 	processExchangeRates(<?= $exchangeRatesJson ?>)
 </script>
 

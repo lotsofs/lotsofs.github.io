@@ -1,4 +1,4 @@
-const ISO4217_PATH = "iso4217.json"
+const ISO4217_PATH = "json/iso4217.json"
 
 const RATE_DISPLAY_DECIMALS = 5
 const ELEMENT_CURRENCY_TABLE_ID = "exchangeRates"

@@ -4,4 +4,4 @@ $pageTitle = "Home Page";
 
 require "exchangeRatesController.php";
 
-require "views/index.view.php";
+require "views/home.view.php";
