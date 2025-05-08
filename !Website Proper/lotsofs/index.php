@@ -1,10 +1,14 @@
 <?php
 
 require 'util.php';
-
 require 'router.php';
 
 // try {
+
+// Based on if its running in this test environment, use test_Db or not. 
+// 	if (php_sapi_name() === 'cli-server') {
+
+
 // 	$db = new PDO('sqlite:database/test_db.sqlite');
 // 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -19,7 +23,6 @@ require 'router.php';
 
 // 	$stm = $db->prepare("select * from tests");
 // 	$stm->execute();
-// 	dd($stm->fetchAll(PDO::FETCH_ASSOC));
 // } catch (PDOException $e) {
 // 	http_response_code(500);
 // 	dd($e);
