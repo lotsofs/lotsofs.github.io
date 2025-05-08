@@ -484,7 +484,7 @@
          sodipodi:insensitive="true" /></g></g><g
      id="floor1"
      inkscape:label="floor1"
-     style="display:none"><g
+     style="display:inline"><g
        id="f1Structure"
        inkscape:label="f1Structure"><rect
          style="fill:#000000;fill-opacity:0.83;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:square;stroke-linejoin:miter;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers stroke fill"

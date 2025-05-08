@@ -52,6 +52,7 @@
 		});
 
 	function hideLayer(button, name) {
+		
 		layer = document.getElementById(name);
 		layer.style.visibility = button.checked ? "visible" : "hidden";
 	}
