@@ -3,27 +3,30 @@
 require 'util.php';
 require 'router.php';
 
-// try {
+require 'classes/Database.php';
 
-// Based on if its running in this test environment, use test_Db or not. 
-// 	if (php_sapi_name() === 'cli-server') {
+$config = require('config.php');
+$db_config = php_sapi_name() === 'cli-server' ? $config['database_test'] : $config['database'];
+
+$db = new Database($db_config);
+$id = "1"; // To be dynamically assigned later
+
+$query = "CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE
+)";
+$db->query($query);
+
+$query = "CREATE TABLE IF NOT EXISTS tests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    text TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
+)";
+$db->query($query);
+
+$query = "SELECT * FROM tests WHERE id = :id";
+$params = [':id' => $id];
+dd($db->query($query, $params)->fetchAll(PDO::FETCH_ASSOC));
 
 
-// 	$db = new PDO('sqlite:database/test_db.sqlite');
-// 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-// 	$stm = $db->prepare("
-// 		CREATE TABLE IF NOT EXISTS tests (
-// 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-// 			text TEXT NOT NULL,
-// 			number INTEGER NOT NULL
-// 		)
-// 	");
-// 	$stm->execute();
-
-// 	$stm = $db->prepare("select * from tests");
-// 	$stm->execute();
-// } catch (PDOException $e) {
-// 	http_response_code(500);
-// 	dd($e);
-// }

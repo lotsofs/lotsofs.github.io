@@ -1,0 +1,63 @@
+COMPOSITION ==> Only used for some back end calculations really
+* id (PK)
+
+SONG ==> This is what would be shown to the user
+* id (PK)
+* composition_id (FK)
+* subtitle ("Live @ Blahblah '23", "Unplugged", "ft. Guest Artist")
+* version (original, radio edit, unplugged, live) --> as categorized by me
+
+SONG_COVER
+* id (PK)
+* original_id (FK)
+* cover_id (FK)
+* type (cover, remix, etc?)
+
+ARTIST
+* id (PK)
+
+SONG_ARTIST
+* id (PK)
+* song_id (FK)
+* artist_id (FK)
+* role
+* is_primary
+
+ARTIST_ALIAS
+* id (PK)
+* artist_id (FK)
+* name
+* is_actual
+
+ALBUM
+* id (PK)
+* name
+* year
+* type (studio, live, compilation, single)
+
+ALBUM_VERSION
+* id (PK)
+* album_id (FK)
+* edition (deluxe, fancy japanese edition, instrumental)
+
+ALBUM_ARTIST
+* id (PK)
+* artist_id (FK)
+* album_id (FK)
+* is_primary
+
+TRACK
+* id (PK)
+* song_version_id (FK)
+* album_version_id (FK)
+* disc (/side)
+* track_number
+* title
+* duration
+* year
+
+
+
+investigate:
+CREATE VIEW fast_access_song_details AS ....
+CREATE INDEX index_song_version ON SONG(Version);
