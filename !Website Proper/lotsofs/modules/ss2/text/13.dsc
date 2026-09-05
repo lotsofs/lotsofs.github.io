@@ -1,0 +1,3 @@
+Quickly Sam! Stop the invasion and protect the Simba Chief. If we lose him, we won't be able to find the Shaman.
+Also, think about the children, the Primitives won't take any prisoners. They will probably strike from all sides, so try to cover as much ground as you can.
+The Simbas are very scared, so don't expect any help. However, if you show them the Primitives are easily beaten, their ancient warrior spirits might wake up.

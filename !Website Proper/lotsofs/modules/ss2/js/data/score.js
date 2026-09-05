@@ -1,4 +1,5 @@
 export const scoreInformation = {
+	"Albino": 500,
 	"Auto Shotgun": 100,
 	"Barbarian": 200,
 	"Chicken": 100,

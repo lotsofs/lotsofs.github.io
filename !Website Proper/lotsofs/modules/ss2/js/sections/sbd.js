@@ -54,7 +54,7 @@ function setEndTable() {
 	}
 
 	const killScore = cumulativeLevelKills * 10;
-	const secretScore = 1000; // 1000/total*collected (floored?)
+	const secretScore = !levelData.secrets ? 0 : 1000; // 1000/total*collected (floored?)
 	const livesCount = Math.floor(cumulativeLevelScore/10000)+3;
 	const livesScore = livesCount * 1000;
 	const playTime = 0;

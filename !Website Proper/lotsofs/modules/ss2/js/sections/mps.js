@@ -46,6 +46,10 @@ async function build(levelData) {
 			functionVars.forEach(fv => {
 				const text = fv.textContent;
 				if (m.goodVars && m.goodVars.includes(text)) {
+					const next = fv.nextElementSibling;
+					if (next && next.classList.contains('purple')) {
+						return;
+					}
 					fv.classList.remove("green");
 					fv.classList.add("red");
 				}
@@ -64,7 +68,7 @@ async function build(levelData) {
 function highlightText(txt) {
 	let text = txt;
 	// VARIABLE=blahblah
-	text = text.replace(/\b\w+(?==)/g, '<span class="red">$&</span>');
+	text = text.replace(/\b\w+(?==[^=])/g, '<span class="red">$&</span>');
 	// Macro header
 	text = text.replace(/Macro\s+(\w+)\s+(\w+|\?)/g, 'Macro <span class="brown">$1</span> <span class="orange">$2</span>');
 	// Global var assignments

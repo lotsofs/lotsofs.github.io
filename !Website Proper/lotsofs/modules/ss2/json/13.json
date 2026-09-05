@@ -1,0 +1,325 @@
+{
+	"name": "M'Keke Village",
+	"id": 13,
+	"eta": 600,
+	"secrets": 0,
+	"objectives": [
+		"Defend the chief and village."
+	],
+	"chapters": [
+		{
+			"id": 0,
+			"name": "",
+			"securityTimer": "Various",
+			"passCondition": "Kill all enemies",
+			"requiresStart": true,
+			"ammoRatio": 1,
+			"preferredWeapon": "",
+			"customAmmo": {
+				"bullets": -1,
+				"grenades": -1,
+				"plasma": -1,
+				"sniperBullets": -1,
+				"klodovik": -1,
+				"cannonBalls": -1
+			},
+			"addedWeapons": [
+				"autoShotgun",
+				"doubleShotgun"
+			],
+			"points": {
+				"Generic": [
+					{ 
+						"name": "Chicken",
+						"count": 3,
+						"countsAsKill": false,
+						"note": ""
+					},
+					{ 
+						"name": "Medium Health",
+						"count": 2,
+						"countsAsKill": false,
+						"note": "In houses"
+					},
+					{ 
+						"name": "Treasure Bag",
+						"count": 1,
+						"countsAsKill": false,
+						"note": "In main tent"
+					}
+				],
+				"First Fight": [
+					{ 
+						"name": "Neanderthal",
+						"count": 1,
+						"countsAsKill": true,
+						"note": "First"
+					},
+					{ 
+						"name": "Neanderthal",
+						"count": 4,
+						"countsAsKill": true,
+						"note": "Maintaingroup after killing first Neanderthal"
+					},
+					{ 
+						"name": "Lizard",
+						"count": 8,
+						"countsAsKill": true,
+						"note": "Maintaingroup after killing first Neanderthal"
+					},
+					{ 
+						"name": "Neanderthal",
+						"count": 2,
+						"countsAsKill": true,
+						"note": "After killing one from second group"
+					},
+					{ 
+						"name": "Neanderthal",
+						"count": 2,
+						"countsAsKill": true,
+						"note": "After killing two from second group"
+					}
+				],
+				"Second Fight": [
+					{ 
+						"name": "Shells",
+						"count": 1,
+						"countsAsKill": false,
+						"note": "Given by a female Simba"
+					},
+					{ 
+						"name": "Neanderthal",
+						"count": 4,
+						"countsAsKill": true,
+						"note": ""
+					},
+					{ 
+						"name": "Lizard",
+						"count": 8,
+						"countsAsKill": true,
+						"note": ""
+					},
+					{ 
+						"name": "Neanderthal",
+						"count": 16,
+						"countsAsKill": true,
+						"note": "after killing previous four"
+					}
+				],
+				"Albino Fight": [
+					{ 
+						"name": "Shells",
+						"count": 1,
+						"countsAsKill": false,
+						"note": "Given by a female Simba"
+					},
+					{ 
+						"name": "Neanderthal",
+						"count": 4,
+						"countsAsKill": true,
+						"note": "Cutscene siege group"
+					},
+					{ 
+						"name": "Barbarian",
+						"count": 1,
+						"countsAsKill": true,
+						"note": "Cutscene siege group",
+						"maxMultiplier": 10
+					},
+					{ 
+						"name": "Neanderthal",
+						"count": 2,
+						"countsAsKill": true,
+						"note": "Door smashers now vulnerable",
+						"maxMultiplier": 1
+					},
+					{ 
+						"name": "Barbarian",
+						"count": 1,
+						"countsAsKill": true,
+						"note": "When killing siege Neanderthals",
+						"maxMultiplier": 10
+					},
+					{ 
+						"name": "Neanderthal",
+						"count": 9,
+						"countsAsKill": true,
+						"note": "Maintaingroup when killing siege Neanderthals"
+					},
+					{
+						"name": "Neanderthal",
+						"count": 3,
+						"countsAsKill": true,
+						"note": "Maintaingroup when killing siege Barbarian"
+					},
+					{ 
+						"name": "Albino",
+						"count": 1,
+						"countsAsKill": true,
+						"note": "",
+						"maxMultiplier": 1
+					}
+				]
+			}
+		},
+		{}
+	],
+	"spawnerGroups": [
+		{
+			"groupName": "First wave",
+			"note": "Neanderthal 01 (N01) first group spawns. Killing it spawns N04 and lizards. Killing first of N04 spawns N01_ and N01 second group. Killing second of N04 spawns N12. Time to kill is assumed 0.1s for Neanderthals, 1s for Lizards. N04 is the bottleneck.",
+			"spawners": [
+				{
+					"name": "Neanderthal 01 (first group)",
+					"color": "#ff0000",
+					"spawnType": "group",
+					"spawnEffectDelay": 0,
+					"spawnEffectType": "",
+					"spawnLaunchDuration": 0,
+					"spawnLaunchType": "",
+					"spawnFormation": "",
+					"totalNumber": 2,
+					"numberInGroup": 1,
+					"initialDelay": 0,
+					"singleDelay": 0,
+					"groupDelay": 0,
+					"spawneeDeathDelay": 0,
+					"timeToKill": 0.1,
+					"initialDelayByScript": 10,
+					"otherInitialDelay": 0
+				},
+				{
+					"name": "Neanderthal 04",
+					"color": "#ffff00",
+					"spawnType": "maintaingroup",
+					"spawnEffectDelay": 0,
+					"spawnEffectType": "",
+					"spawnLaunchDuration": 0,
+					"spawnLaunchType": "",
+					"spawnFormation": "",
+					"totalNumber": 4,
+					"numberInGroup": 2,
+					"initialDelay": 0,
+					"singleDelay": 4,
+					"groupDelay": 0,
+					"spawneeDeathDelay": 0,
+					"timeToKill": 0.1,
+					"initialDelayByScript": 0,
+					"otherInitialDelay": 10.1
+				},
+				{
+					"name": "Lizard 01",
+					"color": "#00ff00",
+					"spawnType": "maintaingroup",
+					"spawnEffectDelay": 0,
+					"spawnEffectType": "",
+					"spawnLaunchDuration": 0,
+					"spawnLaunchType": "",
+					"spawnFormation": "Weighted Formation Markers",
+					"totalNumber": 8,
+					"numberInGroup": 1,
+					"initialDelay": 0,
+					"singleDelay": 0.1,
+					"groupDelay": 1,
+					"spawneeDeathDelay": 0,
+					"timeToKill": 1,
+					"initialDelayByScript": 0,
+					"otherInitialDelay": 10.1
+				},
+				{
+					"name": "Neanderthal 01_",
+					"color": "#00ffff",
+					"spawnType": "group",
+					"spawnEffectDelay": 0,
+					"spawnEffectType": "",
+					"spawnLaunchDuration": 0,
+					"spawnLaunchType": "",
+					"spawnFormation": "",
+					"totalNumber": 1,
+					"numberInGroup": 1,
+					"initialDelay": 0,
+					"singleDelay": 0,
+					"groupDelay": 0,
+					"spawneeDeathDelay": 0,
+					"timeToKill": 0.1,
+					"initialDelayByScript": 0,
+					"otherInitialDelay": 10.2
+				},
+				{
+					"name": "Neanderthal 01 (second group)",
+					"color": "#ff0000",
+					"spawnType": "group",
+					"spawnEffectDelay": 0,
+					"spawnEffectType": "",
+					"spawnLaunchDuration": 0,
+					"spawnLaunchType": "",
+					"spawnFormation": "",
+					"totalNumber": 2,
+					"numberInGroup": 1,
+					"initialDelay": 0,
+					"singleDelay": 0,
+					"groupDelay": 0,
+					"spawneeDeathDelay": 0,
+					"timeToKill": 0.1,
+					"initialDelayByScript": 10.2,
+					"otherInitialDelay": 0
+				},
+				{
+					"name": "Neanderthal 12",
+					"color": "#0000ff",
+					"spawnType": "group",
+					"spawnEffectDelay": 0,
+					"spawnEffectType": "",
+					"spawnLaunchDuration": 0,
+					"spawnLaunchType": "",
+					"spawnFormation": "",
+					"totalNumber": 2,
+					"numberInGroup": 2,
+					"initialDelay": 0,
+					"singleDelay": 4,
+					"groupDelay": 0,
+					"spawneeDeathDelay": 0,
+					"timeToKill": 0.1,
+					"initialDelayByScript": 14.2,
+					"otherInitialDelay": 0
+				}
+			]
+		}
+	],
+	"imagery": [
+		{
+			"fileName": "wave1.png",
+			"title": "First fight spawn order",
+			"description": "This is the order in which enemies spawn during the initial fight, before the door smashers arrive. Green is lizards, red is neanderthals. Note the map has been rotated 180 degrees to have the village entrance be up."
+		}
+	],
+	"map": {
+		"width": 875,
+		"height": 821,
+		"markers": [
+			{ "x": 0, "y": 0, "r": 8, "color": "#000000", "tooltip":"" }
+		]
+	},
+	"macros": [
+		{ 
+			"title": "First fight", 
+			"fileName": "First_Fight",
+			"badVars": [
+				"Albino_spawnee",
+				"Shells",
+				"Health_S"
+			],
+			"goodVars": [
+				"Spawnee"
+			]
+		},
+		{ 
+			"title": "Second fight", 
+			"fileName": "Second_Fight",
+			"badVars": [
+			],
+			"goodVars": [
+			]
+		}
+	]
+}
