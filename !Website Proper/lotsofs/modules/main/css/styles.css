@@ -27,3 +27,62 @@ div {
 {
 	display: none;
 }
+
+#jsonFormat_ArtistMatchTable {
+	max-width: 100%;
+
+	&.hideExtrasColumn .extrasCell {
+		display: none;
+	}
+
+	.artistSelectCell {
+		width: 32em;
+	}
+}
+
+#jsonFormat_ArtistTable {
+	select {
+		width: 100%;
+	}
+
+	.providedName {
+		display: block;
+		max-width: 20em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.rowExtras {
+		display: flex;
+		gap: 0.4em;
+		align-items: center;
+
+		input[type="text"] {
+			flex: 0 0 auto;
+			width: 14em;
+		}
+
+		.rawNamePreview {
+			flex: 0 1 auto;
+			max-width: 20em;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		label {
+			flex: 0 0 auto;
+			white-space: nowrap;
+		}
+	}
+
+	.aliasNameInLabel {
+		display: inline-block;
+		max-width: 14em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		vertical-align: bottom;
+	}
+}

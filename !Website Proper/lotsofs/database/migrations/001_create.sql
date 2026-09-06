@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS artist_alias (
     id INTEGER PRIMARY KEY,
     artist_id INTEGER NOT NULL,
     name TEXT NOT NULL,
+    is_actual BOOLEAN NOT NULL DEFAULT 0,
     FOREIGN KEY (artist_id) REFERENCES artist(id)
 );
 
@@ -98,6 +99,9 @@ ON album_artist (album_id, artist_id);
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_artist_alias_unique
 ON artist_alias (artist_id, name);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_artist_alias_one_actual
+ON artist_alias (artist_id) WHERE is_actual = 1;
 
 CREATE INDEX IF NOT EXISTS idx_song_composition ON song(composition_id);
 CREATE INDEX IF NOT EXISTS idx_track_song ON track(song_id);

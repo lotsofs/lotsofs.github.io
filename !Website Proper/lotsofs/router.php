@@ -7,9 +7,21 @@ include __MODULES__ . '/main/routes.php';
 include __MODULES__ . '/swat4/routes.php';
 include __MODULES__ . '/ss2/routes.php';
 
-$uri = strtolower(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-route($uri, $routes, $globalData, $config);
+// redirect anything that isn't the lowercase, no trailing slash url
+$canonicalUri = rtrim(strtolower($path), '/');
+if ($canonicalUri === '') {
+	$canonicalUri = '/';
+}
+
+if ($path !== $canonicalUri) {
+	$query = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+	header('Location: ' . $canonicalUri . ($query ? '?' . $query : ''), true, 301);
+	exit;
+}
+
+route($canonicalUri, $routes, $globalData, $config);
 
 // function serveDirectFile($uri) {
 // 	var_dump($uri);

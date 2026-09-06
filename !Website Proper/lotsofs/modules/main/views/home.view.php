@@ -32,7 +32,7 @@
 	<p id="exchangeRateReadError">
 	</p>
 	<p>
-		<a href="exchangeRates">More</a>
+		<a href="exchange-rates">More</a>
 	</p>
 </div>
 
