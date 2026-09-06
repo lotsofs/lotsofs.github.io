@@ -5,13 +5,19 @@ const ARTIST_OPTION_NEW = "new";
 const ARTIST_OPTION_CUSTOM = "custom";
 const ARTIST_OPTION_PENDING_PREFIX = "pending:";
 
-const jsonInput = document.getElementById("jsonInput");
-const jsonFormat_Message = document.getElementById("jsonFormat_Message");
-const jsonFormat_ArtistMatchTable = document.getElementById("jsonFormat_ArtistMatchTable");
-const jsonFormat_ArtistTable = document.getElementById("jsonFormat_ArtistTable");
-const jsonFormat_ArtistSubmit = document.getElementById("jsonFormat_SubmitButton");
+const pasteInput = document.getElementById("pasteInput");
+const statusMessage = document.getElementById("statusMessage");
+const artistMatchTable = document.getElementById("artistMatchTable");
+const artistMatchRows = document.getElementById("artistMatchRows");
+const submitButton = document.getElementById("submitButton");
+const songTable = document.getElementById("songTable");
+const songRows = document.getElementById("songRows");
+const submitSongsButton = document.getElementById("submitSongsButton");
 
-function buildTableHtml(data_userInput) {
+let pastedRows = [];
+
+// one artist row per unique pasted name
+function buildArtistTable(data_userInput) {
 	if (!data_userInput) return;
 
 	const uniqueArtists = [];
@@ -31,11 +37,11 @@ function buildTableHtml(data_userInput) {
 
 	uniqueArtists.forEach(artist => {
 		// create tablerow
-		const tr_Exists = jsonFormat_ArtistTable.querySelector(`tr[data_artist="${CSS.escape(artist)}"]`);
+		const tr_Exists = artistMatchRows.querySelector(`tr[data_artist="${CSS.escape(artist)}"]`);
 		if (tr_Exists) {
 			return;
 		}
-		const tr_Element = appendChildToElement(jsonFormat_ArtistTable, "tr");
+		const tr_Element = appendChildToElement(artistMatchRows, "tr");
 		tr_Element.setAttribute('data_artist', artist);
 
 		// create cell with the provided name
@@ -50,7 +56,7 @@ function buildTableHtml(data_userInput) {
 		selectCell_Element.classList.add("artistSelectCell");
 		const dropDown_Element = appendChildToElement(selectCell_Element, "select");
 
-		// create cell holding whatever the selected option needs
+		// create cell for the selected option's extras
 		const extrasCell_Element = appendChildToElement(tr_Element, "td", "");
 		extrasCell_Element.classList.add("extrasCell");
 		const extras_Element = appendChildToElement(extrasCell_Element, "span");
@@ -63,22 +69,23 @@ function buildTableHtml(data_userInput) {
 		const keepRawAliasCheckBox_Element = appendChildToElement(keepRawAliasLabel_Element, "input");
 		keepRawAliasCheckBox_Element.type = "checkbox";
 		keepRawAliasCheckBox_Element.checked = true;
-		appendChildToElement(keepRawAliasLabel_Element, "span", "Also store ");
+		const [aliasLabelBefore, aliasLabelAfter] = t("artists.alsoStoreAlias").split("{name}");
+		appendChildToElement(keepRawAliasLabel_Element, "span", aliasLabelBefore);
 		const keepRawAliasName_Element = appendChildToElement(keepRawAliasLabel_Element, "span", `"${artist}"`);
 		keepRawAliasName_Element.classList.add("aliasNameInLabel");
-		appendChildToElement(keepRawAliasLabel_Element, "span", " as an alias");
-		keepRawAliasLabel_Element.title = `Remember "${artist}" itself as an alias (uncheck if it's just wrong/a typo and shouldn't be matched again)`;
+		appendChildToElement(keepRawAliasLabel_Element, "span", aliasLabelAfter || "");
+		keepRawAliasLabel_Element.title = t("artists.alsoStoreTooltip", { name: artist });
 
 		// create result cell
 		const resultCell = appendChildToElement(tr_Element, "td", "");
 		resultCell.classList.add("resultCell");
 
 		// populate dropdown list
-		const optionNew = appendChildToElement(dropDown_Element, "option", "<New>");
+		const optionNew = appendChildToElement(dropDown_Element, "option", t("artists.option.new"));
 		optionNew.value = ARTIST_OPTION_NEW;
-		const optionCustom = appendChildToElement(dropDown_Element, "option", "<Custom>");
+		const optionCustom = appendChildToElement(dropDown_Element, "option", t("artists.option.custom"));
 		optionCustom.value = ARTIST_OPTION_CUSTOM;
-		const optionSkip = appendChildToElement(dropDown_Element, "option", "<Skip>");
+		const optionSkip = appendChildToElement(dropDown_Element, "option", t("artists.option.skip"));
 		optionSkip.value = ARTIST_OPTION_SKIP;
 		artistOptionLabels.forEach((name, artistId) => {
 			const optionArtist = appendChildToElement(dropDown_Element, "option", name);
@@ -103,7 +110,7 @@ function buildTableHtml(data_userInput) {
 // rebuild pending options, row cells, column visibility and previews
 function refreshAllRows() {
 	refreshPendingArtistOptions();
-	jsonFormat_ArtistTable.querySelectorAll("tr[data_artist]").forEach(row => {
+	artistMatchRows.querySelectorAll("tr[data_artist]").forEach(row => {
 		syncRowInputToSelection(
 			row.querySelector("select"),
 			row.querySelector("input[type='text']"),
@@ -117,7 +124,7 @@ function refreshAllRows() {
 
 // offer every row the artists that other rows are about to create
 function refreshPendingArtistOptions() {
-	const rows = Array.from(jsonFormat_ArtistTable.querySelectorAll("tr[data_artist]"));
+	const rows = Array.from(artistMatchRows.querySelectorAll("tr[data_artist]"));
 
 	const pendingArtists = [];
 	rows.forEach(row => {
@@ -147,7 +154,7 @@ function refreshPendingArtistOptions() {
 			option.classList.add("pendingArtistOption");
 		});
 
-		// restore the selection, falling back if its option is gone
+		// restore the selection
 		select.value = previousValue;
 		if (!select.value) {
 			select.value = ARTIST_OPTION_NEW;
@@ -186,61 +193,65 @@ function syncRowInputToSelection(select, input, keepRawAliasLabel, rawNamePrevie
 
 // fill the Result column with what submitting would do
 function refreshRowPreviews() {
-	jsonFormat_ArtistTable.querySelectorAll("tr[data_artist]:not(.rowHandled)").forEach(row => {
+	artistMatchRows.querySelectorAll("tr[data_artist]:not(.rowHandled)").forEach(row => {
 		row.querySelector(".resultCell").textContent = previewResultFor(row);
 	});
 }
 
+// what this row's selection would do on submit
 function previewResultFor(row) {
 	const providedName = row.getAttribute("data_artist");
 	const selectValue = row.querySelector("select").value;
 
 	if (selectValue === ARTIST_OPTION_SKIP) {
-		return "Skipped";
+		return t("artists.preview.skipped");
 	}
 	if (selectValue === ARTIST_OPTION_NEW || selectValue === ARTIST_OPTION_CUSTOM) {
-		return "Creates new artist";
+		return t("artists.preview.createsNew");
 	}
 	if (selectValue.startsWith(ARTIST_OPTION_PENDING_PREFIX)) {
-		return "Joins new artist";
+		return t("artists.preview.joinsNew");
 	}
 	if (data_artistNames.some(a => a.name == providedName && a.artist_id == selectValue)) {
-		return "Artist found";
+		return t("artists.preview.artistFound");
 	}
-	return row.querySelector("input[type='checkbox']").checked ? "Adds alias" : "Nothing to store";
+	return row.querySelector("input[type='checkbox']").checked
+		? t("artists.preview.addsAlias")
+		: t("artists.preview.nothingToStore");
 }
 
 // hide the "Name To Store" column when no row needs it
 function syncExtrasColumnVisibility() {
-	const rows = jsonFormat_ArtistTable.querySelectorAll("tr[data_artist]");
+	const rows = artistMatchRows.querySelectorAll("tr[data_artist]");
 	const anyRowNeedsExtras = Array.from(rows).some(row => {
 		const extras = rowExtrasFor(row.querySelector("select").value, row.getAttribute("data_artist"));
 		return extras.typedName || extras.rawName || extras.keepRawAlias;
 	});
-	jsonFormat_ArtistMatchTable.classList.toggle("hideExtrasColumn", !anyRowNeedsExtras);
+	artistMatchTable.classList.toggle("hideExtrasColumn", !anyRowNeedsExtras);
 }
 
-function parsePastedJson() {
-	const text = jsonInput.value;
-	jsonFormat_ArtistTable.innerHTML = "";
-	if (!text) {
-		jsonFormat_Message.innerHTML = "";
-		return
+// one line per track, artist and title separated by a tab
+function parsePastedTsv() {
+	const text = pasteInput.value;
+	artistMatchRows.innerHTML = "";
+	statusMessage.innerHTML = "";
+	hideSongTable();
+	if (!text.trim()) {
+		return;
 	}
-	try {
-		const data = JSON.parse(text);
-		if (!Array.isArray(data)) {
-			jsonFormat_Message.innerHTML = "JSON must be array";
+	const data = [];
+	text.split(/\r?\n/).forEach(line => {
+		const fields = line.split("\t");
+		const artist = fields[0].trim();
+		if (!artist) {
 			return;
 		}
-		jsonFormat_Message.innerHTML = "";
-		buildTableHtml(data);
-	}
-	catch (e) {
-		jsonFormat_Message.innerHTML = "Invalid JSON " + e;
-	}
+		data.push({ Artist: artist, Title: (fields[1] || "").trim() });
+	});
+	pastedRows = data;
+	buildArtistTable(data);
 }
-jsonInput.addEventListener('input', parsePastedJson);
+pasteInput.addEventListener('input', parsePastedTsv);
 
 // resolve a row's selection to the artist it targets
 function resolveRowTarget(row, depth = 0) {
@@ -257,7 +268,7 @@ function resolveRowTarget(row, depth = 0) {
 	}
 	if (value.startsWith(ARTIST_OPTION_PENDING_PREFIX)) {
 		const targetName = decodeURIComponent(value.slice(ARTIST_OPTION_PENDING_PREFIX.length));
-		const targetRow = jsonFormat_ArtistTable.querySelector(`tr[data_artist="${CSS.escape(targetName)}"]`);
+		const targetRow = artistMatchRows.querySelector(`tr[data_artist="${CSS.escape(targetName)}"]`);
 		if (!targetRow) {
 			return { kind: 'skip' };
 		}
@@ -266,10 +277,11 @@ function resolveRowTarget(row, depth = 0) {
 	return { kind: 'existing', artistId: value };
 }
 
-jsonFormat_ArtistSubmit.addEventListener('click', () => {
+// send the artist rows, then build the song table
+submitButton.addEventListener('click', () => {
 	const newArtists = [];
 
-	const rows = jsonFormat_ArtistTable.querySelectorAll("tr[data_artist]:not(.rowHandled)");
+	const rows = artistMatchRows.querySelectorAll("tr[data_artist]:not(.rowHandled)");
 	rows.forEach(row => {
 		const artist = row.getAttribute("data_artist");
 		const select = row.querySelector("select");
@@ -287,7 +299,6 @@ jsonFormat_ArtistSubmit.addEventListener('click', () => {
 			return;
 		}
 
-		// only a row creating the artist supplies its actual name
 		const createsArtist = select.value === ARTIST_OPTION_NEW || select.value === ARTIST_OPTION_CUSTOM;
 
 		const payload = {
@@ -312,8 +323,8 @@ jsonFormat_ArtistSubmit.addEventListener('click', () => {
 	if (newArtists.length === 0) {
 		return;
 	}
-	jsonFormat_Message.innerHTML = "Submitting...";
-	fetch("modules/main/ajax/artistAlias.php", {
+	statusMessage.innerHTML = t("status.submitting");
+	fetch("/modules/music/ajax/artistAlias.php", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
@@ -328,9 +339,9 @@ jsonFormat_ArtistSubmit.addEventListener('click', () => {
 		return body;
 	})
 	.then(results => {
-		jsonFormat_Message.innerHTML = "";
+		statusMessage.innerHTML = "";
 		results.forEach(result => {
-			const row = jsonFormat_ArtistTable.querySelector(`tr[data_artist="${CSS.escape(result.provided_name)}"]`);
+			const row = artistMatchRows.querySelector(`tr[data_artist="${CSS.escape(result.provided_name)}"]`);
 			if (!row) return;
 			const resultCell = row.querySelector(".resultCell");
 			resultCell.textContent = result.message;
@@ -339,8 +350,105 @@ jsonFormat_ArtistSubmit.addEventListener('click', () => {
 				row.querySelectorAll("select, input").forEach(el => el.disabled = true);
 			}
 		});
+		buildSongTable(results);
 	})
 	.catch(error => {
-		jsonFormat_Message.innerHTML = "Submit failed: " + error;
+		statusMessage.innerHTML = t("status.submitFailed", { error: error });
+	});
+});
+
+function hideSongTable() {
+	songRows.innerHTML = "";
+	songTable.hidden = true;
+	submitSongsButton.hidden = true;
+}
+
+// one row per unique title of every artist that came back with an id
+function buildSongTable(artistResults) {
+	const artistIdByProvidedName = new Map();
+	artistResults.forEach(result => {
+		if (result.artist_id) {
+			artistIdByProvidedName.set(result.provided_name, result.artist_id);
+		}
+	});
+
+	songRows.innerHTML = "";
+	const seen = new Set();
+
+	pastedRows.forEach(item => {
+		const artistId = artistIdByProvidedName.get(item.Artist);
+		if (!artistId || !item.Title) {
+			return;
+		}
+		const key = artistId + "\t" + item.Title;
+		if (seen.has(key)) {
+			return;
+		}
+		seen.add(key);
+
+		const row = appendChildToElement(songRows, "tr");
+		row.setAttribute("data_artist_id", artistId);
+		row.setAttribute("data_title", item.Title);
+
+		appendChildToElement(row, "td", artistDisplayName(artistId, item.Artist));
+		appendChildToElement(row, "td", item.Title);
+		const resultCell = appendChildToElement(row, "td", "");
+		resultCell.classList.add("resultCell");
+	});
+
+	const hasSongs = songRows.children.length > 0;
+	songTable.hidden = !hasSongs;
+	submitSongsButton.hidden = !hasSongs;
+}
+
+// actual name if known, else the pasted one
+function artistDisplayName(artistId, providedName) {
+	const known = data_artistNames.find(a => a.artist_id == artistId && a.is_actual);
+	return known ? known.name : providedName;
+}
+
+// send the song rows
+submitSongsButton.addEventListener('click', () => {
+	const songs = [];
+	songRows.querySelectorAll("tr:not(.rowHandled)").forEach(row => {
+		songs.push({
+			artist_id: row.getAttribute("data_artist_id"),
+			title: row.getAttribute("data_title"),
+		});
+	});
+	if (songs.length === 0) {
+		return;
+	}
+	statusMessage.innerHTML = t("status.submitting");
+	fetch("/modules/music/ajax/song.php", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(songs)
+	})
+	.then(async response => {
+		const body = await response.json().catch(() => null);
+		if (!response.ok) {
+			throw new Error(body && body.error ? body.error : `HTTP ${response.status}`);
+		}
+		return body;
+	})
+	.then(results => {
+		statusMessage.innerHTML = "";
+		results.forEach(result => {
+			songRows.querySelectorAll("tr").forEach(row => {
+				if (row.getAttribute("data_artist_id") != result.artist_id || row.getAttribute("data_title") !== result.title) {
+					return;
+				}
+				row.querySelector(".resultCell").textContent = result.message;
+				if (result.status === "ok" || result.status === "duplicate") {
+					row.classList.add("rowHandled");
+				}
+			});
+		});
+	})
+	.catch(error => {
+		statusMessage.innerHTML = t("status.submitFailed", { error: error });
 	});
 });

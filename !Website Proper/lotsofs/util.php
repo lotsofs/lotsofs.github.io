@@ -9,6 +9,28 @@ $globalData = [];
 
 $config = require('config.php');
 
+function stringCatalogue($module = null) {
+	static $catalogues = [];
+	static $active = null;
+
+	if ($module !== null) {
+		$active = $module;
+		if (!isset($catalogues[$module])) {
+			$catalogues[$module] = require __MODULES__ . '/' . $module . '/lang/en.php';
+		}
+	}
+
+	return $active === null ? [] : $catalogues[$active];
+}
+
+function t($key, $params = []) {
+	$text = stringCatalogue()[$key] ?? $key;
+	foreach ($params as $name => $value) {
+		$text = str_replace('{' . $name . '}', $value, $text);
+	}
+	return $text;
+}
+
 function dd($value) {
 	echo "<pre>";
 	var_dump($value);

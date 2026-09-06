@@ -26,7 +26,7 @@
 			</tr>
 		</thead>
 		<tbody id="exchangeRates">
-			
+
 		</tbody>
 	</table>
 	<p id="exchangeRateReadError">

@@ -3,8 +3,7 @@
 class Database {
     public $pdo;
     
-    public function __construct($dbName, $username='', $password='') {
-        $dbFilePath = "{$_SERVER['DOCUMENT_ROOT']}\\database\\{$dbName}";
+    public function __construct($dbFilePath, $username='', $password='') {
         $dsn = "sqlite:{$dbFilePath}";
         $connection = new PDO($dsn, $username, $password);
         $connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);

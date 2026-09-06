@@ -1,14 +1,13 @@
 <?php
 
+// shared setup for JSON POST endpoints
+
 set_include_path($_SERVER['DOCUMENT_ROOT']);
 
 require 'util.php';
 require 'classes/Database.php';
 
 $config = require('config.php');
-
-$db_config = php_sapi_name() === 'cli-server' ? $config['database_test'] : $config['database'];
-$db = new Database($db_config);
 
 header('Content-Type: application/json');
 
