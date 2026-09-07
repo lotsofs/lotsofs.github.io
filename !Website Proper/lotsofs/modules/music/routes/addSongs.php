@@ -21,15 +21,17 @@ foreach($sqlFiles as $file) {
         continue;
     }
 
-    $sql = file_get_contents($file);
-
-    $statements = array_filter(explode(";", $sql));
-
-    foreach ($statements as $stmt) {
-        $db->execSQL($stmt);
+    // apply each migration in one transaction
+    $db->pdo->beginTransaction();
+    try {
+        $db->execSQL(file_get_contents($file));
+        $db->query("INSERT INTO schema_migrations (filename, applied_at) VALUES (?, ?)", [$migrationName, date('c')]);
+        $db->pdo->commit();
     }
-
-    $db->query("INSERT INTO schema_migrations (filename, applied_at) VALUES (?, ?)", [$migrationName, date('c')]);
+    catch (PDOException $e) {
+        $db->pdo->rollBack();
+        throw $e;
+    }
 }
 
 $globalData['artistNames'] = $db->selectAllFromTable("artist_alias");

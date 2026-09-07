@@ -38,10 +38,10 @@
 
 <p>
 	There currently isn't much here yet. Did you mean to do one of the following?:
-	<ul>
-		<li>Access my Keep Talking and Nobody Explodes <a class="links-link" href="ktane">merged translated modules manuals w/ bonus languages</a>.</li>
-	</ul>
 </p>
+<ul>
+	<li>Access my Keep Talking and Nobody Explodes <a class="links-link" href="ktane">merged translated modules manuals w/ bonus languages</a>.</li>
+</ul>
 
 <script src="modules/main/js/exchangeRates.js"></script>
 <script>

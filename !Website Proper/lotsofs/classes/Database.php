@@ -13,39 +13,17 @@ class Database {
     }
     
     public function query($query, $params = []) {
-        try {
-            $stm = $this->pdo->prepare($query);
-            $stm->execute($params);
+        $stm = $this->pdo->prepare($query);
+        $stm->execute($params);
 
-            return $stm;
-        }
-        catch (PDOException $e) {
-    	    http_response_code(500);
-    	    // TODO: This won't do anything with ajax
-            dd($e);
-        }
+        return $stm;
     }
 
     public function selectAllFromTable($tableName) {
-        try {
-            $query = "SELECT * FROM ".$tableName;
-            $stm = $this->query($query);
-            return $stm->fetchAll();
-        }
-        catch (PDOException $e) {
-            http_response_code(500);
-            dd($e);
-        }
+        return $this->query("SELECT * FROM " . $tableName)->fetchAll();
     }
 
     public function execSQL($sql) {
-        try {
-            $this->pdo->exec($sql);
-            return true;
-        }
-        catch (PDOException $e) {
-            echo $e->getMessage();
-            return false;
-        }
+        $this->pdo->exec($sql);
     }
 }

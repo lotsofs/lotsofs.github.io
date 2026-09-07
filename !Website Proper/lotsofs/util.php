@@ -34,7 +34,7 @@ function t($key, $params = []) {
 function dd($value) {
 	echo "<pre>";
 	var_dump($value);
-	error_log($value);
+	error_log(print_r($value, true));
 	echo "</pre>";
 
 	die();

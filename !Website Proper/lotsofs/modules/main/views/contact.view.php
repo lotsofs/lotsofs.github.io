@@ -21,9 +21,4 @@
 	<ul>E-Mail:</b> <span style=unicode-bidi:bidi-override;direction:rtl;user-select:none>moc.sfostol@seiriuqni</span>
 </ul>
 
-<script>
-	currencyWhiteList = ["CHF", "DKK", "EUR", "GBP", "IDR", "NOK", "SEK", "TRY", "USD", "VND"]
-	processExchangeRates(<?= $exchangeRatesJson ?>)
-</script>
-
 <?php require(__MAIN__ . '/views/partials/foot.php') ?>

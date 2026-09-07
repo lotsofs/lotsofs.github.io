@@ -25,7 +25,7 @@ foreach ($data as $datum) {
 		continue;
 	}
 
-	// prefer the artist's actual name, fall back to any alias it has
+	// look up the artist name for the message
 	$artistNameStmt = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC LIMIT 1", [$artistId]);
 	$artistRow = $artistNameStmt ? $artistNameStmt->fetch() : false;
 	$artistName = $artistRow ? $artistRow['name'] : $artistId;

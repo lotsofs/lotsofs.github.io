@@ -20,19 +20,19 @@ CREATE TABLE IF NOT EXISTS song (
     FOREIGN KEY (artist_id) REFERENCES artist(id)
 );
 
-CREATE TABLE IF NOT EXISTS user (
+CREATE TABLE IF NOT EXISTS account (
     id INTEGER PRIMARY KEY,
-    username TEXT NOT NULL,
+    account_name TEXT NOT NULL,
     password_hash TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS user_song (
+CREATE TABLE IF NOT EXISTS account_song (
     id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL,
+    account_id INTEGER NOT NULL,
     song_id INTEGER NOT NULL,
     score REAL,
     subjective_note TEXT,
-    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (account_id) REFERENCES account(id),
     FOREIGN KEY (song_id) REFERENCES song(id)
 );
 
@@ -45,10 +45,10 @@ ON artist_alias (artist_id) WHERE is_actual = 1;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_song_unique
 ON song (artist_id, title);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_user_username_unique
-ON user (username);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_account_name_unique
+ON account (account_name);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_user_song_unique
-ON user_song (user_id, song_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_account_song_unique
+ON account_song (account_id, song_id);
 
-CREATE INDEX IF NOT EXISTS idx_user_song_song ON user_song (song_id);
+CREATE INDEX IF NOT EXISTS idx_account_song_song ON account_song (song_id);

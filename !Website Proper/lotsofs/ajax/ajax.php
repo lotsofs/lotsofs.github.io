@@ -11,6 +11,13 @@ $config = require('config.php');
 
 header('Content-Type: application/json');
 
+// return failures as json
+set_exception_handler(function ($e) {
+	http_response_code(500);
+	error_log((string)$e);
+	echo json_encode(['error' => $e->getMessage()]);
+});
+
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 	http_response_code(405);
 	echo json_encode(['error' => 'Method not allowed']);

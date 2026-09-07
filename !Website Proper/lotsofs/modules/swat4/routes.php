@@ -1,7 +1,7 @@
 <?php
 
 $routes += [
-	"/swat4/2" => "modules/swat4/routes/map02.php",
+	"/swat4/2" => __MODULES__ . "/swat4/routes/map02.php",
 	// "/exchangeRates" => "routes/exchangeRates.php",
 	// "/contact" => "routes/contact.php",
 	// "/ktane" => "routes/ktane.php",

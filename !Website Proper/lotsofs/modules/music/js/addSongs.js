@@ -22,7 +22,7 @@ function buildArtistTable(data_userInput) {
 
 	const uniqueArtists = [];
 	data_userInput.forEach(item => {
-		const artist = escapeHtml(item.Artist || item.artist || '');
+		const artist = (item.Artist || item.artist || '').trim();
 		if (artist && !uniqueArtists.includes(artist)) {
 			uniqueArtists.push(artist);
 		}
@@ -293,7 +293,7 @@ submitButton.addEventListener('click', () => {
 			return;
 		}
 
-		// skip rows with nothing left to record
+		// skip rows with nothing to record
 		const extras = rowExtrasFor(select.value, artist);
 		if (extras.keepRawAlias && !keepRawAliasCheckbox.checked && select.value !== ARTIST_OPTION_CUSTOM) {
 			return;
@@ -401,7 +401,7 @@ function buildSongTable(artistResults) {
 	submitSongsButton.hidden = !hasSongs;
 }
 
-// actual name if known, else the pasted one
+// display name for an artist
 function artistDisplayName(artistId, providedName) {
 	const known = data_artistNames.find(a => a.artist_id == artistId && a.is_actual);
 	return known ? known.name : providedName;
