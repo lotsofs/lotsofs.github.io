@@ -5,6 +5,8 @@ const SONG_ENDPOINT = '/modules/music/ajax/song.php';
 return [
 
 	'a song is stored against its artist' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$artistId = $ctx->makeArtist('Song Owner');
 
 		$response = $ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'First Track']]);
@@ -15,6 +17,8 @@ return [
 	},
 
 	'the added message names the artist' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$artistId = $ctx->makeArtist('Named In Message');
 
 		$response = $ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Some Song']]);
@@ -23,6 +27,8 @@ return [
 	},
 
 	'resubmitting a song reports a duplicate' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$artistId = $ctx->makeArtist('Repeat Owner');
 		$payload = [['artist_id' => $artistId, 'title' => 'Repeated Track']];
 
@@ -36,6 +42,8 @@ return [
 	},
 
 	'the same title can belong to two artists' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$first = $ctx->makeArtist('Coverer One');
 		$second = $ctx->makeArtist('Coverer Two');
 
@@ -46,6 +54,8 @@ return [
 	},
 
 	'a titleless row is rejected' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$artistId = $ctx->makeArtist('No Title Owner');
 
 		$response = $ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => '']]);
@@ -53,6 +63,8 @@ return [
 	},
 
 	'punctuation in titles survives the round trip' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$artistId = $ctx->makeArtist('Punctuation Owner');
 		$titles = ["Ain't Talkin' 'Bout Love", 'Salt & Pepper', '<script>alert(1)</script>', 'Voilà'];
 
@@ -67,6 +79,8 @@ return [
 	},
 
 	'a database error comes back as json, not html' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$response = $ctx->post(SONG_ENDPOINT, [['artist_id' => 999999, 'title' => 'Orphan Track']]);
 
 		assertSame(500, $response['status'], 'status');
@@ -76,6 +90,8 @@ return [
 	},
 
 	'endpoints reject non post requests' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$response = $ctx->get(SONG_ENDPOINT);
 
 		assertSame(405, $response['status'], 'status');
@@ -83,6 +99,8 @@ return [
 	},
 
 	'endpoints reject bodies that are not arrays' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$response = $ctx->post(SONG_ENDPOINT, 'null');
 
 		assertSame(400, $response['status'], 'status');
@@ -90,6 +108,8 @@ return [
 	},
 
 	'the songs page lists a song with its id and artist' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$artistId = $ctx->makeArtist('Listed Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Listed Track']]);
 
@@ -102,6 +122,8 @@ return [
 	},
 
 	'the songs page shows its column headings' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$body = $ctx->get('/music/songs')['body'];
 
 		foreach (['All Songs', 'ID', 'Artist', 'Title', 'Note', 'Score'] as $heading) {
@@ -110,6 +132,8 @@ return [
 	},
 
 	'the songs page escapes stored markup' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$artistId = $ctx->makeArtist('Escaping Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => '<b>not bold</b>']]);
 
@@ -119,6 +143,8 @@ return [
 	},
 
 	'the songs page carries no php warnings' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$body = $ctx->get('/music/songs')['body'];
 
 		foreach (['Warning:', 'Notice:', 'Fatal error', 'Undefined variable', 'Undefined index'] as $sign) {

@@ -25,6 +25,24 @@ nav .navCurrent {
 	font-weight: bold;
 }
 
+nav .navAccount {
+	margin-right: 1em;
+	opacity: 0.7;
+}
+
+nav .navLogout {
+	display: inline;
+}
+
+.formError {
+	color: #ff8a80;
+}
+
+form label {
+	display: inline-block;
+	min-width: 12em;
+}
+
 table {
 	border-collapse: collapse;
 }

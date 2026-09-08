@@ -1,5 +1,9 @@
 <?php
 
+require_once __ROOT__ . '/session.php';
+sessionScope('music');
+requireLogin();
+
 stringCatalogue("music");
 
 $pageTitle = t("page.addSongs.title");

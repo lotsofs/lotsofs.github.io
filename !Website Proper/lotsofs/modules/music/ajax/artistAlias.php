@@ -4,6 +4,10 @@ require $_SERVER['DOCUMENT_ROOT'] . '/ajax/ajax.php';
 
 stringCatalogue('music');
 
+require_once __ROOT__ . '/session.php';
+sessionScope('music');
+requireLoginJson(t('ajax.notLoggedIn'));
+
 $db = require __MODULES__ . '/music/db.php';
 
 const ARTIST_ID_NEW = 'new';

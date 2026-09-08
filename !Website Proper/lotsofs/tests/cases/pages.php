@@ -3,6 +3,8 @@
 return [
 
 	'every registered route serves' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$expected = [
 			'/' => 200,
 			'/contact' => 200,
@@ -17,6 +19,40 @@ return [
 		foreach ($expected as $path => $status) {
 			assertSame($status, $ctx->get($path)['status'], "GET {$path}");
 		}
+	},
+
+	'the music pages are hidden from signed out visitors' => function ($ctx) {
+		$ctx->newSession();
+
+		foreach (['/music/add-songs', '/music/songs', '/music/invites'] as $path) {
+			$response = $ctx->get($path);
+			assertSame(302, $response['status'], "GET {$path} while signed out");
+			assertContains('/music/login', $response['location'], "{$path} redirect target");
+		}
+	},
+
+	'the music endpoints reject signed out callers' => function ($ctx) {
+		$ctx->newSession();
+
+		foreach (['/modules/music/ajax/artistAlias.php', '/modules/music/ajax/song.php'] as $path) {
+			$response = $ctx->post($path, []);
+			assertSame(401, $response['status'], "POST {$path} while signed out");
+			assertTrue(isset($response['json']['error']), "{$path} returns a json error");
+		}
+	},
+
+	'the music landing, login and register pages stay public' => function ($ctx) {
+		$ctx->newSession();
+
+		assertSame(200, $ctx->get('/music')['status'], 'GET /music');
+		assertSame(200, $ctx->get('/music/login')['status'], 'GET /music/login');
+		assertSame(200, $ctx->get('/music/register')['status'], 'GET /music/register');
+	},
+
+	'the music landing page links to login' => function ($ctx) {
+		$ctx->newSession();
+
+		assertContains('href="/music/login"', $ctx->get('/music')['body'], 'login link');
 	},
 
 	'unknown paths 404' => function ($ctx) {
@@ -51,6 +87,8 @@ return [
 	},
 
 	'pages render their own strings, not catalogue keys' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$body = $ctx->get('/music/add-songs')['body'];
 		assertContains('Add Songs', $body, 'heading');
 		assertContains('Provided Artist Name', $body, 'artist table header');
@@ -58,7 +96,9 @@ return [
 	},
 
 	'pages carry no php warnings' => function ($ctx) {
-		foreach (['/', '/contact', '/exchange-rates', '/music/add-songs', '/ss2/11'] as $path) {
+		$ctx->ensureLoggedIn();
+
+		foreach (['/', '/contact', '/exchange-rates', '/music/add-songs', '/music/songs', '/ss2/11'] as $path) {
 			$body = $ctx->get($path)['body'];
 			foreach (['Warning:', 'Notice:', 'Fatal error', 'Undefined variable'] as $sign) {
 				assertTrue(strpos($body, $sign) === false, "{$path} contains '{$sign}'");

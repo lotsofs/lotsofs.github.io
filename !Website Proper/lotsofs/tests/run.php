@@ -21,6 +21,7 @@ register_shutdown_function(function () use (&$server, $tempRoot, $serverLog) {
 		proc_close($server);
 	}
 	removeDir($tempRoot);
+	@unlink($tempRoot . '.cookies');
 
 	// the log stays locked for a moment after the server goes away
 	for ($i = 0; $i < 20 && file_exists($serverLog); $i++) {
@@ -49,8 +50,8 @@ if (!waitForServer($port)) {
 
 $ctx = new TestContext($port, $tempRoot);
 
-// the app applies migrations when this page is served
-$ctx->get('/music/add-songs');
+// the app applies migrations when a music page is served, and this one needs no login
+$ctx->get('/music/login');
 
 $passed = 0;
 $failed = 0;
@@ -79,10 +80,17 @@ exit($failed === 0 ? 0 : 1);
 class TestContext {
 	private $port;
 	private $tempRoot;
+	private $cookieJar;
 
 	public function __construct($port, $tempRoot) {
 		$this->port = $port;
 		$this->tempRoot = $tempRoot;
+		$this->cookieJar = $tempRoot . '.cookies';
+	}
+
+	// cookies persist across requests, so a case can log in and stay logged in
+	public function newSession() {
+		@unlink($this->cookieJar);
 	}
 
 	public function get($path, $followRedirects = false) {
@@ -93,17 +101,33 @@ class TestContext {
 		return $this->request('POST', $path, is_string($payload) ? $payload : json_encode($payload), false);
 	}
 
-	private function request($method, $path, $body, $followRedirects) {
+	// a traditional html form submission rather than a json body
+	public function postForm($path, $fields, $followRedirects = false) {
+		return $this->request('POST', $path, http_build_query($fields), $followRedirects, 'application/x-www-form-urlencoded');
+	}
+
+	// the hidden csrf field of whatever form is on the given page
+	public function csrfTokenFrom($path) {
+		$body = $this->get($path)['body'];
+		if (preg_match('/name="csrf_token" value="([^"]+)"/', $body, $m)) {
+			return $m[1];
+		}
+		return null;
+	}
+
+	private function request($method, $path, $body, $followRedirects, $contentType = 'application/json') {
 		$ch = curl_init("http://localhost:{$this->port}{$path}");
 		curl_setopt_array($ch, [
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_HEADER => true,
 			CURLOPT_FOLLOWLOCATION => $followRedirects,
 			CURLOPT_CUSTOMREQUEST => $method,
+			CURLOPT_COOKIEJAR => $this->cookieJar,
+			CURLOPT_COOKIEFILE => $this->cookieJar,
 		]);
 		if ($body !== null) {
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: ' . $contentType]);
 		}
 		$raw = curl_exec($ch);
 		$status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
@@ -129,6 +153,25 @@ class TestContext {
 		$pdo = new PDO('sqlite:' . $this->tempRoot . '/modules/music/database/music_test.sqlite');
 		$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 		return $pdo;
+	}
+
+	// most pages and endpoints need an account, so cases can ask for one
+	public function ensureLoggedIn($name = 'test_runner', $password = 'test password') {
+		$db = $this->db();
+
+		$stmt = $db->prepare("SELECT id FROM account WHERE account_name = ?");
+		$stmt->execute([$name]);
+
+		if (!$stmt->fetch()) {
+			$insert = $db->prepare("INSERT INTO account (account_name, password_hash) VALUES (?, ?)");
+			$insert->execute([$name, password_hash($password, PASSWORD_DEFAULT)]);
+		}
+
+		return $this->postForm('/music/login', [
+			'csrf_token' => $this->csrfTokenFrom('/music/login'),
+			'account_name' => $name,
+			'password' => $password,
+		]);
 	}
 
 	// an artist plus its actual name, ready to attach songs or aliases to

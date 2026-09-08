@@ -5,6 +5,8 @@ const ARTIST_ENDPOINT = '/modules/music/ajax/artistAlias.php';
 return [
 
 	'a new artist is created with its actual name' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$response = $ctx->post(ARTIST_ENDPOINT, [[
 			'artist_id' => 'new',
 			'group' => 'Fresh Band',
@@ -23,6 +25,8 @@ return [
 	},
 
 	'rows sharing a group become one artist' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$response = $ctx->post(ARTIST_ENDPOINT, [
 			['artist_id' => 'new', 'group' => 'Grouped', 'og_name' => 'Grouped', 'provided_name' => 'Grouped', 'is_actual' => true],
 			['artist_id' => 'new', 'group' => 'Grouped', 'og_name' => 'Gruped', 'provided_name' => 'Gruped', 'is_actual' => false],
@@ -42,6 +46,8 @@ return [
 	},
 
 	'an alias can be added to an existing artist' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$artistId = $ctx->makeArtist('Existing Band');
 
 		$response = $ctx->post(ARTIST_ENDPOINT, [[
@@ -59,6 +65,8 @@ return [
 	},
 
 	'resubmitting an alias reports a duplicate' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$artistId = $ctx->makeArtist('Twice Band');
 
 		$response = $ctx->post(ARTIST_ENDPOINT, [[
@@ -75,6 +83,8 @@ return [
 	},
 
 	'a custom name can keep the pasted spelling too' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$response = $ctx->post(ARTIST_ENDPOINT, [[
 			'artist_id' => 'new',
 			'group' => 'Fooo Bar',
@@ -94,6 +104,8 @@ return [
 	},
 
 	'the pasted spelling is dropped when not asked for' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$response = $ctx->post(ARTIST_ENDPOINT, [[
 			'artist_id' => 'new',
 			'group' => 'Wrong Name',
@@ -110,6 +122,8 @@ return [
 	},
 
 	'only one alias per artist stays actual' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$artistId = $ctx->makeArtist('Shifting Band');
 
 		$ctx->post(ARTIST_ENDPOINT, [[
@@ -125,6 +139,8 @@ return [
 	},
 
 	'a nameless row is rejected' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$response = $ctx->post(ARTIST_ENDPOINT, [[
 			'artist_id' => 'new',
 			'og_name' => '',
@@ -136,6 +152,8 @@ return [
 	},
 
 	'punctuation in names survives the round trip' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
 		$names = ["Guns N' Roses", 'Simon & Garfunkel', 'AC/DC', 'Sigur Rós', '"Weird Al" Yankovic'];
 
 		foreach ($names as $name) {

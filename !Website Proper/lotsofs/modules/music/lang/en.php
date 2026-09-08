@@ -4,6 +4,47 @@ return [
 
 	'nav.addSongs' => 'Add Songs',
 	'nav.songs' => 'All Songs',
+	'nav.invites' => 'Invites',
+	'nav.login' => 'Log In',
+	'nav.register' => 'Register',
+	'nav.logout' => 'Log Out',
+
+	'ajax.notLoggedIn' => 'You need to be logged in.',
+
+	'page.music.title' => 'Music',
+
+	'page.register.title' => 'Register',
+	'register.heading' => 'Register',
+	'register.firstAccount' => 'No accounts exist yet, so this first one needs no invite code.',
+	'register.field.inviteCode' => 'Invite code',
+	'register.field.accountName' => 'Account name',
+	'register.field.password' => 'Password',
+	'register.field.passwordConfirm' => 'Repeat password',
+	'register.submit' => 'Register',
+	'register.error.expired' => 'That form expired, please try again.',
+	'register.error.missing' => 'Fill in an account name and a password.',
+	'register.error.passwordShort' => 'Passwords need at least 8 characters.',
+	'register.error.passwordMismatch' => 'The two passwords do not match.',
+	'register.error.nameTaken' => 'That account name is taken.',
+	'register.error.badInvite' => 'That invite code is not valid or has already been used.',
+
+	'page.login.title' => 'Log In',
+	'login.heading' => 'Log In',
+	'login.field.accountName' => 'Account name',
+	'login.field.password' => 'Password',
+	'login.submit' => 'Log In',
+	'login.error.expired' => 'That form expired, please try again.',
+	'login.error.rejected' => 'That account name and password do not match.',
+
+	'page.invites.title' => 'Invites',
+	'invites.heading' => 'Invites',
+	'invites.create' => 'Create an invite code',
+	'invites.empty' => 'No invite codes yet.',
+	'invites.column.code' => 'Code',
+	'invites.column.created' => 'Created',
+	'invites.column.used' => 'Used',
+	'invites.unused' => 'Unused',
+	'invites.usedBy' => 'Used by {name}',
 
 	'page.addSongs.title' => 'Add Songs',
 
