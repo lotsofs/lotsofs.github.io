@@ -2428,23 +2428,36 @@
     <div class="page-content">
         <h4>Chess Board Reference</h4>
         <p style="margin: 0;">Use the following graphic as a reference for the chess board layout</p>
-        <img src="img/modules/chess/Chessboard.png"  class="chess-chessboard">
-        <div class="chess-vertical">
-            <span>6</span>
-            <span>5</span>
-            <span>4</span>
-            <span>3</span>
-            <span>2</span>
-            <span>1</span>
-        </div>
-        <div class="chess-horizontal">
-            <span>a</span>
-            <span>b</span>
-            <span>c</span>
-            <span>d</span>
-            <span>e</span>
-            <span>f</span>
-        </div>
+        <style>
+            #chess-chessboard {
+                display: block;
+                margin: 0.5em;
+                width: 80%;
+            }
+
+            #chess-chessboard rect.white {
+                fill: #fffd
+            }
+
+            #chess-chessboard rect.black {
+                fill: #000d
+            }
+
+            #chess-chessboard rect.border {
+                fill: none;
+                stroke: #666;
+                stroke-width: 10px;
+            }
+
+            #chess-chessboard text {
+                font-size: 30px;
+                text-anchor: middle;
+                dominant-baseline: middle;
+                user-select: none;
+            }
+        </style>
+        <svg id="chess-chessboard" viewBox="-110 -10 720 720"><rect class="border" x="-5" y="-5" width="610" height="610"></rect><rect class="white highlightable" x="0" y="0" width="100" height="100"></rect><rect class="black highlightable" x="100" y="0" width="100" height="100"></rect><rect class="white highlightable" x="200" y="0" width="100" height="100"></rect><rect class="black highlightable" x="300" y="0" width="100" height="100"></rect><rect class="white highlightable" x="400" y="0" width="100" height="100"></rect><rect class="black highlightable" x="500" y="0" width="100" height="100"></rect><rect class="black highlightable" x="0" y="100" width="100" height="100"></rect><rect class="white highlightable" x="100" y="100" width="100" height="100"></rect><rect class="black highlightable" x="200" y="100" width="100" height="100"></rect><rect class="white highlightable" x="300" y="100" width="100" height="100"></rect><rect class="black highlightable" x="400" y="100" width="100" height="100"></rect><rect class="white highlightable" x="500" y="100" width="100" height="100"></rect><rect class="white highlightable" x="0" y="200" width="100" height="100"></rect><rect class="black highlightable" x="100" y="200" width="100" height="100"></rect><rect class="white highlightable" x="200" y="200" width="100" height="100"></rect><rect class="black highlightable" x="300" y="200" width="100" height="100"></rect><rect class="white highlightable" x="400" y="200" width="100" height="100"></rect><rect class="black highlightable" x="500" y="200" width="100" height="100"></rect><rect class="black highlightable" x="0" y="300" width="100" height="100"></rect><rect class="white highlightable" x="100" y="300" width="100" height="100"></rect><rect class="black highlightable" x="200" y="300" width="100" height="100"></rect><rect class="white highlightable" x="300" y="300" width="100" height="100"></rect><rect class="black highlightable" x="400" y="300" width="100" height="100"></rect><rect class="white highlightable" x="500" y="300" width="100" height="100"></rect><rect class="white highlightable" x="0" y="400" width="100" height="100"></rect><rect class="black highlightable" x="100" y="400" width="100" height="100"></rect><rect class="white highlightable" x="200" y="400" width="100" height="100"></rect><rect class="black highlightable" x="300" y="400" width="100" height="100"></rect><rect class="white highlightable" x="400" y="400" width="100" height="100"></rect><rect class="black highlightable" x="500" y="400" width="100" height="100"></rect><rect class="black highlightable" x="0" y="500" width="100" height="100"></rect><rect class="white highlightable" x="100" y="500" width="100" height="100"></rect><rect class="black highlightable" x="200" y="500" width="100" height="100"></rect><rect class="white highlightable" x="300" y="500" width="100" height="100"></rect><rect class="black highlightable" x="400" y="500" width="100" height="100"></rect><rect class="white highlightable" x="500" y="500" width="100" height="100"></rect><text x="-50" y="550" class="coordinate">1</text><text x="50" y="670" class="coordinate">a</text><text x="-50" y="450" class="coordinate">2</text><text x="150" y="670" class="coordinate">b</text><text x="-50" y="350" class="coordinate">3</text><text x="250" y="670" class="coordinate">c</text><text x="-50" y="250" class="coordinate">4</text><text x="350" y="670" class="coordinate">d</text><text x="-50" y="150" class="coordinate">5</text><text x="450" y="670" class="coordinate">e</text><text x="-50" y="50" class="coordinate">6</text><text x="550" y="670" class="coordinate">f</text></svg>
+
     </div>
 </div> 
  
@@ -11109,7 +11122,14 @@
     </div>
     <div class="page-footer absolute-footer solvablepagecount"></div>
     <div class="page-content">
-        <img id="morseCodeChart" src="img/modules/morsev2/International_Morse_Code.svg" style="float: left; margin-right: 1em; height: 32em; width: 24.8270625em; border: 1px solid #021a40; background-color: #ffffff;">
+		<table class="morse-signal-table"><thead><tr class="morse-interpret"><th style="font-size: 12pt">How to Interpret</th>
+			</tr><tr class="morse-interpret"><td style="text-align: left">
+					<p>1. A short flash represents a dot.</p>
+					<p>2. A long flash represents a dash.</p>
+					<p>3. There is a long gap between letters.</p>
+					<p>4. There is a very long gap before the word repeats.</p>
+				</td>
+			</tr></thead><tbody><tr><td><img id="morseSignalImg" src="img/modules/morsev2/morse-signals.svg"></td></tr></tbody></table>
         <table style="border: none">
             <tbody>
                 <tr>
