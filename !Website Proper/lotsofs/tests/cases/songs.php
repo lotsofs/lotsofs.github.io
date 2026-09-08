@@ -89,4 +89,41 @@ return [
 		assertTrue(isset($response['json']['error']), 'body carries an error key');
 	},
 
+	'the songs page lists a song with its id and artist' => function ($ctx) {
+		$artistId = $ctx->makeArtist('Listed Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Listed Track']]);
+
+		$songId = $ctx->db()->query("SELECT id FROM song WHERE title = 'Listed Track'")->fetch()['id'];
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertContains('Listed Track', $body, 'song title');
+		assertContains('Listed Owner', $body, 'artist name');
+		assertContains(">{$songId}<", $body, 'song id');
+	},
+
+	'the songs page shows its column headings' => function ($ctx) {
+		$body = $ctx->get('/music/songs')['body'];
+
+		foreach (['All Songs', 'ID', 'Artist', 'Title', 'Note', 'Score'] as $heading) {
+			assertContains($heading, $body, "heading {$heading}");
+		}
+	},
+
+	'the songs page escapes stored markup' => function ($ctx) {
+		$artistId = $ctx->makeArtist('Escaping Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => '<b>not bold</b>']]);
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertContains('&lt;b&gt;not bold&lt;/b&gt;', $body, 'markup is escaped');
+		assertTrue(strpos($body, '<b>not bold</b>') === false, 'raw markup is absent');
+	},
+
+	'the songs page carries no php warnings' => function ($ctx) {
+		$body = $ctx->get('/music/songs')['body'];
+
+		foreach (['Warning:', 'Notice:', 'Fatal error', 'Undefined variable', 'Undefined index'] as $sign) {
+			assertTrue(strpos($body, $sign) === false, "page contains '{$sign}'");
+		}
+	},
+
 ];

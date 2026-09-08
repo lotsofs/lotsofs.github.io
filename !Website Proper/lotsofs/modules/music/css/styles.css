@@ -1,10 +1,37 @@
+/* dark form controls and scrollbars without styling each one */
+:root {
+	color-scheme: dark;
+}
+
+body {
+	background-color: #000000;
+	color: #ffffff;
+}
+
+a {
+	color: #6cb6ff;
+}
+
+a:visited {
+	color: #b28fdd;
+}
+
+nav a {
+	margin-right: 1em;
+}
+
+nav .navCurrent {
+	color: #ffffff;
+	font-weight: bold;
+}
+
 table {
 	border-collapse: collapse;
 }
 
 th, td {
 	border-width: 1px;
-	border-color: black;
+	border-color: #555555;
 	border-style: solid;
 }
 

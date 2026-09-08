@@ -2,6 +2,9 @@
 
 return [
 
+	'nav.addSongs' => 'Add Songs',
+	'nav.songs' => 'All Songs',
+
 	'page.addSongs.title' => 'Add Songs',
 
 	'addSongs.heading' => 'Add Songs',
@@ -27,6 +30,13 @@ return [
 	'songs.column.title' => 'Title',
 	'songs.column.result' => 'Result',
 	'songs.submit' => 'Submit Songs',
+
+	'page.songs.title' => 'Songs',
+	'songs.heading' => 'All Songs',
+	'songs.column.id' => 'ID',
+	'songs.column.note' => 'Note',
+	'songs.column.score' => 'Score',
+	'songs.empty' => 'No songs yet.',
 
 	'status.submitting' => 'Submitting...',
 	'status.submitFailed' => 'Submit failed: {error}',

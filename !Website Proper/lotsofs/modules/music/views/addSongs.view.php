@@ -1,5 +1,7 @@
 <?php require(__MODULES__ . '/music/views/partials/head.php') ?>
 
+<?php require(__MODULES__ . '/music/views/partials/nav.php') ?>
+
 <h1>
 	<?= t('addSongs.heading') ?>
 </h1>

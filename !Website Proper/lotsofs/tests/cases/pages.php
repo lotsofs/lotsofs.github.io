@@ -9,6 +9,7 @@ return [
 			'/exchange-rates' => 200,
 			'/ktane' => 302,
 			'/music/add-songs' => 200,
+			'/music/songs' => 200,
 			'/swat4/2' => 200,
 			'/ss2/11' => 200,
 			'/ss2/18' => 200,
