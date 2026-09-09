@@ -4,6 +4,8 @@ return [
 
 	'nav.addSongs' => 'Add Songs',
 	'nav.songs' => 'All Songs',
+	'nav.artists' => 'Artists',
+	'nav.albums' => 'Albums',
 	'nav.invites' => 'Invites',
 	'nav.accounts' => 'Accounts',
 	'nav.login' => 'Log In',
@@ -60,6 +62,25 @@ return [
 	'accounts.promote' => 'Make admin',
 	'accounts.demote' => 'Remove admin',
 	'accounts.self' => 'You',
+
+	'page.artists.title' => 'Artists',
+	'artistList.heading' => 'All Artists',
+	'artistList.column.id' => 'ID',
+	'artistList.column.name' => 'Name',
+	'artistList.column.aliases' => 'Also Known As',
+	'artistList.empty' => 'No artists yet.',
+	'artistList.noName' => '(no name)',
+
+	'page.albums.title' => 'Albums',
+	'albumList.heading' => 'All Albums',
+	'albumList.column.id' => 'ID',
+	'albumList.column.name' => 'Name',
+	'albumList.column.aliases' => 'Also Known As',
+	'albumList.column.artist' => 'Artist',
+	'albumList.column.year' => 'Year',
+	'albumList.empty' => 'No albums yet.',
+	'albumList.noName' => '(no name)',
+	'albumList.noArtist' => '(various artists)',
 
 	'page.addSongs.title' => 'Add Songs',
 

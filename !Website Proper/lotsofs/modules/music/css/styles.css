@@ -54,6 +54,18 @@ th, td {
 	padding: 0.15em 0.3em;
 }
 
+#pasteInput {
+	width: 100%;
+	max-width: 60em;
+	min-height: 14em;
+	resize: vertical;
+}
+
+#artistListTable .listAliasCell,
+#albumListTable .listAliasCell {
+	max-width: 40em;
+}
+
 #songTable {
 	max-width: 100%;
 
