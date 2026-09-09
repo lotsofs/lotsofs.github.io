@@ -51,6 +51,7 @@ th, td {
 	border-width: 1px;
 	border-color: #555555;
 	border-style: solid;
+	padding: 0.15em 0.3em;
 }
 
 #songTable {
@@ -70,6 +71,68 @@ th, td {
 #songListTable td input {
 	width: 100%;
 	box-sizing: border-box;
+}
+
+/* fixed, so the column does not resize as the sort triangle comes and goes */
+#songListTable .songIdCell {
+	width: 2.5em;
+	white-space: nowrap;
+}
+
+#songListTable .songRatingNoteCell {
+	width: 12em;
+	white-space: nowrap;
+}
+
+/* the definite max-width is what stops the cell growing, so the text can be clipped */
+#songListTable .ratingNoteText {
+	display: block;
+	max-width: 12em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+#songListTable .songRatingScoreCell {
+	width: 4em;
+}
+
+#songListTable .songRaterGroup {
+	text-align: center;
+}
+
+/* inset shadows rather than borders, so the stripe survives border-collapse */
+#songListTable .songMineCell {
+	background-color: #1a1a1a;
+}
+
+/* the outer edges only, so the score and note cells read as one block */
+#songListTable .songMyScoreCell {
+	box-shadow: inset 2px 0 0 #999999;
+}
+
+#songListTable .songMyNoteCell {
+	box-shadow: inset -2px 0 0 #999999;
+}
+
+#songListTable .songMineGroup {
+	box-shadow: inset 2px 0 0 #999999, inset -2px 0 0 #999999, inset 0 2px 0 #999999;
+}
+
+#songListTable tbody tr:last-child .songMyScoreCell {
+	box-shadow: inset 2px 0 0 #999999, inset 0 -2px 0 #999999;
+}
+
+#songListTable tbody tr:last-child .songMyNoteCell {
+	box-shadow: inset -2px 0 0 #999999, inset 0 -2px 0 #999999;
+}
+
+#songListTable tbody .songMineCell {
+	cursor: pointer;
+}
+
+#songListTable tbody .songMineCell:hover {
+	background-color: #262626;
 }
 
 #songListTable .songResultCell {

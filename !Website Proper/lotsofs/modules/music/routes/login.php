@@ -12,6 +12,8 @@ $db = require __MODULES__ . '/music/db.php';
 require_once __MODULES__ . '/music/migrate.php';
 runMusicMigrations($db);
 
+require_once __MODULES__ . '/music/rateLimit.php';
+
 if (currentAccountId()) {
 	header('Location: /music/songs', true, 302);
 	exit;
@@ -26,19 +28,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 	$globalData['accountName'] = $accountName;
 
+	$ip = loginClientIp();
+
 	if (!checkCsrf($_POST['csrf_token'] ?? null)) {
 		$globalData['formError'] = t('login.error.expired');
+	}
+	// a blocked attempt is not itself recorded, so the block expires when it says it will
+	else if (loginIsBlocked($db, $ip)) {
+		$globalData['formError'] = t('login.error.tooMany');
 	}
 	else {
 		$account = $db->query("SELECT id, account_name, password_hash FROM account WHERE account_name = ?", [$accountName])->fetch();
 
 		// one message for both failures, so the form can't be used to find out who has an account
 		if ($account && password_verify($password, $account['password_hash'])) {
+			clearLoginFailures($db, $ip);
 			logIn($account['id'], $account['account_name']);
 			header('Location: /music/songs', true, 302);
 			exit;
 		}
 
+		recordLoginFailure($db, $ip);
 		$globalData['formError'] = t('login.error.rejected');
 	}
 }

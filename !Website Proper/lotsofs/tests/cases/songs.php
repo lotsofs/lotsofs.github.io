@@ -2,6 +2,7 @@
 
 const SONG_ENDPOINT = '/modules/music/ajax/song.php';
 const EDIT_ENDPOINT = '/modules/music/ajax/songEdit.php';
+const RATING_ENDPOINT = '/modules/music/ajax/songRating.php';
 
 return [
 
@@ -127,7 +128,7 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 
-		foreach (['All Songs', 'ID', 'Artist', 'Title', 'Note', 'Score', 'Result'] as $heading) {
+		foreach (['All Songs', 'ID', 'Artist', 'Title', 'Note', 'test_runner', 'Result'] as $heading) {
 			assertContains($heading, $body, "heading {$heading}");
 		}
 	},
@@ -138,7 +139,7 @@ return [
 		$body = $ctx->get('/music/songs')['body'];
 
 		assertContains('<table id="songListTable" class="hideResultColumn" data-can-edit="1">', $body, 'table starts with the column hidden');
-		assertContains('<th class="songResultCell">', $body, 'result header carries no sort attributes');
+		assertContains('<th rowspan="2" class="songResultCell">', $body, 'result header carries no sort attributes');
 		assertContains('<td class="songResultCell">', $body, 'rows carry a result cell');
 		assertTrue(strpos($body, 'sort=result') === false, 'nothing links to sorting by result');
 	},
@@ -402,16 +403,263 @@ return [
 		}
 	},
 
-	'an edited note shows on the songs page' => function ($ctx) {
+	'the shared note is still stored while its column is hidden' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
 		$artistId = $ctx->makeArtist('Rendered Note Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Note Is Rendered']]);
 		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Note Is Rendered'")->fetch()['id'];
 
-		$ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'shows up in the table']);
+		$ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'kept out of sight']);
 
-		assertContains('shows up in the table', $ctx->get('/music/songs')['body'], 'note renders');
+		$stored = $ctx->db()->query("SELECT objective_note FROM song WHERE id = {$songId}")->fetch()['objective_note'];
+		assertSame('kept out of sight', $stored, 'the note is still saved');
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertTrue(strpos($body, 'kept out of sight') === false, 'but it is not rendered');
+		assertTrue(strpos($body, 'songNoteCell') === false, 'and the column is gone');
+	},
+
+	'a score and subjective note are stored against the rater' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Rating Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Gets A Rating']]);
+		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Gets A Rating'")->fetch()['id'];
+		$accountId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
+
+		$response = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '8.5']);
+		assertSame('ok', $response['json']['status'], 'status');
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'grower']);
+
+		$row = $ctx->db()->query("SELECT account_id, score, subjective_note FROM account_song WHERE song_id = {$songId}")->fetch();
+		assertSame($accountId, (int)$row['account_id'], 'stored against the signed in account');
+		assertSame(8.5, (float)$row['score'], 'stored score');
+		assertSame('grower', $row['subjective_note'], 'stored note');
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertContains('<td class="songRatingCell songRatingScoreCell songMineCell songMyScoreCell">8.5</td>', $body, 'your score has its own cell');
+		assertContains('<td class="songRatingCell songRatingNoteCell songMineCell songMyNoteCell" title="grower"><span class="ratingNoteText">grower</span></td>', $body, 'your note has its own cell');
+	},
+
+	'a long note is clipped in the cell but readable on hover' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Long Note Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Has A Long Note']]);
+		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Has A Long Note'")->fetch()['id'];
+
+		$long = 'this note goes on well past the width of the column and should be chopped off';
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => $long]);
+
+		$body = $ctx->get('/music/songs')['body'];
+
+		// the full text is in the tooltip, the visible run is clipped by css
+		assertContains('title="' . $long . '"', $body, 'the whole note is available on hover');
+		assertContains('<span class="ratingNoteText">' . $long . '</span>', $body, 'the text sits in the clipping block');
+	},
+
+	'editing one half of a rating leaves the other alone' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Half Edit Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Half Edited']]);
+		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Half Edited'")->fetch()['id'];
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '5']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'keeps this']);
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '9']);
+		$row = $ctx->db()->query("SELECT score, subjective_note FROM account_song WHERE song_id = {$songId}")->fetch();
+		assertSame(9.0, (float)$row['score'], 'score changed');
+		assertSame('keeps this', $row['subjective_note'], 'note survived a score edit');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'new words']);
+		$row = $ctx->db()->query("SELECT score, subjective_note FROM account_song WHERE song_id = {$songId}")->fetch();
+		assertSame(9.0, (float)$row['score'], 'score survived a note edit');
+		assertSame('new words', $row['subjective_note'], 'note changed');
+	},
+
+	'rating the same song twice updates rather than duplicates' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Rerating Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Rated Twice']]);
+		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Rated Twice'")->fetch()['id'];
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '4']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '9']);
+
+		$rows = $ctx->db()->query("SELECT score FROM account_song WHERE song_id = {$songId}")->fetchAll();
+		assertSame(1, count($rows), 'only one row');
+		assertSame(9.0, (float)$rows[0]['score'], 'updated score');
+	},
+
+	'clearing both halves removes the rating' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Cleared Rating Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Rating Removed']]);
+		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Rating Removed'")->fetch()['id'];
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '7']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'fine']);
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => '  ']);
+		$stillThere = (int)$ctx->db()->query("SELECT COUNT(*) c FROM account_song WHERE song_id = {$songId}")->fetch()['c'];
+		assertSame(1, $stillThere, 'a scored row survives losing its note');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '  ']);
+		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM account_song WHERE song_id = {$songId}")->fetch()['c'];
+		assertSame(0, $count, 'the row goes once neither half is left');
+	},
+
+	'a note without a score is allowed' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Noteonly Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Note But No Score']]);
+		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Note But No Score'")->fetch()['id'];
+
+		$response = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'not scored yet']);
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$row = $ctx->db()->query("SELECT score, subjective_note FROM account_song WHERE song_id = {$songId}")->fetch();
+		assertSame(null, $row['score'], 'score stays null');
+		assertSame('not scored yet', $row['subjective_note'], 'note is stored');
+	},
+
+	'a score that is not a number is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Bad Score Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Keeps Its Rating']]);
+		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Keeps Its Rating'")->fetch()['id'];
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '6']);
+		$response = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => 'banger']);
+
+		assertSame('error', $response['json']['status'], 'status');
+		assertSame(6.0, (float)$response['json']['value'], 'hands back the stored score');
+
+		$row = $ctx->db()->query("SELECT score FROM account_song WHERE song_id = {$songId}")->fetch();
+		assertSame(6.0, (float)$row['score'], 'stored score is untouched');
+	},
+
+	'an unknown rating field is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Bad Rating Field Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bad Rating Field']]);
+		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Bad Rating Field'")->fetch()['id'];
+
+		foreach (['account_id', 'subjective_note', ''] as $field) {
+			$response = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => $field, 'value' => '1']);
+			assertSame(400, $response['status'], 'status');
+		}
+
+		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM account_song WHERE song_id = {$songId}")->fetch()['c'];
+		assertSame(0, $count, 'nothing was stored');
+	},
+
+	'rating an unknown song is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$response = $ctx->post(RATING_ENDPOINT, ['id' => 999999, 'field' => 'score', 'value' => '5']);
+		assertSame('error', $response['json']['status'], 'status');
+
+		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM account_song WHERE song_id = 999999")->fetch()['c'];
+		assertSame(0, $count, 'nothing was stored');
+	},
+
+	'a rating belongs to its rater and cannot be overwritten by another account' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Shared Rating Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Rated By Two']]);
+		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Rated By Two'")->fetch()['id'];
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '3']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'mine']);
+
+		$ctx->ensureLoggedIn('second_rater', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '10']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'theirs']);
+
+		$rows = $ctx->db()->query("
+			SELECT a.account_name, r.score, r.subjective_note
+			FROM account_song r JOIN account a ON a.id = r.account_id
+			WHERE r.song_id = {$songId}
+			ORDER BY a.account_name
+		")->fetchAll();
+
+		assertSame(2, count($rows), 'two separate ratings, not one overwritten');
+		assertSame('second_rater', $rows[0]['account_name'], 'the second rater has their own row');
+		assertSame(10.0, (float)$rows[0]['score'], 'their score');
+		assertSame('test_runner', $rows[1]['account_name'], 'the first rater still has theirs');
+		assertSame(3.0, (float)$rows[1]['score'], 'the original score is untouched');
+		assertSame('mine', $rows[1]['subjective_note'], 'the original note is untouched');
+	},
+
+	'the songs page shows a column per account but marks only your own editable' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$body = $ctx->get('/music/songs')['body'];
+
+		$accounts = $ctx->db()->query("SELECT account_name FROM account")->fetchAll(PDO::FETCH_COLUMN);
+		foreach ($accounts as $name) {
+			assertContains('>' . $name, $body, "column header for {$name}");
+		}
+
+		assertSame(1, preg_match_all('/<th class="[^"]*songMyScoreCell"/', $body), 'exactly one score column is yours');
+		assertSame(1, preg_match_all('/<th class="[^"]*songMyNoteCell"/', $body), 'exactly one note column is yours');
+		assertTrue(strpos($body, 'songMineCell') !== false, 'your columns are marked');
+
+		assertContains('<th colspan="2" class="songRaterGroup songMineCell songMineGroup">test_runner</th>', $body, 'your name spans both of your columns');
+
+		$others = $ctx->db()->query("SELECT account_name FROM account WHERE account_name != 'test_runner'")->fetchAll(PDO::FETCH_COLUMN);
+		foreach ($others as $name) {
+			assertContains('<th colspan="2" class="songRaterGroup">' . $name . '</th>', $body, "{$name} is grouped too but not highlighted");
+		}
+	},
+
+	'the sort index is explicit and matches the cell order' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$body = $ctx->get('/music/songs')['body'];
+
+		// the grouped header breaks document order, so the js reads this rather than counting
+		preg_match_all('/data-sort-key="([^"]+)" data-sort-type="[^"]+" data-sort-index="(\d+)"/', $body, $m, PREG_SET_ORDER);
+
+		$byKey = [];
+		foreach ($m as $match) {
+			$byKey[$match[1]] = (int)$match[2];
+		}
+
+		$mine = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
+
+		assertSame(0, $byKey['id'], 'id is the first cell');
+		assertSame(1, $byKey['artist'], 'artist is the second');
+		assertSame(2, $byKey['title'], 'title is the third');
+		assertTrue(!isset($byKey['note']), 'the shared note column is hidden');
+		assertSame(3, $byKey["score_{$mine}"], 'your score column comes first among the raters');
+		assertSame(4, $byKey["note_{$mine}"], 'your note column sits beside it');
+
+		$indexes = array_values($byKey);
+		assertSame(count($indexes), count(array_unique($indexes)), 'every column has its own index');
+	},
+
+	'an account with no ratings still gets a column' => function ($ctx) {
+		$ctx->ensureLoggedIn('never_rates', 'test password', false);
+		$ctx->ensureLoggedIn();
+
+		$unrated = (int)$ctx->db()->query("
+			SELECT COUNT(*) c FROM account_song
+			WHERE account_id = (SELECT id FROM account WHERE account_name = 'never_rates')
+		")->fetch()['c'];
+		assertSame(0, $unrated, 'the account really has rated nothing');
+
+		assertContains('>never_rates', $ctx->get('/music/songs')['body'], 'they get a column anyway');
 	},
 
 	'the songs page carries no php warnings' => function ($ctx) {

@@ -65,12 +65,12 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 
-		assertTrue(strpos($body, 'data-can-edit') === false, 'no edit flag for the script');
-		assertTrue(strpos($body, 'songResultCell') === false, 'no result column');
-		assertTrue(strpos($body, 'songEditHint') === false, 'no edit hint');
+		assertTrue(strpos($body, 'data-can-edit') === false, 'no edit flag for title and note editing');
 
 		assertContains('songTitleCell', $body, 'the table still renders');
 		assertContains('?sort=title', $body, 'the columns still sort');
+		assertContains('songResultCell', $body, 'the result column is there for rating feedback');
+		assertContains('songMineCell', $body, 'their own rating column is editable');
 	},
 
 	'a non admin sees no links to the admin pages' => function ($ctx) {

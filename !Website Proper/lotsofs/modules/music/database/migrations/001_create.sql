@@ -37,6 +37,12 @@ CREATE TABLE IF NOT EXISTS account_song (
     FOREIGN KEY (song_id) REFERENCES song(id)
 );
 
+CREATE TABLE IF NOT EXISTS login_attempt (
+    id INTEGER PRIMARY KEY,
+    ip TEXT NOT NULL,
+    attempted_at INTEGER NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS invite (
     id INTEGER PRIMARY KEY,
     code TEXT NOT NULL,
@@ -67,3 +73,6 @@ CREATE INDEX IF NOT EXISTS idx_account_song_song ON account_song (song_id);
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_invite_code_unique
 ON invite (code);
+
+CREATE INDEX IF NOT EXISTS idx_login_attempt_ip
+ON login_attempt (ip, attempted_at);

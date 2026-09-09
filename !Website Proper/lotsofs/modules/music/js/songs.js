@@ -50,7 +50,7 @@ function refreshHeaders() {
 	});
 }
 
-songListHeaders.forEach((header, index) => {
+songListHeaders.forEach(header => {
 	const link = header.querySelector("a");
 	link.dataset.baseLabel = link.textContent.replace(/[\s▲▼]+$/, "");
 
@@ -61,15 +61,20 @@ songListHeaders.forEach((header, index) => {
 		songDir = key === songSort && songDir === "asc" ? "desc" : "asc";
 		songSort = key;
 
-		sortRows(index, header.dataset.sortType);
+		sortRows(Number(header.dataset.sortIndex), header.dataset.sortType);
 		refreshHeaders();
 		history.replaceState(null, "", "?sort=" + songSort + "&dir=" + songDir);
 	});
 });
 
-const EDITABLE_FIELDS = {
-	songTitleCell: "title",
-	songNoteCell: "note",
+const SONG_EDIT_ENDPOINT = "/modules/music/ajax/songEdit.php";
+const RATING_ENDPOINT = "/modules/music/ajax/songRating.php";
+
+const EDITABLE_CELLS = {
+	songMyScoreCell: { field: "score", endpoint: RATING_ENDPOINT, required: false, needsAdmin: false, doubleClick: false },
+	songMyNoteCell: { field: "note", endpoint: RATING_ENDPOINT, required: false, needsAdmin: false, doubleClick: false, wrapClass: "ratingNoteText" },
+	songTitleCell: { field: "title", endpoint: SONG_EDIT_ENDPOINT, required: true, needsAdmin: true, doubleClick: true },
+	songNoteCell: { field: "note", endpoint: SONG_EDIT_ENDPOINT, required: false, needsAdmin: true, doubleClick: true },
 };
 
 function setResult(cell, message) {
@@ -79,7 +84,23 @@ function setResult(cell, message) {
 	songListTable.classList.toggle("hideResultColumn", !anyShown);
 }
 
-function beginCellEdit(cell, field) {
+// a clipped cell keeps its text in an inner block, and the tooltip alongside it
+function setCellValue(cell, spec, value) {
+	if (!spec.wrapClass) {
+		cell.textContent = value;
+		return;
+	}
+
+	cell.textContent = "";
+	cell.title = value;
+
+	const text = document.createElement("span");
+	text.className = spec.wrapClass;
+	text.textContent = value;
+	cell.appendChild(text);
+}
+
+function beginCellEdit(cell, spec) {
 	const original = cell.textContent;
 	const input = document.createElement("input");
 	input.type = "text";
@@ -87,6 +108,7 @@ function beginCellEdit(cell, field) {
 
 	setResult(cell, "");
 	cell.textContent = "";
+	cell.removeAttribute("title");
 	cell.appendChild(input);
 	input.focus();
 	input.select();
@@ -100,12 +122,12 @@ function beginCellEdit(cell, field) {
 		settled = true;
 
 		const value = input.value.trim();
-		const keep = commit && (value !== "" || field !== "title");
+		const keep = commit && (value !== "" || !spec.required);
 
-		cell.textContent = keep ? value : original;
+		setCellValue(cell, spec, keep ? value : original);
 
 		if (keep && value !== original) {
-			saveCell(cell, field, original, value);
+			saveCell(cell, spec, original, value);
 		}
 	}
 
@@ -120,16 +142,16 @@ function beginCellEdit(cell, field) {
 	input.addEventListener("blur", () => finish(true));
 }
 
-function saveCell(cell, field, original, value) {
+function saveCell(cell, spec, original, value) {
 	const id = cell.parentElement.cells[0].textContent.trim();
 
-	fetch("/modules/music/ajax/songEdit.php", {
+	fetch(spec.endpoint, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 			"X-CSRF-Token": CSRF_TOKEN
 		},
-		body: JSON.stringify({ id: id, field: field, value: value })
+		body: JSON.stringify({ id: id, field: spec.field, value: value })
 	})
 	.then(async response => {
 		const body = await response.json().catch(() => null);
@@ -139,34 +161,40 @@ function saveCell(cell, field, original, value) {
 		return body;
 	})
 	.then(result => {
-		cell.textContent = result.value;
+		setCellValue(cell, spec, String(result.value));
 		setResult(cell, result.status === "ok" ? "" : result.message);
 	})
 	.catch(error => {
-		cell.textContent = original;
+		setCellValue(cell, spec, original);
 		setResult(cell, t("status.submitFailed", { error: error.message }));
 	});
 }
 
-function editableField(cell) {
-	for (const [className, field] of Object.entries(EDITABLE_FIELDS)) {
+function editableCell(cell) {
+	for (const [className, spec] of Object.entries(EDITABLE_CELLS)) {
 		if (cell.classList.contains(className)) {
-			return field;
+			return spec;
 		}
 	}
 	return null;
 }
 
-if (songListTable.dataset.canEdit) {
-	songListBody.addEventListener("dblclick", event => {
-		const cell = event.target.closest("td");
-		if (!cell || cell.querySelector("input")) {
-			return;
-		}
+function handleEdit(event, viaDoubleClick) {
+	const cell = event.target.closest("td");
+	if (!cell || cell.querySelector("input")) {
+		return;
+	}
 
-		const field = editableField(cell);
-		if (field) {
-			beginCellEdit(cell, field);
-		}
-	});
+	const spec = editableCell(cell);
+	if (!spec || spec.doubleClick !== viaDoubleClick) {
+		return;
+	}
+	if (spec.needsAdmin && !songListTable.dataset.canEdit) {
+		return;
+	}
+
+	beginCellEdit(cell, spec);
 }
+
+songListBody.addEventListener("click", event => handleEdit(event, false));
+songListBody.addEventListener("dblclick", event => handleEdit(event, true));

@@ -176,6 +176,90 @@ return [
 		assertTrue($message !== '', 'an error message was shown');
 	},
 
+	'repeated failures block further attempts from that address' => function ($ctx) {
+		$ctx->newSession();
+		$ctx->db()->exec("DELETE FROM login_attempt");
+
+		for ($i = 0; $i < 5; $i++) {
+			$response = logInAs($ctx, 'first_owner', 'wrong guess');
+			assertSame(200, $response['status'], "attempt {$i} refused");
+		}
+
+		$blocked = logInAs($ctx, 'first_owner', 'wrong guess');
+		assertContains('Too many', t_testMessage($blocked['body']), 'the sixth attempt is rate limited');
+
+		// the whole point: the block holds even against the right password
+		$correct = logInAs($ctx, 'first_owner', 'correct horse');
+		assertSame(200, $correct['status'], 'no redirect, so no login');
+		assertContains('Too many', t_testMessage($correct['body']), 'the correct password is refused too');
+		assertSame(302, $ctx->get('/music/songs')['status'], 'still signed out');
+
+		$ctx->db()->exec("DELETE FROM login_attempt");
+	},
+
+	'the block lifts once the window passes' => function ($ctx) {
+		$ctx->newSession();
+		$ctx->db()->exec("DELETE FROM login_attempt");
+
+		for ($i = 0; $i < 5; $i++) {
+			logInAs($ctx, 'first_owner', 'wrong guess');
+		}
+		assertContains('Too many', t_testMessage(logInAs($ctx, 'first_owner', 'correct horse')['body']), 'blocked to begin with');
+
+		// ageing the rows beats sleeping for fifteen minutes
+		$ctx->db()->exec("UPDATE login_attempt SET attempted_at = attempted_at - 1000");
+
+		$response = logInAs($ctx, 'first_owner', 'correct horse');
+		assertSame(302, $response['status'], 'login works again once the attempts age out');
+
+		$ctx->db()->exec("DELETE FROM login_attempt");
+	},
+
+	'a successful login clears the count' => function ($ctx) {
+		$ctx->newSession();
+		$ctx->db()->exec("DELETE FROM login_attempt");
+
+		for ($i = 0; $i < 4; $i++) {
+			logInAs($ctx, 'first_owner', 'wrong guess');
+		}
+
+		assertSame(302, logInAs($ctx, 'first_owner', 'correct horse')['status'], 'still under the limit');
+
+		$remaining = (int)$ctx->db()->query("SELECT COUNT(*) c FROM login_attempt")->fetch()['c'];
+		assertSame(0, $remaining, 'the failures were forgotten on success');
+	},
+
+	'a stale form does not count towards the limit' => function ($ctx) {
+		$ctx->newSession();
+		$ctx->db()->exec("DELETE FROM login_attempt");
+
+		for ($i = 0; $i < 8; $i++) {
+			$ctx->postForm('/music/login', ['account_name' => 'first_owner', 'password' => 'wrong guess']);
+		}
+
+		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM login_attempt")->fetch()['c'];
+		assertSame(0, $count, 'csrf rejections are not password guesses');
+
+		assertSame(302, logInAs($ctx, 'first_owner', 'correct horse')['status'], 'login still works');
+	},
+
+	'the rate limit message does not reveal whether an account exists' => function ($ctx) {
+		$ctx->newSession();
+		$ctx->db()->exec("DELETE FROM login_attempt");
+
+		for ($i = 0; $i < 5; $i++) {
+			logInAs($ctx, 'first_owner', 'wrong guess');
+		}
+
+		$known = t_testMessage(logInAs($ctx, 'first_owner', 'wrong guess')['body']);
+		$unknown = t_testMessage(logInAs($ctx, 'nobody_at_all', 'wrong guess')['body']);
+
+		assertSame($known, $unknown, 'both say the same thing while blocked');
+		assertTrue($known !== '', 'a message was shown');
+
+		$ctx->db()->exec("DELETE FROM login_attempt");
+	},
+
 	'a post without a csrf token is refused' => function ($ctx) {
 		$ctx->newSession();
 

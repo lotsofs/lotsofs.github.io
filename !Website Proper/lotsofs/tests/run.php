@@ -174,6 +174,7 @@ class TestContext {
 	public function db() {
 		$pdo = new PDO('sqlite:' . $this->tempRoot . '/modules/music/database/music_test.sqlite');
 		$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		$pdo->exec('PRAGMA busy_timeout = 5000');
 		return $pdo;
 	}
 
