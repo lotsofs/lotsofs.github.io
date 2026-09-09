@@ -327,7 +327,8 @@ submitButton.addEventListener('click', () => {
 	fetch("/modules/music/ajax/artistAlias.php", {
 		method: "POST",
 		headers: {
-			"Content-Type": "application/json"
+			"Content-Type": "application/json",
+			"X-CSRF-Token": CSRF_TOKEN
 		},
 		body: JSON.stringify(newArtists)
 	})
@@ -423,7 +424,8 @@ submitSongsButton.addEventListener('click', () => {
 	fetch("/modules/music/ajax/song.php", {
 		method: "POST",
 		headers: {
-			"Content-Type": "application/json"
+			"Content-Type": "application/json",
+			"X-CSRF-Token": CSRF_TOKEN
 		},
 		body: JSON.stringify(songs)
 	})

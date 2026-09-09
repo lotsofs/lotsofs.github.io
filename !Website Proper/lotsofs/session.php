@@ -69,6 +69,14 @@ function requireLoginJson($message) {
 	}
 }
 
+function requireCsrfJson($message) {
+	if (!checkCsrf($_SERVER['HTTP_X_CSRF_TOKEN'] ?? null)) {
+		http_response_code(403);
+		echo json_encode(['error' => $message]);
+		exit;
+	}
+}
+
 function csrfToken() {
 	if (empty($_SESSION['csrf_token'])) {
 		$_SESSION['csrf_token'] = bin2hex(random_bytes(32));

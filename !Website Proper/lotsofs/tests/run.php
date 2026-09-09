@@ -81,6 +81,7 @@ class TestContext {
 	private $port;
 	private $tempRoot;
 	private $cookieJar;
+	private $csrfToken;
 
 	public function __construct($port, $tempRoot) {
 		$this->port = $port;
@@ -91,6 +92,7 @@ class TestContext {
 	// cookies persist across requests, so a case can log in and stay logged in
 	public function newSession() {
 		@unlink($this->cookieJar);
+		$this->csrfToken = null;
 	}
 
 	public function get($path, $followRedirects = false) {
@@ -99,6 +101,10 @@ class TestContext {
 
 	public function post($path, $payload) {
 		return $this->request('POST', $path, is_string($payload) ? $payload : json_encode($payload), false);
+	}
+
+	public function postWithoutCsrf($path, $payload) {
+		return $this->request('POST', $path, json_encode($payload), false, 'application/json', false);
 	}
 
 	// a traditional html form submission rather than a json body
@@ -115,7 +121,19 @@ class TestContext {
 		return null;
 	}
 
-	private function request($method, $path, $body, $followRedirects, $contentType = 'application/json') {
+	// the token the page hands to javascript, kept for the life of the session
+	private function csrfHeaderToken() {
+		if ($this->csrfToken === null) {
+			$body = $this->request('GET', '/music', null, false)['body'];
+			if (!preg_match('/name="csrfToken" content="([^"]+)"/', $body, $m)) {
+				throw new RuntimeException('no csrf token meta on /music');
+			}
+			$this->csrfToken = $m[1];
+		}
+		return $this->csrfToken;
+	}
+
+	private function request($method, $path, $body, $followRedirects, $contentType = 'application/json', $withCsrf = true) {
 		$ch = curl_init("http://localhost:{$this->port}{$path}");
 		curl_setopt_array($ch, [
 			CURLOPT_RETURNTRANSFER => true,
@@ -126,8 +144,12 @@ class TestContext {
 			CURLOPT_COOKIEFILE => $this->cookieJar,
 		]);
 		if ($body !== null) {
+			$headers = ['Content-Type: ' . $contentType];
+			if ($withCsrf && $contentType === 'application/json') {
+				$headers[] = 'X-CSRF-Token: ' . $this->csrfHeaderToken();
+			}
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: ' . $contentType]);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		}
 		$raw = curl_exec($ch);
 		$status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
@@ -155,16 +177,18 @@ class TestContext {
 		return $pdo;
 	}
 
-	// most pages and endpoints need an account, so cases can ask for one
-	public function ensureLoggedIn($name = 'test_runner', $password = 'test password') {
+	// starts a fresh session, because logging in is ignored while another account holds one
+	public function ensureLoggedIn($name = 'test_runner', $password = 'test password', $isAdmin = true) {
+		$this->newSession();
+
 		$db = $this->db();
 
 		$stmt = $db->prepare("SELECT id FROM account WHERE account_name = ?");
 		$stmt->execute([$name]);
 
 		if (!$stmt->fetch()) {
-			$insert = $db->prepare("INSERT INTO account (account_name, password_hash) VALUES (?, ?)");
-			$insert->execute([$name, password_hash($password, PASSWORD_DEFAULT)]);
+			$insert = $db->prepare("INSERT INTO account (account_name, password_hash, is_admin) VALUES (?, ?, ?)");
+			$insert->execute([$name, password_hash($password, PASSWORD_DEFAULT), $isAdmin ? 1 : 0]);
 		}
 
 		return $this->postForm('/music/login', [

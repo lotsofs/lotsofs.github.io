@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="csrfToken" content="<?= htmlspecialchars(csrfToken()) ?>">
 	<title><?= $pageTitle ?> - Music - LotsOfS</title>
 	<link rel="stylesheet" href="/modules/music/css/styles.css">
 	<script id="langStrings" type="application/json"><?= json_encode(stringCatalogue()) ?></script>

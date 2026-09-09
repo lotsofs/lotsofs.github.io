@@ -1,6 +1,9 @@
 const LANG_STRINGS_ELEMENT = document.getElementById("langStrings");
 const LANG_STRINGS = LANG_STRINGS_ELEMENT ? JSON.parse(LANG_STRINGS_ELEMENT.textContent) : {};
 
+const CSRF_TOKEN_ELEMENT = document.querySelector('meta[name="csrfToken"]');
+const CSRF_TOKEN = CSRF_TOKEN_ELEMENT ? CSRF_TOKEN_ELEMENT.content : "";
+
 function t(key, params = {}) {
     let text = LANG_STRINGS[key] ?? key;
     Object.entries(params).forEach(([name, value]) => {

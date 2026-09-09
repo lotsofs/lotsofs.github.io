@@ -9,14 +9,20 @@
 <?php if (!$globalData['songs']): ?>
 	<p><?= t('songs.empty') ?></p>
 <?php else: ?>
-	<table id="songListTable">
+	<?php if ($globalData['isAdmin']): ?>
+		<p id="songEditHint"><?= t('songs.editHint') ?></p>
+	<?php endif ?>
+	<table id="songListTable" class="hideResultColumn"<?= $globalData['isAdmin'] ? ' data-can-edit="1"' : '' ?>>
 		<thead>
 			<tr>
-				<th class="songIdCell"><?= t('songs.column.id') ?></th>
-				<th class="songArtistCell"><?= t('songs.column.artist') ?></th>
-				<th class="songTitleCell"><?= t('songs.column.title') ?></th>
-				<th class="songNoteCell"><?= t('songs.column.note') ?></th>
-				<th class="songScoreCell"><?= t('songs.column.score') ?></th>
+				<?php foreach ($globalData['columns'] as $column): ?>
+					<th class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>">
+						<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
+					</th>
+				<?php endforeach ?>
+				<?php if ($globalData['isAdmin']): ?>
+					<th class="songResultCell"><?= t('songs.column.result') ?></th>
+				<?php endif ?>
 			</tr>
 		</thead>
 		<tbody>
@@ -27,10 +33,14 @@
 					<td class="songTitleCell"><?= htmlspecialchars($song['title']) ?></td>
 					<td class="songNoteCell"><?= htmlspecialchars($song['objective_note'] ?? '') ?></td>
 					<td class="songScoreCell"><?= htmlspecialchars($song['score'] ?? '') ?></td>
+					<?php if ($globalData['isAdmin']): ?>
+						<td class="songResultCell"></td>
+					<?php endif ?>
 				</tr>
 			<?php endforeach ?>
 		</tbody>
 	</table>
+	<script src="/modules/music/js/songs.js"></script>
 <?php endif ?>
 
 <?php require(__MODULES__ . '/music/views/partials/foot.php') ?>

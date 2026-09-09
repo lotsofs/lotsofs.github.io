@@ -12,6 +12,7 @@ return [
 			'/ktane' => 302,
 			'/music/add-songs' => 200,
 			'/music/songs' => 200,
+			'/music/accounts' => 200,
 			'/swat4/2' => 200,
 			'/ss2/11' => 200,
 			'/ss2/18' => 200,
@@ -34,9 +35,19 @@ return [
 	'the music endpoints reject signed out callers' => function ($ctx) {
 		$ctx->newSession();
 
-		foreach (['/modules/music/ajax/artistAlias.php', '/modules/music/ajax/song.php'] as $path) {
+		foreach (['/modules/music/ajax/artistAlias.php', '/modules/music/ajax/song.php', '/modules/music/ajax/songEdit.php'] as $path) {
 			$response = $ctx->post($path, []);
 			assertSame(401, $response['status'], "POST {$path} while signed out");
+			assertTrue(isset($response['json']['error']), "{$path} returns a json error");
+		}
+	},
+
+	'the music endpoints reject posts without a csrf token' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		foreach (['/modules/music/ajax/artistAlias.php', '/modules/music/ajax/song.php', '/modules/music/ajax/songEdit.php'] as $path) {
+			$response = $ctx->postWithoutCsrf($path, []);
+			assertSame(403, $response['status'], "POST {$path} without a token");
 			assertTrue(isset($response['json']['error']), "{$path} returns a json error");
 		}
 	},

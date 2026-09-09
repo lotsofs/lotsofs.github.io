@@ -13,6 +13,12 @@ $db = require __MODULES__ . '/music/db.php';
 require_once __MODULES__ . '/music/migrate.php';
 runMusicMigrations($db);
 
+require_once __MODULES__ . '/music/auth.php';
+requireMusicAccount($db);
+requireMusicAdmin($db, '/music/songs');
+
+$globalData['isAdmin'] = true;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && checkCsrf($_POST['csrf_token'] ?? null)) {
 	$db->query(
 		"INSERT INTO invite (code, created_at, created_by_account_id) VALUES (?, ?, ?)",

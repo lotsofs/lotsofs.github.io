@@ -7,8 +7,12 @@ stringCatalogue('music');
 require_once __ROOT__ . '/session.php';
 sessionScope('music');
 requireLoginJson(t('ajax.notLoggedIn'));
+requireCsrfJson(t('ajax.badCsrf'));
 
 $db = require __MODULES__ . '/music/db.php';
+
+require_once __MODULES__ . '/music/auth.php';
+requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 $results = [];
 

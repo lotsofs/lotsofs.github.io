@@ -8,4 +8,5 @@ $routes += [
 	"/music/login" => __MODULES__ . "/music/routes/login.php",
 	"/music/logout" => __MODULES__ . "/music/routes/logout.php",
 	"/music/invites" => __MODULES__ . "/music/routes/invites.php",
+	"/music/accounts" => __MODULES__ . "/music/routes/accounts.php",
 ];

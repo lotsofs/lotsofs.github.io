@@ -3,9 +3,14 @@
 
 <nav>
 	<?php if (currentAccountId()): ?>
-		<a href="/music/add-songs" class="<?= urlIs("/music/add-songs") ? "navCurrent" : "" ?>"><?= t('nav.addSongs') ?></a>
+		<?php if ($globalData['isAdmin'] ?? false): ?>
+			<a href="/music/add-songs" class="<?= urlIs("/music/add-songs") ? "navCurrent" : "" ?>"><?= t('nav.addSongs') ?></a>
+		<?php endif ?>
 		<a href="/music/songs" class="<?= urlIs("/music/songs") ? "navCurrent" : "" ?>"><?= t('nav.songs') ?></a>
-		<a href="/music/invites" class="<?= urlIs("/music/invites") ? "navCurrent" : "" ?>"><?= t('nav.invites') ?></a>
+		<?php if ($globalData['isAdmin'] ?? false): ?>
+			<a href="/music/invites" class="<?= urlIs("/music/invites") ? "navCurrent" : "" ?>"><?= t('nav.invites') ?></a>
+			<a href="/music/accounts" class="<?= urlIs("/music/accounts") ? "navCurrent" : "" ?>"><?= t('nav.accounts') ?></a>
+		<?php endif ?>
 		<span class="navAccount"><?= htmlspecialchars(currentAccountName()) ?></span>
 		<form method="post" action="/music/logout" class="navLogout">
 			<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken()) ?>">

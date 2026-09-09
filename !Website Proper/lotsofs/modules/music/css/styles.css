@@ -61,6 +61,30 @@ th, td {
 	}
 }
 
+/* headers are links but should still read as headers */
+#songListTable th a {
+	color: inherit;
+	text-decoration: none;
+}
+
+#songListTable td input {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+#songListTable .songResultCell {
+	width: 14em;
+}
+
+#songListTable.hideResultColumn .songResultCell {
+	display: none;
+}
+
+
+#songListTable td.songResultCell {
+	color: #ff8a80;
+}
+
 #artistMatchTable {
 	max-width: 100%;
 

@@ -5,11 +5,14 @@ return [
 	'nav.addSongs' => 'Add Songs',
 	'nav.songs' => 'All Songs',
 	'nav.invites' => 'Invites',
+	'nav.accounts' => 'Accounts',
 	'nav.login' => 'Log In',
 	'nav.register' => 'Register',
 	'nav.logout' => 'Log Out',
 
 	'ajax.notLoggedIn' => 'You need to be logged in.',
+	'ajax.badCsrf' => 'That page expired, please reload it and try again.',
+	'ajax.notAdmin' => 'That needs an admin account.',
 
 	'page.music.title' => 'Music',
 
@@ -46,6 +49,17 @@ return [
 	'invites.unused' => 'Unused',
 	'invites.usedBy' => 'Used by {name}',
 
+	'page.accounts.title' => 'Accounts',
+	'accounts.heading' => 'Accounts',
+	'accounts.column.name' => 'Account',
+	'accounts.column.admin' => 'Admin',
+	'accounts.column.action' => 'Action',
+	'accounts.isAdmin' => 'Yes',
+	'accounts.notAdmin' => 'No',
+	'accounts.promote' => 'Make admin',
+	'accounts.demote' => 'Remove admin',
+	'accounts.self' => 'You',
+
 	'page.addSongs.title' => 'Add Songs',
 
 	'addSongs.heading' => 'Add Songs',
@@ -78,6 +92,9 @@ return [
 	'songs.column.note' => 'Note',
 	'songs.column.score' => 'Score',
 	'songs.empty' => 'No songs yet.',
+	'songs.sortAscending' => 'Sort ascending',
+	'songs.sortDescending' => 'Sort descending',
+	'songs.editHint' => 'Double-click a title or note to edit it.',
 
 	'status.submitting' => 'Submitting...',
 	'status.submitFailed' => 'Submit failed: {error}',
@@ -93,5 +110,6 @@ return [
 	'song.added' => 'Added "{title}" by {artist}',
 	'song.duplicate' => 'Song already existed',
 	'song.required' => 'Artist and title are required',
+	'song.notFound' => 'That song no longer exists',
 
 ];

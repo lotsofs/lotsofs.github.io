@@ -61,8 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$db->pdo->beginTransaction();
 		try {
 			$db->query(
-				"INSERT INTO account (account_name, password_hash) VALUES (?, ?)",
-				[$accountName, password_hash($password, PASSWORD_DEFAULT)]
+				"INSERT INTO account (account_name, password_hash, is_admin) VALUES (?, ?, ?)",
+				[$accountName, password_hash($password, PASSWORD_DEFAULT), $accountCount === 0 ? 1 : 0]
 			);
 			$accountId = $db->pdo->lastInsertId();
 
