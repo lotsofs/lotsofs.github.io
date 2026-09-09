@@ -14,32 +14,90 @@ $db = require __MODULES__ . '/music/db.php';
 require_once __MODULES__ . '/music/auth.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
+const SONG_ID_NEW = 'new';
+const SONG_ID_CUSTOM = 'custom';
+const SONG_ID_SKIP = 'skip';
+
 $results = [];
 
 foreach ($data as $datum) {
 	$artistId = $datum['artist_id'] ?? null;
-	$title = trim($datum['title'] ?? '');
+	$providedName = trim($datum['title'] ?? '');
+	$rawId = (string)($datum['song_id'] ?? SONG_ID_NEW);
+	$aliasName = trim($datum['og_name'] ?? '');
+	if ($aliasName === '') {
+		$aliasName = $providedName;
+	}
 
-	if ($artistId === null || $artistId === '' || $title === '') {
-		$results[] = ['artist_id' => $artistId, 'title' => $title, 'status' => 'error', 'message' => t('song.required')];
+	if ($rawId === SONG_ID_SKIP) {
+		$results[] = ['provided_name' => $providedName, 'artist_id' => $artistId, 'title' => $providedName, 'status' => 'skipped', 'message' => t('song.skipped')];
 		continue;
 	}
 
-	$existingStmt = $db->query("SELECT id FROM song WHERE artist_id = ? AND title = ?", [$artistId, $title]);
-	$existing = $existingStmt ? $existingStmt->fetch() : false;
-
-	if ($existing) {
-		$results[] = ['artist_id' => (int)$artistId, 'title' => $title, 'status' => 'duplicate', 'message' => t('song.duplicate')];
+	if ($artistId === null || $artistId === '' || $aliasName === '') {
+		$results[] = ['provided_name' => $providedName, 'artist_id' => $artistId, 'title' => $providedName, 'status' => 'error', 'message' => t('song.required')];
 		continue;
 	}
 
 	// look up the artist name for the message
-	$artistNameStmt = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC LIMIT 1", [$artistId]);
-	$artistRow = $artistNameStmt ? $artistNameStmt->fetch() : false;
+	$artistRow = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC LIMIT 1", [$artistId])->fetch();
 	$artistName = $artistRow ? $artistRow['name'] : $artistId;
 
-	$db->query("INSERT INTO song (artist_id, title) VALUES (?, ?)", [$artistId, $title]);
-	$results[] = ['artist_id' => (int)$artistId, 'title' => $title, 'status' => 'ok', 'message' => t('song.added', ['title' => $title, 'artist' => $artistName])];
+	// this pasted title belongs to a song that already exists
+	if ($rawId !== SONG_ID_NEW && $rawId !== SONG_ID_CUSTOM) {
+		$songId = (int)$rawId;
+
+		if (!$db->query("SELECT id FROM song WHERE id = ? AND artist_id = ?", [$songId, $artistId])->fetch()) {
+			$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'title' => $providedName, 'status' => 'error', 'message' => t('song.notFound')];
+			continue;
+		}
+
+		// the song this row landed on, so the message can name it
+		$targetRow = $db->query("SELECT name FROM song_alias WHERE song_id = ? AND is_actual = 1", [$songId])->fetch();
+		$targetTitle = $targetRow ? $targetRow['name'] : $providedName;
+
+		if ($db->query("SELECT id FROM song_alias WHERE song_id = ? AND name = ?", [$songId, $providedName])->fetch()) {
+			$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'title' => $providedName, 'status' => 'duplicate', 'message' => t('song.aliasDuplicate', ['title' => $targetTitle])];
+			continue;
+		}
+
+		// the row still reports its song id, because the album step needs it either way
+		if (empty($datum['also_alias_provided_name'])) {
+			$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'title' => $providedName, 'status' => 'duplicate', 'message' => t('song.matchedOnly', ['title' => $targetTitle])];
+			continue;
+		}
+
+		$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 0)", [$songId, $providedName]);
+		$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'title' => $providedName, 'status' => 'ok', 'message' => t('song.aliased', ['name' => $providedName, 'title' => $targetTitle])];
+		continue;
+	}
+
+	// the unique index used to guarantee this, so the check now lives here
+	$existing = $db->query("
+		SELECT s.id
+		FROM song s
+		JOIN song_alias sa ON sa.song_id = s.id
+		WHERE s.artist_id = ? AND sa.name = ?
+	", [$artistId, $aliasName])->fetch();
+
+	if ($existing) {
+		$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => (int)$existing['id'], 'title' => $aliasName, 'status' => 'duplicate', 'message' => t('song.duplicate')];
+		continue;
+	}
+
+	$db->query("INSERT INTO song (artist_id) VALUES (?)", [$artistId]);
+	$songId = (int)$db->pdo->lastInsertId();
+	$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 1)", [$songId, $aliasName]);
+
+	$message = t('song.added', ['title' => $aliasName, 'artist' => $artistName]);
+
+	// also store the pasted spelling as an alias
+	if (!empty($datum['also_alias_provided_name']) && $providedName !== '' && $providedName !== $aliasName) {
+		$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 0)", [$songId, $providedName]);
+		$message .= t('song.alsoAliased', ['name' => $providedName]);
+	}
+
+	$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'title' => $aliasName, 'status' => 'ok', 'message' => $message];
 }
 
 echo json_encode($results);

@@ -51,12 +51,12 @@ return [
 
 		$artistId = $ctx->makeArtist('Guarded Owner');
 		$ctx->post('/modules/music/ajax/song.php', [['artist_id' => $artistId, 'title' => 'Guarded Title']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Guarded Title'")->fetch()['id'];
+		$songId = $ctx->songId('Guarded Title');
 
 		logInAsViewer($ctx);
 		$ctx->post('/modules/music/ajax/songEdit.php', ['id' => $songId, 'field' => 'title', 'value' => 'Renamed By A Viewer']);
 
-		$stored = $ctx->db()->query("SELECT title FROM song WHERE id = {$songId}")->fetch()['title'];
+		$stored = $ctx->songTitle($songId);
 		assertSame('Guarded Title', $stored, 'the title is untouched');
 	},
 

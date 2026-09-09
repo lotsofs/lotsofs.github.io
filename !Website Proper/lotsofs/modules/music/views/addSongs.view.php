@@ -28,6 +28,8 @@
 		<tr>
 			<th class="songArtistCell"><?= t('songs.column.artist') ?></th>
 			<th class="songTitleCell"><?= t('songs.column.title') ?></th>
+			<th class="songSelectCell"><?= t('songs.column.foundSong') ?></th>
+			<th class="extrasCell"><?= t('songs.column.nameToStore') ?></th>
 			<th class="resultCell"><?= t('songs.column.result') ?></th>
 		</tr>
 	</thead>
@@ -37,7 +39,27 @@
 </table>
 <button id="submitSongsButton" hidden><?= t('songs.submit') ?></button>
 
+<table id="albumTable" hidden>
+	<thead>
+		<tr>
+			<th class="providedNameCell"><?= t('albums.column.providedName') ?></th>
+			<th class="albumSelectCell"><?= t('albums.column.foundAlbum') ?></th>
+			<th class="extrasCell"><?= t('albums.column.nameToStore') ?></th>
+			<th class="albumArtistCell"><?= t('albums.column.attributedTo') ?></th>
+			<th class="albumYearCell"><?= t('albums.column.year') ?></th>
+			<th class="albumTracksCell"><?= t('albums.column.tracks') ?></th>
+			<th class="resultCell"><?= t('albums.column.result') ?></th>
+		</tr>
+	</thead>
+	<tbody id="albumRows">
+
+	</tbody>
+</table>
+<button id="submitAlbumsButton" hidden><?= t('albums.submit') ?></button>
+<div id="albumScrollSpace" hidden></div>
+
 <script id="artistNamesData" type="application/json"><?= json_encode($globalData['artistNames']) ?></script>
+<script id="albumNamesData" type="application/json"><?= json_encode($globalData['albumNames']) ?></script>
 <script src="/modules/music/js/addSongs.js"></script>
 
 <?php require(__MODULES__ . '/music/views/partials/foot.php') ?>

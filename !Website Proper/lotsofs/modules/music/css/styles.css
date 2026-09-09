@@ -148,6 +148,11 @@ th, td {
 	color: #ff8a80;
 }
 
+/* real height rather than a margin, which would collapse away instead of scrolling */
+#albumScrollSpace {
+	height: 75vh;
+}
+
 #artistMatchTable {
 	max-width: 100%;
 

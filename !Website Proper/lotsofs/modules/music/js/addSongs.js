@@ -15,6 +15,22 @@ const songRows = document.getElementById("songRows");
 const submitSongsButton = document.getElementById("submitSongsButton");
 
 let pastedRows = [];
+let artistIdByProvidedName = new Map();
+
+// every outcome carries its own icon in the string catalogue
+function showRowResult(row, result) {
+	row.querySelector(".resultCell").textContent = result.message || "";
+}
+
+// a row the server never mentioned is a fault, not a success, so say so rather than leave it blank
+function flagUnreportedRows(container) {
+	container.querySelectorAll("tr").forEach(row => {
+		const cell = row.querySelector(".resultCell");
+		if (cell && cell.textContent.trim() === "") {
+			cell.textContent = t("status.noResult");
+		}
+	});
+}
 
 // one artist row per unique pasted name
 function buildArtistTable(data_userInput) {
@@ -170,8 +186,12 @@ function rowExtrasFor(selectValue, providedName) {
 	if (selectValue === ARTIST_OPTION_NEW) {
 		return { typedName: false, rawName: true, keepRawAlias: false };
 	}
-	if (selectValue === ARTIST_OPTION_SKIP || selectValue.startsWith(ARTIST_OPTION_PENDING_PREFIX)) {
+	if (selectValue === ARTIST_OPTION_SKIP) {
 		return { typedName: false, rawName: false, keepRawAlias: false };
+	}
+	// joining an artist another row is creating still lets you decline your own spelling
+	if (selectValue.startsWith(ARTIST_OPTION_PENDING_PREFIX)) {
+		return { typedName: false, rawName: false, keepRawAlias: true };
 	}
 	const alreadyAnAlias = data_artistNames.some(a => a.name == providedName && a.artist_id == selectValue);
 	return { typedName: false, rawName: false, keepRawAlias: !alreadyAnAlias };
@@ -210,7 +230,9 @@ function previewResultFor(row) {
 		return t("artists.preview.createsNew");
 	}
 	if (selectValue.startsWith(ARTIST_OPTION_PENDING_PREFIX)) {
-		return t("artists.preview.joinsNew");
+		return row.querySelector("input[type='checkbox']").checked
+			? t("artists.preview.joinsNew")
+			: t("artists.preview.nothingToStore");
 	}
 	if (data_artistNames.some(a => a.name == providedName && a.artist_id == selectValue)) {
 		return t("artists.preview.artistFound");
@@ -246,7 +268,14 @@ function parsePastedTsv() {
 		if (!artist) {
 			return;
 		}
-		data.push({ Artist: artist, Title: (fields[1] || "").trim() });
+		// a track number of 0 is legal, so test for digits rather than truthiness
+		const trackRaw = (fields[3] || "").trim();
+		data.push({
+			Artist: artist,
+			Title: (fields[1] || "").trim(),
+			Album: (fields[2] || "").trim(),
+			Track: /^\d+$/.test(trackRaw) ? Number(trackRaw) : null,
+		});
 	});
 	pastedRows = data;
 	buildArtistTable(data);
@@ -293,12 +322,6 @@ submitButton.addEventListener('click', () => {
 			return;
 		}
 
-		// skip rows with nothing to record
-		const extras = rowExtrasFor(select.value, artist);
-		if (extras.keepRawAlias && !keepRawAliasCheckbox.checked && select.value !== ARTIST_OPTION_CUSTOM) {
-			return;
-		}
-
 		const createsArtist = select.value === ARTIST_OPTION_NEW || select.value === ARTIST_OPTION_CUSTOM;
 
 		const payload = {
@@ -306,6 +329,11 @@ submitButton.addEventListener('click', () => {
 			og_name: input.value.trim() || artist,
 			is_actual: createsArtist,
 		};
+
+		// the row is still sent so the song step learns which artist it resolved to
+		if (!createsArtist && !keepRawAliasCheckbox.checked) {
+			payload.store_name = false;
+		}
 		if (target.kind === 'existing') {
 			payload.artist_id = target.artistId;
 		}
@@ -344,8 +372,7 @@ submitButton.addEventListener('click', () => {
 		results.forEach(result => {
 			const row = artistMatchRows.querySelector(`tr[data_artist="${CSS.escape(result.provided_name)}"]`);
 			if (!row) return;
-			const resultCell = row.querySelector(".resultCell");
-			resultCell.textContent = result.message;
+			showRowResult(row, result);
 			if (result.status === "ok" || result.status === "duplicate") {
 				row.classList.add("rowHandled");
 				row.querySelectorAll("select, input").forEach(el => el.disabled = true);
@@ -362,14 +389,54 @@ function hideSongTable() {
 	songRows.innerHTML = "";
 	songTable.hidden = true;
 	submitSongsButton.hidden = true;
+	hideAlbumTable();
 }
 
 // one row per unique title of every artist that came back with an id
+const SONG_OPTION_SKIP = "skip";
+const SONG_OPTION_NEW = "new";
+const SONG_OPTION_CUSTOM = "custom";
+
+let songsByArtistId = new Map();
+let artistNameById = new Map();
+
+function songExtrasFor(selectValue, providedName, artistId) {
+	if (selectValue === SONG_OPTION_CUSTOM) {
+		return { typedName: true, rawName: false, keepRawAlias: true };
+	}
+	if (selectValue === SONG_OPTION_NEW) {
+		return { typedName: false, rawName: true, keepRawAlias: false };
+	}
+	if (selectValue === SONG_OPTION_SKIP) {
+		return { typedName: false, rawName: false, keepRawAlias: false };
+	}
+	// an existing song is picked to hang the pasted spelling off it, unless it already has it
+	const alreadyAnAlias = (songsByArtistId.get(artistId) || []).some(song => song.name === providedName && song.id == selectValue);
+	return { typedName: false, rawName: false, keepRawAlias: !alreadyAnAlias };
+}
+
+function syncSongRow(row) {
+	const extras = songExtrasFor(
+		row.querySelector(".songSelectCell select").value,
+		row.getAttribute("data_title"),
+		Number(row.getAttribute("data_artist_id")));
+
+	row.querySelector(".extrasCell input[type='text']").hidden = !extras.typedName;
+	row.querySelector(".extrasCell .rawNamePreview").hidden = !extras.rawName;
+	row.querySelector(".extrasCell label").hidden = !extras.keepRawAlias;
+}
+
 function buildSongTable(artistResults) {
-	const artistIdByProvidedName = new Map();
+	artistIdByProvidedName = new Map();
+	songsByArtistId = new Map();
+	artistNameById = new Map();
 	artistResults.forEach(result => {
 		if (result.artist_id) {
 			artistIdByProvidedName.set(result.provided_name, result.artist_id);
+			songsByArtistId.set(result.artist_id, result.songs || []);
+			if (result.artist_name) {
+				artistNameById.set(result.artist_id, result.artist_name);
+			}
 		}
 	});
 
@@ -393,8 +460,56 @@ function buildSongTable(artistResults) {
 
 		appendChildToElement(row, "td", artistDisplayName(artistId, item.Artist));
 		appendChildToElement(row, "td", item.Title);
+
+		const selectCell = appendChildToElement(row, "td", "");
+		selectCell.classList.add("songSelectCell");
+		const select = appendChildToElement(selectCell, "select");
+
+		const extrasCell = appendChildToElement(row, "td", "");
+		extrasCell.classList.add("extrasCell");
+		const extras = appendChildToElement(extrasCell, "span");
+		extras.classList.add("rowExtras");
+		appendChildToElement(extras, "span", item.Title).classList.add("rawNamePreview");
+		const textInput = appendChildToElement(extras, "input");
+		textInput.type = "text";
+		textInput.placeholder = item.Title;
+		const keepLabel = appendChildToElement(extras, "label");
+		const keepBox = appendChildToElement(keepLabel, "input");
+		keepBox.type = "checkbox";
+		keepBox.checked = true;
+		const [labelBefore, labelAfter] = t("artists.alsoStoreAlias").split("{name}");
+		appendChildToElement(keepLabel, "span", labelBefore);
+		appendChildToElement(keepLabel, "span", `"${item.Title}"`).classList.add("aliasNameInLabel");
+		appendChildToElement(keepLabel, "span", labelAfter || "");
+
 		const resultCell = appendChildToElement(row, "td", "");
 		resultCell.classList.add("resultCell");
+
+		appendChildToElement(select, "option", t("artists.option.new")).value = SONG_OPTION_NEW;
+		appendChildToElement(select, "option", t("artists.option.custom")).value = SONG_OPTION_CUSTOM;
+		appendChildToElement(select, "option", t("artists.option.skip")).value = SONG_OPTION_SKIP;
+
+		// only this row's artist, since a same titled song by someone else is a cover
+		const aliases = songsByArtistId.get(artistId) || [];
+
+		const songLabels = new Map();
+		aliases.forEach(song => {
+			if (song.is_actual || !songLabels.has(song.id)) {
+				songLabels.set(song.id, song.name);
+			}
+		});
+		songLabels.forEach((name, songId) => {
+			appendChildToElement(select, "option", name).value = songId;
+		});
+
+		// preselect the song this exact spelling is already filed under
+		const matchedAlias = aliases.find(song => song.name === item.Title);
+		if (matchedAlias) {
+			select.value = matchedAlias.id;
+		}
+
+		select.addEventListener("change", () => syncSongRow(row));
+		syncSongRow(row);
 	});
 
 	const hasSongs = songRows.children.length > 0;
@@ -404,6 +519,10 @@ function buildSongTable(artistResults) {
 
 // display name for an artist
 function artistDisplayName(artistId, providedName) {
+	// what the submit just resolved to, which the page's own list cannot know about
+	if (artistNameById.has(artistId)) {
+		return artistNameById.get(artistId);
+	}
 	const known = data_artistNames.find(a => a.artist_id == artistId && a.is_actual);
 	return known ? known.name : providedName;
 }
@@ -412,9 +531,15 @@ function artistDisplayName(artistId, providedName) {
 submitSongsButton.addEventListener('click', () => {
 	const songs = [];
 	songRows.querySelectorAll("tr:not(.rowHandled)").forEach(row => {
+		const select = row.querySelector(".songSelectCell select");
+		const typedName = row.querySelector(".extrasCell input[type='text']").value.trim();
+
 		songs.push({
 			artist_id: row.getAttribute("data_artist_id"),
 			title: row.getAttribute("data_title"),
+			song_id: select.value,
+			og_name: select.value === SONG_OPTION_CUSTOM ? typedName : "",
+			also_alias_provided_name: row.querySelector(".extrasCell input[type='checkbox']").checked,
 		});
 	});
 	if (songs.length === 0) {
@@ -440,15 +565,290 @@ submitSongsButton.addEventListener('click', () => {
 		statusMessage.innerHTML = "";
 		results.forEach(result => {
 			songRows.querySelectorAll("tr").forEach(row => {
-				if (row.getAttribute("data_artist_id") != result.artist_id || row.getAttribute("data_title") !== result.title) {
+				// the pasted spelling, since a custom name means the stored title differs
+				if (row.getAttribute("data_artist_id") != result.artist_id || row.getAttribute("data_title") !== result.provided_name) {
 					return;
 				}
-				row.querySelector(".resultCell").textContent = result.message;
+				showRowResult(row, result);
 				if (result.status === "ok" || result.status === "duplicate") {
 					row.classList.add("rowHandled");
 				}
 			});
 		});
+		flagUnreportedRows(songRows);
+		// the songs are already saved, so a fault here must not read as a failed submit
+		try {
+			buildAlbumTable(results);
+		}
+		catch (error) {
+			statusMessage.innerHTML = t("status.albumsFailed", { error: error.message });
+			throw error;
+		}
+	})
+	.catch(error => {
+		if (statusMessage.innerHTML === "") {
+			statusMessage.innerHTML = t("status.submitFailed", { error: error });
+		}
+	});
+});
+
+const data_albumNames = JSON.parse(document.getElementById("albumNamesData").textContent);
+
+const ALBUM_OPTION_SKIP = "skip";
+const ALBUM_OPTION_NEW = "new";
+const ALBUM_OPTION_CUSTOM = "custom";
+
+const albumTable = document.getElementById("albumTable");
+const albumRows = document.getElementById("albumRows");
+const submitAlbumsButton = document.getElementById("submitAlbumsButton");
+const albumScrollSpace = document.getElementById("albumScrollSpace");
+
+function hideAlbumTable() {
+	albumRows.innerHTML = "";
+	albumTable.hidden = true;
+	submitAlbumsButton.hidden = true;
+	albumScrollSpace.hidden = true;
+}
+
+// an explicit number wins, a blank takes the lowest position that album has not claimed
+function assignTrackPositions(tracks) {
+	const claimed = new Set();
+	tracks.forEach(track => {
+		if (track.explicit !== null) {
+			claimed.add(track.explicit);
+		}
+	});
+
+	let next = 1;
+	tracks.forEach(track => {
+		if (track.explicit !== null) {
+			track.position = track.explicit;
+			return;
+		}
+		while (claimed.has(next)) {
+			next++;
+		}
+		track.position = next;
+		claimed.add(next);
+	});
+}
+
+// one row per unique album name, so a compilation can gather several artists
+function collectAlbums(songResults) {
+	const songIdByKey = new Map();
+	songResults.forEach(result => {
+		if (result.song_id) {
+			songIdByKey.set(result.artist_id + "\t" + result.title, result.song_id);
+		}
+	});
+
+	const albums = new Map();
+	pastedRows.forEach(item => {
+		if (!item.Album) {
+			return;
+		}
+		const artistId = artistIdByProvidedName.get(item.Artist);
+		const songId = artistId ? songIdByKey.get(artistId + "\t" + item.Title) : null;
+		if (!songId) {
+			return;
+		}
+		if (!albums.has(item.Album)) {
+			albums.set(item.Album, []);
+		}
+		albums.get(item.Album).push({ songId, artistId, title: item.Title, explicit: item.Track });
+	});
+
+	albums.forEach(assignTrackPositions);
+	return albums;
+}
+
+function albumExtrasFor(selectValue, providedName) {
+	if (selectValue === ALBUM_OPTION_CUSTOM) {
+		return { typedName: true, rawName: false, keepRawAlias: true };
+	}
+	if (selectValue === ALBUM_OPTION_NEW) {
+		return { typedName: false, rawName: true, keepRawAlias: false };
+	}
+	if (selectValue === ALBUM_OPTION_SKIP) {
+		return { typedName: false, rawName: false, keepRawAlias: false };
+	}
+	const alreadyAnAlias = data_albumNames.some(a => a.name == providedName && a.album_id == selectValue);
+	return { typedName: false, rawName: false, keepRawAlias: !alreadyAnAlias };
+}
+
+function syncAlbumRow(row) {
+	const providedName = row.getAttribute("data_album");
+	const extras = albumExtrasFor(row.querySelector(".albumSelectCell select").value, providedName);
+
+	row.querySelector(".extrasCell input[type='text']").hidden = !extras.typedName;
+	row.querySelector(".extrasCell .rawNamePreview").hidden = !extras.rawName;
+	row.querySelector(".extrasCell label").hidden = !extras.keepRawAlias;
+}
+
+function buildAlbumTable(songResults) {
+	albumRows.innerHTML = "";
+
+	const albums = collectAlbums(songResults);
+
+	const albumOptionLabels = new Map();
+	data_albumNames.forEach(a => {
+		if (a.is_actual || !albumOptionLabels.has(a.album_id)) {
+			albumOptionLabels.set(a.album_id, a.artist_name ? `${a.name} - ${a.artist_name}` : a.name);
+		}
+	});
+
+	const providedNameByArtistId = new Map();
+	artistIdByProvidedName.forEach((id, name) => {
+		if (!providedNameByArtistId.has(id)) {
+			providedNameByArtistId.set(id, name);
+		}
+	});
+
+	albums.forEach((tracks, albumName) => {
+		const row = appendChildToElement(albumRows, "tr");
+		row.setAttribute("data_album", albumName);
+		row.setAttribute("data_tracks", JSON.stringify(tracks.map(track => ({ song_id: track.songId, position: track.position }))));
+
+		const nameCell = appendChildToElement(row, "td", "");
+		nameCell.classList.add("providedNameCell");
+		nameCell.title = albumName;
+		appendChildToElement(nameCell, "span", albumName).classList.add("providedName");
+
+		const selectCell = appendChildToElement(row, "td", "");
+		selectCell.classList.add("albumSelectCell");
+		const select = appendChildToElement(selectCell, "select");
+
+		const extrasCell = appendChildToElement(row, "td", "");
+		extrasCell.classList.add("extrasCell");
+		const extras = appendChildToElement(extrasCell, "span");
+		extras.classList.add("rowExtras");
+		appendChildToElement(extras, "span", albumName).classList.add("rawNamePreview");
+		const textInput = appendChildToElement(extras, "input");
+		textInput.type = "text";
+		textInput.placeholder = albumName;
+		const keepLabel = appendChildToElement(extras, "label");
+		const keepBox = appendChildToElement(keepLabel, "input");
+		keepBox.type = "checkbox";
+		keepBox.checked = true;
+		const [labelBefore, labelAfter] = t("artists.alsoStoreAlias").split("{name}");
+		appendChildToElement(keepLabel, "span", labelBefore);
+		appendChildToElement(keepLabel, "span", `"${albumName}"`).classList.add("aliasNameInLabel");
+		appendChildToElement(keepLabel, "span", labelAfter || "");
+
+		const artistCell = appendChildToElement(row, "td", "");
+		artistCell.classList.add("albumArtistCell");
+		const artistSelect = appendChildToElement(artistCell, "select");
+
+		const yearCell = appendChildToElement(row, "td", "");
+		yearCell.classList.add("albumYearCell");
+		const yearInput = appendChildToElement(yearCell, "input");
+		yearInput.type = "text";
+
+		const positions = tracks.map(track => track.position).sort((a, b) => a - b);
+		const tracksCell = appendChildToElement(row, "td", positions.length === 1
+			? t("albums.trackSummaryOne", { first: positions[0] })
+			: t("albums.trackSummary", { count: positions.length, first: positions[0], last: positions[positions.length - 1] }));
+		tracksCell.classList.add("albumTracksCell");
+		tracksCell.title = tracks
+			.slice()
+			.sort((a, b) => a.position - b.position)
+			.map(track => `${track.position} ${track.title}`)
+			.join("\n");
+
+		appendChildToElement(row, "td", "").classList.add("resultCell");
+
+		const optionNew = appendChildToElement(select, "option", t("artists.option.new"));
+		optionNew.value = ALBUM_OPTION_NEW;
+		const optionCustom = appendChildToElement(select, "option", t("artists.option.custom"));
+		optionCustom.value = ALBUM_OPTION_CUSTOM;
+		const optionSkip = appendChildToElement(select, "option", t("artists.option.skip"));
+		optionSkip.value = ALBUM_OPTION_SKIP;
+		albumOptionLabels.forEach((label, albumId) => {
+			appendChildToElement(select, "option", label).value = albumId;
+		});
+
+		const matchedAlias = data_albumNames.find(a => a.name == albumName);
+		if (matchedAlias) {
+			select.value = matchedAlias.album_id;
+		}
+
+		// the artist carrying the most tracks is the likeliest attribution
+		const counts = new Map();
+		tracks.forEach(track => counts.set(track.artistId, (counts.get(track.artistId) || 0) + 1));
+		Array.from(counts.entries())
+			.sort((a, b) => b[1] - a[1])
+			.forEach(entry => {
+				appendChildToElement(artistSelect, "option", artistDisplayName(entry[0], providedNameByArtistId.get(entry[0]) || "")).value = entry[0];
+			});
+		appendChildToElement(artistSelect, "option", t("albums.option.none")).value = "";
+
+		select.addEventListener("change", () => syncAlbumRow(row));
+		syncAlbumRow(row);
+	});
+
+	const hasAlbums = albumRows.children.length > 0;
+	albumTable.hidden = !hasAlbums;
+	submitAlbumsButton.hidden = !hasAlbums;
+	albumScrollSpace.hidden = !hasAlbums;
+}
+
+submitAlbumsButton.addEventListener('click', () => {
+	const albums = [];
+
+	albumRows.querySelectorAll("tr:not(.rowHandled)").forEach(row => {
+		const select = row.querySelector(".albumSelectCell select");
+		if (select.value === ALBUM_OPTION_SKIP) {
+			return;
+		}
+
+		const isNew = select.value === ALBUM_OPTION_NEW || select.value === ALBUM_OPTION_CUSTOM;
+		const typedName = row.querySelector(".extrasCell input[type='text']").value.trim();
+
+		albums.push({
+			provided_name: row.getAttribute("data_album"),
+			album_id: select.value,
+			og_name: select.value === ALBUM_OPTION_CUSTOM ? typedName : "",
+			is_actual: isNew,
+			also_alias_provided_name: row.querySelector(".extrasCell input[type='checkbox']").checked,
+			artist_id: row.querySelector(".albumArtistCell select").value || null,
+			release_year: row.querySelector(".albumYearCell input").value.trim(),
+			tracks: JSON.parse(row.getAttribute("data_tracks")),
+		});
+	});
+
+	if (albums.length === 0) {
+		return;
+	}
+
+	statusMessage.innerHTML = t("status.submitting");
+	fetch("/modules/music/ajax/album.php", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			"X-CSRF-Token": CSRF_TOKEN
+		},
+		body: JSON.stringify(albums)
+	})
+	.then(async response => {
+		const body = await response.json().catch(() => null);
+		if (!response.ok) {
+			throw new Error(body && body.error ? body.error : `HTTP ${response.status}`);
+		}
+		return body;
+	})
+	.then(results => {
+		statusMessage.innerHTML = "";
+		results.forEach(result => {
+			const row = albumRows.querySelector(`tr[data_album="${CSS.escape(result.provided_name)}"]`);
+			if (!row) {
+				return;
+			}
+			showRowResult(row, result);
+			if (result.status === "ok") {
+				row.classList.add("rowHandled");
+			}
+		});
+		flagUnreportedRows(albumRows);
 	})
 	.catch(error => {
 		statusMessage.innerHTML = t("status.submitFailed", { error: error });

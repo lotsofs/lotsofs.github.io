@@ -34,7 +34,7 @@ $globalData['showSharedNote'] = false;
 $sortable = [
 	'id' => 's.id',
 	'artist' => 'artist COLLATE NOCASE',
-	'title' => 's.title COLLATE NOCASE',
+	'title' => 'title COLLATE NOCASE',
 ];
 
 if ($globalData['showSharedNote']) {
@@ -64,13 +64,14 @@ $globalData['dir'] = strtolower($dir);
 $globalData['songs'] = $db->query("
 	SELECT
 		s.id,
-		s.title,
+		st.name AS title,
 		s.objective_note,
 		(SELECT name FROM artist_alias
 			WHERE artist_id = s.artist_id
 			ORDER BY is_actual DESC LIMIT 1) AS artist
 		{$selects}
 	FROM song s
+	LEFT JOIN song_alias st ON st.song_id = s.id AND st.is_actual = 1
 	{$joins}
 	ORDER BY {$sortable[$sort]} {$dir}, s.id
 ")->fetchAll();

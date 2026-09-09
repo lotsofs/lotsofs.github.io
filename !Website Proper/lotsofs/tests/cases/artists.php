@@ -45,6 +45,118 @@ return [
 		assertSame('Grouped', array_values($actual)[0]['name'], 'the actual name');
 	},
 
+	'a result message names the artist the row landed on' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Message Target');
+
+		// an alias joining an existing artist must not read as if it created one
+		$joined = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+			'artist_id' => $artistId,
+			'og_name' => 'asdfasdf',
+			'provided_name' => 'asdfasdf',
+			'is_actual' => false,
+		]]);
+
+		assertContains('asdfasdf', $joined['json'][0]['message'], 'the message names the spelling');
+		assertContains('Message Target', $joined['json'][0]['message'], 'and the artist it joined');
+
+		$created = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+			'artist_id' => 'new',
+			'group' => 'Brand New Artist',
+			'og_name' => 'Brand New Artist',
+			'provided_name' => 'Brand New Artist',
+			'is_actual' => true,
+		]]);
+
+		assertContains('Created artist', $created['json'][0]['message'], 'a new artist says so instead');
+	},
+
+	'declining to store a spelling still resolves the artist for the song step' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		// rows g, h and i: one creates the artist, one joins and stores, one joins silently
+		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [
+			['artist_id' => 'new', 'group' => 'g', 'og_name' => 'g', 'provided_name' => 'g', 'is_actual' => true],
+			['artist_id' => 'new', 'group' => 'g', 'og_name' => 'h', 'provided_name' => 'h', 'is_actual' => false],
+			['artist_id' => 'new', 'group' => 'g', 'og_name' => 'i', 'provided_name' => 'i', 'is_actual' => false, 'store_name' => false],
+		]);
+
+		$artistId = (int)$response['json'][0]['artist_id'];
+
+		// the whole point: i still reports an artist id, so its song can be added
+		assertSame($artistId, (int)$response['json'][2]['artist_id'], 'i resolved to the same artist');
+		assertSame('duplicate', $response['json'][2]['status'], 'but nothing was created for it');
+
+		$names = $ctx->db()->query("SELECT name FROM artist_alias WHERE artist_id = {$artistId} ORDER BY name")->fetchAll(PDO::FETCH_COLUMN);
+		assertSame(['g', 'h'], $names, 'the declined spelling was not stored');
+	},
+
+	'declining to store a spelling for an existing artist works the same way' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Existing Target');
+
+		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+			'artist_id' => $artistId,
+			'og_name' => 'f',
+			'provided_name' => 'f',
+			'is_actual' => false,
+			'store_name' => false,
+		]]);
+
+		assertSame($artistId, (int)$response['json'][0]['artist_id'], 'f resolved to the existing artist');
+		assertContains('Existing Target', $response['json'][0]['message'], 'the message names it');
+
+		$names = $ctx->db()->query("SELECT name FROM artist_alias WHERE artist_id = {$artistId}")->fetchAll(PDO::FETCH_COLUMN);
+		assertSame(['Existing Target'], $names, 'f was not stored as an alias');
+	},
+
+	'a new artist is always named even if the row says not to store it' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+			'artist_id' => 'new',
+			'group' => 'Unnameable',
+			'og_name' => 'Unnameable',
+			'provided_name' => 'Unnameable',
+			'is_actual' => true,
+			'store_name' => false,
+		]]);
+
+		$artistId = (int)$response['json'][0]['artist_id'];
+		$names = $ctx->db()->query("SELECT name FROM artist_alias WHERE artist_id = {$artistId}")->fetchAll(PDO::FETCH_COLUMN);
+		assertSame(['Unnameable'], $names, 'a brand new artist cannot be left nameless');
+	},
+
+	'every result reports the artist name it resolved to' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		// g is created here, so the page's own artist list cannot know its name yet
+		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [
+			['artist_id' => 'new', 'group' => 'gg', 'og_name' => 'gg', 'provided_name' => 'gg', 'is_actual' => true],
+			['artist_id' => 'new', 'group' => 'gg', 'og_name' => 'hh', 'provided_name' => 'hh', 'is_actual' => false],
+			['artist_id' => 'new', 'group' => 'gg', 'og_name' => 'ii', 'provided_name' => 'ii', 'is_actual' => false, 'store_name' => false],
+		]);
+
+		foreach ($response['json'] as $result) {
+			assertSame('gg', $result['artist_name'], "{$result['provided_name']} reports the artist it joined");
+		}
+	},
+
+	'result and preview strings all carry an icon' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$catalogue = $ctx->get('/music/add-songs')['body'];
+
+		// the icons live in the catalogue now, not in the javascript
+		foreach (['Created artist', 'as an alias of', 'spelling not stored', 'Joins new artist', 'Skipped'] as $phrase) {
+			assertContains($phrase, $catalogue, "the catalogue carries {$phrase}");
+		}
+
+		assertTrue(strpos($catalogue, 'RESULT_ICONS') === false, 'no icon map is shipped to the page');
+	},
+
 	'an alias can be added to an existing artist' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 

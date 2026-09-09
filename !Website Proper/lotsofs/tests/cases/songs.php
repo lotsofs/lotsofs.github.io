@@ -14,8 +14,12 @@ return [
 		$response = $ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'First Track']]);
 		assertSame('ok', $response['json'][0]['status'], 'status');
 
-		$song = $ctx->db()->query("SELECT artist_id, title FROM song WHERE title = 'First Track'")->fetch();
+		$songId = $ctx->songId('First Track');
+		assertTrue($songId > 0, 'the song exists');
+
+		$song = $ctx->db()->query("SELECT artist_id FROM song WHERE id = {$songId}")->fetch();
 		assertSame($artistId, (int)$song['artist_id'], 'attached to the right artist');
+		assertSame('First Track', $ctx->songTitle($songId), 'its actual name is the pasted title');
 	},
 
 	'the added message names the artist' => function ($ctx) {
@@ -39,7 +43,7 @@ return [
 
 		assertSame('duplicate', $response['json'][0]['status'], 'status');
 
-		$count = $ctx->db()->query("SELECT COUNT(*) c FROM song WHERE title = 'Repeated Track'")->fetch()['c'];
+		$count = $ctx->songCount('Repeated Track');
 		assertSame(1, (int)$count, 'only one row exists');
 	},
 
@@ -74,10 +78,247 @@ return [
 			$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => $title]]);
 		}
 
-		$stored = $ctx->db()->query("SELECT title FROM song WHERE artist_id = {$artistId}")->fetchAll(PDO::FETCH_COLUMN);
+		$stored = $ctx->db()->query("
+			SELECT sa.name
+			FROM song s JOIN song_alias sa ON sa.song_id = s.id
+			WHERE s.artist_id = {$artistId}
+		")->fetchAll(PDO::FETCH_COLUMN);
 		foreach ($titles as $title) {
 			assertTrue(in_array($title, $stored, true), "stored form of {$title}");
 		}
+	},
+
+	'a title can be filed as an alias of an existing song' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Song Alias Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bohemian Rhapsody']]);
+		$songId = $ctx->songId('Bohemian Rhapsody');
+
+		$response = $ctx->post(SONG_ENDPOINT, [[
+			'artist_id' => $artistId,
+			'title' => 'Bohemian Rapsody',
+			'song_id' => $songId,
+			'also_alias_provided_name' => true,
+		]]);
+
+		assertSame('ok', $response['json'][0]['status'], 'status');
+		assertSame($songId, (int)$response['json'][0]['song_id'], 'points at the same song');
+
+		assertSame($songId, $ctx->songId('Bohemian Rapsody'), 'the misspelling resolves to it too');
+		assertSame('Bohemian Rhapsody', $ctx->songTitle($songId), 'the actual name is unchanged');
+
+		$names = $ctx->db()->query("SELECT name FROM song_alias WHERE song_id = {$songId} ORDER BY name")->fetchAll(PDO::FETCH_COLUMN);
+		assertSame(['Bohemian Rapsody', 'Bohemian Rhapsody'], $names, 'both spellings hang off one song');
+
+		$songCount = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song WHERE artist_id = {$artistId}")->fetch()['c'];
+		assertSame(1, $songCount, 'no second song was created');
+	},
+
+	'unticking the alias box matches the song without storing the spelling' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Untick Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Kept Clean']]);
+		$songId = $ctx->songId('Kept Clean');
+
+		$response = $ctx->post(SONG_ENDPOINT, [[
+			'artist_id' => $artistId,
+			'title' => 'Kept Clean.ogg',
+			'song_id' => $songId,
+			'also_alias_provided_name' => false,
+		]]);
+
+		assertSame('duplicate', $response['json'][0]['status'], 'the row is resolved, not created');
+
+		// the album step still needs to know which song the row landed on
+		assertSame($songId, (int)$response['json'][0]['song_id'], 'the song id still comes back');
+
+		assertSame(0, $ctx->songId('Kept Clean.ogg'), 'the spelling was not stored');
+
+		$names = $ctx->db()->query("SELECT name FROM song_alias WHERE song_id = {$songId}")->fetchAll(PDO::FETCH_COLUMN);
+		assertSame(['Kept Clean'], $names, 'the song keeps only its own name');
+	},
+
+	'ticking the alias box does store the spelling' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Tick Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Gains A Spelling']]);
+		$songId = $ctx->songId('Gains A Spelling');
+
+		$response = $ctx->post(SONG_ENDPOINT, [[
+			'artist_id' => $artistId,
+			'title' => 'Gains A Spelling.ogg',
+			'song_id' => $songId,
+			'also_alias_provided_name' => true,
+		]]);
+
+		assertSame('ok', $response['json'][0]['status'], 'status');
+		assertSame($songId, $ctx->songId('Gains A Spelling.ogg'), 'the spelling resolves to the song');
+	},
+
+	'aliasing the same spelling twice is a duplicate' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Repeat Alias Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Original Spelling']]);
+		$songId = $ctx->songId('Original Spelling');
+
+		$payload = [['artist_id' => $artistId, 'title' => 'Other Spelling', 'song_id' => $songId, 'also_alias_provided_name' => true]];
+		$ctx->post(SONG_ENDPOINT, $payload);
+		$response = $ctx->post(SONG_ENDPOINT, $payload);
+
+		assertSame('duplicate', $response['json'][0]['status'], 'status');
+
+		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song_alias WHERE song_id = {$songId}")->fetch()['c'];
+		assertSame(2, $count, 'still just the two names');
+	},
+
+	'a song cannot be aliased onto another artists song' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$mine = $ctx->makeArtist('Alias Scope Mine');
+		$theirs = $ctx->makeArtist('Alias Scope Theirs');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $theirs, 'title' => 'Their Song']]);
+		$theirSongId = $ctx->songId('Their Song');
+
+		$response = $ctx->post(SONG_ENDPOINT, [[
+			'artist_id' => $mine,
+			'title' => 'My Cover',
+			'song_id' => $theirSongId,
+			'also_alias_provided_name' => true,
+		]]);
+
+		assertSame('error', $response['json'][0]['status'], 'refused');
+		assertSame(0, $ctx->songId('My Cover'), 'nothing was stored');
+	},
+
+	'a custom name stores the pasted spelling alongside it' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Custom Title Owner');
+
+		$response = $ctx->post(SONG_ENDPOINT, [[
+			'artist_id' => $artistId,
+			'title' => 'bohemian rhapsody (remaster)',
+			'song_id' => 'custom',
+			'og_name' => 'Bohemian Rhapsody',
+			'also_alias_provided_name' => true,
+		]]);
+
+		assertSame('ok', $response['json'][0]['status'], 'status');
+		$songId = (int)$response['json'][0]['song_id'];
+
+		assertSame('Bohemian Rhapsody', $ctx->songTitle($songId), 'the typed name became the actual one');
+		assertSame($songId, $ctx->songId('bohemian rhapsody (remaster)'), 'the pasted spelling is an alias');
+	},
+
+	'every result carries the pasted spelling so the page can match its row' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Reporting Owner');
+		$existingId = 0;
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Already Here']]);
+		$existingId = $ctx->songId('Already Here');
+
+		// one of each outcome, all pasted under names that differ from what gets stored
+		$response = $ctx->post(SONG_ENDPOINT, [
+			['artist_id' => $artistId, 'title' => 'Plain New.ogg'],
+			['artist_id' => $artistId, 'title' => 'Custom Source.ogg', 'song_id' => 'custom', 'og_name' => 'Custom Stored'],
+			['artist_id' => $artistId, 'title' => 'Already Here'],
+			['artist_id' => $artistId, 'title' => 'Aliased Onto.ogg', 'song_id' => $existingId, 'also_alias_provided_name' => true],
+			['artist_id' => $artistId, 'title' => 'Skipped One.ogg', 'song_id' => 'skip'],
+		]);
+
+		$pasted = ['Plain New.ogg', 'Custom Source.ogg', 'Already Here', 'Aliased Onto.ogg', 'Skipped One.ogg'];
+		assertSame($pasted, array_column($response['json'], 'provided_name'), 'every row reports under the name it was pasted as');
+
+		assertSame(['ok', 'ok', 'duplicate', 'ok', 'skipped'], array_column($response['json'], 'status'), 'each outcome');
+
+		foreach ($response['json'] as $result) {
+			assertTrue(($result['message'] ?? '') !== '', "a message for {$result['provided_name']}");
+		}
+
+		// the custom row is the one that used to go unreported, because its stored title differs
+		$custom = $response['json'][1];
+		assertSame('Custom Source.ogg', $custom['provided_name'], 'reported under the pasted name');
+		assertSame('Custom Stored', $custom['title'], 'while the stored title is the typed one');
+	},
+
+	'a skipped song stores nothing' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Skipped Song Owner');
+
+		$response = $ctx->post(SONG_ENDPOINT, [[
+			'artist_id' => $artistId,
+			'title' => 'Never Added',
+			'song_id' => 'skip',
+		]]);
+
+		assertSame('skipped', $response['json'][0]['status'], 'status');
+		assertSame(0, $ctx->songId('Never Added'), 'nothing was stored');
+	},
+
+	'an artist can still not hold two songs with the same title' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('No Dupes Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Only Once']]);
+		$response = $ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Only Once']]);
+
+		assertSame('duplicate', $response['json'][0]['status'], 'the second attempt is refused');
+
+		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song WHERE artist_id = {$artistId}")->fetch()['c'];
+		assertSame(1, $count, 'the check that replaced idx_song_unique still holds');
+	},
+
+	'the artist endpoint hands back that artists songs for the dropdown' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Dropdown Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Dropdown Song One']]);
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Dropdown Song Two']]);
+
+		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+			'artist_id' => $artistId,
+			'og_name' => 'Dropdown Owner',
+			'provided_name' => 'Dropdown Owner',
+		]]);
+
+		$songs = $response['json'][0]['songs'];
+		assertSame(2, count($songs), 'both songs came back');
+		assertSame(['Dropdown Song One', 'Dropdown Song Two'], array_column($songs, 'name'), 'named and ordered');
+	},
+
+	'the dropdown data carries every alias so a pasted spelling can be matched' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Rematch Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'A Functioning God']]);
+		$songId = $ctx->songId('A Functioning God');
+
+		// the shape of a second paste of the same file listing
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'A Functioning God.ogg', 'song_id' => $songId, 'also_alias_provided_name' => true]]);
+
+		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+			'artist_id' => $artistId,
+			'og_name' => 'Rematch Owner',
+			'provided_name' => 'Rematch Owner',
+		]]);
+
+		$songs = $response['json'][0]['songs'];
+		assertSame(2, count($songs), 'both spellings come back, not just the actual name');
+
+		$byName = [];
+		foreach ($songs as $song) {
+			$byName[$song['name']] = $song;
+		}
+
+		assertSame($songId, (int)$byName['A Functioning God.ogg']['id'], 'the pasted spelling points at the song');
+		assertSame(0, (int)$byName['A Functioning God.ogg']['is_actual'], 'and is marked as the alias');
+		assertSame(1, (int)$byName['A Functioning God']['is_actual'], 'while the clean name stays actual');
 	},
 
 	'a database error comes back as json, not html' => function ($ctx) {
@@ -115,7 +356,7 @@ return [
 		$artistId = $ctx->makeArtist('Listed Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Listed Track']]);
 
-		$songId = $ctx->db()->query("SELECT id FROM song WHERE title = 'Listed Track'")->fetch()['id'];
+		$songId = $ctx->songId('Listed Track');
 
 		$body = $ctx->get('/music/songs')['body'];
 		assertContains('Listed Track', $body, 'song title');
@@ -242,13 +483,13 @@ return [
 
 		$artistId = $ctx->makeArtist('Rename Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Before Rename']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Before Rename'")->fetch()['id'];
+		$songId = $ctx->songId('Before Rename');
 
 		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'title', 'value' =>'After Rename']);
 		assertSame('ok', $response['json']['status'], 'status');
 		assertSame('After Rename', $response['json']['value'], 'echoed title');
 
-		$stored = $ctx->db()->query("SELECT title FROM song WHERE id = {$songId}")->fetch()['title'];
+		$stored = $ctx->songTitle($songId);
 		assertSame('After Rename', $stored, 'stored title');
 	},
 
@@ -257,11 +498,11 @@ return [
 
 		$artistId = $ctx->makeArtist('Trim Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Untrimmed']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Untrimmed'")->fetch()['id'];
+		$songId = $ctx->songId('Untrimmed');
 
 		$ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'title', 'value' =>'   Trimmed   ']);
 
-		$stored = $ctx->db()->query("SELECT title FROM song WHERE id = {$songId}")->fetch()['title'];
+		$stored = $ctx->songTitle($songId);
 		assertSame('Trimmed', $stored, 'stored title');
 	},
 
@@ -270,13 +511,13 @@ return [
 
 		$artistId = $ctx->makeArtist('Empty Rename Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Keeps Its Name']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Keeps Its Name'")->fetch()['id'];
+		$songId = $ctx->songId('Keeps Its Name');
 
 		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'title', 'value' =>'   ']);
 		assertSame('error', $response['json']['status'], 'status');
 		assertSame('Keeps Its Name', $response['json']['value'], 'hands back the unchanged title');
 
-		$stored = $ctx->db()->query("SELECT title FROM song WHERE id = {$songId}")->fetch()['title'];
+		$stored = $ctx->songTitle($songId);
 		assertSame('Keeps Its Name', $stored, 'stored title is untouched');
 	},
 
@@ -286,13 +527,13 @@ return [
 		$artistId = $ctx->makeArtist('Clash Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Clash One']]);
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Clash Two']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Clash Two'")->fetch()['id'];
+		$songId = $ctx->songId('Clash Two');
 
 		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'title', 'value' =>'Clash One']);
 		assertSame('duplicate', $response['json']['status'], 'status');
 		assertSame('Clash Two', $response['json']['value'], 'hands back the unchanged title');
 
-		$stored = $ctx->db()->query("SELECT title FROM song WHERE id = {$songId}")->fetch()['title'];
+		$stored = $ctx->songTitle($songId);
 		assertSame('Clash Two', $stored, 'stored title is untouched');
 	},
 
@@ -303,7 +544,7 @@ return [
 		$second = $ctx->makeArtist('Rename Coverer Two');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $first, 'title' => 'Covered Later']]);
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $second, 'title' => 'Not Yet Covered']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Not Yet Covered'")->fetch()['id'];
+		$songId = $ctx->songId('Not Yet Covered');
 
 		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'title', 'value' =>'Covered Later']);
 		assertSame('ok', $response['json']['status'], 'status');
@@ -314,7 +555,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Idempotent Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Unchanged Title']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Unchanged Title'")->fetch()['id'];
+		$songId = $ctx->songId('Unchanged Title');
 
 		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'title', 'value' =>'Unchanged Title']);
 		assertSame('ok', $response['json']['status'], 'status');
@@ -326,7 +567,7 @@ return [
 		$response = $ctx->post(EDIT_ENDPOINT, ['id' => 999999, 'field' => 'title', 'value' => 'Ghost Title']);
 		assertSame('error', $response['json']['status'], 'status');
 
-		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song WHERE title = 'Ghost Title'")->fetch()['c'];
+		$count = $ctx->songCount('Ghost Title');
 		assertSame(0, $count, 'nothing was created');
 	},
 
@@ -345,7 +586,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Bad Field Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Untouched By Bad Field']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Untouched By Bad Field'")->fetch()['id'];
+		$songId = $ctx->songId('Untouched By Bad Field');
 
 		foreach (['artist_id', 'id', '', ['title']] as $field) {
 			$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => $field, 'value' => 'nope']);
@@ -353,7 +594,7 @@ return [
 			assertTrue(isset($response['json']['error']), 'body carries an error key');
 		}
 
-		$stored = $ctx->db()->query("SELECT title FROM song WHERE id = {$songId}")->fetch()['title'];
+		$stored = $ctx->songTitle($songId);
 		assertSame('Untouched By Bad Field', $stored, 'the row is untouched');
 	},
 
@@ -362,7 +603,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Note Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Gets A Note']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Gets A Note'")->fetch()['id'];
+		$songId = $ctx->songId('Gets A Note');
 
 		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'first thoughts']);
 		assertSame('ok', $response['json']['status'], 'status');
@@ -379,7 +620,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Cleared Note Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Loses Its Note']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Loses Its Note'")->fetch()['id'];
+		$songId = $ctx->songId('Loses Its Note');
 
 		$ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'to be removed']);
 		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => '   ']);
@@ -397,7 +638,7 @@ return [
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Shares A Note Two']]);
 
 		foreach (['Shares A Note One', 'Shares A Note Two'] as $title) {
-			$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = '{$title}'")->fetch()['id'];
+			$songId = $ctx->songId($title);
 			$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'same note']);
 			assertSame('ok', $response['json']['status'], "note on {$title}");
 		}
@@ -408,7 +649,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Rendered Note Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Note Is Rendered']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Note Is Rendered'")->fetch()['id'];
+		$songId = $ctx->songId('Note Is Rendered');
 
 		$ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'kept out of sight']);
 
@@ -425,7 +666,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Rating Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Gets A Rating']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Gets A Rating'")->fetch()['id'];
+		$songId = $ctx->songId('Gets A Rating');
 		$accountId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
 
 		$response = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '8.5']);
@@ -447,7 +688,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Long Note Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Has A Long Note']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Has A Long Note'")->fetch()['id'];
+		$songId = $ctx->songId('Has A Long Note');
 
 		$long = 'this note goes on well past the width of the column and should be chopped off';
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => $long]);
@@ -464,7 +705,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Half Edit Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Half Edited']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Half Edited'")->fetch()['id'];
+		$songId = $ctx->songId('Half Edited');
 
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '5']);
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'keeps this']);
@@ -485,7 +726,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Rerating Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Rated Twice']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Rated Twice'")->fetch()['id'];
+		$songId = $ctx->songId('Rated Twice');
 
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '4']);
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '9']);
@@ -500,7 +741,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Cleared Rating Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Rating Removed']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Rating Removed'")->fetch()['id'];
+		$songId = $ctx->songId('Rating Removed');
 
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '7']);
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'fine']);
@@ -519,7 +760,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Noteonly Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Note But No Score']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Note But No Score'")->fetch()['id'];
+		$songId = $ctx->songId('Note But No Score');
 
 		$response = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'not scored yet']);
 		assertSame('ok', $response['json']['status'], 'status');
@@ -534,7 +775,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Bad Score Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Keeps Its Rating']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Keeps Its Rating'")->fetch()['id'];
+		$songId = $ctx->songId('Keeps Its Rating');
 
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '6']);
 		$response = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => 'banger']);
@@ -551,7 +792,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Bad Rating Field Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bad Rating Field']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Bad Rating Field'")->fetch()['id'];
+		$songId = $ctx->songId('Bad Rating Field');
 
 		foreach (['account_id', 'subjective_note', ''] as $field) {
 			$response = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => $field, 'value' => '1']);
@@ -577,7 +818,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Shared Rating Owner');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Rated By Two']]);
-		$songId = (int)$ctx->db()->query("SELECT id FROM song WHERE title = 'Rated By Two'")->fetch()['id'];
+		$songId = $ctx->songId('Rated By Two');
 
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '3']);
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'mine']);

@@ -199,6 +199,30 @@ class TestContext {
 		]);
 	}
 
+	// titles live in song_alias now, so cases ask for them rather than reading song.title
+	public function songId($title) {
+		$stmt = $this->db()->prepare("SELECT s.id FROM song s JOIN song_alias sa ON sa.song_id = s.id WHERE sa.name = ?");
+		$stmt->execute([$title]);
+		$row = $stmt->fetch();
+
+		return $row ? (int)$row['id'] : 0;
+	}
+
+	public function songTitle($songId) {
+		$stmt = $this->db()->prepare("SELECT name FROM song_alias WHERE song_id = ? AND is_actual = 1");
+		$stmt->execute([$songId]);
+		$row = $stmt->fetch();
+
+		return $row ? $row['name'] : null;
+	}
+
+	public function songCount($title) {
+		$stmt = $this->db()->prepare("SELECT COUNT(*) c FROM song s JOIN song_alias sa ON sa.song_id = s.id WHERE sa.name = ?");
+		$stmt->execute([$title]);
+
+		return (int)$stmt->fetch()['c'];
+	}
+
 	// an artist plus its actual name, ready to attach songs or aliases to
 	public function makeArtist($name) {
 		$response = $this->post('/modules/music/ajax/artistAlias.php', [[
