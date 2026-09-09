@@ -21,7 +21,6 @@ if (!musicAccount($db)) {
 
 $accountId = (int)currentAccountId();
 
-// a column name cannot be a bound parameter, so only these are ever used
 $fields = [
 	'score' => 'score',
 	'note' => 'subjective_note',
@@ -39,7 +38,7 @@ if (!isset($fields[$field])) {
 }
 
 if (!$db->query("SELECT id FROM song WHERE id = ?", [$songId])->fetch()) {
-	echo json_encode(['status' => 'error', 'value' => '', 'message' => t('song.notFound')]);
+	echo json_encode(['status' => 'error', 'value' => '', 'message' => t('song.result.notFound')]);
 	exit;
 }
 
@@ -49,7 +48,7 @@ if ($field === 'score' && $value !== '' && !is_numeric($value)) {
 	echo json_encode([
 		'status' => 'error',
 		'value' => $existing && $existing['score'] !== null ? (float)$existing['score'] : '',
-		'message' => t('rating.badScore'),
+		'message' => t('song.result.badScore'),
 	]);
 	exit;
 }
@@ -63,7 +62,6 @@ $db->query("
 	DO UPDATE SET {$fields[$field]} = excluded.{$fields[$field]}
 ", [$accountId, $songId, $stored]);
 
-// a rating with neither a score nor a note is no rating at all
 $db->query("
 	DELETE FROM account_song
 	WHERE account_id = ? AND song_id = ?

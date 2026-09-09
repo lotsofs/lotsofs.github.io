@@ -50,7 +50,6 @@ return [
 
 		$artistId = $ctx->makeArtist('Message Target');
 
-		// an alias joining an existing artist must not read as if it created one
 		$joined = $ctx->post('/modules/music/ajax/artistAlias.php', [[
 			'artist_id' => $artistId,
 			'og_name' => 'asdfasdf',
@@ -75,7 +74,6 @@ return [
 	'declining to store a spelling still resolves the artist for the song step' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		// rows g, h and i: one creates the artist, one joins and stores, one joins silently
 		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [
 			['artist_id' => 'new', 'group' => 'g', 'og_name' => 'g', 'provided_name' => 'g', 'is_actual' => true],
 			['artist_id' => 'new', 'group' => 'g', 'og_name' => 'h', 'provided_name' => 'h', 'is_actual' => false],
@@ -84,7 +82,6 @@ return [
 
 		$artistId = (int)$response['json'][0]['artist_id'];
 
-		// the whole point: i still reports an artist id, so its song can be added
 		assertSame($artistId, (int)$response['json'][2]['artist_id'], 'i resolved to the same artist');
 		assertSame('duplicate', $response['json'][2]['status'], 'but nothing was created for it');
 
@@ -132,7 +129,6 @@ return [
 	'every result reports the artist name it resolved to' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		// g is created here, so the page's own artist list cannot know its name yet
 		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [
 			['artist_id' => 'new', 'group' => 'gg', 'og_name' => 'gg', 'provided_name' => 'gg', 'is_actual' => true],
 			['artist_id' => 'new', 'group' => 'gg', 'og_name' => 'hh', 'provided_name' => 'hh', 'is_actual' => false],
@@ -149,7 +145,6 @@ return [
 
 		$catalogue = $ctx->get('/music/add-songs')['body'];
 
-		// the icons live in the catalogue now, not in the javascript
 		foreach (['Created artist', 'as an alias of', 'spelling not stored', 'Joins new artist', 'Skipped'] as $phrase) {
 			assertContains($phrase, $catalogue, "the catalogue carries {$phrase}");
 		}

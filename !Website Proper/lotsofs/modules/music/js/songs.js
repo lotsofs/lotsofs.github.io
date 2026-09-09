@@ -5,7 +5,6 @@ const songListHeaders = Array.from(songListTable.querySelectorAll("th[data-sort-
 let songSort = new URLSearchParams(location.search).get("sort") || "id";
 let songDir = new URLSearchParams(location.search).get("dir") === "desc" ? "desc" : "asc";
 
-// mirrors the sql: empty sorts first ascending, numbers numerically, text case insensitively
 function compareCells(a, b, type) {
 	if (a === "" || b === "") {
 		return a === b ? 0 : (a === "" ? -1 : 1);
@@ -22,7 +21,6 @@ function cellText(row, index) {
 	return row.cells[index].textContent.trim();
 }
 
-// the sql breaks ties on id ascending whichever way the column is sorted
 function sortRows(index, type) {
 	const rows = Array.from(songListBody.rows);
 	const flip = songDir === "desc" ? -1 : 1;
@@ -46,7 +44,7 @@ function refreshHeaders() {
 
 		link.textContent = link.dataset.baseLabel + (isActive ? (songDir === "asc" ? " ▲" : " ▼") : "");
 		link.href = "?sort=" + key + "&dir=" + nextDir;
-		link.title = nextDir === "asc" ? t("songs.sortAscending") : t("songs.sortDescending");
+		link.title = nextDir === "asc" ? t("song.list.sortAscending") : t("song.list.sortDescending");
 	});
 }
 
@@ -84,7 +82,6 @@ function setResult(cell, message) {
 	songListTable.classList.toggle("hideResultColumn", !anyShown);
 }
 
-// a clipped cell keeps its text in an inner block, and the tooltip alongside it
 function setCellValue(cell, spec, value) {
 	if (!spec.wrapClass) {
 		cell.textContent = value;

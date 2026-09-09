@@ -33,7 +33,7 @@ $song = $db->query("
 ", [$id])->fetch();
 
 if (!$song) {
-	echo json_encode(['status' => 'error', 'value' => '', 'message' => t('song.notFound')]);
+	echo json_encode(['status' => 'error', 'value' => '', 'message' => t('song.result.notFound')]);
 	exit;
 }
 
@@ -44,11 +44,10 @@ if ($field === 'note') {
 }
 
 if ($value === '') {
-	echo json_encode(['status' => 'error', 'value' => $song['title'] ?? '', 'message' => t('song.required')]);
+	echo json_encode(['status' => 'error', 'value' => $song['title'] ?? '', 'message' => t('song.result.required')]);
 	exit;
 }
 
-// no unique index spans song and song_alias, so the artist wide check lives here
 $clash = $db->query("
 	SELECT s.id
 	FROM song s
@@ -57,11 +56,10 @@ $clash = $db->query("
 ", [$song['artist_id'], $value, $id])->fetch();
 
 if ($clash) {
-	echo json_encode(['status' => 'duplicate', 'value' => $song['title'] ?? '', 'message' => t('song.duplicate')]);
+	echo json_encode(['status' => 'duplicate', 'value' => $song['title'] ?? '', 'message' => t('song.result.duplicate')]);
 	exit;
 }
 
-// renaming means renaming the actual alias, creating it if the song somehow lost it
 if ($song['title'] === null) {
 	$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 1)", [$id, $value]);
 }

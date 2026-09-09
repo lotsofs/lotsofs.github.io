@@ -2,7 +2,6 @@
 
 const ALBUM_ENDPOINT = '/modules/music/ajax/album.php';
 
-// the js derives track positions before posting, so mirror that rule here
 function withPositions($tracks) {
 	$claimed = [];
 	foreach ($tracks as $track) {
@@ -53,7 +52,6 @@ return [
 	'the pasted rows can be joined back to the song results' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		// exactly what the page does: paste, match artists, add songs, then group albums
 		$pasted = [
 			['Artist' => 'Joinable Band', 'Title' => 'Joinable One', 'Album' => 'Joinable Record', 'Track' => 1],
 			['Artist' => 'Joinable Band', 'Title' => 'Joinable Two', 'Album' => 'Joinable Record', 'Track' => null],
@@ -80,7 +78,6 @@ return [
 		}
 		$songResults = $ctx->post('/modules/music/ajax/song.php', $songPayload)['json'];
 
-		// the key the javascript builds, artist id and title joined
 		$songIdByKey = [];
 		foreach ($songResults as $result) {
 			if (!empty($result['song_id'])) {

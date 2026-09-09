@@ -3,13 +3,13 @@
 <?php require(__MODULES__ . '/music/views/partials/nav.php') ?>
 
 <h1>
-	<?= t('songs.heading') ?>
+	<?= t('song.list.heading') ?>
 </h1>
 
 <?php if (!$globalData['songs']): ?>
-	<p><?= t('songs.empty') ?></p>
+	<p><?= t('song.list.empty') ?></p>
 <?php else: ?>
-	<p id="songEditHint"><?= $globalData['isAdmin'] ? t('songs.editHintAdmin') : t('songs.editHint') ?></p>
+	<p id="songEditHint"><?= $globalData['isAdmin'] ? t('song.list.editHintAdmin') : t('song.list.editHint') ?></p>
 	<table id="songListTable" class="hideResultColumn"<?= $globalData['isAdmin'] ? ' data-can-edit="1"' : '' ?>>
 		<thead>
 			<tr>
@@ -24,7 +24,7 @@
 						</th>
 					<?php endif ?>
 				<?php endforeach ?>
-				<th rowspan="2" class="songResultCell"><?= t('songs.column.result') ?></th>
+				<th rowspan="2" class="songResultCell"><?= t('song.column.result') ?></th>
 			</tr>
 			<tr>
 				<?php foreach ($globalData['columns'] as $column): ?>

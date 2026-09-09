@@ -1,4 +1,3 @@
-/* dark form controls and scrollbars without styling each one */
 :root {
 	color-scheme: dark;
 }
@@ -74,7 +73,6 @@ th, td {
 	}
 }
 
-/* headers are links but should still read as headers */
 #songListTable th a {
 	color: inherit;
 	text-decoration: none;
@@ -85,7 +83,6 @@ th, td {
 	box-sizing: border-box;
 }
 
-/* fixed, so the column does not resize as the sort triangle comes and goes */
 #songListTable .songIdCell {
 	width: 2.5em;
 	white-space: nowrap;
@@ -96,7 +93,6 @@ th, td {
 	white-space: nowrap;
 }
 
-/* the definite max-width is what stops the cell growing, so the text can be clipped */
 #songListTable .ratingNoteText {
 	display: block;
 	max-width: 12em;
@@ -113,12 +109,10 @@ th, td {
 	text-align: center;
 }
 
-/* inset shadows rather than borders, so the stripe survives border-collapse */
 #songListTable .songMineCell {
 	background-color: #1a1a1a;
 }
 
-/* the outer edges only, so the score and note cells read as one block */
 #songListTable .songMyScoreCell {
 	box-shadow: inset 2px 0 0 #999999;
 }
@@ -155,12 +149,10 @@ th, td {
 	display: none;
 }
 
-
 #songListTable td.songResultCell {
 	color: #ff8a80;
 }
 
-/* real height rather than a margin, which would collapse away instead of scrolling */
 #albumScrollSpace {
 	height: 75vh;
 }

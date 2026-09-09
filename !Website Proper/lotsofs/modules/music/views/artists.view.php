@@ -3,25 +3,25 @@
 <?php require(__MODULES__ . '/music/views/partials/nav.php') ?>
 
 <h1>
-	<?= t('artistList.heading') ?>
+	<?= t('artist.list.heading') ?>
 </h1>
 
 <?php if (!$globalData['artists']): ?>
-	<p><?= t('artistList.empty') ?></p>
+	<p><?= t('artist.list.empty') ?></p>
 <?php else: ?>
 	<table id="artistListTable">
 		<thead>
 			<tr>
-				<th class="listIdCell"><?= t('artistList.column.id') ?></th>
-				<th class="listNameCell"><?= t('artistList.column.name') ?></th>
-				<th class="listAliasCell"><?= t('artistList.column.aliases') ?></th>
+				<th class="listIdCell"><?= t('artist.column.id') ?></th>
+				<th class="listNameCell"><?= t('artist.column.name') ?></th>
+				<th class="listAliasCell"><?= t('artist.column.aliases') ?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php foreach ($globalData['artists'] as $artist): ?>
 				<tr>
 					<td class="listIdCell"><?= htmlspecialchars($artist['id']) ?></td>
-					<td class="listNameCell"><?= $artist['name'] === null ? t('artistList.noName') : htmlspecialchars($artist['name']) ?></td>
+					<td class="listNameCell"><?= $artist['name'] === null ? t('artist.list.noName') : htmlspecialchars($artist['name']) ?></td>
 					<td class="listAliasCell"><?= htmlspecialchars($artist['aliases'] ?? '') ?></td>
 				</tr>
 			<?php endforeach ?>

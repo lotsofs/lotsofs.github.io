@@ -1,6 +1,5 @@
 <?php
 
-// accounts are separate per module, so each gets its own slice of the session
 function sessionScope($scope = null) {
 	static $active = null;
 
@@ -12,7 +11,6 @@ function sessionScope($scope = null) {
 	return $active;
 }
 
-// start a session, only for pages that need one
 function startSession() {
 	if (session_status() === PHP_SESSION_ACTIVE) {
 		return;
@@ -46,13 +44,11 @@ function logIn($accountId, $accountName) {
 	];
 }
 
-// signs out of this module only, any other module stays signed in
 function logOut() {
 	unset($_SESSION[sessionScope()]);
 	session_regenerate_id(true);
 }
 
-// send a signed out visitor to the login page
 function requireLogin($loginPath = null) {
 	if (!currentAccountId()) {
 		header('Location: ' . ($loginPath ?? '/' . sessionScope() . '/login'), true, 302);
@@ -60,7 +56,6 @@ function requireLogin($loginPath = null) {
 	}
 }
 
-// the json equivalent, for endpoints that are fetched rather than browsed to
 function requireLoginJson($message) {
 	if (!currentAccountId()) {
 		http_response_code(401);

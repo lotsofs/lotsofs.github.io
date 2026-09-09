@@ -6,7 +6,7 @@ requireLogin();
 
 stringCatalogue("music");
 
-$pageTitle = t("page.accounts.title");
+$pageTitle = t("accounts.title");
 
 $db = require __MODULES__ . '/music/db.php';
 
@@ -23,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && checkCsrf($_POST['csrf_token'] ?? n
 	$targetId = ctype_digit($_POST['account_id'] ?? '') ? (int)$_POST['account_id'] : 0;
 	$makeAdmin = ($_POST['action'] ?? '') === 'promote' ? 1 : 0;
 
-	// an account cannot change its own status, so at least one admin always remains
 	if ($targetId !== 0 && $targetId !== (int)currentAccountId()) {
 		$db->query("UPDATE account SET is_admin = ? WHERE id = ?", [$makeAdmin, $targetId]);
 	}

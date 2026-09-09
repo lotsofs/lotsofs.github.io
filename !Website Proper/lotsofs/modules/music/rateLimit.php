@@ -19,7 +19,6 @@ function recordLoginFailure($db, $ip) {
 	$db->query("DELETE FROM login_attempt WHERE attempted_at <= ?", [time() - LOGIN_ATTEMPT_WINDOW]);
 }
 
-// checked first, so a normal login takes no write lock at all
 function clearLoginFailures($db, $ip) {
 	if (!$db->query("SELECT 1 FROM login_attempt WHERE ip = ? LIMIT 1", [$ip])->fetch()) {
 		return;

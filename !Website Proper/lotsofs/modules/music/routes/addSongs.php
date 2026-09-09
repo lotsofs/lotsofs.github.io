@@ -6,7 +6,7 @@ requireLogin();
 
 stringCatalogue("music");
 
-$pageTitle = t("page.addSongs.title");
+$pageTitle = t("addSongs.title");
 
 $db = require __MODULES__ . '/music/db.php';
 

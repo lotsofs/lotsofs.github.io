@@ -2,7 +2,6 @@
 
 require_once __ROOT__ . '/session.php';
 
-// read per request rather than cached in the session, so a promotion takes effect at once
 function musicAccount($db) {
 	static $account = null;
 	static $loaded = false;

@@ -1,7 +1,5 @@
 <?php
 
-// the read only listing pages for artists and albums
-
 return [
 
 	'the artists page lists an artist with its aliases' => function ($ctx) {
@@ -69,7 +67,6 @@ return [
 		assertContains('Album Page Band', $body, 'the attributed artist');
 		assertContains('1977', $body, 'the release year');
 
-		// the pages show the entity, not its tracks
 		assertTrue(strpos($body, 'Album Page Song') === false, 'no track listing');
 	},
 

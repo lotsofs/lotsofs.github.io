@@ -9,7 +9,6 @@ class Database {
         $connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $connection->exec("PRAGMA foreign_keys = ON");
-        // sqlite allows one writer at a time, so wait for it instead of failing outright
         $connection->exec("PRAGMA busy_timeout = 5000");
         $this->pdo = $connection;
     }

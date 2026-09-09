@@ -131,7 +131,6 @@ return [
 
 		assertSame('duplicate', $response['json'][0]['status'], 'the row is resolved, not created');
 
-		// the album step still needs to know which song the row landed on
 		assertSame($songId, (int)$response['json'][0]['song_id'], 'the song id still comes back');
 
 		assertSame(0, $ctx->songId('Kept Clean.ogg'), 'the spelling was not stored');
@@ -222,7 +221,6 @@ return [
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Already Here']]);
 		$existingId = $ctx->songId('Already Here');
 
-		// one of each outcome, all pasted under names that differ from what gets stored
 		$response = $ctx->post(SONG_ENDPOINT, [
 			['artist_id' => $artistId, 'title' => 'Plain New.ogg'],
 			['artist_id' => $artistId, 'title' => 'Custom Source.ogg', 'song_id' => 'custom', 'og_name' => 'Custom Stored'],
@@ -240,7 +238,6 @@ return [
 			assertTrue(($result['message'] ?? '') !== '', "a message for {$result['provided_name']}");
 		}
 
-		// the custom row is the one that used to go unreported, because its stored title differs
 		$custom = $response['json'][1];
 		assertSame('Custom Source.ogg', $custom['provided_name'], 'reported under the pasted name');
 		assertSame('Custom Stored', $custom['title'], 'while the stored title is the typed one');
@@ -299,7 +296,6 @@ return [
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'A Functioning God']]);
 		$songId = $ctx->songId('A Functioning God');
 
-		// the shape of a second paste of the same file listing
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'A Functioning God.ogg', 'song_id' => $songId, 'also_alias_provided_name' => true]]);
 
 		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [[
@@ -695,7 +691,6 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 
-		// the full text is in the tooltip, the visible run is clipped by css
 		assertContains('title="' . $long . '"', $body, 'the whole note is available on hover');
 		assertContains('<span class="ratingNoteText">' . $long . '</span>', $body, 'the text sits in the clipping block');
 	},
@@ -869,7 +864,6 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 
-		// the grouped header breaks document order, so the js reads this rather than counting
 		preg_match_all('/data-sort-key="([^"]+)" data-sort-type="[^"]+" data-sort-index="(\d+)"/', $body, $m, PREG_SET_ORDER);
 
 		$byKey = [];

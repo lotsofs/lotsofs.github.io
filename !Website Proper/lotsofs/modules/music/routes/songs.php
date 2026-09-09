@@ -6,7 +6,7 @@ requireLogin();
 
 stringCatalogue("music");
 
-$pageTitle = t("page.songs.title");
+$pageTitle = t("song.list.title");
 
 $db = require __MODULES__ . '/music/db.php';
 
@@ -20,17 +20,14 @@ $globalData['isAdmin'] = musicIsAdmin($db);
 
 $accountId = (int)currentAccountId();
 
-// every account gets a column, your own first
 $raters = $db->query("
 	SELECT a.id, a.account_name
 	FROM account a
 	ORDER BY a.id = ? DESC, a.account_name COLLATE NOCASE
 ", [$accountId])->fetchAll();
 
-// flip to true to bring the shared per song note back
 $globalData['showSharedNote'] = false;
 
-// a column name cannot be a bound parameter, so only these are ever used
 $sortable = [
 	'id' => 's.id',
 	'artist' => 'artist COLLATE NOCASE',
@@ -77,16 +74,15 @@ $globalData['songs'] = $db->query("
 ")->fetchAll();
 
 $columns = [
-	['key' => 'id', 'type' => 'number', 'class' => 'songIdCell', 'label' => t('songs.column.id')],
-	['key' => 'artist', 'type' => 'text', 'class' => 'songArtistCell', 'label' => t('songs.column.artist')],
-	['key' => 'title', 'type' => 'text', 'class' => 'songTitleCell', 'label' => t('songs.column.title')],
+	['key' => 'id', 'type' => 'number', 'class' => 'songIdCell', 'label' => t('song.column.id')],
+	['key' => 'artist', 'type' => 'text', 'class' => 'songArtistCell', 'label' => t('song.column.artist')],
+	['key' => 'title', 'type' => 'text', 'class' => 'songTitleCell', 'label' => t('song.column.title')],
 ];
 
 if ($globalData['showSharedNote']) {
-	$columns[] = ['key' => 'note', 'type' => 'text', 'class' => 'songNoteCell', 'label' => t('songs.column.note')];
+	$columns[] = ['key' => 'note', 'type' => 'text', 'class' => 'songNoteCell', 'label' => t('song.column.note')];
 }
 
-// every rater gets a score and a note column under one grouped header
 foreach ($raters as $index => $rater) {
 	$id = (int)$rater['id'];
 	$isMine = $id === $accountId;
@@ -99,7 +95,7 @@ foreach ($raters as $index => $rater) {
 		'key' => "score_{$id}",
 		'type' => 'number',
 		'class' => $raters[$index]['scoreClass'],
-		'label' => t('songs.column.ratingScore'),
+		'label' => t('song.column.ratingScore'),
 		'group' => "rater_{$id}",
 		'groupStart' => true,
 		'groupLabel' => $rater['account_name'],
@@ -109,7 +105,7 @@ foreach ($raters as $index => $rater) {
 		'key' => "note_{$id}",
 		'type' => 'text',
 		'class' => $raters[$index]['noteClass'],
-		'label' => t('songs.column.ratingNote'),
+		'label' => t('song.column.ratingNote'),
 		'group' => "rater_{$id}",
 	];
 }
@@ -119,7 +115,6 @@ $globalData['accountId'] = $accountId;
 
 $globalData['columns'] = [];
 foreach ($columns as $index => $column) {
-	// the cell position, since a grouped header no longer sits in document order
 	$column['index'] = $index;
 
 	$isActive = $column['key'] === $sort;
@@ -127,7 +122,7 @@ foreach ($columns as $index => $column) {
 
 	$column['link'] = '?sort=' . $column['key'] . '&dir=' . $nextDir;
 	$column['indicator'] = $isActive ? ($globalData['dir'] === 'asc' ? ' ▲' : ' ▼') : '';
-	$column['title'] = $nextDir === 'asc' ? t('songs.sortAscending') : t('songs.sortDescending');
+	$column['title'] = $nextDir === 'asc' ? t('song.list.sortAscending') : t('song.list.sortDescending');
 
 	$globalData['columns'][] = $column;
 }

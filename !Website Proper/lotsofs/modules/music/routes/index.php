@@ -5,7 +5,7 @@ sessionScope('music');
 
 stringCatalogue("music");
 
-$pageTitle = t("page.music.title");
+$pageTitle = t("music.title");
 
 $db = require __MODULES__ . '/music/db.php';
 

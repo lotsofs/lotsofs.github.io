@@ -1,7 +1,5 @@
 <?php
 
-// this file runs after accounts.php, so first_owner already exists and is the admin
-
 const ADMIN_ENDPOINTS = [
 	'/modules/music/ajax/artistAlias.php',
 	'/modules/music/ajax/song.php',
@@ -124,7 +122,6 @@ return [
 		logInAsViewer($ctx);
 		assertSame(302, $ctx->get('/music/add-songs')['status'], 'blocked before promotion');
 
-		// the session is left untouched, only the row changes
 		$ctx->db()->exec("UPDATE account SET is_admin = 1 WHERE id = {$viewerId}");
 		assertSame(200, $ctx->get('/music/add-songs')['status'], 'allowed straight after promotion');
 
@@ -171,7 +168,6 @@ return [
 		assertSame(302, $response['status'], 'the deleted account is turned away');
 		assertContains('/music/login', $response['location'], 'sent to login');
 
-		// the session is cleared, not merely redirected, so the landing page reads as signed out
 		$landing = $ctx->get('/music')['body'];
 		assertContains('href="/music/register"', $landing, 'the signed out nav is shown');
 		assertTrue(strpos($landing, 'ghost_account') === false, 'the stale name is gone');

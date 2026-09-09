@@ -5,7 +5,7 @@ sessionScope('music');
 
 stringCatalogue("music");
 
-$pageTitle = t("page.register.title");
+$pageTitle = t("register.title");
 
 $db = require __MODULES__ . '/music/db.php';
 
@@ -17,7 +17,6 @@ if (currentAccountId()) {
 	exit;
 }
 
-// the very first account needs no invite, because nobody can hand one out yet
 $accountCount = (int)$db->query("SELECT COUNT(*) c FROM account")->fetch()['c'];
 $globalData['inviteRequired'] = $accountCount > 0;
 $globalData['accountName'] = '';
@@ -66,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			);
 			$accountId = $db->pdo->lastInsertId();
 
-			// the conditional update is what stops one code being redeemed twice at once
 			if ($invite) {
 				$spent = $db->query(
 					"UPDATE invite SET used_at = ?, used_by_account_id = ? WHERE id = ? AND used_at IS NULL",

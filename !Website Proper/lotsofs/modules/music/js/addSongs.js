@@ -17,12 +17,10 @@ const submitSongsButton = document.getElementById("submitSongsButton");
 let pastedRows = [];
 let artistIdByProvidedName = new Map();
 
-// every outcome carries its own icon in the string catalogue
 function showRowResult(row, result) {
 	row.querySelector(".resultCell").textContent = result.message || "";
 }
 
-// a row the server never mentioned is a fault, not a success, so say so rather than leave it blank
 function flagUnreportedRows(container) {
 	container.querySelectorAll("tr").forEach(row => {
 		const cell = row.querySelector(".resultCell");
@@ -32,7 +30,6 @@ function flagUnreportedRows(container) {
 	});
 }
 
-// one artist row per unique pasted name
 function buildArtistTable(data_userInput) {
 	if (!data_userInput) return;
 
@@ -52,7 +49,6 @@ function buildArtistTable(data_userInput) {
 	});
 
 	uniqueArtists.forEach(artist => {
-		// create tablerow
 		const tr_Exists = artistMatchRows.querySelector(`tr[data_artist="${CSS.escape(artist)}"]`);
 		if (tr_Exists) {
 			return;
@@ -60,19 +56,16 @@ function buildArtistTable(data_userInput) {
 		const tr_Element = appendChildToElement(artistMatchRows, "tr");
 		tr_Element.setAttribute('data_artist', artist);
 
-		// create cell with the provided name
 		const nameCell_Element = appendChildToElement(tr_Element, "td", "");
 		nameCell_Element.classList.add("providedNameCell");
 		nameCell_Element.title = artist;
 		const nameText_Element = appendChildToElement(nameCell_Element, "span", artist);
 		nameText_Element.classList.add("providedName");
 
-		// create dropdown cell
 		const selectCell_Element = appendChildToElement(tr_Element, "td", "");
 		selectCell_Element.classList.add("artistSelectCell");
 		const dropDown_Element = appendChildToElement(selectCell_Element, "select");
 
-		// create cell for the selected option's extras
 		const extrasCell_Element = appendChildToElement(tr_Element, "td", "");
 		extrasCell_Element.classList.add("extrasCell");
 		const extras_Element = appendChildToElement(extrasCell_Element, "span");
@@ -85,36 +78,32 @@ function buildArtistTable(data_userInput) {
 		const keepRawAliasCheckBox_Element = appendChildToElement(keepRawAliasLabel_Element, "input");
 		keepRawAliasCheckBox_Element.type = "checkbox";
 		keepRawAliasCheckBox_Element.checked = true;
-		const [aliasLabelBefore, aliasLabelAfter] = t("artists.alsoStoreAlias").split("{name}");
+		const [aliasLabelBefore, aliasLabelAfter] = t("artist.alsoStoreAlias").split("{name}");
 		appendChildToElement(keepRawAliasLabel_Element, "span", aliasLabelBefore);
 		const keepRawAliasName_Element = appendChildToElement(keepRawAliasLabel_Element, "span", `"${artist}"`);
 		keepRawAliasName_Element.classList.add("aliasNameInLabel");
 		appendChildToElement(keepRawAliasLabel_Element, "span", aliasLabelAfter || "");
-		keepRawAliasLabel_Element.title = t("artists.alsoStoreTooltip", { name: artist });
+		keepRawAliasLabel_Element.title = t("artist.alsoStoreTooltip", { name: artist });
 
-		// create result cell
 		const resultCell = appendChildToElement(tr_Element, "td", "");
 		resultCell.classList.add("resultCell");
 
-		// populate dropdown list
-		const optionNew = appendChildToElement(dropDown_Element, "option", t("artists.option.new"));
+		const optionNew = appendChildToElement(dropDown_Element, "option", t("artist.option.new"));
 		optionNew.value = ARTIST_OPTION_NEW;
-		const optionCustom = appendChildToElement(dropDown_Element, "option", t("artists.option.custom"));
+		const optionCustom = appendChildToElement(dropDown_Element, "option", t("artist.option.custom"));
 		optionCustom.value = ARTIST_OPTION_CUSTOM;
-		const optionSkip = appendChildToElement(dropDown_Element, "option", t("artists.option.skip"));
+		const optionSkip = appendChildToElement(dropDown_Element, "option", t("artist.option.skip"));
 		optionSkip.value = ARTIST_OPTION_SKIP;
 		artistOptionLabels.forEach((name, artistId) => {
 			const optionArtist = appendChildToElement(dropDown_Element, "option", name);
 			optionArtist.value = artistId;
 		});
 
-		// preselect the artist this name is already an alias of
 		const matchedAlias = data_artistNames.find(a => a.name == artist);
 		if (matchedAlias) {
 			dropDown_Element.value = matchedAlias.artist_id;
 		}
 
-		// rebuild every row when this one changes
 		dropDown_Element.addEventListener('change', refreshAllRows);
 		keepRawAliasCheckBox_Element.addEventListener('change', refreshAllRows);
 		textInput_Element.addEventListener('input', refreshAllRows);
@@ -123,7 +112,6 @@ function buildArtistTable(data_userInput) {
 	refreshAllRows();
 }
 
-// rebuild pending options, row cells, column visibility and previews
 function refreshAllRows() {
 	refreshPendingArtistOptions();
 	artistMatchRows.querySelectorAll("tr[data_artist]").forEach(row => {
@@ -138,7 +126,6 @@ function refreshAllRows() {
 	refreshRowPreviews();
 }
 
-// offer every row the artists that other rows are about to create
 function refreshPendingArtistOptions() {
 	const rows = Array.from(artistMatchRows.querySelectorAll("tr[data_artist]"));
 
@@ -170,7 +157,6 @@ function refreshPendingArtistOptions() {
 			option.classList.add("pendingArtistOption");
 		});
 
-		// restore the selection
 		select.value = previousValue;
 		if (!select.value) {
 			select.value = ARTIST_OPTION_NEW;
@@ -178,7 +164,6 @@ function refreshPendingArtistOptions() {
 	});
 }
 
-// what the "Name To Store" cell shows for a given option
 function rowExtrasFor(selectValue, providedName) {
 	if (selectValue === ARTIST_OPTION_CUSTOM) {
 		return { typedName: true, rawName: false, keepRawAlias: true };
@@ -189,7 +174,6 @@ function rowExtrasFor(selectValue, providedName) {
 	if (selectValue === ARTIST_OPTION_SKIP) {
 		return { typedName: false, rawName: false, keepRawAlias: false };
 	}
-	// joining an artist another row is creating still lets you decline your own spelling
 	if (selectValue.startsWith(ARTIST_OPTION_PENDING_PREFIX)) {
 		return { typedName: false, rawName: false, keepRawAlias: true };
 	}
@@ -197,7 +181,6 @@ function rowExtrasFor(selectValue, providedName) {
 	return { typedName: false, rawName: false, keepRawAlias: !alreadyAnAlias };
 }
 
-// show or hide a row's "Name To Store" contents
 function syncRowInputToSelection(select, input, keepRawAliasLabel, rawNamePreview, providedName) {
 	const extras = rowExtrasFor(select.value, providedName);
 	input.hidden = !extras.typedName;
@@ -211,38 +194,35 @@ function syncRowInputToSelection(select, input, keepRawAliasLabel, rawNamePrevie
 	}
 }
 
-// fill the Result column with what submitting would do
 function refreshRowPreviews() {
 	artistMatchRows.querySelectorAll("tr[data_artist]:not(.rowHandled)").forEach(row => {
 		row.querySelector(".resultCell").textContent = previewResultFor(row);
 	});
 }
 
-// what this row's selection would do on submit
 function previewResultFor(row) {
 	const providedName = row.getAttribute("data_artist");
 	const selectValue = row.querySelector("select").value;
 
 	if (selectValue === ARTIST_OPTION_SKIP) {
-		return t("artists.preview.skipped");
+		return t("artist.preview.skipped");
 	}
 	if (selectValue === ARTIST_OPTION_NEW || selectValue === ARTIST_OPTION_CUSTOM) {
-		return t("artists.preview.createsNew");
+		return t("artist.preview.createsNew");
 	}
 	if (selectValue.startsWith(ARTIST_OPTION_PENDING_PREFIX)) {
 		return row.querySelector("input[type='checkbox']").checked
-			? t("artists.preview.joinsNew")
-			: t("artists.preview.nothingToStore");
+			? t("artist.preview.joinsNew")
+			: t("artist.preview.nothingToStore");
 	}
 	if (data_artistNames.some(a => a.name == providedName && a.artist_id == selectValue)) {
-		return t("artists.preview.artistFound");
+		return t("artist.preview.found");
 	}
 	return row.querySelector("input[type='checkbox']").checked
-		? t("artists.preview.addsAlias")
-		: t("artists.preview.nothingToStore");
+		? t("artist.preview.addsAlias")
+		: t("artist.preview.nothingToStore");
 }
 
-// hide the "Name To Store" column when no row needs it
 function syncExtrasColumnVisibility() {
 	const rows = artistMatchRows.querySelectorAll("tr[data_artist]");
 	const anyRowNeedsExtras = Array.from(rows).some(row => {
@@ -252,7 +232,6 @@ function syncExtrasColumnVisibility() {
 	artistMatchTable.classList.toggle("hideExtrasColumn", !anyRowNeedsExtras);
 }
 
-// one line per track, artist and title separated by a tab
 function parsePastedTsv() {
 	const text = pasteInput.value;
 	artistMatchRows.innerHTML = "";
@@ -268,7 +247,6 @@ function parsePastedTsv() {
 		if (!artist) {
 			return;
 		}
-		// a track number of 0 is legal, so test for digits rather than truthiness
 		const trackRaw = (fields[3] || "").trim();
 		data.push({
 			Artist: artist,
@@ -282,7 +260,6 @@ function parsePastedTsv() {
 }
 pasteInput.addEventListener('input', parsePastedTsv);
 
-// resolve a row's selection to the artist it targets
 function resolveRowTarget(row, depth = 0) {
 	const select = row.querySelector("select");
 	const value = select.value;
@@ -306,7 +283,6 @@ function resolveRowTarget(row, depth = 0) {
 	return { kind: 'existing', artistId: value };
 }
 
-// send the artist rows, then build the song table
 submitButton.addEventListener('click', () => {
 	const newArtists = [];
 
@@ -330,7 +306,6 @@ submitButton.addEventListener('click', () => {
 			is_actual: createsArtist,
 		};
 
-		// the row is still sent so the song step learns which artist it resolved to
 		if (!createsArtist && !keepRawAliasCheckbox.checked) {
 			payload.store_name = false;
 		}
@@ -342,7 +317,6 @@ submitButton.addEventListener('click', () => {
 			payload.group = target.groupKey;
 		}
 
-		// also keep the pasted name as an alias
 		if (select.value === ARTIST_OPTION_CUSTOM && keepRawAliasCheckbox.checked) {
 			payload.also_alias_provided_name = true;
 		}
@@ -392,7 +366,6 @@ function hideSongTable() {
 	hideAlbumTable();
 }
 
-// one row per unique title of every artist that came back with an id
 const SONG_OPTION_SKIP = "skip";
 const SONG_OPTION_NEW = "new";
 const SONG_OPTION_CUSTOM = "custom";
@@ -410,7 +383,6 @@ function songExtrasFor(selectValue, providedName, artistId) {
 	if (selectValue === SONG_OPTION_SKIP) {
 		return { typedName: false, rawName: false, keepRawAlias: false };
 	}
-	// an existing song is picked to hang the pasted spelling off it, unless it already has it
 	const alreadyAnAlias = (songsByArtistId.get(artistId) || []).some(song => song.name === providedName && song.id == selectValue);
 	return { typedName: false, rawName: false, keepRawAlias: !alreadyAnAlias };
 }
@@ -477,7 +449,7 @@ function buildSongTable(artistResults) {
 		const keepBox = appendChildToElement(keepLabel, "input");
 		keepBox.type = "checkbox";
 		keepBox.checked = true;
-		const [labelBefore, labelAfter] = t("artists.alsoStoreAlias").split("{name}");
+		const [labelBefore, labelAfter] = t("artist.alsoStoreAlias").split("{name}");
 		appendChildToElement(keepLabel, "span", labelBefore);
 		appendChildToElement(keepLabel, "span", `"${item.Title}"`).classList.add("aliasNameInLabel");
 		appendChildToElement(keepLabel, "span", labelAfter || "");
@@ -485,11 +457,10 @@ function buildSongTable(artistResults) {
 		const resultCell = appendChildToElement(row, "td", "");
 		resultCell.classList.add("resultCell");
 
-		appendChildToElement(select, "option", t("artists.option.new")).value = SONG_OPTION_NEW;
-		appendChildToElement(select, "option", t("artists.option.custom")).value = SONG_OPTION_CUSTOM;
-		appendChildToElement(select, "option", t("artists.option.skip")).value = SONG_OPTION_SKIP;
+		appendChildToElement(select, "option", t("artist.option.new")).value = SONG_OPTION_NEW;
+		appendChildToElement(select, "option", t("artist.option.custom")).value = SONG_OPTION_CUSTOM;
+		appendChildToElement(select, "option", t("artist.option.skip")).value = SONG_OPTION_SKIP;
 
-		// only this row's artist, since a same titled song by someone else is a cover
 		const aliases = songsByArtistId.get(artistId) || [];
 
 		const songLabels = new Map();
@@ -502,7 +473,6 @@ function buildSongTable(artistResults) {
 			appendChildToElement(select, "option", name).value = songId;
 		});
 
-		// preselect the song this exact spelling is already filed under
 		const matchedAlias = aliases.find(song => song.name === item.Title);
 		if (matchedAlias) {
 			select.value = matchedAlias.id;
@@ -517,9 +487,7 @@ function buildSongTable(artistResults) {
 	submitSongsButton.hidden = !hasSongs;
 }
 
-// display name for an artist
 function artistDisplayName(artistId, providedName) {
-	// what the submit just resolved to, which the page's own list cannot know about
 	if (artistNameById.has(artistId)) {
 		return artistNameById.get(artistId);
 	}
@@ -527,7 +495,6 @@ function artistDisplayName(artistId, providedName) {
 	return known ? known.name : providedName;
 }
 
-// send the song rows
 submitSongsButton.addEventListener('click', () => {
 	const songs = [];
 	songRows.querySelectorAll("tr:not(.rowHandled)").forEach(row => {
@@ -565,7 +532,6 @@ submitSongsButton.addEventListener('click', () => {
 		statusMessage.innerHTML = "";
 		results.forEach(result => {
 			songRows.querySelectorAll("tr").forEach(row => {
-				// the pasted spelling, since a custom name means the stored title differs
 				if (row.getAttribute("data_artist_id") != result.artist_id || row.getAttribute("data_title") !== result.provided_name) {
 					return;
 				}
@@ -576,7 +542,6 @@ submitSongsButton.addEventListener('click', () => {
 			});
 		});
 		flagUnreportedRows(songRows);
-		// the songs are already saved, so a fault here must not read as a failed submit
 		try {
 			buildAlbumTable(results);
 		}
@@ -610,7 +575,6 @@ function hideAlbumTable() {
 	albumScrollSpace.hidden = true;
 }
 
-// an explicit number wins, a blank takes the lowest position that album has not claimed
 function assignTrackPositions(tracks) {
 	const claimed = new Set();
 	tracks.forEach(track => {
@@ -633,7 +597,6 @@ function assignTrackPositions(tracks) {
 	});
 }
 
-// one row per unique album name, so a compilation can gather several artists
 function collectAlbums(songResults) {
 	const songIdByKey = new Map();
 	songResults.forEach(result => {
@@ -730,7 +693,7 @@ function buildAlbumTable(songResults) {
 		const keepBox = appendChildToElement(keepLabel, "input");
 		keepBox.type = "checkbox";
 		keepBox.checked = true;
-		const [labelBefore, labelAfter] = t("artists.alsoStoreAlias").split("{name}");
+		const [labelBefore, labelAfter] = t("artist.alsoStoreAlias").split("{name}");
 		appendChildToElement(keepLabel, "span", labelBefore);
 		appendChildToElement(keepLabel, "span", `"${albumName}"`).classList.add("aliasNameInLabel");
 		appendChildToElement(keepLabel, "span", labelAfter || "");
@@ -746,8 +709,8 @@ function buildAlbumTable(songResults) {
 
 		const positions = tracks.map(track => track.position).sort((a, b) => a - b);
 		const tracksCell = appendChildToElement(row, "td", positions.length === 1
-			? t("albums.trackSummaryOne", { first: positions[0] })
-			: t("albums.trackSummary", { count: positions.length, first: positions[0], last: positions[positions.length - 1] }));
+			? t("album.trackSummaryOne", { first: positions[0] })
+			: t("album.trackSummary", { count: positions.length, first: positions[0], last: positions[positions.length - 1] }));
 		tracksCell.classList.add("albumTracksCell");
 		tracksCell.title = tracks
 			.slice()
@@ -757,11 +720,11 @@ function buildAlbumTable(songResults) {
 
 		appendChildToElement(row, "td", "").classList.add("resultCell");
 
-		const optionNew = appendChildToElement(select, "option", t("artists.option.new"));
+		const optionNew = appendChildToElement(select, "option", t("artist.option.new"));
 		optionNew.value = ALBUM_OPTION_NEW;
-		const optionCustom = appendChildToElement(select, "option", t("artists.option.custom"));
+		const optionCustom = appendChildToElement(select, "option", t("artist.option.custom"));
 		optionCustom.value = ALBUM_OPTION_CUSTOM;
-		const optionSkip = appendChildToElement(select, "option", t("artists.option.skip"));
+		const optionSkip = appendChildToElement(select, "option", t("artist.option.skip"));
 		optionSkip.value = ALBUM_OPTION_SKIP;
 		albumOptionLabels.forEach((label, albumId) => {
 			appendChildToElement(select, "option", label).value = albumId;
@@ -772,7 +735,6 @@ function buildAlbumTable(songResults) {
 			select.value = matchedAlias.album_id;
 		}
 
-		// the artist carrying the most tracks is the likeliest attribution
 		const counts = new Map();
 		tracks.forEach(track => counts.set(track.artistId, (counts.get(track.artistId) || 0) + 1));
 		Array.from(counts.entries())
@@ -780,7 +742,7 @@ function buildAlbumTable(songResults) {
 			.forEach(entry => {
 				appendChildToElement(artistSelect, "option", artistDisplayName(entry[0], providedNameByArtistId.get(entry[0]) || "")).value = entry[0];
 			});
-		appendChildToElement(artistSelect, "option", t("albums.option.none")).value = "";
+		appendChildToElement(artistSelect, "option", t("album.option.none")).value = "";
 
 		select.addEventListener("change", () => syncAlbumRow(row));
 		syncAlbumRow(row);

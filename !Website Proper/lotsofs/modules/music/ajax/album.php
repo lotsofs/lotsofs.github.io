@@ -28,12 +28,12 @@ foreach ($data as $datum) {
 	$isActual = !empty($datum['is_actual']);
 
 	if ($rawId === null || $rawId === '') {
-		$results[] = ['provided_name' => $providedName, 'album_id' => null, 'status' => 'skipped', 'message' => t('album.skipped')];
+		$results[] = ['provided_name' => $providedName, 'album_id' => null, 'status' => 'skipped', 'message' => t('album.result.skipped')];
 		continue;
 	}
 
 	if ($aliasName === '') {
-		$results[] = ['provided_name' => $providedName, 'album_id' => null, 'status' => 'error', 'message' => t('album.nameRequired')];
+		$results[] = ['provided_name' => $providedName, 'album_id' => null, 'status' => 'error', 'message' => t('album.result.nameRequired')];
 		continue;
 	}
 
@@ -55,10 +55,10 @@ foreach ($data as $datum) {
 		if ($isActual && !$existing['is_actual']) {
 			$db->query("UPDATE album_alias SET is_actual = 0 WHERE album_id = ? AND id != ?", [$id, $existing['id']]);
 			$db->query("UPDATE album_alias SET is_actual = 1 WHERE id = ?", [$existing['id']]);
-			$message = t('album.markedActual', ['name' => $aliasName]);
+			$message = t('album.result.markedActual', ['name' => $aliasName]);
 		}
 		else {
-			$message = t('album.duplicate');
+			$message = t('album.result.duplicate');
 		}
 	}
 	else {
@@ -66,18 +66,16 @@ foreach ($data as $datum) {
 			$db->query("UPDATE album_alias SET is_actual = 0 WHERE album_id = ?", [$id]);
 		}
 		$db->query("INSERT INTO album_alias (album_id, name, is_actual) VALUES (?, ?, ?)", [$id, $aliasName, $isActual ? 1 : 0]);
-		$message = $isActual ? t('album.addedActual', ['name' => $aliasName]) : t('album.added', ['name' => $aliasName]);
+		$message = $isActual ? t('album.result.addedActual', ['name' => $aliasName]) : t('album.result.added', ['name' => $aliasName]);
 	}
 
-	// also store the pasted spelling as an alias
 	if (!empty($datum['also_alias_provided_name']) && $providedName !== '' && $providedName !== $aliasName) {
 		if (!$db->query("SELECT id FROM album_alias WHERE album_id = ? AND name = ?", [$id, $providedName])->fetch()) {
 			$db->query("INSERT INTO album_alias (album_id, name, is_actual) VALUES (?, ?, 0)", [$id, $providedName]);
-			$message .= t('album.alsoAliased', ['name' => $providedName]);
+			$message .= t('album.result.alsoAliased', ['name' => $providedName]);
 		}
 	}
 
-	// resubmitting the same paste must not pile up duplicate tracks
 	$added = 0;
 	foreach ($datum['tracks'] ?? [] as $track) {
 		$songId = isset($track['song_id']) && ctype_digit((string)$track['song_id']) ? (int)$track['song_id'] : 0;
@@ -100,7 +98,7 @@ foreach ($data as $datum) {
 		'provided_name' => $providedName,
 		'album_id' => $id,
 		'status' => 'ok',
-		'message' => $message . t('album.trackCount', ['count' => $added]),
+		'message' => $message . t('album.result.trackCount', ['count' => $added]),
 	];
 }
 

@@ -1,0 +1,50 @@
+<?php
+
+return [
+
+	'register.title' => 'Register',
+	'register.heading' => 'Register',
+	'register.firstAccount' => 'No accounts exist yet, so this first one needs no invite code.',
+	'register.field.inviteCode' => 'Invite code',
+	'register.field.accountName' => 'Account name',
+	'register.field.password' => 'Password',
+	'register.field.passwordConfirm' => 'Repeat password',
+	'register.submit' => 'Register',
+	'register.error.expired' => 'That form expired, please try again.',
+	'register.error.missing' => 'Fill in an account name and a password.',
+	'register.error.passwordShort' => 'Passwords need at least 8 characters.',
+	'register.error.passwordMismatch' => 'The two passwords do not match.',
+	'register.error.nameTaken' => 'That account name is taken.',
+	'register.error.badInvite' => 'That invite code is not valid or has already been used.',
+
+	'login.title' => 'Log In',
+	'login.heading' => 'Log In',
+	'login.field.accountName' => 'Account name',
+	'login.field.password' => 'Password',
+	'login.submit' => 'Log In',
+	'login.error.expired' => 'That form expired, please try again.',
+	'login.error.rejected' => 'That account name and password do not match.',
+	'login.error.tooMany' => 'Too many failed attempts. Try again in a few minutes.',
+
+	'invites.title' => 'Invites',
+	'invites.heading' => 'Invites',
+	'invites.create' => 'Create an invite code',
+	'invites.empty' => 'No invite codes yet.',
+	'invites.column.code' => 'Code',
+	'invites.column.created' => 'Created',
+	'invites.column.used' => 'Used',
+	'invites.unused' => 'Unused',
+	'invites.usedBy' => 'Used by {name}',
+
+	'accounts.title' => 'Accounts',
+	'accounts.heading' => 'Accounts',
+	'accounts.column.name' => 'Account',
+	'accounts.column.admin' => 'Admin',
+	'accounts.column.action' => 'Action',
+	'accounts.isAdmin' => 'Yes',
+	'accounts.notAdmin' => 'No',
+	'accounts.promote' => 'Make admin',
+	'accounts.demote' => 'Remove admin',
+	'accounts.self' => 'You',
+
+];

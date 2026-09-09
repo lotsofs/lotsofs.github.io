@@ -7,7 +7,6 @@ $dbIsNew = !file_exists($dbPath);
 
 $db = new Database($dbPath);
 
-// restrict a newly created database file
 if ($dbIsNew) {
 	@chmod($dbPath, 0640);
 }

@@ -1,6 +1,5 @@
 <?php
 
-// run migrations this database hasn't had yet
 function runMusicMigrations($db) {
 	$db->execSQL('PRAGMA foreign_keys = ON');
 	$db->execSQL('CREATE TABLE IF NOT EXISTS schema_migrations (filename TEXT PRIMARY KEY, applied_at TEXT NOT NULL)');
@@ -16,7 +15,6 @@ function runMusicMigrations($db) {
 			continue;
 		}
 
-		// apply each migration in one transaction
 		$db->pdo->beginTransaction();
 		try {
 			$db->execSQL(file_get_contents($file));

@@ -1,7 +1,5 @@
 <?php
 
-// this file runs before the others, so the first case still sees an empty account table
-
 function registerAccount($ctx, $fields) {
 	$fields['csrf_token'] = $ctx->csrfTokenFrom('/music/register');
 	return $ctx->postForm('/music/register', $fields);
@@ -188,7 +186,6 @@ return [
 		$blocked = logInAs($ctx, 'first_owner', 'wrong guess');
 		assertContains('Too many', t_testMessage($blocked['body']), 'the sixth attempt is rate limited');
 
-		// the whole point: the block holds even against the right password
 		$correct = logInAs($ctx, 'first_owner', 'correct horse');
 		assertSame(200, $correct['status'], 'no redirect, so no login');
 		assertContains('Too many', t_testMessage($correct['body']), 'the correct password is refused too');
@@ -206,7 +203,6 @@ return [
 		}
 		assertContains('Too many', t_testMessage(logInAs($ctx, 'first_owner', 'correct horse')['body']), 'blocked to begin with');
 
-		// ageing the rows beats sleeping for fifteen minutes
 		$ctx->db()->exec("UPDATE login_attempt SET attempted_at = attempted_at - 1000");
 
 		$response = logInAs($ctx, 'first_owner', 'correct horse');

@@ -23,7 +23,6 @@ register_shutdown_function(function () use (&$server, $tempRoot, $serverLog) {
 	removeDir($tempRoot);
 	@unlink($tempRoot . '.cookies');
 
-	// the log stays locked for a moment after the server goes away
 	for ($i = 0; $i < 20 && file_exists($serverLog); $i++) {
 		@unlink($serverLog);
 		usleep(50000);
@@ -34,7 +33,6 @@ echo "copying project to a scratch copy\n";
 copyProject($projectRoot, $tempRoot);
 
 echo "serving scratch copy on port {$port}\n";
-// bypass_shell so the handle is the server itself and not a cmd.exe wrapper
 $server = proc_open(
 	escapeshellarg(PHP_BINARY) . " -S localhost:{$port} -t " . escapeshellarg($tempRoot),
 	[1 => ['file', $serverLog, 'a'], 2 => ['file', $serverLog, 'a']],
@@ -50,7 +48,6 @@ if (!waitForServer($port)) {
 
 $ctx = new TestContext($port, $tempRoot);
 
-// the app applies migrations when a music page is served, and this one needs no login
 $ctx->get('/music/login');
 
 $passed = 0;
@@ -76,7 +73,6 @@ foreach (glob(__DIR__ . '/cases/*.php') as $caseFile) {
 echo "\n{$passed} passed, {$failed} failed\n";
 exit($failed === 0 ? 0 : 1);
 
-
 class TestContext {
 	private $port;
 	private $tempRoot;
@@ -89,7 +85,6 @@ class TestContext {
 		$this->cookieJar = $tempRoot . '.cookies';
 	}
 
-	// cookies persist across requests, so a case can log in and stay logged in
 	public function newSession() {
 		@unlink($this->cookieJar);
 		$this->csrfToken = null;
@@ -107,12 +102,10 @@ class TestContext {
 		return $this->request('POST', $path, json_encode($payload), false, 'application/json', false);
 	}
 
-	// a traditional html form submission rather than a json body
 	public function postForm($path, $fields, $followRedirects = false) {
 		return $this->request('POST', $path, http_build_query($fields), $followRedirects, 'application/x-www-form-urlencoded');
 	}
 
-	// the hidden csrf field of whatever form is on the given page
 	public function csrfTokenFrom($path) {
 		$body = $this->get($path)['body'];
 		if (preg_match('/name="csrf_token" value="([^"]+)"/', $body, $m)) {
@@ -121,7 +114,6 @@ class TestContext {
 		return null;
 	}
 
-	// the token the page hands to javascript, kept for the life of the session
 	private function csrfHeaderToken() {
 		if ($this->csrfToken === null) {
 			$body = $this->request('GET', '/music', null, false)['body'];
@@ -178,7 +170,6 @@ class TestContext {
 		return $pdo;
 	}
 
-	// starts a fresh session, because logging in is ignored while another account holds one
 	public function ensureLoggedIn($name = 'test_runner', $password = 'test password', $isAdmin = true) {
 		$this->newSession();
 
@@ -199,7 +190,6 @@ class TestContext {
 		]);
 	}
 
-	// titles live in song_alias now, so cases ask for them rather than reading song.title
 	public function songId($title) {
 		$stmt = $this->db()->prepare("SELECT s.id FROM song s JOIN song_alias sa ON sa.song_id = s.id WHERE sa.name = ?");
 		$stmt->execute([$title]);
@@ -223,7 +213,6 @@ class TestContext {
 		return (int)$stmt->fetch()['c'];
 	}
 
-	// an artist plus its actual name, ready to attach songs or aliases to
 	public function makeArtist($name) {
 		$response = $this->post('/modules/music/ajax/artistAlias.php', [[
 			'artist_id' => 'new',
@@ -235,7 +224,6 @@ class TestContext {
 		return $response['json'][0]['artist_id'];
 	}
 }
-
 
 function assertSame($expected, $actual, $what) {
 	if ($expected !== $actual) {
@@ -254,7 +242,6 @@ function assertContains($needle, $haystack, $what) {
 		throw new Exception("{$what}: " . var_export($needle, true) . " not found in " . var_export(substr((string)$haystack, 0, 200), true));
 	}
 }
-
 
 function findFreePort() {
 	$socket = stream_socket_server('tcp://localhost:0', $errno, $errstr);

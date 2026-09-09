@@ -1,7 +1,5 @@
 <?php
 
-// shared setup for JSON POST endpoints
-
 set_include_path($_SERVER['DOCUMENT_ROOT']);
 
 require 'util.php';
@@ -11,7 +9,6 @@ $config = require('config.php');
 
 header('Content-Type: application/json');
 
-// return failures as json
 set_exception_handler(function ($e) {
 	http_response_code(500);
 	error_log((string)$e);
