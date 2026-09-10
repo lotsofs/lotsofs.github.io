@@ -5,6 +5,70 @@ const songListHeaders = Array.from(songListTable.querySelectorAll("th[data-sort-
 let songSort = new URLSearchParams(location.search).get("sort") || "id";
 let songDir = new URLSearchParams(location.search).get("dir") === "desc" ? "desc" : "asc";
 
+const songArtistSelect = document.getElementById("filterArtist");
+const songAlbumSelect = document.getElementById("filterAlbum");
+const songNoMatch = document.getElementById("songNoMatch");
+const songAlbumData = JSON.parse(document.getElementById("songAlbumData").textContent);
+
+function songQuery(sort, dir) {
+	const params = new URLSearchParams();
+	params.set("sort", sort);
+	params.set("dir", dir);
+	if (songArtistSelect.value) {
+		params.set("artist", songArtistSelect.value);
+	}
+	if (songAlbumSelect.value) {
+		params.set("album", songAlbumSelect.value);
+	}
+	return "?" + params.toString();
+}
+
+function applySongFilter() {
+	const artist = songArtistSelect.value;
+	const album = songAlbumSelect.value;
+	let visible = 0;
+
+	Array.from(songListBody.rows).forEach(row => {
+		let show = true;
+		if (album) {
+			show = (row.dataset.albumIds || "").split(",").includes(album);
+		}
+		else if (artist) {
+			show = row.dataset.artistId === artist;
+		}
+		row.hidden = !show;
+		if (show) {
+			visible++;
+		}
+	});
+
+	songNoMatch.hidden = visible > 0;
+}
+
+function repopulateSongAlbums() {
+	const previous = songAlbumSelect.value;
+	songAlbumSelect.length = 1;
+
+	songAlbumData
+		.filter(album => songArtistSelect.value
+			? String(album.artist_id) === songArtistSelect.value
+			: album.artist_id === null)
+		.forEach(album => songAlbumSelect.add(new Option(album.name, album.id)));
+
+	songAlbumSelect.value = Array.from(songAlbumSelect.options).some(option => option.value === previous) ? previous : "";
+}
+
+songArtistSelect.addEventListener("change", () => {
+	repopulateSongAlbums();
+	applySongFilter();
+	history.replaceState(null, "", songQuery(songSort, songDir));
+});
+
+songAlbumSelect.addEventListener("change", () => {
+	applySongFilter();
+	history.replaceState(null, "", songQuery(songSort, songDir));
+});
+
 function compareCells(a, b, type) {
 	if (a === "" || b === "") {
 		return a === b ? 0 : (a === "" ? -1 : 1);
@@ -43,7 +107,7 @@ function refreshHeaders() {
 		const nextDir = isActive && songDir === "asc" ? "desc" : "asc";
 
 		link.textContent = link.dataset.baseLabel + (isActive ? (songDir === "asc" ? " ▲" : " ▼") : "");
-		link.href = "?sort=" + key + "&dir=" + nextDir;
+		link.href = songQuery(key, nextDir);
 		link.title = nextDir === "asc" ? t("song.list.sortAscending") : t("song.list.sortDescending");
 	});
 }
@@ -61,7 +125,7 @@ songListHeaders.forEach(header => {
 
 		sortRows(Number(header.dataset.sortIndex), header.dataset.sortType);
 		refreshHeaders();
-		history.replaceState(null, "", "?sort=" + songSort + "&dir=" + songDir);
+		history.replaceState(null, "", songQuery(songSort, songDir));
 	});
 });
 

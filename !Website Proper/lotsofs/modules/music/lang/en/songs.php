@@ -33,4 +33,12 @@ return [
 	'song.list.editHint' => 'Click your own score or note cell to edit it.',
 	'song.list.editHintAdmin' => 'Click your own score or note cell to edit it. Double-click a title to change it for everyone.',
 
+	'song.list.filterHeading' => 'Filter',
+	'song.list.filterArtist' => 'Artist',
+	'song.list.filterAlbum' => 'Album',
+	'song.list.filterAllArtists' => 'All artists',
+	'song.list.filterAnyAlbum' => 'Any album',
+	'song.list.filterApply' => 'Apply',
+	'song.list.noMatch' => 'No songs match this filter.',
+
 ];

@@ -15,7 +15,6 @@ require_once __MODULES__ . '/music/auth.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 const SONG_ID_NEW = 'new';
-const SONG_ID_CUSTOM = 'custom';
 const SONG_ID_SKIP = 'skip';
 
 $results = [];
@@ -42,7 +41,7 @@ foreach ($data as $datum) {
 	$artistRow = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC LIMIT 1", [$artistId])->fetch();
 	$artistName = $artistRow ? $artistRow['name'] : $artistId;
 
-	if ($rawId !== SONG_ID_NEW && $rawId !== SONG_ID_CUSTOM) {
+	if ($rawId !== SONG_ID_NEW) {
 		$songId = (int)$rawId;
 
 		if (!$db->query("SELECT id FROM song WHERE id = ? AND artist_id = ?", [$songId, $artistId])->fetch()) {

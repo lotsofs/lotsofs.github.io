@@ -58,9 +58,50 @@ $dir = ($_GET['dir'] ?? '') === 'desc' ? 'DESC' : 'ASC';
 $globalData['sort'] = $sort;
 $globalData['dir'] = strtolower($dir);
 
+$rawArtist = filter_input(INPUT_GET, 'artist', FILTER_VALIDATE_INT);
+$rawAlbum = filter_input(INPUT_GET, 'album', FILTER_VALIDATE_INT);
+
+$artistOptions = $db->query("
+	SELECT a.id,
+		(SELECT name FROM artist_alias WHERE artist_id = a.id ORDER BY is_actual DESC LIMIT 1) AS name
+	FROM artist a
+	ORDER BY name COLLATE NOCASE, a.id
+")->fetchAll();
+
+$filterArtist = null;
+foreach ($artistOptions as $option) {
+	if ((int)$option['id'] === $rawArtist) {
+		$filterArtist = $rawArtist;
+	}
+}
+
+$albumOptions = $db->query("
+	SELECT al.id, al.artist_id,
+		(SELECT name FROM album_alias WHERE album_id = al.id ORDER BY is_actual DESC LIMIT 1) AS name
+	FROM album al
+	ORDER BY name COLLATE NOCASE, al.id
+")->fetchAll();
+
+$filterAlbum = null;
+foreach ($albumOptions as $option) {
+	$inScope = $filterArtist !== null
+		? (int)$option['artist_id'] === $filterArtist
+		: $option['artist_id'] === null;
+	if ((int)$option['id'] === $rawAlbum && $inScope) {
+		$filterAlbum = $rawAlbum;
+	}
+}
+
+$globalData['artistOptions'] = $artistOptions;
+$globalData['albumOptions'] = $albumOptions;
+$globalData['filterArtist'] = $filterArtist;
+$globalData['filterAlbum'] = $filterAlbum;
+
 $globalData['songs'] = $db->query("
 	SELECT
 		s.id,
+		s.artist_id,
+		(SELECT group_concat(album_id) FROM album_track WHERE song_id = s.id) AS album_ids,
 		st.name AS title,
 		s.objective_note,
 		(SELECT name FROM artist_alias
@@ -113,6 +154,9 @@ foreach ($raters as $index => $rater) {
 $globalData['raters'] = $raters;
 $globalData['accountId'] = $accountId;
 
+$filterQuery = ($filterArtist !== null ? '&artist=' . $filterArtist : '')
+	. ($filterAlbum !== null ? '&album=' . $filterAlbum : '');
+
 $globalData['columns'] = [];
 foreach ($columns as $index => $column) {
 	$column['index'] = $index;
@@ -120,7 +164,7 @@ foreach ($columns as $index => $column) {
 	$isActive = $column['key'] === $sort;
 	$nextDir = $isActive && $globalData['dir'] === 'asc' ? 'desc' : 'asc';
 
-	$column['link'] = '?sort=' . $column['key'] . '&dir=' . $nextDir;
+	$column['link'] = '?sort=' . $column['key'] . '&dir=' . $nextDir . $filterQuery;
 	$column['indicator'] = $isActive ? ($globalData['dir'] === 'asc' ? ' ▲' : ' ▼') : '';
 	$column['title'] = $nextDir === 'asc' ? t('song.list.sortAscending') : t('song.list.sortDescending');
 

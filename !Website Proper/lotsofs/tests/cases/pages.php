@@ -12,6 +12,7 @@ return [
 			'/ktane' => 302,
 			'/music/add-songs' => 200,
 			'/music/songs' => 200,
+			'/music/songs?artist=1&album=1' => 200,
 			'/music/artists' => 200,
 			'/music/albums' => 200,
 			'/music/accounts' => 200,

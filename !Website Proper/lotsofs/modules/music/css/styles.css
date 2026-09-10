@@ -54,10 +54,9 @@ th, td {
 }
 
 #pasteInput {
-	width: 100%;
-	max-width: 60em;
+	width: 80%;
 	min-height: 14em;
-	resize: vertical;
+	resize: both;
 }
 
 #artistListTable .listAliasCell,
@@ -71,6 +70,33 @@ th, td {
 	.songTitleCell {
 		width: 32em;
 	}
+}
+
+.songLayout {
+	display: flex;
+	gap: 1.5em;
+	align-items: flex-start;
+}
+
+.songFilters {
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4em;
+
+	label {
+		min-width: 0;
+	}
+
+	select {
+		width: 14em;
+	}
+}
+
+.songListArea {
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow-x: auto;
 }
 
 #songListTable th a {

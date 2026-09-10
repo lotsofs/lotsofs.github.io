@@ -499,12 +499,13 @@ submitSongsButton.addEventListener('click', () => {
 	const songs = [];
 	songRows.querySelectorAll("tr:not(.rowHandled)").forEach(row => {
 		const select = row.querySelector(".songSelectCell select");
+		const isNew = select.value === SONG_OPTION_NEW || select.value === SONG_OPTION_CUSTOM;
 		const typedName = row.querySelector(".extrasCell input[type='text']").value.trim();
 
 		songs.push({
 			artist_id: row.getAttribute("data_artist_id"),
 			title: row.getAttribute("data_title"),
-			song_id: select.value,
+			song_id: isNew ? SONG_OPTION_NEW : select.value,
 			og_name: select.value === SONG_OPTION_CUSTOM ? typedName : "",
 			also_alias_provided_name: row.querySelector(".extrasCell input[type='checkbox']").checked,
 		});
@@ -768,7 +769,7 @@ submitAlbumsButton.addEventListener('click', () => {
 
 		albums.push({
 			provided_name: row.getAttribute("data_album"),
-			album_id: select.value,
+			album_id: isNew ? ALBUM_OPTION_NEW : select.value,
 			og_name: select.value === ALBUM_OPTION_CUSTOM ? typedName : "",
 			is_actual: isNew,
 			also_alias_provided_name: row.querySelector(".extrasCell input[type='checkbox']").checked,

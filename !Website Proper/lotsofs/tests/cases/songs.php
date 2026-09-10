@@ -4,6 +4,30 @@ const SONG_ENDPOINT = '/modules/music/ajax/song.php';
 const EDIT_ENDPOINT = '/modules/music/ajax/songEdit.php';
 const RATING_ENDPOINT = '/modules/music/ajax/songRating.php';
 
+function songsMakeAlbum($ctx, $name, $artistId, $tracks) {
+	$response = $ctx->post('/modules/music/ajax/album.php', [[
+		'provided_name' => $name,
+		'album_id' => 'new',
+		'og_name' => $name,
+		'is_actual' => true,
+		'artist_id' => $artistId,
+		'release_year' => '',
+		'tracks' => $tracks,
+	]]);
+	return (int)$response['json'][0]['album_id'];
+}
+
+function songsVisibleTitles($body) {
+	preg_match_all('/<tr data-artist-id="\d+" data-album-ids="[^"]*"( hidden)?>.*?<td class="songTitleCell">([^<]*)<\/td>/s', $body, $rows, PREG_SET_ORDER);
+	$visible = [];
+	foreach ($rows as $row) {
+		if ($row[1] === '') {
+			$visible[] = $row[2];
+		}
+	}
+	return $visible;
+}
+
 return [
 
 	'a song is stored against its artist' => function ($ctx) {
@@ -201,7 +225,7 @@ return [
 		$response = $ctx->post(SONG_ENDPOINT, [[
 			'artist_id' => $artistId,
 			'title' => 'bohemian rhapsody (remaster)',
-			'song_id' => 'custom',
+			'song_id' => 'new',
 			'og_name' => 'Bohemian Rhapsody',
 			'also_alias_provided_name' => true,
 		]]);
@@ -223,7 +247,7 @@ return [
 
 		$response = $ctx->post(SONG_ENDPOINT, [
 			['artist_id' => $artistId, 'title' => 'Plain New.ogg'],
-			['artist_id' => $artistId, 'title' => 'Custom Source.ogg', 'song_id' => 'custom', 'og_name' => 'Custom Stored'],
+			['artist_id' => $artistId, 'title' => 'Custom Source.ogg', 'song_id' => 'new', 'og_name' => 'Custom Stored'],
 			['artist_id' => $artistId, 'title' => 'Already Here'],
 			['artist_id' => $artistId, 'title' => 'Aliased Onto.ogg', 'song_id' => $existingId, 'also_alias_provided_name' => true],
 			['artist_id' => $artistId, 'title' => 'Skipped One.ogg', 'song_id' => 'skip'],
@@ -902,6 +926,126 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 
+		foreach (['Warning:', 'Notice:', 'Fatal error', 'Undefined variable', 'Undefined index'] as $sign) {
+			assertTrue(strpos($body, $sign) === false, "page contains '{$sign}'");
+		}
+	},
+
+	'the artist filter hides other artists rows' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$one = $ctx->makeArtist('Filter Artist One');
+		$two = $ctx->makeArtist('Filter Artist Two');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $one, 'title' => 'Kept By Filter']]);
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $two, 'title' => 'Dropped By Filter']]);
+
+		$visible = songsVisibleTitles($ctx->get("/music/songs?artist={$one}")['body']);
+		assertTrue(in_array('Kept By Filter', $visible, true), 'the chosen artists song shows');
+		assertTrue(!in_array('Dropped By Filter', $visible, true), 'the other artists song is hidden');
+	},
+
+	'a compilation album filters the list to its tracklist' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Compilation Contributor');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'On The Comp']]);
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Off The Comp']]);
+		$albumId = songsMakeAlbum($ctx, 'Various Artists Collection', null, [
+			['song_id' => $ctx->songId('On The Comp'), 'position' => 1],
+		]);
+
+		$visible = songsVisibleTitles($ctx->get("/music/songs?album={$albumId}")['body']);
+		assertSame(['On The Comp'], $visible, 'only the album track shows');
+	},
+
+	'selecting an album overrides the artist filter' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$main = $ctx->makeArtist('Album Artist Main');
+		$guest = $ctx->makeArtist('Album Guest');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $main, 'title' => 'Main Track']]);
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $guest, 'title' => 'Guest Track']]);
+		$albumId = songsMakeAlbum($ctx, 'Split Record', $main, [
+			['song_id' => $ctx->songId('Main Track'), 'position' => 1],
+			['song_id' => $ctx->songId('Guest Track'), 'position' => 2],
+		]);
+
+		$visible = songsVisibleTitles($ctx->get("/music/songs?artist={$main}&album={$albumId}")['body']);
+		assertTrue(in_array('Guest Track', $visible, true), 'the guest track shows even though it is not by the chosen artist');
+		assertTrue(in_array('Main Track', $visible, true), 'the album artists track shows');
+	},
+
+	'the album dropdown only offers the chosen artists albums' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$one = $ctx->makeArtist('Dropdown Artist One');
+		$two = $ctx->makeArtist('Dropdown Artist Two');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $one, 'title' => 'Dropdown One Track']]);
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $two, 'title' => 'Dropdown Two Track']]);
+		songsMakeAlbum($ctx, 'Record By Artist One', $one, [['song_id' => $ctx->songId('Dropdown One Track'), 'position' => 1]]);
+		songsMakeAlbum($ctx, 'Record By Artist Two', $two, [['song_id' => $ctx->songId('Dropdown Two Track'), 'position' => 1]]);
+
+		preg_match('/<select id="filterAlbum".*?<\/select>/s', $ctx->get("/music/songs?artist={$one}")['body'], $m);
+		assertContains('Record By Artist One', $m[0], 'the chosen artists album is offered');
+		assertTrue(strpos($m[0], 'Record By Artist Two') === false, 'the other artists album is not offered');
+	},
+
+	'the album dropdown offers compilations when no artist is chosen' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Owned Album Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Owned Album Track']]);
+		songsMakeAlbum($ctx, 'An Attributed Album', $artistId, [['song_id' => $ctx->songId('Owned Album Track'), 'position' => 1]]);
+		songsMakeAlbum($ctx, 'A Loose Compilation', null, [['song_id' => $ctx->songId('Owned Album Track'), 'position' => 1]]);
+
+		preg_match('/<select id="filterAlbum".*?<\/select>/s', $ctx->get('/music/songs')['body'], $m);
+		assertContains('A Loose Compilation', $m[0], 'the compilation is offered');
+		assertTrue(strpos($m[0], 'An Attributed Album') === false, 'the attributed album is not offered');
+	},
+
+	'unknown or malformed filter ids show every song' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Fallback Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Fallback Track']]);
+
+		$before = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song")->fetch()['c'];
+
+		foreach (['/music/songs?artist=999999', '/music/songs?artist[]=1', '/music/songs?artist=' . urlencode('1;DROP TABLE song')] as $path) {
+			$response = $ctx->get($path);
+			assertSame(200, $response['status'], "renders: {$path}");
+			assertTrue(in_array('Fallback Track', songsVisibleTitles($response['body']), true), "song still shows for {$path}");
+		}
+
+		$after = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song")->fetch()['c'];
+		assertSame($before, $after, 'the song table survived');
+	},
+
+	'sorting keeps the active filter' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Sorted Filter Artist');
+		$other = $ctx->makeArtist('Sorted Filter Other');
+		foreach (['Ccc Filtered', 'Aaa Filtered', 'Bbb Filtered'] as $title) {
+			$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => $title]]);
+		}
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $other, 'title' => 'Zzz Elsewhere']]);
+
+		$body = $ctx->get("/music/songs?artist={$artistId}&sort=title&dir=desc")['body'];
+		$visible = songsVisibleTitles($body);
+		assertSame(['Ccc Filtered', 'Bbb Filtered', 'Aaa Filtered'], $visible, 'filtered rows stay sorted descending');
+		assertTrue(!in_array('Zzz Elsewhere', $visible, true), 'the other artist stays hidden');
+		assertContains("&amp;artist={$artistId}", $body, 'the sort links carry the filter');
+	},
+
+	'the filtered songs page carries no php warnings' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Clean Filter Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Clean Track']]);
+		$albumId = songsMakeAlbum($ctx, 'Clean Album', $artistId, [['song_id' => $ctx->songId('Clean Track'), 'position' => 1]]);
+
+		$body = $ctx->get("/music/songs?artist={$artistId}&album={$albumId}")['body'];
 		foreach (['Warning:', 'Notice:', 'Fatal error', 'Undefined variable', 'Undefined index'] as $sign) {
 			assertTrue(strpos($body, $sign) === false, "page contains '{$sign}'");
 		}

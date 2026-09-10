@@ -138,6 +138,33 @@ return [
 		assertSame(2, (int)$tracks[1]['position'], 'second position');
 	},
 
+	'a custom-named new album stores the typed name and keeps the pasted one as an alias' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Custom Album Owner');
+		$songId = makeSong($ctx, $artistId, 'Custom Album Song');
+
+		$response = $ctx->post(ALBUM_ENDPOINT, [[
+			'provided_name' => 'C:\\music\\ost\\final',
+			'album_id' => 'new',
+			'og_name' => 'Frozen Synapse: Original Soundtrack',
+			'is_actual' => true,
+			'also_alias_provided_name' => true,
+			'artist_id' => $artistId,
+			'release_year' => '2012',
+			'tracks' => [['song_id' => $songId, 'position' => 1]],
+		]]);
+
+		assertSame('ok', $response['json'][0]['status'], 'status');
+		$albumId = (int)$response['json'][0]['album_id'];
+
+		$actual = $ctx->db()->query("SELECT name FROM album_alias WHERE album_id = {$albumId} AND is_actual = 1")->fetch()['name'];
+		assertSame('Frozen Synapse: Original Soundtrack', $actual, 'the typed name is the actual one');
+
+		$names = $ctx->db()->query("SELECT name FROM album_alias WHERE album_id = {$albumId} ORDER BY name")->fetchAll(PDO::FETCH_COLUMN);
+		assertSame(['C:\\music\\ost\\final', 'Frozen Synapse: Original Soundtrack'], $names, 'the pasted string is kept as a second alias');
+	},
+
 	'blank track numbers become one upwards in paste order' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
