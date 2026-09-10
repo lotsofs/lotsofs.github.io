@@ -12,6 +12,8 @@ $db = require __MODULES__ . '/music/db.php';
 require_once __MODULES__ . '/music/migrate.php';
 runMusicMigrations($db);
 
+require_once __MODULES__ . '/music/inviteCode.php';
+
 if (currentAccountId()) {
 	header('Location: /music/songs', true, 302);
 	exit;
@@ -27,10 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$accountName = trim($_POST['account_name'] ?? '');
 	$password = $_POST['password'] ?? '';
 	$passwordConfirm = $_POST['password_confirm'] ?? '';
-	$inviteCode = trim($_POST['invite_code'] ?? '');
+	$inviteCode = normalizeInviteCode($_POST['invite_code'] ?? '');
 
 	$globalData['accountName'] = $accountName;
-	$globalData['inviteCode'] = $inviteCode;
+	$globalData['inviteCode'] = $inviteCode === '' ? '' : formatInviteCode($inviteCode);
 
 	$invite = null;
 
@@ -50,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$globalData['formError'] = t('register.error.nameTaken');
 	}
 	else if ($globalData['inviteRequired']) {
-		$invite = $db->query("SELECT id FROM invite WHERE code = ? AND used_at IS NULL", [$inviteCode])->fetch();
+		$invite = $db->query("SELECT id FROM invite WHERE code = ? AND used_at IS NULL AND revoked_at IS NULL", [$inviteCode])->fetch();
 		if (!$invite) {
 			$globalData['formError'] = t('register.error.badInvite');
 		}
@@ -67,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 			if ($invite) {
 				$spent = $db->query(
-					"UPDATE invite SET used_at = ?, used_by_account_id = ? WHERE id = ? AND used_at IS NULL",
+					"UPDATE invite SET used_at = ?, used_by_account_id = ? WHERE id = ? AND used_at IS NULL AND revoked_at IS NULL",
 					[date('c'), $accountId, $invite['id']]
 				);
 				if ($spent->rowCount() !== 1) {

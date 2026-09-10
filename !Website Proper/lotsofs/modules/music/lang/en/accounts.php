@@ -33,8 +33,11 @@ return [
 	'invites.column.code' => 'Code',
 	'invites.column.created' => 'Created',
 	'invites.column.used' => 'Used',
+	'invites.column.action' => 'Action',
 	'invites.unused' => 'Unused',
 	'invites.usedBy' => 'Used by {name}',
+	'invites.revoked' => 'Invalidated',
+	'invites.revoke' => 'Invalidate',
 
 	'accounts.title' => 'Accounts',
 	'accounts.heading' => 'Accounts',

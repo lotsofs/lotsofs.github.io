@@ -99,84 +99,109 @@ th, td {
 	overflow-x: auto;
 }
 
-#songListTable th a {
-	color: inherit;
-	text-decoration: none;
+@keyframes songRatingFlash {
+	from {
+		background-color: #555555;
+	}
+	to {
+		background-color: transparent;
+	}
 }
 
-#songListTable td input {
-	width: 100%;
-	box-sizing: border-box;
-}
+#songListTable {
+	th a {
+		color: inherit;
+		text-decoration: none;
+	}
 
-#songListTable .songIdCell {
-	width: 2.5em;
-	white-space: nowrap;
-}
+	td input {
+		width: 100%;
+		box-sizing: border-box;
+	}
 
-#songListTable .songRatingNoteCell {
-	width: 12em;
-	white-space: nowrap;
-}
+	.songIdCell {
+		width: 2.5em;
+		white-space: nowrap;
+	}
 
-#songListTable .ratingNoteText {
-	display: block;
-	max-width: 12em;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
+	.songRatingScoreCell {
+		width: 2em;
+	}
 
-#songListTable .songRatingScoreCell {
-	width: 4em;
-}
+	td.songRatingScoreCell {
+		text-align: right;
+	}
 
-#songListTable .songRaterGroup {
-	text-align: center;
-}
+	.songRatingNoteCell {
+		width: 12em;
+		white-space: nowrap;
+	}
 
-#songListTable .songMineCell {
-	background-color: #1a1a1a;
-}
+	.ratingNoteText {
+		display: block;
+		max-width: 12em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 
-#songListTable .songMyScoreCell {
-	box-shadow: inset 2px 0 0 #999999;
-}
+	.songRaterGroup {
+		text-align: center;
+	}
 
-#songListTable .songMyNoteCell {
-	box-shadow: inset -2px 0 0 #999999;
-}
+	.songMineCell {
+		background-color: #101010;
+	}
 
-#songListTable .songMineGroup {
-	box-shadow: inset 2px 0 0 #999999, inset -2px 0 0 #999999, inset 0 2px 0 #999999;
-}
+	.songMyScoreCell {
+		box-shadow: inset 1px 0 0 #999999;
+	}
 
-#songListTable tbody tr:last-child .songMyScoreCell {
-	box-shadow: inset 2px 0 0 #999999, inset 0 -2px 0 #999999;
-}
+	.songMyNoteCell {
+		box-shadow: inset -1px 0 0 #999999;
+	}
 
-#songListTable tbody tr:last-child .songMyNoteCell {
-	box-shadow: inset -2px 0 0 #999999, inset 0 -2px 0 #999999;
-}
+	.songMineGroup {
+		box-shadow: inset 1px 0 0 #999999, inset -1px 0 0 #999999, inset 0 1px 0 #999999;
+	}
 
-#songListTable tbody .songMineCell {
-	cursor: pointer;
-}
+	tbody tr:last-child {
+		.songMyScoreCell {
+			box-shadow: inset 1px 0 0 #999999, inset 0 -1px 0 #999999;
+		}
 
-#songListTable tbody .songMineCell:hover {
-	background-color: #262626;
-}
+		.songMyNoteCell {
+			box-shadow: inset -1px 0 0 #999999, inset 0 -1px 0 #999999;
+		}
+	}
 
-#songListTable .songResultCell {
-	width: 14em;
-}
+	tbody .songMineCell {
+		cursor: pointer;
 
-#songListTable.hideResultColumn .songResultCell {
-	display: none;
-}
+		&:hover {
+			background-color: #262626;
+		}
+	}
 
-#songListTable td.songResultCell {
-	color: #ff8a80;
+	tbody .songRatingCell.songRatingFlash {
+		animation: songRatingFlash 1.2s ease-out;
+
+		@media (prefers-reduced-motion: reduce) {
+			animation: none;
+		}
+	}
+
+	.songResultCell {
+		width: 14em;
+	}
+
+	td.songResultCell {
+		color: #ff8a80;
+	}
+
+	&.hideResultColumn .songResultCell {
+		display: none;
+	}
 }
 
 #albumScrollSpace {

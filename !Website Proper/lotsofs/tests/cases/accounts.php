@@ -110,12 +110,113 @@ return [
 		assertTrue($account === false, 'no account was created from the spent invite');
 	},
 
+	'a freshly minted invite is easy for a person to read' => function ($ctx) {
+		$ctx->newSession();
+		logInAs($ctx, 'first_owner', 'correct horse');
+		$ctx->postForm('/music/invites', ['csrf_token' => $ctx->csrfTokenFrom('/music/invites')]);
+
+		$code = $ctx->db()->query("SELECT code FROM invite WHERE used_at IS NULL ORDER BY id DESC")->fetch()['code'];
+
+		assertSame(8, strlen($code), 'short enough to read out loud');
+		assertSame(1, preg_match('/^[A-Z]{8}$/', $code), 'letters only');
+
+		$shown = $ctx->get('/music/invites')['body'];
+		assertContains(substr($code, 0, 4) . '-' . substr($code, 4), $shown, 'displayed in two grouped halves');
+	},
+
+	'an invite code is accepted however a person types it back' => function ($ctx) {
+		$ctx->newSession();
+		logInAs($ctx, 'first_owner', 'correct horse');
+		$ctx->db()->exec("INSERT INTO invite (code, created_at) VALUES ('ABCDWXYZ', '2020-01-01T00:00:00+00:00')");
+
+		$ctx->newSession();
+		$response = registerAccount($ctx, [
+			'invite_code' => ' abcd-wxyz ',
+			'account_name' => 'sloppy_typist',
+			'password' => 'correct horse',
+			'password_confirm' => 'correct horse',
+		]);
+
+		assertSame(302, $response['status'], 'lowercase, spaced and dashed all forgiven');
+
+		$invite = $ctx->db()->query("SELECT used_by_account_id FROM invite WHERE code = 'ABCDWXYZ'")->fetch();
+		assertTrue($invite['used_by_account_id'] !== null, 'the invite was spent');
+	},
+
+	'a wrong invite code is still refused' => function ($ctx) {
+		$ctx->newSession();
+
+		$response = registerAccount($ctx, [
+			'invite_code' => 'ZZZZ-ZZZZ',
+			'account_name' => 'gatecrasher',
+			'password' => 'correct horse',
+			'password_confirm' => 'correct horse',
+		]);
+
+		assertSame(200, $response['status'], 'no redirect');
+		assertTrue($ctx->db()->query("SELECT id FROM account WHERE account_name = 'gatecrasher'")->fetch() === false, 'no account created');
+	},
+
+	'an unused invite can be invalidated from the invites page' => function ($ctx) {
+		$ctx->newSession();
+		logInAs($ctx, 'first_owner', 'correct horse');
+		$ctx->postForm('/music/invites', ['csrf_token' => $ctx->csrfTokenFrom('/music/invites')]);
+
+		$invite = $ctx->db()->query("SELECT id, code FROM invite WHERE used_at IS NULL AND revoked_at IS NULL ORDER BY id DESC")->fetch();
+		assertContains(substr($invite['code'], 0, 4) . '-' . substr($invite['code'], 4), $ctx->get('/music/invites')['body'], 'the code is on the page to begin with');
+
+		$ctx->postForm('/music/invites', [
+			'csrf_token' => $ctx->csrfTokenFrom('/music/invites'),
+			'action' => 'revoke',
+			'invite_id' => $invite['id'],
+		]);
+
+		$row = $ctx->db()->query("SELECT used_at, revoked_at FROM invite WHERE id = {$invite['id']}")->fetch();
+		assertTrue($row !== false, 'the invite record is kept, not deleted');
+		assertTrue($row['revoked_at'] !== null, 'it is marked invalidated');
+		assertSame(null, $row['used_at'], 'and never counts as used');
+
+		$body = $ctx->get('/music/invites')['body'];
+		assertContains('Invalidated', $body, 'the page shows it as invalidated');
+		assertTrue(strpos($body, 'value="' . $invite['id'] . '"') === false, 'and drops its invalidate button');
+
+		$ctx->newSession();
+		$rejected = registerAccount($ctx, [
+			'invite_code' => $invite['code'],
+			'account_name' => 'too_late',
+			'password' => 'correct horse',
+			'password_confirm' => 'correct horse',
+		]);
+		assertSame(200, $rejected['status'], 'the invalidated code no longer registers anyone');
+	},
+
+	'invalidating leaves a spent invite alone' => function ($ctx) {
+		$ctx->newSession();
+		logInAs($ctx, 'first_owner', 'correct horse');
+		$ctx->db()->exec("INSERT INTO invite (code, created_at, used_at, used_by_account_id) VALUES ('SPENTCOD', '2020-01-01T00:00:00+00:00', '2020-01-02T00:00:00+00:00', 1)");
+		$spentId = (int)$ctx->db()->query("SELECT id FROM invite WHERE code = 'SPENTCOD'")->fetch()['id'];
+
+		$ctx->postForm('/music/invites', [
+			'csrf_token' => $ctx->csrfTokenFrom('/music/invites'),
+			'action' => 'revoke',
+			'invite_id' => $spentId,
+		]);
+
+		$row = $ctx->db()->query("SELECT revoked_at FROM invite WHERE id = {$spentId}")->fetch();
+		assertSame(null, $row['revoked_at'], 'a used invite cannot be invalidated after the fact');
+
+		$body = $ctx->get('/music/invites')['body'];
+		assertTrue(strpos($body, 'value="' . $spentId . '"') === false, 'and no invalidate button is offered for it');
+	},
+
 	'registration validates its fields' => function ($ctx) {
 		$ctx->newSession();
 		logInAs($ctx, 'first_owner', 'correct horse');
 		$ctx->postForm('/music/invites', ['csrf_token' => $ctx->csrfTokenFrom('/music/invites')]);
 		$code = $ctx->db()->query("SELECT code FROM invite WHERE used_at IS NULL ORDER BY id DESC")->fetch()['code'];
 		$ctx->newSession();
+
+		$before = (int)$ctx->db()->query("SELECT COUNT(*) c FROM account")->fetch()['c'];
 
 		$tooShort = registerAccount($ctx, [
 			'invite_code' => $code,
@@ -142,8 +243,8 @@ return [
 		]);
 		assertSame(200, $taken['status'], 'duplicate name refused');
 
-		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM account")->fetch()['c'];
-		assertSame(2, $count, 'no extra accounts were created');
+		$after = (int)$ctx->db()->query("SELECT COUNT(*) c FROM account")->fetch()['c'];
+		assertSame($before, $after, 'no account was created by any of the rejected attempts');
 	},
 
 	'logging in and out works' => function ($ctx) {

@@ -1,5 +1,14 @@
 <?php
 
+const MUSIC_AJAX_ENDPOINTS = [
+	'/modules/music/ajax/artistAlias.php',
+	'/modules/music/ajax/song.php',
+	'/modules/music/ajax/songEdit.php',
+	'/modules/music/ajax/songRating.php',
+	'/modules/music/ajax/songRatingPoll.php',
+	'/modules/music/ajax/album.php',
+];
+
 return [
 
 	'every registered route serves' => function ($ctx) {
@@ -38,7 +47,7 @@ return [
 	'the music endpoints reject signed out callers' => function ($ctx) {
 		$ctx->newSession();
 
-		foreach (['/modules/music/ajax/artistAlias.php', '/modules/music/ajax/song.php', '/modules/music/ajax/songEdit.php'] as $path) {
+		foreach (MUSIC_AJAX_ENDPOINTS as $path) {
 			$response = $ctx->post($path, []);
 			assertSame(401, $response['status'], "POST {$path} while signed out");
 			assertTrue(isset($response['json']['error']), "{$path} returns a json error");
@@ -48,7 +57,7 @@ return [
 	'the music endpoints reject posts without a csrf token' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		foreach (['/modules/music/ajax/artistAlias.php', '/modules/music/ajax/song.php', '/modules/music/ajax/songEdit.php'] as $path) {
+		foreach (MUSIC_AJAX_ENDPOINTS as $path) {
 			$response = $ctx->postWithoutCsrf($path, []);
 			assertSame(403, $response['status'], "POST {$path} without a token");
 			assertTrue(isset($response['json']['error']), "{$path} returns a json error");

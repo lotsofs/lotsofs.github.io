@@ -56,18 +56,12 @@ if ($field === 'score' && $value !== '' && !is_numeric($value)) {
 $stored = $value === '' ? null : ($field === 'score' ? (float)$value : $value);
 
 $db->query("
-	INSERT INTO account_song (account_id, song_id, {$fields[$field]})
-	VALUES (?, ?, ?)
+	INSERT INTO account_song (account_id, song_id, {$fields[$field]}, updated_at)
+	VALUES (?, ?, ?, ?)
 	ON CONFLICT (account_id, song_id)
-	DO UPDATE SET {$fields[$field]} = excluded.{$fields[$field]}
-", [$accountId, $songId, $stored]);
-
-$db->query("
-	DELETE FROM account_song
-	WHERE account_id = ? AND song_id = ?
-		AND score IS NULL
-		AND (subjective_note IS NULL OR subjective_note = '')
-", [$accountId, $songId]);
+	DO UPDATE SET {$fields[$field]} = excluded.{$fields[$field]},
+		updated_at = excluded.updated_at
+", [$accountId, $songId, $stored, time()]);
 
 echo json_encode([
 	'status' => 'ok',

@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS account_song (
     song_id INTEGER NOT NULL,
     score REAL,
     subjective_note TEXT,
+    updated_at INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (account_id) REFERENCES account(id),
     FOREIGN KEY (song_id) REFERENCES song(id)
 );
@@ -83,6 +84,7 @@ CREATE TABLE IF NOT EXISTS invite (
     created_by_account_id INTEGER,
     used_at TEXT,
     used_by_account_id INTEGER,
+    revoked_at TEXT,
     FOREIGN KEY (created_by_account_id) REFERENCES account(id),
     FOREIGN KEY (used_by_account_id) REFERENCES account(id)
 );
@@ -119,6 +121,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_account_song_unique
 ON account_song (account_id, song_id);
 
 CREATE INDEX IF NOT EXISTS idx_account_song_song ON account_song (song_id);
+
+CREATE INDEX IF NOT EXISTS idx_account_song_updated ON account_song (updated_at);
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_invite_code_unique
 ON invite (code);

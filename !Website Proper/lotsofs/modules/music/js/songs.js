@@ -178,9 +178,12 @@ songListHeaders.forEach(header => {
 const SONG_EDIT_ENDPOINT = "/modules/music/ajax/songEdit.php";
 const RATING_ENDPOINT = "/modules/music/ajax/songRating.php";
 
+const SCORE_SPEC = {};
+const NOTE_SPEC = { wrapClass: "ratingNoteText" };
+
 const EDITABLE_CELLS = {
-	songMyScoreCell: { field: "score", endpoint: RATING_ENDPOINT, required: false, needsAdmin: false, doubleClick: false },
-	songMyNoteCell: { field: "note", endpoint: RATING_ENDPOINT, required: false, needsAdmin: false, doubleClick: false, wrapClass: "ratingNoteText" },
+	songMyScoreCell: { ...SCORE_SPEC, field: "score", endpoint: RATING_ENDPOINT, required: false, needsAdmin: false, doubleClick: false },
+	songMyNoteCell: { ...NOTE_SPEC, field: "note", endpoint: RATING_ENDPOINT, required: false, needsAdmin: false, doubleClick: false },
 	songTitleCell: { field: "title", endpoint: SONG_EDIT_ENDPOINT, required: true, needsAdmin: true, doubleClick: true },
 	songNoteCell: { field: "note", endpoint: SONG_EDIT_ENDPOINT, required: false, needsAdmin: true, doubleClick: true },
 };
@@ -192,20 +195,38 @@ function setResult(cell, message) {
 	songListTable.classList.toggle("hideResultColumn", !anyShown);
 }
 
-function setCellValue(cell, spec, value) {
-	if (!spec.wrapClass) {
-		cell.textContent = value;
+function colorScoreCell(cell) {
+	const score = Number(cell.textContent.trim());
+
+	if (cell.textContent.trim() === "" || Number.isNaN(score)) {
+		cell.style.removeProperty("color");
 		return;
 	}
 
-	cell.textContent = "";
-	cell.title = value;
-
-	const text = document.createElement("span");
-	text.className = spec.wrapClass;
-	text.textContent = value;
-	cell.appendChild(text);
+	const clamped = Math.min(10, Math.max(0, score));
+	cell.style.color = "hsl(" + clamped * 12 + ", 75%, 55%)";
 }
+
+function setCellValue(cell, spec, value) {
+	if (spec.wrapClass) {
+		cell.textContent = "";
+		cell.title = value;
+
+		const text = document.createElement("span");
+		text.className = spec.wrapClass;
+		text.textContent = value;
+		cell.appendChild(text);
+	}
+	else {
+		cell.textContent = value;
+	}
+
+	if (cell.classList.contains("songRatingScoreCell")) {
+		colorScoreCell(cell);
+	}
+}
+
+Array.from(songListBody.querySelectorAll(".songRatingScoreCell")).forEach(colorScoreCell);
 
 function beginCellEdit(cell, spec) {
 	const original = cell.textContent;
@@ -251,6 +272,7 @@ function beginCellEdit(cell, spec) {
 
 function saveCell(cell, spec, original, value) {
 	const id = cell.parentElement.cells[0].textContent.trim();
+	cell.dataset.pending = "1";
 
 	fetch(spec.endpoint, {
 		method: "POST",
@@ -268,6 +290,7 @@ function saveCell(cell, spec, original, value) {
 		return body;
 	})
 	.then(result => {
+		delete cell.dataset.pending;
 		setCellValue(cell, spec, String(result.value));
 		if (spec.field === "title") {
 			cell.dataset.canonicalTitle = String(result.value);
@@ -275,6 +298,7 @@ function saveCell(cell, spec, original, value) {
 		setResult(cell, result.status === "ok" ? "" : result.message);
 	})
 	.catch(error => {
+		delete cell.dataset.pending;
 		setCellValue(cell, spec, original);
 		setResult(cell, t("status.submitFailed", { error: error.message }));
 	});
@@ -311,3 +335,109 @@ function handleEdit(event, viaDoubleClick) {
 
 songListBody.addEventListener("click", event => handleEdit(event, false));
 songListBody.addEventListener("dblclick", event => handleEdit(event, true));
+
+const RATING_POLL_ENDPOINT = "/modules/music/ajax/songRatingPoll.php";
+const RATING_POLL_INTERVAL = 3000;
+const RATING_POLL_BACKOFF = 60000;
+
+const ratingCellIndexes = new Map();
+songListHeaders.forEach(header => {
+	const parts = /^(score|note)_(\d+)$/.exec(header.dataset.sortKey);
+	if (!parts) {
+		return;
+	}
+
+	const accountId = parts[2];
+	if (!ratingCellIndexes.has(accountId)) {
+		ratingCellIndexes.set(accountId, {});
+	}
+	ratingCellIndexes.get(accountId)[parts[1]] = Number(header.dataset.sortIndex);
+});
+
+const rowsBySongId = new Map();
+Array.from(songListBody.rows).forEach(row => rowsBySongId.set(row.cells[0].textContent.trim(), row));
+
+let ratingCursor = Number(JSON.parse(document.getElementById("songRatingCursor").textContent)) || 0;
+let ratingPollTimer = null;
+let ratingPollInFlight = false;
+let ratingPollFailures = 0;
+
+function flashCell(cell) {
+	cell.classList.remove("songRatingFlash");
+	void cell.offsetWidth;
+	cell.classList.add("songRatingFlash");
+}
+
+function applyRatingHalf(row, index, spec, value) {
+	if (index === undefined) {
+		return;
+	}
+
+	const cell = row.cells[index];
+	if (!cell || cell.querySelector("input") || cell.dataset.pending) {
+		return;
+	}
+	if (cell.textContent === value) {
+		return;
+	}
+
+	setCellValue(cell, spec, value);
+	flashCell(cell);
+}
+
+function applyRatingChange(change) {
+	const row = rowsBySongId.get(String(change.song));
+	const indexes = ratingCellIndexes.get(String(change.account));
+	if (!row || !indexes) {
+		return;
+	}
+
+	applyRatingHalf(row, indexes.score, SCORE_SPEC, change.score);
+	applyRatingHalf(row, indexes.note, NOTE_SPEC, change.note);
+}
+
+function scheduleRatingPoll(delay) {
+	clearTimeout(ratingPollTimer);
+	ratingPollTimer = setTimeout(pollRatings, delay);
+}
+
+function pollRatings() {
+	if (document.visibilityState !== "visible" || ratingPollInFlight) {
+		return;
+	}
+	ratingPollInFlight = true;
+
+	fetch(RATING_POLL_ENDPOINT, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			"X-CSRF-Token": CSRF_TOKEN
+		},
+		body: JSON.stringify({ since: ratingCursor })
+	})
+	.then(response => response.ok ? response.json() : Promise.reject(new Error(response.status)))
+	.then(result => {
+		result.changes.forEach(applyRatingChange);
+		ratingCursor = result.cursor;
+		ratingPollFailures = 0;
+	})
+	.catch(() => {
+		ratingPollFailures++;
+	})
+	.finally(() => {
+		ratingPollInFlight = false;
+		scheduleRatingPoll(ratingPollFailures > 2 ? RATING_POLL_BACKOFF : RATING_POLL_INTERVAL);
+	});
+}
+
+document.addEventListener("visibilitychange", () => {
+	if (document.visibilityState === "visible") {
+		pollRatings();
+		return;
+	}
+	clearTimeout(ratingPollTimer);
+});
+
+if (document.visibilityState === "visible") {
+	scheduleRatingPoll(RATING_POLL_INTERVAL);
+}

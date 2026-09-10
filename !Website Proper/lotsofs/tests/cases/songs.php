@@ -3,6 +3,7 @@
 const SONG_ENDPOINT = '/modules/music/ajax/song.php';
 const EDIT_ENDPOINT = '/modules/music/ajax/songEdit.php';
 const RATING_ENDPOINT = '/modules/music/ajax/songRating.php';
+const RATING_POLL_ENDPOINT = '/modules/music/ajax/songRatingPoll.php';
 
 function songsMakeAlbum($ctx, $name, $artistId, $tracks) {
 	$response = $ctx->post('/modules/music/ajax/album.php', [[
@@ -776,7 +777,7 @@ return [
 		assertSame(9.0, (float)$rows[0]['score'], 'updated score');
 	},
 
-	'clearing both halves removes the rating' => function ($ctx) {
+	'clearing both halves empties the rating but keeps the row' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
 		$artistId = $ctx->makeArtist('Cleared Rating Owner');
@@ -791,8 +792,14 @@ return [
 		assertSame(1, $stillThere, 'a scored row survives losing its note');
 
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '  ']);
-		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM account_song WHERE song_id = {$songId}")->fetch()['c'];
-		assertSame(0, $count, 'the row goes once neither half is left');
+
+		$row = $ctx->db()->query("SELECT score, subjective_note FROM account_song WHERE song_id = {$songId}")->fetch();
+		assertTrue($row !== false, 'the row survives so the clear can reach other viewers');
+		assertSame(null, $row['score'], 'score is emptied');
+		assertSame(null, $row['subjective_note'], 'note is emptied');
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertContains('<td class="songRatingCell songRatingScoreCell songMineCell songMyScoreCell"></td>', $body, 'an emptied rating renders exactly like no rating');
 	},
 
 	'a note without a score is allowed' => function ($ctx) {
@@ -1234,7 +1241,7 @@ return [
 
 		assertSame('All Songs', $heading('/music/songs'), 'unfiltered');
 		assertSame('Heading Artist', $heading("/music/songs?artist={$artistId}"), 'filtered to an artist');
-		assertSame('Heading Record — Heading Artist', $heading("/music/songs?artist={$artistId}&album={$owned}"), 'filtered to an attributed album');
+		assertSame('Heading Artist — Heading Record', $heading("/music/songs?artist={$artistId}&album={$owned}"), 'filtered to an attributed album');
 		assertSame('Heading Compilation', $heading("/music/songs?album={$loose}"), 'filtered to a compilation');
 	},
 
@@ -1244,6 +1251,148 @@ return [
 		$body = $ctx->get('/music/songs')['body'];
 		assertContains('<a href="/music/songs" class="navCurrent">Songs</a>', $body, 'the nav entry is Songs');
 		assertContains('<h1 id="songListHeading">', $body, 'the page still has its own heading');
+	},
+
+	'a rating stamps updated_at when it is first stored' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Stamped Rating Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Stamped Song']]);
+		$songId = $ctx->songId('Stamped Song');
+
+		$before = time();
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '4']);
+
+		$stamp = (int)$ctx->db()->query("SELECT updated_at FROM account_song WHERE song_id = {$songId}")->fetch()['updated_at'];
+		assertTrue($stamp >= $before, 'stamped at write time');
+	},
+
+	'a later edit moves updated_at forward' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Restamped Rating Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Restamped Song']]);
+		$songId = $ctx->songId('Restamped Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '4']);
+
+		$ctx->db()->exec("UPDATE account_song SET updated_at = 0 WHERE song_id = {$songId}");
+
+		$before = time();
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '5']);
+
+		$stamp = (int)$ctx->db()->query("SELECT updated_at FROM account_song WHERE song_id = {$songId}")->fetch()['updated_at'];
+		assertTrue($stamp >= $before, 'the update path stamps too, not just the insert');
+	},
+
+	'the poll hands back everything when asked from scratch' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Snapshot Rating Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Snapshot Song']]);
+		$songId = $ctx->songId('Snapshot Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '8.5']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'grower']);
+
+		$response = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0]);
+		assertSame(200, $response['status'], 'status');
+
+		$mine = null;
+		foreach ($response['json']['changes'] as $change) {
+			if ($change['song'] === $songId) {
+				$mine = $change;
+			}
+		}
+
+		assertTrue($mine !== null, 'the rating came back');
+		assertSame('8.5', $mine['score'], 'the score is preformatted the way the page renders it');
+		assertSame('grower', $mine['note'], 'the note comes back');
+		assertTrue($response['json']['cursor'] > 0, 'a cursor came back');
+	},
+
+	'the poll cursor is inclusive so a same second write cannot slip through' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Cursor Rating Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Cursor Song']]);
+		$songId = $ctx->songId('Cursor Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '6']);
+		$stamp = (int)$ctx->db()->query("SELECT updated_at FROM account_song WHERE song_id = {$songId}")->fetch()['updated_at'];
+
+		$songsIn = function ($since) use ($ctx, $songId) {
+			$changes = $ctx->post(RATING_POLL_ENDPOINT, ['since' => $since])['json']['changes'];
+			return count(array_filter($changes, fn($change) => $change['song'] === $songId));
+		};
+
+		assertSame(1, $songsIn(0), 'a full snapshot includes it');
+		assertSame(1, $songsIn($stamp), 'asking from its own second still returns it');
+		assertSame(0, $songsIn($stamp + 1), 'asking from later excludes it');
+	},
+
+	'one accounts rating reaches another accounts poll' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Shared Rating Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Shared Rating Song']]);
+		$songId = $ctx->songId('Shared Rating Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '9']);
+		$writer = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
+
+		$ctx->ensureLoggedIn('polling_rater', 'test password', false);
+		$changes = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0])['json']['changes'];
+
+		$seen = null;
+		foreach ($changes as $change) {
+			if ($change['song'] === $songId) {
+				$seen = $change;
+			}
+		}
+
+		assertTrue($seen !== null, 'the other accounts rating is visible');
+		assertSame($writer, $seen['account'], 'attributed to whoever wrote it');
+		assertSame('9', $seen['score'], 'with their score');
+	},
+
+	'a cleared rating reaches the poll as empty rather than vanishing' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Cleared Poll Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Cleared Poll Song']]);
+		$songId = $ctx->songId('Cleared Poll Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '3']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'meh']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => '']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '']);
+
+		$changes = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0])['json']['changes'];
+
+		$seen = null;
+		foreach ($changes as $change) {
+			if ($change['song'] === $songId) {
+				$seen = $change;
+			}
+		}
+
+		assertTrue($seen !== null, 'the clear is reported instead of disappearing');
+		assertSame('', $seen['score'], 'score reads as empty');
+		assertSame('', $seen['note'], 'note reads as empty');
+	},
+
+	'the songs page hands the browser a starting cursor' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Cursor Page Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Cursor Page Song']]);
+		$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Cursor Page Song'), 'field' => 'score', 'value' => '2']);
+
+		$max = (int)$ctx->db()->query("SELECT COALESCE(MAX(updated_at), 0) c FROM account_song")->fetch()['c'];
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertContains('<script id="songRatingCursor" type="application/json">' . $max . '</script>', $body, 'the current cursor is on the page');
 	},
 
 	'the filtered songs page carries no php warnings' => function ($ctx) {

@@ -130,6 +130,8 @@ else if ($filterArtist !== null) {
 $globalData['listHeading'] = $listHeading;
 $pageTitle = $listHeading;
 
+$globalData['ratingCursor'] = (int)$db->query("SELECT COALESCE(MAX(updated_at), 0) c FROM account_song")->fetch()['c'];
+
 $globalData['songs'] = $db->query("
 	SELECT
 		s.id,

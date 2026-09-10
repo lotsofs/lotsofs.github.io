@@ -116,6 +116,7 @@
 	</div>
 	<script id="songAlbumData" type="application/json"><?= json_encode($globalData['albumOptions'], JSON_HEX_TAG) ?></script>
 	<script id="songTrackAliases" type="application/json"><?= json_encode($globalData['trackAliases'], JSON_HEX_TAG) ?></script>
+	<script id="songRatingCursor" type="application/json"><?= (int)$globalData['ratingCursor'] ?></script>
 	<script src="/modules/music/js/songs.js"></script>
 <?php endif ?>
 
