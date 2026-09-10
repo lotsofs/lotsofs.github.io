@@ -42,7 +42,7 @@
 <script>
 	let mapContainer = document.getElementById('mapContainer');
 
-	fetch('/swat4/svg/02Fairfax_Map.svg')
+	fetch('/modules/swat4/svg/02Fairfax_Map.svg')
 		.then(response => response.text())
 		.then(svgText => {
 			mapContainer.innerHTML = svgText;

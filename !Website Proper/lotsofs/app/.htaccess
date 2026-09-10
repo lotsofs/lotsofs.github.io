@@ -1,0 +1,9 @@
+# This directory holds application source and must never be served.
+# It already sits outside the web root; this is defense in depth.
+<IfModule mod_authz_core.c>
+	Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+	Order allow,deny
+	Deny from all
+</IfModule>

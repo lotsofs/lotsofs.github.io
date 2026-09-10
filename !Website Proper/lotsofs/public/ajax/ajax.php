@@ -1,11 +1,7 @@
 <?php
 
-set_include_path($_SERVER['DOCUMENT_ROOT']);
-
-require 'util.php';
-require 'classes/Database.php';
-
-$config = require('config.php');
+require __DIR__ . '/../../app/util.php';
+require __DIR__ . '/../../app/classes/Database.php';
 
 header('Content-Type: application/json');
 

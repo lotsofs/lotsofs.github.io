@@ -24,17 +24,6 @@ if ($path !== $canonicalUri) {
 
 route($canonicalUri, $routes, $globalData, $config);
 
-// function serveDirectFile($uri) {
-// 	var_dump($uri);
-// 	if (php_sapi_name() === 'cli-server') {
-// 		$file = __DIR__ . $uri;
-// 		if (is_file($file)) {
-// 			dd($uri);
-// 			return false;
-// 		}
-// 	}
-// }
-
 function route($uri, $routes, $globalData, $config) {
 	if (array_key_exists($uri, $routes)) {
 		require $routes[$uri];

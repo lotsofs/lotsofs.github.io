@@ -1,7 +1,7 @@
 <?php
 
 $url = "https://fer.eltrick.uk/latest?base=EUR";
-$cacert_pem = "secure/cacert.pem"; // https://curl.se/ca
+$cacert_pem = __ROOT__ . '/secure/cacert.pem'; // https://curl.se/ca
 
 // OPENSSL:
 // $exchangeRatesJson = file_get_contents($url);

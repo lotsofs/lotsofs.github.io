@@ -1,13 +1,13 @@
 <?php
 
-define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
+define('__ROOT__', __DIR__);
 define('__MODULES__', __ROOT__ . '/modules');
 define('__MAIN__', __MODULES__ . '/main');
-define('__MAIN_URL__', '/modules/main');
+define('__DATA__', dirname(__DIR__) . '/data');
 
 $globalData = [];
 
-$config = require('config.php');
+$config = require __DIR__ . '/config.php';
 
 function stringCatalogue($module = null) {
 	static $catalogues = [];

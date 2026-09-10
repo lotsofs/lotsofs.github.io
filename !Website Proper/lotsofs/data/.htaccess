@@ -1,4 +1,5 @@
-# deny web access to the database and migrations
+# Holds the SQLite database. Must never be served.
+# Already outside the web root; this is defense in depth.
 <IfModule mod_authz_core.c>
 	Require all denied
 </IfModule>

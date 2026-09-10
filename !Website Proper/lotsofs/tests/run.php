@@ -7,7 +7,7 @@ if (php_sapi_name() !== 'cli') {
 	exit;
 }
 
-const SKIP_DIRS = ['modules/ss2/img', 'modules/ss2/fonts', 'raw', 'tests'];
+const SKIP_DIRS = ['public/modules/ss2/img', 'public/modules/ss2/fonts', 'public/raw', 'tests', '_deploy'];
 
 $projectRoot = realpath(__DIR__ . '/..');
 $tempRoot = sys_get_temp_dir() . '/lotsofs_tests_' . getmypid();
@@ -34,7 +34,7 @@ copyProject($projectRoot, $tempRoot);
 
 echo "serving scratch copy on port {$port}\n";
 $server = proc_open(
-	escapeshellarg(PHP_BINARY) . " -S localhost:{$port} -t " . escapeshellarg($tempRoot),
+	escapeshellarg(PHP_BINARY) . " -S localhost:{$port} -t " . escapeshellarg($tempRoot . '/public'),
 	[1 => ['file', $serverLog, 'a'], 2 => ['file', $serverLog, 'a']],
 	$pipes,
 	null,
@@ -164,7 +164,7 @@ class TestContext {
 	}
 
 	public function db() {
-		$pdo = new PDO('sqlite:' . $this->tempRoot . '/modules/music/database/music_test.sqlite');
+		$pdo = new PDO('sqlite:' . $this->tempRoot . '/data/music_test.sqlite');
 		$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 		$pdo->exec('PRAGMA busy_timeout = 5000');
 		return $pdo;
@@ -273,6 +273,7 @@ function copyProject($from, $to) {
 	);
 
 	mkdir($to, 0777, true);
+	@mkdir($to . '/data', 0777, true);
 
 	foreach ($items as $item) {
 		$path = str_replace('\\', '/', $item->getPathname());

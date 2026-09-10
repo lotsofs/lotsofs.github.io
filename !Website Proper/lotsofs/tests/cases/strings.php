@@ -1,17 +1,23 @@
 <?php
 
 function musicCatalogue() {
-	return require __DIR__ . '/../../modules/music/lang/en.php';
+	return require __DIR__ . '/../../app/modules/music/lang/en.php';
 }
 
 function musicSourceFiles() {
-	$root = realpath(__DIR__ . '/../../modules/music');
+	// server logic lives in app/, browser JS in public/ — the t() calls are in both
+	$roots = [
+		realpath(__DIR__ . '/../../app/modules/music'),
+		realpath(__DIR__ . '/../../public/modules/music'),
+	];
 	$files = [];
 
-	foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root)) as $file) {
-		$path = str_replace('\\', '/', $file->getPathname());
-		if (preg_match('/\.(php|js)$/', $path) && strpos($path, '/lang/') === false) {
-			$files[] = $path;
+	foreach ($roots as $root) {
+		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root)) as $file) {
+			$path = str_replace('\\', '/', $file->getPathname());
+			if (preg_match('/\.(php|js)$/', $path) && strpos($path, '/lang/') === false) {
+				$files[] = $path;
+			}
 		}
 	}
 
@@ -73,7 +79,7 @@ return [
 	},
 
 	'the catalogue files define no key twice' => function ($ctx) {
-		$dir = realpath(__DIR__ . '/../../modules/music/lang/en');
+		$dir = realpath(__DIR__ . '/../../app/modules/music/lang/en');
 		$seen = [];
 		$clashes = [];
 

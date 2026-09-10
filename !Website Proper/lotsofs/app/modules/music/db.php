@@ -1,7 +1,7 @@
 <?php
 
 $dbFile = php_sapi_name() === 'cli-server' ? 'music_test.sqlite' : 'music.sqlite';
-$dbPath = __MODULES__ . '/music/database/' . $dbFile;
+$dbPath = __DATA__ . '/' . $dbFile;
 
 $dbIsNew = !file_exists($dbPath);
 
