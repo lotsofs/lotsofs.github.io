@@ -40,7 +40,10 @@
 	There currently isn't much here yet. Did you mean to do one of the following?:
 </p>
 <ul>
+	<li>Look at my <a class="links-link" href="contact">socials</a>.</li>
+	<li>Click <a class="links-link" href="exchange-rates">this redundant link</a> for currency exchange rates.</li>
 	<li>Access my Keep Talking and Nobody Explodes <a class="links-link" href="ktane">merged translated modules manuals w/ bonus languages</a>.</li>
+	<li>Use my <a class="links-link" href="music">music thing</a>.</li>
 </ul>
 
 <script src="modules/main/js/exchangeRates.js"></script>

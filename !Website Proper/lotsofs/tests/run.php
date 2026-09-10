@@ -33,6 +33,7 @@ echo "copying project to a scratch copy\n";
 copyProject($projectRoot, $tempRoot);
 
 echo "serving scratch copy on port {$port}\n";
+putenv('LOTSOFS_DEFAULT_LOCALE=en');
 $server = proc_open(
 	escapeshellarg(PHP_BINARY) . " -S localhost:{$port} -t " . escapeshellarg($tempRoot . '/public'),
 	[1 => ['file', $serverLog, 'a'], 2 => ['file', $serverLog, 'a']],
@@ -90,8 +91,8 @@ class TestContext {
 		$this->csrfToken = null;
 	}
 
-	public function get($path, $followRedirects = false) {
-		return $this->request('GET', $path, null, $followRedirects);
+	public function get($path, $followRedirects = false, $extraHeaders = []) {
+		return $this->request('GET', $path, null, $followRedirects, 'application/json', true, $extraHeaders);
 	}
 
 	public function post($path, $payload) {
@@ -102,8 +103,8 @@ class TestContext {
 		return $this->request('POST', $path, json_encode($payload), false, 'application/json', false);
 	}
 
-	public function postForm($path, $fields, $followRedirects = false) {
-		return $this->request('POST', $path, http_build_query($fields), $followRedirects, 'application/x-www-form-urlencoded');
+	public function postForm($path, $fields, $followRedirects = false, $extraHeaders = []) {
+		return $this->request('POST', $path, http_build_query($fields), $followRedirects, 'application/x-www-form-urlencoded', true, $extraHeaders);
 	}
 
 	public function csrfTokenFrom($path) {
@@ -125,7 +126,7 @@ class TestContext {
 		return $this->csrfToken;
 	}
 
-	private function request($method, $path, $body, $followRedirects, $contentType = 'application/json', $withCsrf = true) {
+	private function request($method, $path, $body, $followRedirects, $contentType = 'application/json', $withCsrf = true, $extraHeaders = []) {
 		$ch = curl_init("http://localhost:{$this->port}{$path}");
 		curl_setopt_array($ch, [
 			CURLOPT_RETURNTRANSFER => true,
@@ -135,12 +136,15 @@ class TestContext {
 			CURLOPT_COOKIEJAR => $this->cookieJar,
 			CURLOPT_COOKIEFILE => $this->cookieJar,
 		]);
+		$headers = $extraHeaders;
 		if ($body !== null) {
-			$headers = ['Content-Type: ' . $contentType];
+			$headers[] = 'Content-Type: ' . $contentType;
 			if ($withCsrf && $contentType === 'application/json') {
 				$headers[] = 'X-CSRF-Token: ' . $this->csrfHeaderToken();
 			}
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+		}
+		if ($headers) {
 			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		}
 		$raw = curl_exec($ch);
@@ -179,7 +183,7 @@ class TestContext {
 		$stmt->execute([$name]);
 
 		if (!$stmt->fetch()) {
-			$insert = $db->prepare("INSERT INTO account (account_name, password_hash, is_admin) VALUES (?, ?, ?)");
+			$insert = $db->prepare("INSERT INTO account (account_name, password_hash, is_admin, lang) VALUES (?, ?, ?, 'en')");
 			$insert->execute([$name, password_hash($password, PASSWORD_DEFAULT), $isAdmin ? 1 : 0]);
 		}
 

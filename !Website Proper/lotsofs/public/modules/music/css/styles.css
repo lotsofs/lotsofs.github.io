@@ -33,6 +33,11 @@ nav .navLogout {
 	display: inline;
 }
 
+nav .navLanguage {
+	display: inline;
+	margin-left: 1em;
+}
+
 .formError {
 	color: #ff8a80;
 }

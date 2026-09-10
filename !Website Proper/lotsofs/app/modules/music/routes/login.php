@@ -37,11 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$globalData['formError'] = t('login.error.tooMany');
 	}
 	else {
-		$account = $db->query("SELECT id, account_name, password_hash FROM account WHERE account_name = ?", [$accountName])->fetch();
+		$account = $db->query("SELECT id, account_name, password_hash, lang FROM account WHERE account_name = ?", [$accountName])->fetch();
 
 		if ($account && password_verify($password, $account['password_hash'])) {
 			clearLoginFailures($db, $ip);
 			logIn($account['id'], $account['account_name']);
+			if (in_array($account['lang'], AVAILABLE_LOCALES, true)) {
+				$_SESSION['lang'] = $account['lang'];
+			}
 			header('Location: /music/songs', true, 302);
 			exit;
 		}

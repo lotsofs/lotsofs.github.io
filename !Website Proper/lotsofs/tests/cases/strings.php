@@ -70,6 +70,9 @@ return [
 		$unused = [];
 
 		foreach (array_keys(musicCatalogue()) as $key) {
+			if (str_starts_with($key, 'language.')) {
+				continue; // the nav switcher builds these dynamically, one per available locale
+			}
 			if (!isset($used[$key])) {
 				$unused[] = $key;
 			}

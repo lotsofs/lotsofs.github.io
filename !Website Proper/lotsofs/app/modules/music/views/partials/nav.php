@@ -22,4 +22,14 @@
 		<a href="/music/login" class="<?= urlIs("/music/login") ? "navCurrent" : "" ?>"><?= t('nav.login') ?></a>
 		<a href="/music/register" class="<?= urlIs("/music/register") ? "navCurrent" : "" ?>"><?= t('nav.register') ?></a>
 	<?php endif ?>
+
+	<form method="post" action="/music/language" class="navLanguage">
+		<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken()) ?>">
+		<input type="hidden" name="return" value="<?= htmlspecialchars(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) ?>">
+		<select name="lang" onchange="this.form.submit()" aria-label="<?= t('nav.language') ?>">
+			<?php foreach (AVAILABLE_LOCALES as $code): ?>
+				<option value="<?= $code ?>"<?= activeLocale() === $code ? ' selected' : '' ?>><?= htmlspecialchars(stringCatalogue()['language.' . $code] ?? strtoupper($code)) ?></option>
+			<?php endforeach ?>
+		</select>
+	</form>
 </nav>

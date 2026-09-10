@@ -1,8 +1,8 @@
 <?php
 
-function registerAccount($ctx, $fields) {
+function registerAccount($ctx, $fields, $extraHeaders = []) {
 	$fields['csrf_token'] = $ctx->csrfTokenFrom('/music/register');
-	return $ctx->postForm('/music/register', $fields);
+	return $ctx->postForm('/music/register', $fields, false, $extraHeaders);
 }
 
 function logInAs($ctx, $name, $password) {

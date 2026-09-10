@@ -57,7 +57,8 @@ CREATE TABLE IF NOT EXISTS account (
     id INTEGER PRIMARY KEY,
     account_name TEXT NOT NULL,
     password_hash TEXT NOT NULL,
-    is_admin BOOLEAN NOT NULL DEFAULT 0
+    is_admin BOOLEAN NOT NULL DEFAULT 0,
+    lang TEXT NOT NULL DEFAULT 'fy'
 );
 
 CREATE TABLE IF NOT EXISTS account_song (

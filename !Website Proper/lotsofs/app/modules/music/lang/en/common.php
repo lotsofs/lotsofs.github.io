@@ -11,6 +11,11 @@ return [
 	'nav.login' => 'Log In',
 	'nav.register' => 'Register',
 	'nav.logout' => 'Log Out',
+	'nav.language' => 'Language',
+
+	'language.en' => 'English',
+	'language.de' => 'German',
+	'language.fy' => 'West Frisian',
 
 	'music.title' => 'Music',
 

@@ -1,0 +1,53 @@
+<?php
+
+return [
+
+	'register.title' => 'Registrearje',
+	'register.heading' => 'Registrearje',
+	'register.firstAccount' => 'Der binne noch gjin akkounts, dus foar dit earste is gjin útnodigingskoade nedich.',
+	'register.field.inviteCode' => 'Útnûgingskoade',
+	'register.field.accountName' => 'Akkountnamme',
+	'register.field.password' => 'Wachtwurd',
+	'register.field.passwordConfirm' => 'Wachtwurd werhelje',
+	'register.submit' => 'Registrearje',
+	'register.error.expired' => 'It formulier is ferrûn; besykje it asjebleaft opnij.',
+	'register.error.missing' => 'Folje in akkountnamme en in wachtwurd yn.',
+	'register.error.passwordShort' => 'Wachtwurden moatte op syn minst 8 tekens lang wêze.',
+	'register.error.passwordMismatch' => 'De twa wachtwurden komme net oerien.',
+	'register.error.nameTaken' => 'Dy akkountnamme is al yn gebrûk.',
+	'register.error.badInvite' => 'Dy útnodigingskoade is net jildich of is al brûkt.',
+
+	'login.title' => 'Oanmelde',
+	'login.heading' => 'Oanmelde',
+	'login.field.accountName' => 'Akkountnamme',
+	'login.field.password' => 'Wachtwurd',
+	'login.submit' => 'Oanmelde',
+	'login.error.expired' => 'It formulier is ferrûn; besykje it asjebleaft opnij.',
+	'login.error.rejected' => 'De kombinaasje fan brûkersnamme en wachtwurd is net korrekt.',
+	'login.error.tooMany' => 'Te folle mislearre pogingen. Besykje it oer in pear minuten opnij.',
+
+	'invites.title' => 'Útnûgings',
+	'invites.heading' => 'Útnûgings',
+	'invites.create' => 'Útnûgingskoade oanmeitsje',
+	'invites.empty' => 'Noch gjin útnûgingskoades.',
+	'invites.column.code' => 'Koade',
+	'invites.column.created' => 'Oanmakke',
+	'invites.column.used' => 'Brûkt',
+	'invites.column.action' => 'Aksje',
+	'invites.unused' => 'Net brûkt',
+	'invites.usedBy' => 'Brûkt troch {name}',
+	'invites.revoked' => 'Ynlutsen',
+	'invites.revoke' => 'Ynlûke',
+
+	'accounts.title' => 'Akkounts',
+	'accounts.heading' => 'Akkounts',
+	'accounts.column.name' => 'Akkount',
+	'accounts.column.admin' => 'Admin',
+	'accounts.column.action' => 'Aksje',
+	'accounts.isAdmin' => 'Ja',
+	'accounts.notAdmin' => 'Nee',
+	'accounts.promote' => 'Ta admin meitsje',
+	'accounts.demote' => 'Admin fuortsmite',
+	'accounts.self' => 'Do',
+
+];

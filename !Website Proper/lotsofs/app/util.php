@@ -9,6 +9,24 @@ $globalData = [];
 
 $config = require __DIR__ . '/config.php';
 
+const AVAILABLE_LOCALES = ['en', 'de', 'fy'];
+
+function activeLocale() {
+	static $locale = null;
+
+	if ($locale !== null) {
+		return $locale;
+	}
+
+	if (isset($_SESSION['lang']) && in_array($_SESSION['lang'], AVAILABLE_LOCALES, true)) {
+		return $locale = $_SESSION['lang'];
+	}
+
+	$default = getenv('LOTSOFS_DEFAULT_LOCALE');
+
+	return $locale = in_array($default, AVAILABLE_LOCALES, true) ? $default : 'fy';
+}
+
 function stringCatalogue($module = null) {
 	static $catalogues = [];
 	static $active = null;
@@ -16,7 +34,19 @@ function stringCatalogue($module = null) {
 	if ($module !== null) {
 		$active = $module;
 		if (!isset($catalogues[$module])) {
-			$catalogues[$module] = require __MODULES__ . '/' . $module . '/lang/en.php';
+			$base = require __MODULES__ . '/' . $module . '/lang/en.php';
+			$locale = activeLocale();
+
+			if ($locale === 'en') {
+				$catalogues[$module] = $base;
+			}
+			else {
+				$overlay = array_filter(
+					require __MODULES__ . '/' . $module . '/lang/' . $locale . '.php',
+					fn($value) => $value !== null && $value !== ''
+				);
+				$catalogues[$module] = array_merge($base, $overlay);
+			}
 		}
 	}
 
