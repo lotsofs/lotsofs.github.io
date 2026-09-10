@@ -23,7 +23,7 @@
 			<?php foreach ($globalData['albums'] as $album): ?>
 				<tr>
 					<td class="listIdCell"><?= htmlspecialchars($album['id']) ?></td>
-					<td class="listNameCell"><?= $album['name'] === null ? t('album.list.noName') : htmlspecialchars($album['name']) ?></td>
+					<td class="listNameCell"><a href="<?= htmlspecialchars('/music/songs?' . ($album['artist_id'] === null ? '' : 'artist=' . (int)$album['artist_id'] . '&') . 'album=' . (int)$album['id']) ?>"><?= $album['name'] === null ? t('album.list.noName') : htmlspecialchars($album['name']) ?></a></td>
 					<td class="listAliasCell"><?= htmlspecialchars($album['aliases'] ?? '') ?></td>
 					<td class="listArtistCell"><?= $album['artist'] === null ? t('album.list.noArtist') : htmlspecialchars($album['artist']) ?></td>
 					<td class="listYearCell"><?= htmlspecialchars($album['release_year'] ?? '') ?></td>

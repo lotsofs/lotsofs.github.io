@@ -17,6 +17,11 @@ requireMusicAdminJson($db, t('ajax.notAdmin'));
 const SONG_ID_NEW = 'new';
 const SONG_ID_SKIP = 'skip';
 
+function listedAsAliasId($db, $songId, $providedName) {
+	$row = $db->query("SELECT id FROM song_alias WHERE song_id = ? AND name = ? AND is_actual = 0", [$songId, $providedName])->fetch();
+	return $row ? (int)$row['id'] : null;
+}
+
 $results = [];
 
 foreach ($data as $datum) {
@@ -53,17 +58,17 @@ foreach ($data as $datum) {
 		$targetTitle = $targetRow ? $targetRow['name'] : $providedName;
 
 		if ($db->query("SELECT id FROM song_alias WHERE song_id = ? AND name = ?", [$songId, $providedName])->fetch()) {
-			$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'title' => $providedName, 'status' => 'duplicate', 'message' => t('song.result.aliasDuplicate', ['title' => $targetTitle])];
+			$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'song_alias_id' => listedAsAliasId($db, $songId, $providedName), 'title' => $providedName, 'status' => 'duplicate', 'message' => t('song.result.aliasDuplicate', ['title' => $targetTitle])];
 			continue;
 		}
 
 		if (empty($datum['also_alias_provided_name'])) {
-			$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'title' => $providedName, 'status' => 'duplicate', 'message' => t('song.result.matchedOnly', ['title' => $targetTitle])];
+			$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'song_alias_id' => null, 'title' => $providedName, 'status' => 'duplicate', 'message' => t('song.result.matchedOnly', ['title' => $targetTitle])];
 			continue;
 		}
 
 		$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 0)", [$songId, $providedName]);
-		$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'title' => $providedName, 'status' => 'ok', 'message' => t('song.result.aliased', ['name' => $providedName, 'title' => $targetTitle])];
+		$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'song_alias_id' => listedAsAliasId($db, $songId, $providedName), 'title' => $providedName, 'status' => 'ok', 'message' => t('song.result.aliased', ['name' => $providedName, 'title' => $targetTitle])];
 		continue;
 	}
 
@@ -75,7 +80,7 @@ foreach ($data as $datum) {
 	", [$artistId, $aliasName])->fetch();
 
 	if ($existing) {
-		$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => (int)$existing['id'], 'title' => $aliasName, 'status' => 'duplicate', 'message' => t('song.result.duplicate')];
+		$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => (int)$existing['id'], 'song_alias_id' => listedAsAliasId($db, (int)$existing['id'], $providedName), 'title' => $aliasName, 'status' => 'duplicate', 'message' => t('song.result.duplicate')];
 		continue;
 	}
 
@@ -90,7 +95,7 @@ foreach ($data as $datum) {
 		$message .= t('song.result.alsoAliased', ['name' => $providedName]);
 	}
 
-	$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'title' => $aliasName, 'status' => 'ok', 'message' => $message];
+	$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'song_alias_id' => listedAsAliasId($db, $songId, $providedName), 'title' => $aliasName, 'status' => 'ok', 'message' => $message];
 }
 
 echo json_encode($results);

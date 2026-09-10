@@ -2,8 +2,8 @@
 
 <?php require(__MODULES__ . '/music/views/partials/nav.php') ?>
 
-<h1>
-	<?= t('song.list.heading') ?>
+<h1 id="songListHeading">
+	<?= htmlspecialchars($globalData['listHeading']) ?>
 </h1>
 
 <?php if (!$globalData['songs']): ?>
@@ -35,7 +35,7 @@
 			<select id="filterArtist" name="artist">
 				<option value=""><?= t('song.list.filterAllArtists') ?></option>
 				<?php foreach ($globalData['artistOptions'] as $option): ?>
-					<option value="<?= (int)$option['id'] ?>"<?= (int)$option['id'] === $globalData['filterArtist'] ? ' selected' : '' ?>><?= htmlspecialchars($option['name'] ?? '') ?></option>
+					<option value="<?= (int)$option['id'] ?>"<?= (int)$option['id'] === $globalData['filterArtist'] ? ' selected' : '' ?>><?= $option['name'] === null ? t('artist.list.noName') : htmlspecialchars($option['name']) ?></option>
 				<?php endforeach ?>
 			</select>
 			<label for="filterAlbum"><?= t('song.list.filterAlbum') ?></label>
@@ -48,7 +48,7 @@
 							: $option['artist_id'] === null;
 					?>
 					<?php if ($inScope): ?>
-						<option value="<?= (int)$option['id'] ?>"<?= (int)$option['id'] === $globalData['filterAlbum'] ? ' selected' : '' ?>><?= htmlspecialchars($option['name'] ?? '') ?></option>
+						<option value="<?= (int)$option['id'] ?>"<?= (int)$option['id'] === $globalData['filterAlbum'] ? ' selected' : '' ?>><?= $option['name'] === null ? t('album.list.noName') : htmlspecialchars($option['name']) ?></option>
 					<?php endif ?>
 				<?php endforeach ?>
 			</select>
@@ -88,7 +88,13 @@
 						<tr data-artist-id="<?= (int)$song['artist_id'] ?>" data-album-ids="<?= htmlspecialchars($song['album_ids'] ?? '') ?>"<?= $song['hidden'] ? ' hidden' : '' ?>>
 							<td class="songIdCell"><?= htmlspecialchars($song['id']) ?></td>
 							<td class="songArtistCell"><?= htmlspecialchars($song['artist'] ?? '') ?></td>
-							<td class="songTitleCell"><?= htmlspecialchars($song['title']) ?></td>
+							<?php
+								$canonicalTitle = $song['title'] ?? '';
+								$listedAs = $globalData['listedAsBySong'][(int)$song['id']] ?? null;
+								$allNames = $song['all_names'] ?? '';
+							?>
+							<td class="songTitleCell<?= $listedAs === null ? '' : ' songTitleAliased' ?>" data-canonical-title="<?= htmlspecialchars($canonicalTitle) ?>"<?= $allNames === $canonicalTitle ? '' : ' title="' . htmlspecialchars($allNames) . '"' ?>><?= htmlspecialchars($listedAs ?? $canonicalTitle) ?></td>
+							<td class="songAlbumCell" title="<?= htmlspecialchars($song['albums'] ?? '') ?>"><?= htmlspecialchars($song['albums'] ?? '') ?></td>
 							<?php if ($globalData['showSharedNote']): ?>
 								<td class="songNoteCell"><?= htmlspecialchars($song['objective_note'] ?? '') ?></td>
 							<?php endif ?>
@@ -109,6 +115,7 @@
 		</div>
 	</div>
 	<script id="songAlbumData" type="application/json"><?= json_encode($globalData['albumOptions'], JSON_HEX_TAG) ?></script>
+	<script id="songTrackAliases" type="application/json"><?= json_encode($globalData['trackAliases'], JSON_HEX_TAG) ?></script>
 	<script src="/modules/music/js/songs.js"></script>
 <?php endif ?>
 

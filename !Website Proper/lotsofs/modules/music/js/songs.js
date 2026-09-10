@@ -8,7 +8,9 @@ let songDir = new URLSearchParams(location.search).get("dir") === "desc" ? "desc
 const songArtistSelect = document.getElementById("filterArtist");
 const songAlbumSelect = document.getElementById("filterAlbum");
 const songNoMatch = document.getElementById("songNoMatch");
+const songListHeading = document.getElementById("songListHeading");
 const songAlbumData = JSON.parse(document.getElementById("songAlbumData").textContent);
+const songTrackAliases = JSON.parse(document.getElementById("songTrackAliases").textContent);
 
 function songQuery(sort, dir) {
 	const params = new URLSearchParams();
@@ -53,19 +55,63 @@ function repopulateSongAlbums() {
 		.filter(album => songArtistSelect.value
 			? String(album.artist_id) === songArtistSelect.value
 			: album.artist_id === null)
-		.forEach(album => songAlbumSelect.add(new Option(album.name, album.id)));
+		.forEach(album => songAlbumSelect.add(new Option(album.name === null ? t("album.list.noName") : album.name, album.id)));
 
 	songAlbumSelect.value = Array.from(songAlbumSelect.options).some(option => option.value === previous) ? previous : "";
+}
+
+function applySongTitles() {
+	const album = songAlbumSelect.value;
+
+	Array.from(songListBody.rows).forEach(row => {
+		const cell = row.querySelector(".songTitleCell");
+		if (!cell || cell.querySelector("input")) {
+			return;
+		}
+
+		const songId = row.cells[0].textContent.trim();
+		const listing = album
+			? songTrackAliases.find(entry => String(entry.album_id) === album && String(entry.song_id) === songId)
+			: null;
+
+		cell.textContent = listing ? listing.name : cell.dataset.canonicalTitle;
+		cell.classList.toggle("songTitleAliased", listing !== null && listing !== undefined);
+	});
+}
+
+function songOptionLabel(select, value) {
+	const option = Array.from(select.options).find(candidate => candidate.value === value);
+	return option ? option.textContent : "";
+}
+
+function refreshSongHeading() {
+	if (songAlbumSelect.value) {
+		const album = songAlbumData.find(entry => String(entry.id) === songAlbumSelect.value);
+		const albumName = songOptionLabel(songAlbumSelect, songAlbumSelect.value);
+
+		songListHeading.textContent = album && album.artist_id !== null
+			? t("song.list.headingAlbumBy", { album: albumName, artist: songOptionLabel(songArtistSelect, String(album.artist_id)) })
+			: albumName;
+		return;
+	}
+
+	songListHeading.textContent = songArtistSelect.value
+		? songOptionLabel(songArtistSelect, songArtistSelect.value)
+		: t("song.list.heading");
 }
 
 songArtistSelect.addEventListener("change", () => {
 	repopulateSongAlbums();
 	applySongFilter();
+	applySongTitles();
+	refreshSongHeading();
 	history.replaceState(null, "", songQuery(songSort, songDir));
 });
 
 songAlbumSelect.addEventListener("change", () => {
 	applySongFilter();
+	applySongTitles();
+	refreshSongHeading();
 	history.replaceState(null, "", songQuery(songSort, songDir));
 });
 
@@ -223,6 +269,9 @@ function saveCell(cell, spec, original, value) {
 	})
 	.then(result => {
 		setCellValue(cell, spec, String(result.value));
+		if (spec.field === "title") {
+			cell.dataset.canonicalTitle = String(result.value);
+		}
 		setResult(cell, result.status === "ok" ? "" : result.message);
 	})
 	.catch(error => {
@@ -251,6 +300,9 @@ function handleEdit(event, viaDoubleClick) {
 		return;
 	}
 	if (spec.needsAdmin && !songListTable.dataset.canEdit) {
+		return;
+	}
+	if (cell.classList.contains("songTitleAliased")) {
 		return;
 	}
 

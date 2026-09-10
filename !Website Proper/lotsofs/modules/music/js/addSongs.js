@@ -599,10 +599,10 @@ function assignTrackPositions(tracks) {
 }
 
 function collectAlbums(songResults) {
-	const songIdByKey = new Map();
+	const resultByKey = new Map();
 	songResults.forEach(result => {
 		if (result.song_id) {
-			songIdByKey.set(result.artist_id + "\t" + result.title, result.song_id);
+			resultByKey.set(result.artist_id + "\t" + result.provided_name, result);
 		}
 	});
 
@@ -612,14 +612,14 @@ function collectAlbums(songResults) {
 			return;
 		}
 		const artistId = artistIdByProvidedName.get(item.Artist);
-		const songId = artistId ? songIdByKey.get(artistId + "\t" + item.Title) : null;
-		if (!songId) {
+		const result = artistId ? resultByKey.get(artistId + "\t" + item.Title) : null;
+		if (!result) {
 			return;
 		}
 		if (!albums.has(item.Album)) {
 			albums.set(item.Album, []);
 		}
-		albums.get(item.Album).push({ songId, artistId, title: item.Title, explicit: item.Track });
+		albums.get(item.Album).push({ songId: result.song_id, songAliasId: result.song_alias_id ?? null, artistId, title: item.Title, explicit: item.Track });
 	});
 
 	albums.forEach(assignTrackPositions);
@@ -671,7 +671,7 @@ function buildAlbumTable(songResults) {
 	albums.forEach((tracks, albumName) => {
 		const row = appendChildToElement(albumRows, "tr");
 		row.setAttribute("data_album", albumName);
-		row.setAttribute("data_tracks", JSON.stringify(tracks.map(track => ({ song_id: track.songId, position: track.position }))));
+		row.setAttribute("data_tracks", JSON.stringify(tracks.map(track => ({ song_id: track.songId, song_alias_id: track.songAliasId, position: track.position }))));
 
 		const nameCell = appendChildToElement(row, "td", "");
 		nameCell.classList.add("providedNameCell");

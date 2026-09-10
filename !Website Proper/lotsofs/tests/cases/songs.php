@@ -17,8 +17,29 @@ function songsMakeAlbum($ctx, $name, $artistId, $tracks) {
 	return (int)$response['json'][0]['album_id'];
 }
 
+function songsTitleCellFor($body, $songId) {
+	$pattern = '/<td class="songIdCell">' . (int)$songId . '<\/td>.*?'
+		. '<td class="songTitleCell([^"]*)" data-canonical-title="([^"]*)"( title="([^"]*)")?>([^<]*)<\/td>/s';
+
+	if (!preg_match($pattern, $body, $m)) {
+		return null;
+	}
+
+	return [
+		'classes' => trim($m[1]),
+		'canonical' => $m[2],
+		'tooltip' => $m[3] === '' ? null : $m[4],
+		'text' => $m[5],
+	];
+}
+
+function songsAlbumCellFor($body, $songId) {
+	$pattern = '/<td class="songIdCell">' . (int)$songId . '<\/td>.*?<td class="songAlbumCell"[^>]*>([^<]*)<\/td>/s';
+	return preg_match($pattern, $body, $m) ? $m[1] : null;
+}
+
 function songsVisibleTitles($body) {
-	preg_match_all('/<tr data-artist-id="\d+" data-album-ids="[^"]*"( hidden)?>.*?<td class="songTitleCell">([^<]*)<\/td>/s', $body, $rows, PREG_SET_ORDER);
+	preg_match_all('/<tr data-artist-id="\d+" data-album-ids="[^"]*"( hidden)?>.*?<td class="songTitleCell[^"]*"[^>]*>([^<]*)<\/td>/s', $body, $rows, PREG_SET_ORDER);
 	$visible = [];
 	foreach ($rows as $row) {
 		if ($row[1] === '') {
@@ -389,7 +410,7 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 
-		foreach (['All Songs', 'ID', 'Artist', 'Title', 'Note', 'test_runner', 'Result'] as $heading) {
+		foreach (['All Songs', 'ID', 'Artist', 'Title', 'Album', 'Note', 'test_runner', 'Result'] as $heading) {
 			assertContains($heading, $body, "heading {$heading}");
 		}
 	},
@@ -426,7 +447,7 @@ return [
 		}
 
 		$titlesInOrder = function ($path) use ($ctx, $mine) {
-			preg_match_all('/<td class="songTitleCell">([^<]*)<\/td>/', $ctx->get($path)['body'], $m);
+			preg_match_all('/<td class="songTitleCell[^"]*"[^>]*>([^<]*)<\/td>/', $ctx->get($path)['body'], $m);
 			return array_values(array_filter($m[1], fn($t) => in_array($t, $mine, true)));
 		};
 
@@ -900,9 +921,10 @@ return [
 		assertSame(0, $byKey['id'], 'id is the first cell');
 		assertSame(1, $byKey['artist'], 'artist is the second');
 		assertSame(2, $byKey['title'], 'title is the third');
+		assertSame(3, $byKey['album'], 'album is the fourth');
 		assertTrue(!isset($byKey['note']), 'the shared note column is hidden');
-		assertSame(3, $byKey["score_{$mine}"], 'your score column comes first among the raters');
-		assertSame(4, $byKey["note_{$mine}"], 'your note column sits beside it');
+		assertSame(4, $byKey["score_{$mine}"], 'your score column comes first among the raters');
+		assertSame(5, $byKey["note_{$mine}"], 'your note column sits beside it');
 
 		$indexes = array_values($byKey);
 		assertSame(count($indexes), count(array_unique($indexes)), 'every column has its own index');
@@ -1036,6 +1058,192 @@ return [
 		assertSame(['Ccc Filtered', 'Bbb Filtered', 'Aaa Filtered'], $visible, 'filtered rows stay sorted descending');
 		assertTrue(!in_array('Zzz Elsewhere', $visible, true), 'the other artist stays hidden');
 		assertContains("&amp;artist={$artistId}", $body, 'the sort links carry the filter');
+	},
+
+	'the songs page shows which albums a song is on' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Album Column Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'On Two Records']]);
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'On No Record']]);
+		$songId = $ctx->songId('On Two Records');
+
+		songsMakeAlbum($ctx, 'Aaa Column Record', $artistId, [['song_id' => $songId, 'position' => 1]]);
+		songsMakeAlbum($ctx, 'Zzz Column Record', $artistId, [['song_id' => $songId, 'position' => 1]]);
+
+		$body = $ctx->get('/music/songs')['body'];
+		preg_match_all('/<td class="songTitleCell[^"]*"[^>]*>([^<]*)<\/td>\s*<td class="songAlbumCell"[^>]*>([^<]*)<\/td>/', $body, $m, PREG_SET_ORDER);
+
+		$albumsByTitle = [];
+		foreach ($m as $row) {
+			$albumsByTitle[$row[1]] = $row[2];
+		}
+
+		assertSame('Aaa Column Record, Zzz Column Record', $albumsByTitle['On Two Records'] ?? '', 'both albums are listed');
+		assertSame('', $albumsByTitle['On No Record'] ?? 'missing', 'a song on no album has an empty cell');
+	},
+
+	'filtering to an album retitles its tracks as that release lists them' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Odd Listing Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Studio Version']]);
+		$songId = $ctx->songId('Studio Version');
+
+		$aliased = $ctx->post(SONG_ENDPOINT, [[
+			'artist_id' => $artistId,
+			'title' => 'Sleeve Version',
+			'song_id' => $songId,
+			'also_alias_provided_name' => true,
+		]]);
+		$aliasId = (int)$aliased['json'][0]['song_alias_id'];
+
+		$odd = songsMakeAlbum($ctx, 'Oddly Listed Record', $artistId, [
+			['song_id' => $songId, 'song_alias_id' => $aliasId, 'position' => 1],
+		]);
+		$plain = songsMakeAlbum($ctx, 'Plainly Listed Record', $artistId, [
+			['song_id' => $songId, 'position' => 2],
+		]);
+
+		$cell = fn($path) => songsTitleCellFor($ctx->get($path)['body'], $songId);
+
+		$plainly = $cell("/music/songs?artist={$artistId}");
+		assertSame('Studio Version', $plainly['text'], 'unfiltered shows the actual title');
+		assertSame('', $plainly['classes'], 'and is not marked as retitled');
+
+		$retitled = $cell("/music/songs?artist={$artistId}&album={$odd}");
+		assertSame('Sleeve Version', $retitled['text'], 'the odd release retitles it');
+		assertSame('songTitleAliased', $retitled['classes'], 'and the cell is marked so editing stays off');
+		assertSame('Studio Version', $retitled['canonical'], 'the real title is kept on the cell');
+
+		$ordinary = $cell("/music/songs?artist={$artistId}&album={$plain}");
+		assertSame('Studio Version', $ordinary['text'], 'a release with no odd title leaves it alone');
+		assertSame('', $ordinary['classes'], 'and leaves the cell editable');
+	},
+
+	'the album column lists album names only' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Plain Album Column Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Column Studio Title']]);
+		$songId = $ctx->songId('Column Studio Title');
+
+		$aliased = $ctx->post(SONG_ENDPOINT, [[
+			'artist_id' => $artistId,
+			'title' => 'Column Sleeve Title',
+			'song_id' => $songId,
+			'also_alias_provided_name' => true,
+		]]);
+
+		songsMakeAlbum($ctx, 'Column Record', $artistId, [
+			['song_id' => $songId, 'song_alias_id' => (int)$aliased['json'][0]['song_alias_id'], 'position' => 1],
+		]);
+
+		$body = $ctx->get("/music/songs?artist={$artistId}")['body'];
+
+		assertSame('Column Record', songsAlbumCellFor($body, $songId), 'no listed-as annotation');
+		assertTrue(strpos($body, '(as &quot;') === false, 'the old annotation is gone everywhere');
+	},
+
+	'hovering a title reveals every name the song goes by' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Tooltip Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Tooltip Actual']]);
+		$songId = $ctx->songId('Tooltip Actual');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Tooltip Other', 'song_id' => $songId, 'also_alias_provided_name' => true]]);
+
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Tooltip Lonely']]);
+		$lonelyId = $ctx->songId('Tooltip Lonely');
+
+		$body = $ctx->get("/music/songs?artist={$artistId}")['body'];
+
+		assertSame('Tooltip Actual, Tooltip Other', songsTitleCellFor($body, $songId)['tooltip'], 'actual name first, then aliases');
+		assertSame(null, songsTitleCellFor($body, $lonelyId)['tooltip'], 'a song with only one name gets no tooltip');
+	},
+
+	'the songs page sorts by album' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Album Sort Artist');
+		foreach (['Sorted By Mmm', 'Sorted By Aaa', 'Sorted By Zzz'] as $title) {
+			$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => $title]]);
+		}
+		songsMakeAlbum($ctx, 'Mmm Sorting Album', $artistId, [['song_id' => $ctx->songId('Sorted By Mmm'), 'position' => 1]]);
+		songsMakeAlbum($ctx, 'Aaa Sorting Album', $artistId, [['song_id' => $ctx->songId('Sorted By Aaa'), 'position' => 1]]);
+		songsMakeAlbum($ctx, 'Zzz Sorting Album', $artistId, [['song_id' => $ctx->songId('Sorted By Zzz'), 'position' => 1]]);
+
+		$body = $ctx->get("/music/songs?artist={$artistId}&sort=album&dir=asc")['body'];
+		preg_match_all('/<td class="songAlbumCell"[^>]*>([^<]*)<\/td>/', $body, $m);
+		$mine = array_values(array_filter($m[1], fn($a) => strpos($a, 'Sorting Album') !== false));
+
+		assertSame(['Aaa Sorting Album', 'Mmm Sorting Album', 'Zzz Sorting Album'], $mine, 'ascending by album name');
+	},
+
+	'the artists page links each artist to its filtered songs' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Linked From Artists Page');
+
+		$body = $ctx->get('/music/artists')['body'];
+		assertContains("<a href=\"/music/songs?artist={$artistId}\">Linked From Artists Page</a>", $body, 'the name links to the artist filter');
+	},
+
+	'the albums page links an album to its filtered songs' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Linked From Albums Page');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Linked Album Song']]);
+		$songId = $ctx->songId('Linked Album Song');
+
+		$owned = songsMakeAlbum($ctx, 'An Attributed Linked Album', $artistId, [['song_id' => $songId, 'position' => 1]]);
+		$loose = songsMakeAlbum($ctx, 'A Compilation Linked Album', null, [['song_id' => $songId, 'position' => 1]]);
+
+		$body = $ctx->get('/music/albums')['body'];
+		assertContains("/music/songs?artist={$artistId}&amp;album={$owned}", $body, 'an attributed album carries its artist so the filter is in scope');
+		assertContains("\"/music/songs?album={$loose}\"", $body, 'a compilation links by album alone');
+	},
+
+	'an album link from the albums page actually filters' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Round Trip Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Round Trip On Album']]);
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Round Trip Off Album']]);
+		$albumId = songsMakeAlbum($ctx, 'Round Trip Record', $artistId, [
+			['song_id' => $ctx->songId('Round Trip On Album'), 'position' => 1],
+		]);
+
+		$visible = songsVisibleTitles($ctx->get("/music/songs?artist={$artistId}&album={$albumId}")['body']);
+		assertSame(['Round Trip On Album'], $visible, 'following the link lands on a filtered list');
+	},
+
+	'the heading names whatever the list is showing' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Heading Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Heading Song']]);
+		$songId = $ctx->songId('Heading Song');
+		$owned = songsMakeAlbum($ctx, 'Heading Record', $artistId, [['song_id' => $songId, 'position' => 1]]);
+		$loose = songsMakeAlbum($ctx, 'Heading Compilation', null, [['song_id' => $songId, 'position' => 1]]);
+
+		$heading = function ($path) use ($ctx) {
+			preg_match('/<h1 id="songListHeading">\s*(.*?)\s*<\/h1>/s', $ctx->get($path)['body'], $m);
+			return $m[1] ?? '';
+		};
+
+		assertSame('All Songs', $heading('/music/songs'), 'unfiltered');
+		assertSame('Heading Artist', $heading("/music/songs?artist={$artistId}"), 'filtered to an artist');
+		assertSame('Heading Record — Heading Artist', $heading("/music/songs?artist={$artistId}&album={$owned}"), 'filtered to an attributed album');
+		assertSame('Heading Compilation', $heading("/music/songs?album={$loose}"), 'filtered to a compilation');
+	},
+
+	'the nav calls the songs page Songs' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertContains('<a href="/music/songs" class="navCurrent">Songs</a>', $body, 'the nav entry is Songs');
+		assertContains('<h1 id="songListHeading">', $body, 'the page still has its own heading');
 	},
 
 	'the filtered songs page carries no php warnings' => function ($ctx) {

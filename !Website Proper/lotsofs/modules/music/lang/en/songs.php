@@ -4,6 +4,7 @@ return [
 
 	'song.column.artist' => 'Artist',
 	'song.column.title' => 'Title',
+	'song.column.album' => 'Album',
 	'song.column.found' => 'Found Song',
 	'song.column.nameToStore' => 'Name To Store',
 	'song.column.result' => 'Result',
@@ -27,6 +28,7 @@ return [
 
 	'song.list.title' => 'Songs',
 	'song.list.heading' => 'All Songs',
+	'song.list.headingAlbumBy' => '{artist} — {album}',
 	'song.list.empty' => 'No songs yet.',
 	'song.list.sortAscending' => 'Sort ascending',
 	'song.list.sortDescending' => 'Sort descending',

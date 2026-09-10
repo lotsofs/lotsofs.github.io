@@ -32,6 +32,7 @@ $sortable = [
 	'id' => 's.id',
 	'artist' => 'artist COLLATE NOCASE',
 	'title' => 'title COLLATE NOCASE',
+	'album' => 'albums COLLATE NOCASE',
 ];
 
 if ($globalData['showSharedNote']) {
@@ -97,12 +98,57 @@ $globalData['albumOptions'] = $albumOptions;
 $globalData['filterArtist'] = $filterArtist;
 $globalData['filterAlbum'] = $filterAlbum;
 
+$listHeading = t('song.list.heading');
+
+if ($filterAlbum !== null) {
+	foreach ($albumOptions as $option) {
+		if ((int)$option['id'] !== $filterAlbum) {
+			continue;
+		}
+
+		$albumArtist = null;
+		foreach ($artistOptions as $artist) {
+			if ((int)$artist['id'] === (int)$option['artist_id']) {
+				$albumArtist = $artist['name'] ?? t('artist.list.noName');
+			}
+		}
+
+		$albumName = $option['name'] ?? t('album.list.noName');
+		$listHeading = $albumArtist === null
+			? $albumName
+			: t('song.list.headingAlbumBy', ['album' => $albumName, 'artist' => $albumArtist]);
+	}
+}
+else if ($filterArtist !== null) {
+	foreach ($artistOptions as $option) {
+		if ((int)$option['id'] === $filterArtist) {
+			$listHeading = $option['name'] ?? t('artist.list.noName');
+		}
+	}
+}
+
+$globalData['listHeading'] = $listHeading;
+$pageTitle = $listHeading;
+
 $globalData['songs'] = $db->query("
 	SELECT
 		s.id,
 		s.artist_id,
 		(SELECT group_concat(album_id) FROM album_track WHERE song_id = s.id) AS album_ids,
+		(SELECT group_concat(album_name, ', ') FROM (
+			SELECT (SELECT name FROM album_alias
+				WHERE album_id = at.album_id
+				ORDER BY is_actual DESC LIMIT 1) AS album_name
+			FROM album_track at
+			WHERE at.song_id = s.id
+			ORDER BY album_name COLLATE NOCASE
+		)) AS albums,
 		st.name AS title,
+		(SELECT group_concat(name, ', ') FROM (
+			SELECT name FROM song_alias
+			WHERE song_id = s.id
+			ORDER BY is_actual DESC, name COLLATE NOCASE
+		)) AS all_names,
 		s.objective_note,
 		(SELECT name FROM artist_alias
 			WHERE artist_id = s.artist_id
@@ -114,10 +160,34 @@ $globalData['songs'] = $db->query("
 	ORDER BY {$sortable[$sort]} {$dir}, s.id
 ")->fetchAll();
 
+$trackAliases = [];
+foreach ($db->query("
+	SELECT at.album_id, at.song_id, (SELECT name FROM song_alias WHERE id = at.song_alias_id) AS name
+	FROM album_track at
+	WHERE at.song_alias_id IS NOT NULL
+")->fetchAll() as $track) {
+	$trackAliases[] = [
+		'album_id' => (int)$track['album_id'],
+		'song_id' => (int)$track['song_id'],
+		'name' => $track['name'],
+	];
+}
+
+$listedAsBySong = [];
+foreach ($trackAliases as $track) {
+	if ($filterAlbum !== null && $track['album_id'] === $filterAlbum) {
+		$listedAsBySong[$track['song_id']] = $track['name'];
+	}
+}
+
+$globalData['trackAliases'] = $trackAliases;
+$globalData['listedAsBySong'] = $listedAsBySong;
+
 $columns = [
 	['key' => 'id', 'type' => 'number', 'class' => 'songIdCell', 'label' => t('song.column.id')],
 	['key' => 'artist', 'type' => 'text', 'class' => 'songArtistCell', 'label' => t('song.column.artist')],
 	['key' => 'title', 'type' => 'text', 'class' => 'songTitleCell', 'label' => t('song.column.title')],
+	['key' => 'album', 'type' => 'text', 'class' => 'songAlbumCell', 'label' => t('song.column.album')],
 ];
 
 if ($globalData['showSharedNote']) {

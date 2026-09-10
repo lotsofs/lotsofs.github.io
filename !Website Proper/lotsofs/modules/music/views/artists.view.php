@@ -21,7 +21,7 @@
 			<?php foreach ($globalData['artists'] as $artist): ?>
 				<tr>
 					<td class="listIdCell"><?= htmlspecialchars($artist['id']) ?></td>
-					<td class="listNameCell"><?= $artist['name'] === null ? t('artist.list.noName') : htmlspecialchars($artist['name']) ?></td>
+					<td class="listNameCell"><a href="/music/songs?artist=<?= (int)$artist['id'] ?>"><?= $artist['name'] === null ? t('artist.list.noName') : htmlspecialchars($artist['name']) ?></a></td>
 					<td class="listAliasCell"><?= htmlspecialchars($artist['aliases'] ?? '') ?></td>
 				</tr>
 			<?php endforeach ?>

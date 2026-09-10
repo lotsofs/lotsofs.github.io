@@ -21,6 +21,7 @@ $globalData['isAdmin'] = musicIsAdmin($db);
 $globalData['albums'] = $db->query("
 	SELECT
 		al.id,
+		al.artist_id,
 		al.release_year,
 		(SELECT name FROM album_alias WHERE album_id = al.id AND is_actual = 1) AS name,
 		(SELECT group_concat(name, ', ') FROM (

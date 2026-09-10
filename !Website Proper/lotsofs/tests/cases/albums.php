@@ -165,6 +165,138 @@ return [
 		assertSame(['C:\\music\\ost\\final', 'Frozen Synapse: Original Soundtrack'], $names, 'the pasted string is kept as a second alias');
 	},
 
+	'a song stored under its own name reports no album alias' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Plain Track Owner');
+		$response = $ctx->post('/modules/music/ajax/song.php', [['artist_id' => $artistId, 'title' => 'Plain Track']]);
+
+		assertSame(null, $response['json'][0]['song_alias_id'], 'the actual name is not an album specific alias');
+	},
+
+	'a song listed differently reports the alias it was listed under' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Relisted Track Owner');
+		$songId = makeSong($ctx, $artistId, 'Canonical Name');
+
+		$response = $ctx->post('/modules/music/ajax/song.php', [[
+			'artist_id' => $artistId,
+			'title' => 'Name On The Sleeve',
+			'song_id' => $songId,
+			'also_alias_provided_name' => true,
+		]]);
+
+		$aliasId = (int)$response['json'][0]['song_alias_id'];
+		assertTrue($aliasId > 0, 'an alias id came back');
+
+		$alias = $ctx->db()->query("SELECT name, is_actual FROM song_alias WHERE id = {$aliasId}")->fetch();
+		assertSame('Name On The Sleeve', $alias['name'], 'it points at the album specific spelling');
+		assertSame(0, (int)$alias['is_actual'], 'which is never the actual name');
+	},
+
+	'a matched song whose spelling was not stored reports no alias' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Unstored Spelling Owner');
+		$songId = makeSong($ctx, $artistId, 'Kept Name');
+
+		$response = $ctx->post('/modules/music/ajax/song.php', [[
+			'artist_id' => $artistId,
+			'title' => 'Discarded Spelling',
+			'song_id' => $songId,
+		]]);
+
+		assertSame(null, $response['json'][0]['song_alias_id'], 'nothing was stored so there is nothing to point at');
+	},
+
+	'a track remembers the alias the album listed it under' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Track Alias Owner');
+		$songId = makeSong($ctx, $artistId, 'Studio Title');
+		$aliased = $ctx->post('/modules/music/ajax/song.php', [[
+			'artist_id' => $artistId,
+			'title' => 'Sleeve Title',
+			'song_id' => $songId,
+			'also_alias_provided_name' => true,
+		]]);
+		$aliasId = (int)$aliased['json'][0]['song_alias_id'];
+
+		$response = $ctx->post(ALBUM_ENDPOINT, [[
+			'provided_name' => 'Record With Odd Titles',
+			'album_id' => 'new',
+			'og_name' => 'Record With Odd Titles',
+			'is_actual' => true,
+			'artist_id' => $artistId,
+			'release_year' => '',
+			'tracks' => [['song_id' => $songId, 'song_alias_id' => $aliasId, 'position' => 1]],
+		]]);
+
+		$albumId = (int)$response['json'][0]['album_id'];
+		$track = $ctx->db()->query("SELECT song_id, song_alias_id FROM album_track WHERE album_id = {$albumId}")->fetch();
+
+		assertSame($songId, (int)$track['song_id'], 'still points at the song');
+		assertSame($aliasId, (int)$track['song_alias_id'], 'and at the name this album used');
+	},
+
+	'a track with no odd title leaves the alias column empty' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Ordinary Track Owner');
+		$songId = makeSong($ctx, $artistId, 'Ordinary Title');
+
+		$response = $ctx->post(ALBUM_ENDPOINT, [[
+			'provided_name' => 'Ordinary Record',
+			'album_id' => 'new',
+			'og_name' => 'Ordinary Record',
+			'is_actual' => true,
+			'artist_id' => $artistId,
+			'release_year' => '',
+			'tracks' => [['song_id' => $songId, 'position' => 1]],
+		]]);
+
+		$albumId = (int)$response['json'][0]['album_id'];
+		$aliasId = $ctx->db()->query("SELECT song_alias_id FROM album_track WHERE album_id = {$albumId}")->fetch()['song_alias_id'];
+
+		assertSame(null, $aliasId, 'stored as null');
+	},
+
+	'resubmitting a track corrects the alias rather than duplicating' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Corrected Track Owner');
+		$songId = makeSong($ctx, $artistId, 'Correctable Title');
+		$aliased = $ctx->post('/modules/music/ajax/song.php', [[
+			'artist_id' => $artistId,
+			'title' => 'Corrected Sleeve Title',
+			'song_id' => $songId,
+			'also_alias_provided_name' => true,
+		]]);
+		$aliasId = (int)$aliased['json'][0]['song_alias_id'];
+
+		$payload = [[
+			'provided_name' => 'Correctable Record',
+			'album_id' => 'new',
+			'og_name' => 'Correctable Record',
+			'is_actual' => true,
+			'artist_id' => $artistId,
+			'release_year' => '',
+			'tracks' => [['song_id' => $songId, 'position' => 1]],
+		]];
+
+		$created = $ctx->post(ALBUM_ENDPOINT, $payload);
+		$albumId = (int)$created['json'][0]['album_id'];
+
+		$payload[0]['album_id'] = $albumId;
+		$payload[0]['tracks'] = [['song_id' => $songId, 'song_alias_id' => $aliasId, 'position' => 1]];
+		$ctx->post(ALBUM_ENDPOINT, $payload);
+
+		$tracks = $ctx->db()->query("SELECT song_alias_id FROM album_track WHERE album_id = {$albumId}")->fetchAll();
+		assertSame(1, count($tracks), 'still one track row');
+		assertSame($aliasId, (int)$tracks[0]['song_alias_id'], 'the alias was filled in on the existing row');
+	},
+
 	'blank track numbers become one upwards in paste order' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 

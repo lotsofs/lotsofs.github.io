@@ -25,7 +25,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Solo Act');
 
-		preg_match('/<td class="listIdCell">' . $artistId . '<\/td><td class="listNameCell">([^<]*)<\/td><td class="listAliasCell">([^<]*)<\/td>/',
+		preg_match('/<td class="listIdCell">' . $artistId . '<\/td><td class="listNameCell"><a[^>]*>([^<]*)<\/a><\/td><td class="listAliasCell">([^<]*)<\/td>/',
 			preg_replace('/\s+</', '<', $ctx->get('/music/artists')['body']), $m);
 
 		assertSame('Solo Act', $m[1] ?? '', 'the name column holds the actual name');

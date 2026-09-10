@@ -3,7 +3,7 @@
 return [
 
 	'nav.addSongs' => 'Add Songs',
-	'nav.songs' => 'All Songs',
+	'nav.songs' => 'Songs',
 	'nav.artists' => 'Artists',
 	'nav.albums' => 'Albums',
 	'nav.invites' => 'Invites',

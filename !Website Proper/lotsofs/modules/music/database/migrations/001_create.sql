@@ -46,9 +46,11 @@ CREATE TABLE IF NOT EXISTS album_track (
     id INTEGER PRIMARY KEY,
     album_id INTEGER NOT NULL,
     song_id INTEGER NOT NULL,
+    song_alias_id INTEGER,
     position INTEGER,
     FOREIGN KEY (album_id) REFERENCES album(id),
-    FOREIGN KEY (song_id) REFERENCES song(id)
+    FOREIGN KEY (song_id) REFERENCES song(id),
+    FOREIGN KEY (song_alias_id) REFERENCES song_alias(id)
 );
 
 CREATE TABLE IF NOT EXISTS account (

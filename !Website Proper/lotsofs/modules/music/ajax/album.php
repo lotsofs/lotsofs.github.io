@@ -84,13 +84,14 @@ foreach ($data as $datum) {
 		}
 
 		$position = isset($track['position']) && ctype_digit((string)$track['position']) ? (int)$track['position'] : null;
+		$aliasId = isset($track['song_alias_id']) && ctype_digit((string)$track['song_alias_id']) ? (int)$track['song_alias_id'] : null;
 
 		if ($db->query("SELECT id FROM album_track WHERE album_id = ? AND song_id = ?", [$id, $songId])->fetch()) {
-			$db->query("UPDATE album_track SET position = ? WHERE album_id = ? AND song_id = ?", [$position, $id, $songId]);
+			$db->query("UPDATE album_track SET position = ?, song_alias_id = ? WHERE album_id = ? AND song_id = ?", [$position, $aliasId, $id, $songId]);
 			continue;
 		}
 
-		$db->query("INSERT INTO album_track (album_id, song_id, position) VALUES (?, ?, ?)", [$id, $songId, $position]);
+		$db->query("INSERT INTO album_track (album_id, song_id, song_alias_id, position) VALUES (?, ?, ?, ?)", [$id, $songId, $aliasId, $position]);
 		$added++;
 	}
 
