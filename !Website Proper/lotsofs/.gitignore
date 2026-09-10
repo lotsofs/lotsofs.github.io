@@ -3,3 +3,4 @@ app/secure/*
 *.db
 !*.gitinclude
 /_deploy/
+/data/sessions/

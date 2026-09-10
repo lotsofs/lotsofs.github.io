@@ -16,6 +16,18 @@ function startSession() {
 		return;
 	}
 
+	if (defined('__DATA__')) {
+		$sessionPath = __DATA__ . '/sessions';
+		if (!is_dir($sessionPath)) {
+			@mkdir($sessionPath, 0700, true);
+		}
+		if (is_writable($sessionPath)) {
+			session_save_path($sessionPath);
+			ini_set('session.gc_probability', '1');
+			ini_set('session.gc_divisor', '100');
+		}
+	}
+
 	session_set_cookie_params([
 		'httponly' => true,
 		'samesite' => 'Lax',

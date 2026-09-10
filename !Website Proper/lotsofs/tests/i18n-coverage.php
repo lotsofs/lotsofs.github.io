@@ -1,11 +1,7 @@
 <?php
 
 // usage: php tests/i18n-coverage.php
-// reports, per music locale, which catalogue keys are still untranslated
-// (absent, null, or blank) and which are orphans (not in the english base).
-// english is the base; a key counts as translated only if the locale gives it
-// a non-empty value of its own. exits non-zero only on orphan keys (a real
-// bug); untranslated keys are a known state, not a failure.
+// lists untranslated (absent/null/blank) and orphan keys per music locale; exits non-zero only on orphans
 
 if (php_sapi_name() !== 'cli') {
 	exit;

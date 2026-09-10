@@ -5,7 +5,6 @@ function musicCatalogue() {
 }
 
 function musicSourceFiles() {
-	// server logic lives in app/, browser JS in public/ — the t() calls are in both
 	$roots = [
 		realpath(__DIR__ . '/../../app/modules/music'),
 		realpath(__DIR__ . '/../../public/modules/music'),
@@ -71,7 +70,7 @@ return [
 
 		foreach (array_keys(musicCatalogue()) as $key) {
 			if (str_starts_with($key, 'language.')) {
-				continue; // the nav switcher builds these dynamically, one per available locale
+				continue;
 			}
 			if (!isset($used[$key])) {
 				$unused[] = $key;
