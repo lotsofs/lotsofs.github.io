@@ -1,12 +1,12 @@
 <?php
 
 const MUSIC_AJAX_ENDPOINTS = [
-	'/modules/music/ajax/artistAlias.php',
-	'/modules/music/ajax/song.php',
-	'/modules/music/ajax/songEdit.php',
-	'/modules/music/ajax/songRating.php',
-	'/modules/music/ajax/songRatingPoll.php',
-	'/modules/music/ajax/album.php',
+	'/music/ajax/artist-alias',
+	'/music/ajax/song',
+	'/music/ajax/song-edit',
+	'/music/ajax/song-rating',
+	'/music/ajax/song-rating-poll',
+	'/music/ajax/album',
 ];
 
 return [

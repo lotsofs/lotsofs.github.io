@@ -326,7 +326,7 @@ submitButton.addEventListener('click', () => {
 		return;
 	}
 	statusMessage.innerHTML = t("status.submitting");
-	fetch("/modules/music/ajax/artistAlias.php", {
+	fetch("/music/ajax/artist-alias", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -514,7 +514,7 @@ submitSongsButton.addEventListener('click', () => {
 		return;
 	}
 	statusMessage.innerHTML = t("status.submitting");
-	fetch("/modules/music/ajax/song.php", {
+	fetch("/music/ajax/song", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -784,7 +784,7 @@ submitAlbumsButton.addEventListener('click', () => {
 	}
 
 	statusMessage.innerHTML = t("status.submitting");
-	fetch("/modules/music/ajax/album.php", {
+	fetch("/music/ajax/album", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

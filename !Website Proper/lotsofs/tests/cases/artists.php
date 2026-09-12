@@ -1,6 +1,6 @@
 <?php
 
-const ARTIST_ENDPOINT = '/modules/music/ajax/artistAlias.php';
+const ARTIST_ENDPOINT = '/music/ajax/artist-alias';
 
 return [
 
@@ -50,7 +50,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Message Target');
 
-		$joined = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+		$joined = $ctx->post('/music/ajax/artist-alias', [[
 			'artist_id' => $artistId,
 			'og_name' => 'asdfasdf',
 			'provided_name' => 'asdfasdf',
@@ -60,7 +60,7 @@ return [
 		assertContains('asdfasdf', $joined['json'][0]['message'], 'the message names the spelling');
 		assertContains('Message Target', $joined['json'][0]['message'], 'and the artist it joined');
 
-		$created = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+		$created = $ctx->post('/music/ajax/artist-alias', [[
 			'artist_id' => 'new',
 			'group' => 'Brand New Artist',
 			'og_name' => 'Brand New Artist',
@@ -74,7 +74,7 @@ return [
 	'declining to store a spelling still resolves the artist for the song step' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [
+		$response = $ctx->post('/music/ajax/artist-alias', [
 			['artist_id' => 'new', 'group' => 'g', 'og_name' => 'g', 'provided_name' => 'g', 'is_actual' => true],
 			['artist_id' => 'new', 'group' => 'g', 'og_name' => 'h', 'provided_name' => 'h', 'is_actual' => false],
 			['artist_id' => 'new', 'group' => 'g', 'og_name' => 'i', 'provided_name' => 'i', 'is_actual' => false, 'store_name' => false],
@@ -94,7 +94,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Existing Target');
 
-		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+		$response = $ctx->post('/music/ajax/artist-alias', [[
 			'artist_id' => $artistId,
 			'og_name' => 'f',
 			'provided_name' => 'f',
@@ -112,7 +112,7 @@ return [
 	'a new artist is always named even if the row says not to store it' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+		$response = $ctx->post('/music/ajax/artist-alias', [[
 			'artist_id' => 'new',
 			'group' => 'Unnameable',
 			'og_name' => 'Unnameable',
@@ -129,7 +129,7 @@ return [
 	'every result reports the artist name it resolved to' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [
+		$response = $ctx->post('/music/ajax/artist-alias', [
 			['artist_id' => 'new', 'group' => 'gg', 'og_name' => 'gg', 'provided_name' => 'gg', 'is_actual' => true],
 			['artist_id' => 'new', 'group' => 'gg', 'og_name' => 'hh', 'provided_name' => 'hh', 'is_actual' => false],
 			['artist_id' => 'new', 'group' => 'gg', 'og_name' => 'ii', 'provided_name' => 'ii', 'is_actual' => false, 'store_name' => false],

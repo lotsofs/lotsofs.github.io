@@ -1,8 +1,5 @@
 <?php
 
-require __DIR__ . '/../../app/util.php';
-require __DIR__ . '/../../app/classes/Database.php';
-
 header('Content-Type: application/json');
 
 set_exception_handler(function ($e) {
@@ -11,13 +8,13 @@ set_exception_handler(function ($e) {
 	echo json_encode(['error' => $e->getMessage()]);
 });
 
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 	http_response_code(405);
 	echo json_encode(['error' => 'Method not allowed']);
 	exit;
 }
 
-$data = json_decode(file_get_contents("php://input"), true);
+$data = json_decode(file_get_contents('php://input'), true);
 
 if (!is_array($data)) {
 	http_response_code(400);

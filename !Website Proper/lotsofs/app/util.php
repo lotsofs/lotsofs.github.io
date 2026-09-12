@@ -3,7 +3,7 @@
 define('__ROOT__', __DIR__);
 define('__MODULES__', __ROOT__ . '/modules');
 define('__MAIN__', __MODULES__ . '/main');
-define('__DATA__', dirname(__DIR__) . '/data');
+define('__DATA__', is_dir('/home/lotsofs') ? '/home/lotsofs/data' : dirname(__DIR__) . '/data');
 
 $globalData = [];
 

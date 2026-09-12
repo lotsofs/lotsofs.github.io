@@ -7,7 +7,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Listed Band');
 
-		$ctx->post('/modules/music/ajax/artistAlias.php', [
+		$ctx->post('/music/ajax/artist-alias', [
 			['artist_id' => $artistId, 'og_name' => 'Listed Bnad', 'provided_name' => 'Listed Bnad', 'is_actual' => false],
 			['artist_id' => $artistId, 'og_name' => 'The Listed Band', 'provided_name' => 'The Listed Band', 'is_actual' => false],
 		]);
@@ -36,10 +36,10 @@ return [
 		$ctx->ensureLoggedIn();
 
 		$artistId = $ctx->makeArtist('Album Page Band');
-		$ctx->post('/modules/music/ajax/song.php', [['artist_id' => $artistId, 'title' => 'Album Page Song']]);
+		$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Album Page Song']]);
 		$songId = $ctx->songId('Album Page Song');
 
-		$created = $ctx->post('/modules/music/ajax/album.php', [[
+		$created = $ctx->post('/music/ajax/album', [[
 			'provided_name' => 'The Listed Record',
 			'album_id' => 'new',
 			'og_name' => 'The Listed Record',
@@ -50,7 +50,7 @@ return [
 		]]);
 		$albumId = (int)$created['json'][0]['album_id'];
 
-		$ctx->post('/modules/music/ajax/album.php', [[
+		$ctx->post('/music/ajax/album', [[
 			'provided_name' => 'Self Titled',
 			'album_id' => $albumId,
 			'og_name' => 'Self Titled',
@@ -73,7 +73,7 @@ return [
 	'an album with no artist reads as various artists' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		$ctx->post('/modules/music/ajax/album.php', [[
+		$ctx->post('/music/ajax/album', [[
 			'provided_name' => 'Ownerless Compilation',
 			'album_id' => 'new',
 			'og_name' => 'Ownerless Compilation',

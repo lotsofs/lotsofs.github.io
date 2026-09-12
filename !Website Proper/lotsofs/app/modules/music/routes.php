@@ -12,4 +12,10 @@ $routes += [
 	"/music/language" => __MODULES__ . "/music/routes/language.php",
 	"/music/invites" => __MODULES__ . "/music/routes/invites.php",
 	"/music/accounts" => __MODULES__ . "/music/routes/accounts.php",
+	"/music/ajax/artist-alias" => __MODULES__ . "/music/ajax/artistAlias.php",
+	"/music/ajax/song" => __MODULES__ . "/music/ajax/song.php",
+	"/music/ajax/song-edit" => __MODULES__ . "/music/ajax/songEdit.php",
+	"/music/ajax/song-rating" => __MODULES__ . "/music/ajax/songRating.php",
+	"/music/ajax/song-rating-poll" => __MODULES__ . "/music/ajax/songRatingPoll.php",
+	"/music/ajax/album" => __MODULES__ . "/music/ajax/album.php",
 ];

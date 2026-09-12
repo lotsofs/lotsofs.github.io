@@ -1,6 +1,6 @@
 <?php
 
-const ALBUM_ENDPOINT = '/modules/music/ajax/album.php';
+const ALBUM_ENDPOINT = '/music/ajax/album';
 
 function withPositions($tracks) {
 	$claimed = [];
@@ -29,7 +29,7 @@ function withPositions($tracks) {
 }
 
 function makeSong($ctx, $artistId, $title) {
-	$response = $ctx->post('/modules/music/ajax/song.php', [['artist_id' => $artistId, 'title' => $title]]);
+	$response = $ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => $title]]);
 	return (int)$response['json'][0]['song_id'];
 }
 
@@ -40,11 +40,11 @@ return [
 
 		$artistId = $ctx->makeArtist('Id Returning Owner');
 
-		$first = $ctx->post('/modules/music/ajax/song.php', [['artist_id' => $artistId, 'title' => 'Returns An Id']]);
+		$first = $ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Returns An Id']]);
 		assertSame('ok', $first['json'][0]['status'], 'first status');
 		assertTrue(!empty($first['json'][0]['song_id']), 'a new song reports its id');
 
-		$second = $ctx->post('/modules/music/ajax/song.php', [['artist_id' => $artistId, 'title' => 'Returns An Id']]);
+		$second = $ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Returns An Id']]);
 		assertSame('duplicate', $second['json'][0]['status'], 'second status');
 		assertSame($first['json'][0]['song_id'], $second['json'][0]['song_id'], 'a duplicate reports the same id');
 	},
@@ -62,7 +62,7 @@ return [
 		foreach (array_unique(array_column($pasted, 'Artist')) as $name) {
 			$artistPayload[] = ['artist_id' => 'new', 'group' => $name, 'og_name' => $name, 'provided_name' => $name, 'is_actual' => true];
 		}
-		$artistResults = $ctx->post('/modules/music/ajax/artistAlias.php', $artistPayload)['json'];
+		$artistResults = $ctx->post('/music/ajax/artist-alias', $artistPayload)['json'];
 
 		$artistIdByProvidedName = [];
 		foreach ($artistResults as $result) {
@@ -76,7 +76,7 @@ return [
 		foreach ($pasted as $item) {
 			$songPayload[] = ['artist_id' => (string)$artistIdByProvidedName[$item['Artist']], 'title' => $item['Title']];
 		}
-		$songResults = $ctx->post('/modules/music/ajax/song.php', $songPayload)['json'];
+		$songResults = $ctx->post('/music/ajax/song', $songPayload)['json'];
 
 		$songIdByKey = [];
 		foreach ($songResults as $result) {
@@ -169,7 +169,7 @@ return [
 		$ctx->ensureLoggedIn();
 
 		$artistId = $ctx->makeArtist('Plain Track Owner');
-		$response = $ctx->post('/modules/music/ajax/song.php', [['artist_id' => $artistId, 'title' => 'Plain Track']]);
+		$response = $ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Plain Track']]);
 
 		assertSame(null, $response['json'][0]['song_alias_id'], 'the actual name is not an album specific alias');
 	},
@@ -180,7 +180,7 @@ return [
 		$artistId = $ctx->makeArtist('Relisted Track Owner');
 		$songId = makeSong($ctx, $artistId, 'Canonical Name');
 
-		$response = $ctx->post('/modules/music/ajax/song.php', [[
+		$response = $ctx->post('/music/ajax/song', [[
 			'artist_id' => $artistId,
 			'title' => 'Name On The Sleeve',
 			'song_id' => $songId,
@@ -201,7 +201,7 @@ return [
 		$artistId = $ctx->makeArtist('Unstored Spelling Owner');
 		$songId = makeSong($ctx, $artistId, 'Kept Name');
 
-		$response = $ctx->post('/modules/music/ajax/song.php', [[
+		$response = $ctx->post('/music/ajax/song', [[
 			'artist_id' => $artistId,
 			'title' => 'Discarded Spelling',
 			'song_id' => $songId,
@@ -215,7 +215,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Track Alias Owner');
 		$songId = makeSong($ctx, $artistId, 'Studio Title');
-		$aliased = $ctx->post('/modules/music/ajax/song.php', [[
+		$aliased = $ctx->post('/music/ajax/song', [[
 			'artist_id' => $artistId,
 			'title' => 'Sleeve Title',
 			'song_id' => $songId,
@@ -267,7 +267,7 @@ return [
 
 		$artistId = $ctx->makeArtist('Corrected Track Owner');
 		$songId = makeSong($ctx, $artistId, 'Correctable Title');
-		$aliased = $ctx->post('/modules/music/ajax/song.php', [[
+		$aliased = $ctx->post('/music/ajax/song', [[
 			'artist_id' => $artistId,
 			'title' => 'Corrected Sleeve Title',
 			'song_id' => $songId,

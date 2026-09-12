@@ -4,14 +4,16 @@
 //
 //   php build-deploy.php
 //
-// _deploy/ ends up as { lotsofs.com/, app/, data/ }:
+// _deploy/ ends up as { lotsofs.com/, app/ }:
 //   lotsofs.com/  = the repo's public/  -> the domain's web root
 //   app/          = the repo's app/     -> a sibling of the web root (PHP source, not served)
-//   data/         = the repo's data/    -> the SQLite DB dir (first deploy only; never overwrite after)
 //
-// First deploy: delete everything inside the old lotsofs.com/, then drag the
-// contents of _deploy/ into ~lotsofs/. chmod data/ writable.
-// Later deploys: drag lotsofs.com/ and app/ only; leave data/ and app/config.php alone.
+// The SQLite DB and sessions live under /home/lotsofs/ instead, a directory
+// only the host's unix user can reach (see app/util.php's __DATA__) — nothing
+// to deploy for that, the app creates it on first use.
+//
+// Drag the contents of _deploy/ into ~lotsofs/; leave app/config.php alone on
+// later deploys if it ever holds a real secret.
 //
 // _deploy/ and this script never ship.
 
@@ -22,14 +24,12 @@ $out = $root . '/_deploy';
 $roots = [
 	'public' => 'lotsofs.com',
 	'app' => 'app',
-	'data' => 'data',
 ];
 
 // paths (relative to each source dir) to leave out
 $excludeRel = [
 	'public' => [],
 	'app' => ['modules/music/notes.txt'],
-	'data' => [],
 ];
 
 $excludeName = ['.git', '.gitinclude', '.DS_Store', 'Thumbs.db'];
@@ -99,8 +99,6 @@ $mustExist = [
 	'lotsofs.com/index.php',
 	'lotsofs.com/favicon.ico',
 	'lotsofs.com/js/util.js',
-	'lotsofs.com/ajax/ajax.php',
-	'lotsofs.com/modules/music/ajax/songRatingPoll.php',
 	'lotsofs.com/modules/music/css/styles.css',
 	'lotsofs.com/raw/ktane/translated.html',
 	'app/.htaccess',
@@ -111,7 +109,8 @@ $mustExist = [
 	'app/classes/Database.php',
 	'app/modules/music/inviteCode.php',
 	'app/modules/music/database/migrations/001_create.sql',
-	'data/.htaccess',
+	'app/modules/music/ajaxGuard.php',
+	'app/modules/music/ajax/songRatingPoll.php',
 ];
 // app/secure/cacert.pem is gitignored (large CA bundle, referenced only by
 // currently-disabled code); copied if present, not required.
@@ -120,9 +119,10 @@ $mustNotExist = [
 	'lotsofs.com/util.php',
 	'lotsofs.com/router.php',
 	'lotsofs.com/config.php',
+	'lotsofs.com/ajax',
+	'lotsofs.com/modules/music/ajax',
 	'app/modules/music/notes.txt',
-	'data/music.sqlite',
-	'data/music_test.sqlite',
+	'data',
 	'tests',
 	'TODO.md',
 	'.gitignore',

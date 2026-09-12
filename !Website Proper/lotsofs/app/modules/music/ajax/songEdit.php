@@ -1,6 +1,6 @@
 <?php
 
-require $_SERVER['DOCUMENT_ROOT'] . '/ajax/ajax.php';
+require_once __MODULES__ . '/music/ajaxGuard.php';
 
 stringCatalogue('music');
 

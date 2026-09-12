@@ -1,9 +1,9 @@
 <?php
 
 const ADMIN_ENDPOINTS = [
-	'/modules/music/ajax/artistAlias.php',
-	'/modules/music/ajax/song.php',
-	'/modules/music/ajax/songEdit.php',
+	'/music/ajax/artist-alias',
+	'/music/ajax/song',
+	'/music/ajax/song-edit',
 ];
 
 const ADMIN_PAGES = ['/music/add-songs', '/music/invites', '/music/accounts'];
@@ -48,11 +48,11 @@ return [
 		$ctx->ensureLoggedIn();
 
 		$artistId = $ctx->makeArtist('Guarded Owner');
-		$ctx->post('/modules/music/ajax/song.php', [['artist_id' => $artistId, 'title' => 'Guarded Title']]);
+		$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Guarded Title']]);
 		$songId = $ctx->songId('Guarded Title');
 
 		logInAsViewer($ctx);
-		$ctx->post('/modules/music/ajax/songEdit.php', ['id' => $songId, 'field' => 'title', 'value' => 'Renamed By A Viewer']);
+		$ctx->post('/music/ajax/song-edit', ['id' => $songId, 'field' => 'title', 'value' => 'Renamed By A Viewer']);
 
 		$stored = $ctx->songTitle($songId);
 		assertSame('Guarded Title', $stored, 'the title is untouched');

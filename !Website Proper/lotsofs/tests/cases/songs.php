@@ -1,12 +1,12 @@
 <?php
 
-const SONG_ENDPOINT = '/modules/music/ajax/song.php';
-const EDIT_ENDPOINT = '/modules/music/ajax/songEdit.php';
-const RATING_ENDPOINT = '/modules/music/ajax/songRating.php';
-const RATING_POLL_ENDPOINT = '/modules/music/ajax/songRatingPoll.php';
+const SONG_ENDPOINT = '/music/ajax/song';
+const EDIT_ENDPOINT = '/music/ajax/song-edit';
+const RATING_ENDPOINT = '/music/ajax/song-rating';
+const RATING_POLL_ENDPOINT = '/music/ajax/song-rating-poll';
 
 function songsMakeAlbum($ctx, $name, $artistId, $tracks) {
-	$response = $ctx->post('/modules/music/ajax/album.php', [[
+	$response = $ctx->post('/music/ajax/album', [[
 		'provided_name' => $name,
 		'album_id' => 'new',
 		'og_name' => $name,
@@ -324,7 +324,7 @@ return [
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Dropdown Song One']]);
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Dropdown Song Two']]);
 
-		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+		$response = $ctx->post('/music/ajax/artist-alias', [[
 			'artist_id' => $artistId,
 			'og_name' => 'Dropdown Owner',
 			'provided_name' => 'Dropdown Owner',
@@ -344,7 +344,7 @@ return [
 
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'A Functioning God.ogg', 'song_id' => $songId, 'also_alias_provided_name' => true]]);
 
-		$response = $ctx->post('/modules/music/ajax/artistAlias.php', [[
+		$response = $ctx->post('/music/ajax/artist-alias', [[
 			'artist_id' => $artistId,
 			'og_name' => 'Rematch Owner',
 			'provided_name' => 'Rematch Owner',

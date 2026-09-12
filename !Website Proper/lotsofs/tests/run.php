@@ -218,7 +218,7 @@ class TestContext {
 	}
 
 	public function makeArtist($name) {
-		$response = $this->post('/modules/music/ajax/artistAlias.php', [[
+		$response = $this->post('/music/ajax/artist-alias', [[
 			'artist_id' => 'new',
 			'group' => $name,
 			'og_name' => $name,

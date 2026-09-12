@@ -175,8 +175,8 @@ songListHeaders.forEach(header => {
 	});
 });
 
-const SONG_EDIT_ENDPOINT = "/modules/music/ajax/songEdit.php";
-const RATING_ENDPOINT = "/modules/music/ajax/songRating.php";
+const SONG_EDIT_ENDPOINT = "/music/ajax/song-edit";
+const RATING_ENDPOINT = "/music/ajax/song-rating";
 
 const SCORE_SPEC = {};
 const NOTE_SPEC = { wrapClass: "ratingNoteText" };
@@ -336,7 +336,7 @@ function handleEdit(event, viaDoubleClick) {
 songListBody.addEventListener("click", event => handleEdit(event, false));
 songListBody.addEventListener("dblclick", event => handleEdit(event, true));
 
-const RATING_POLL_ENDPOINT = "/modules/music/ajax/songRatingPoll.php";
+const RATING_POLL_ENDPOINT = "/music/ajax/song-rating-poll";
 const RATING_POLL_INTERVAL = 3000;
 const RATING_POLL_BACKOFF = 60000;
 
