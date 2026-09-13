@@ -65,6 +65,14 @@
 			<div id="songNotePreview" class="songNotePreview songNotePreviewEmpty">
 				<span id="songNotePreviewText"><?= t('song.list.notePreviewEmpty') ?></span>
 			</div>
+			<div class="songMobileSort">
+				<label for="songMobileSortKey"><?= t('song.list.sortBy') ?></label>
+				<select id="songMobileSortKey"></select>
+				<select id="songMobileSortDir">
+					<option value="asc"><?= t('song.list.sortAscending') ?></option>
+					<option value="desc"><?= t('song.list.sortDescending') ?></option>
+				</select>
+			</div>
 			<p id="songEditHint"><?= $globalData['isAdmin'] ? t('song.list.editHintAdmin') : t('song.list.editHint') ?></p>
 			<table id="songListTable" class="hideResultColumn"<?= $globalData['isAdmin'] ? ' data-can-edit="1"' : '' ?>>
 				<thead>
@@ -95,27 +103,27 @@
 				<tbody>
 					<?php foreach ($songRows as $song): ?>
 						<tr data-artist-id="<?= (int)$song['artist_id'] ?>" data-album-ids="<?= htmlspecialchars($song['album_ids'] ?? '') ?>"<?= $song['hidden'] ? ' hidden' : '' ?>>
-							<td class="songIdCell"><?= htmlspecialchars($song['id']) ?></td>
-							<td class="songArtistCell"><?= htmlspecialchars($song['artist'] ?? '') ?></td>
+							<td class="songIdCell" data-label="<?= htmlspecialchars(t('song.column.id')) ?>"><?= htmlspecialchars($song['id']) ?></td>
+							<td class="songArtistCell" data-label="<?= htmlspecialchars(t('song.column.artist')) ?>"><?= htmlspecialchars($song['artist'] ?? '') ?></td>
 							<?php
 								$canonicalTitle = $song['title'] ?? '';
 								$listedAs = $globalData['listedAsBySong'][(int)$song['id']] ?? null;
 								$allNames = $song['all_names'] ?? '';
 							?>
 							<td class="songTitleCell<?= $listedAs === null ? '' : ' songTitleAliased' ?>" data-canonical-title="<?= htmlspecialchars($canonicalTitle) ?>"<?= $allNames === $canonicalTitle ? '' : ' title="' . htmlspecialchars($allNames) . '"' ?>><?= htmlspecialchars($listedAs ?? $canonicalTitle) ?></td>
-							<td class="songAlbumCell" title="<?= htmlspecialchars($song['albums'] ?? '') ?>"><?= htmlspecialchars($song['albums'] ?? '') ?></td>
+							<td class="songAlbumCell" data-label="<?= htmlspecialchars(t('song.column.album')) ?>" title="<?= htmlspecialchars($song['albums'] ?? '') ?>"><?= htmlspecialchars($song['albums'] ?? '') ?></td>
 							<?php if ($globalData['showSharedNote']): ?>
-								<td class="songNoteCell"><?= htmlspecialchars($song['objective_note'] ?? '') ?></td>
+								<td class="songNoteCell" data-label="<?= htmlspecialchars(t('song.column.note')) ?>"><?= htmlspecialchars($song['objective_note'] ?? '') ?></td>
 							<?php endif ?>
 							<?php foreach ($globalData['raters'] as $rater): ?>
 								<?php
 									$score = $song['score_' . (int)$rater['id']];
 									$note = $song['note_' . (int)$rater['id']] ?? '';
 								?>
-								<td class="<?= $rater['scoreClass'] ?>"><?= htmlspecialchars($score === null ? '' : (float)$score) ?></td>
-								<td class="<?= $rater['noteClass'] ?>" title="<?= htmlspecialchars($note) ?>"><span class="ratingNoteText"><?= htmlspecialchars($note) ?></span></td>
+								<td class="<?= $rater['scoreClass'] ?>" data-label="<?= htmlspecialchars(t('song.list.raterScoreLabel', ['name' => $rater['account_name']])) ?>"><?= htmlspecialchars($score === null ? '' : (float)$score) ?></td>
+								<td class="<?= $rater['noteClass'] ?>" data-label="<?= htmlspecialchars(t('song.list.raterNoteLabel', ['name' => $rater['account_name']])) ?>" title="<?= htmlspecialchars($note) ?>"><span class="ratingNoteText"><?= htmlspecialchars($note) ?></span></td>
 							<?php endforeach ?>
-							<td class="songResultCell"></td>
+							<td class="songResultCell" data-label="<?= htmlspecialchars(t('song.column.result')) ?>"></td>
 						</tr>
 					<?php endforeach ?>
 				</tbody>

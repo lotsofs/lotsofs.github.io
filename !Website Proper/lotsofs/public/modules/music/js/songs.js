@@ -8,6 +8,8 @@ let songDir = new URLSearchParams(location.search).get("dir") === "desc" ? "desc
 const songArtistSelect = document.getElementById("filterArtist");
 const songAlbumSelect = document.getElementById("filterAlbum");
 const songNoMatch = document.getElementById("songNoMatch");
+const songMobileSortKey = document.getElementById("songMobileSortKey");
+const songMobileSortDir = document.getElementById("songMobileSortDir");
 const songNotePreview = document.getElementById("songNotePreview");
 const songNotePreviewText = document.getElementById("songNotePreviewText");
 const songNotePreviewEmptyText = songNotePreviewText.textContent;
@@ -161,22 +163,50 @@ function refreshHeaders() {
 	});
 }
 
+function syncMobileSortControls() {
+	songMobileSortKey.value = songSort;
+	songMobileSortDir.value = songDir;
+}
+
+function applySort(key, dir, index, type) {
+	songSort = key;
+	songDir = dir;
+
+	sortRows(index, type);
+	refreshHeaders();
+	syncMobileSortControls();
+	history.replaceState(null, "", songQuery(songSort, songDir));
+}
+
 songListHeaders.forEach(header => {
 	const link = header.querySelector("a");
 	link.dataset.baseLabel = link.textContent.replace(/[\s▲▼]+$/, "");
+	songMobileSortKey.add(new Option(link.dataset.baseLabel, header.dataset.sortKey));
 
 	link.addEventListener("click", event => {
 		event.preventDefault();
 
 		const key = header.dataset.sortKey;
-		songDir = key === songSort && songDir === "asc" ? "desc" : "asc";
-		songSort = key;
+		const dir = key === songSort && songDir === "asc" ? "desc" : "asc";
 
-		sortRows(Number(header.dataset.sortIndex), header.dataset.sortType);
-		refreshHeaders();
-		history.replaceState(null, "", songQuery(songSort, songDir));
+		applySort(key, dir, Number(header.dataset.sortIndex), header.dataset.sortType);
 	});
 });
+
+syncMobileSortControls();
+
+function applyMobileSort() {
+	const key = songMobileSortKey.value;
+	const header = songListHeaders.find(candidate => candidate.dataset.sortKey === key);
+	if (!header) {
+		return;
+	}
+
+	applySort(key, songMobileSortDir.value, Number(header.dataset.sortIndex), header.dataset.sortType);
+}
+
+songMobileSortKey.addEventListener("change", applyMobileSort);
+songMobileSortDir.addEventListener("change", applyMobileSort);
 
 const SONG_EDIT_ENDPOINT = "/music/ajax/song-edit";
 const RATING_ENDPOINT = "/music/ajax/song-rating";

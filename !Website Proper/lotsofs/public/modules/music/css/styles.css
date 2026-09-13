@@ -118,6 +118,10 @@ th, td {
 	overflow-x: auto;
 }
 
+.songMobileSort {
+	display: none;
+}
+
 .songNotePreview {
 	position: sticky;
 	top: 0;
@@ -350,5 +354,98 @@ th, td {
 	#artistMatchRows .rowExtras input[type="text"],
 	#artistMatchRows .rawNamePreview {
 		max-width: 100%;
+	}
+
+	.songMobileSort {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		margin-bottom: 0.8em;
+
+		label {
+			min-width: 0;
+		}
+
+		select {
+			flex: 1 1 0;
+			min-width: 0;
+		}
+	}
+
+	#songListTable {
+		display: block;
+
+		thead {
+			display: none;
+		}
+
+		tbody {
+			display: block;
+		}
+
+		tr {
+			display: flex;
+			flex-direction: column;
+			border: 1px solid #555555;
+			border-radius: 4px;
+			padding: 0.5em 0.7em;
+			margin-bottom: 0.8em;
+		}
+
+		td {
+			display: block;
+			border: none;
+			padding: 0.2em 0;
+		}
+
+		td[data-label]::before {
+			content: attr(data-label);
+			display: block;
+			font-size: 0.75em;
+			font-weight: bold;
+			opacity: 0.65;
+			margin-top: 0.5em;
+		}
+
+		.songIdCell {
+			display: none;
+		}
+
+		.songRatingScoreCell,
+		.songRatingNoteCell,
+		.songResultCell {
+			width: auto;
+		}
+
+		td.songRatingScoreCell {
+			text-align: left;
+		}
+
+		.songRatingNoteCell {
+			white-space: normal;
+		}
+
+		.songTitleCell {
+			order: -2;
+			font-size: 1.15em;
+			font-weight: bold;
+			padding-bottom: 0.3em;
+			margin-bottom: 0.3em;
+			border-bottom: 1px solid #555555;
+		}
+
+		.ratingNoteText {
+			max-width: none;
+			overflow: visible;
+			text-overflow: clip;
+			white-space: normal;
+		}
+
+		.songMyScoreCell,
+		.songMyNoteCell {
+			box-shadow: none;
+			border-left: 3px solid #999999;
+			padding-left: 0.5em;
+		}
 	}
 }

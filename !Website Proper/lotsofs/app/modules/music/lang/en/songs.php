@@ -35,6 +35,9 @@ return [
 	'song.list.editHint' => 'Click your own score or note cell to edit it.',
 	'song.list.editHintAdmin' => 'Click your own score or note cell to edit it. Double-click a title to change it for everyone.',
 	'song.list.notePreviewEmpty' => 'Click a note to see its full text here.',
+	'song.list.sortBy' => 'Sort by',
+	'song.list.raterScoreLabel' => '{name} score',
+	'song.list.raterNoteLabel' => '{name} note',
 
 	'song.list.filterHeading' => 'Filter',
 	'song.list.filterArtist' => 'Artist',

@@ -35,6 +35,9 @@ return [
 	'song.list.editHint' => 'Klicke auf deine eigene Wertung oder Notiz, um sie zu bearbeiten.',
 	'song.list.editHintAdmin' => 'Klicke auf deine eigene Wertung oder Notiz, um sie zu bearbeiten. Doppelklicke einen Titel, um ihn für alle zu ändern.',
 	'song.list.notePreviewEmpty' => 'Klicke auf eine Notiz, um ihren vollständigen Text hier zu sehen.',
+	'song.list.sortBy' => 'Sortieren nach',
+	'song.list.raterScoreLabel' => '{name} Wertung',
+	'song.list.raterNoteLabel' => '{name} Notiz',
 
 	'song.list.filterHeading' => 'Filter',
 	'song.list.filterArtist' => 'Interpret',
