@@ -31,27 +31,33 @@
 			<h2><?= t('song.list.filterHeading') ?></h2>
 			<input type="hidden" name="sort" value="<?= htmlspecialchars($globalData['sort']) ?>">
 			<input type="hidden" name="dir" value="<?= htmlspecialchars($globalData['dir']) ?>">
-			<label for="filterArtist"><?= t('song.list.filterArtist') ?></label>
-			<select id="filterArtist" name="artist">
-				<option value=""><?= t('song.list.filterAllArtists') ?></option>
-				<?php foreach ($globalData['artistOptions'] as $option): ?>
-					<option value="<?= (int)$option['id'] ?>"<?= (int)$option['id'] === $globalData['filterArtist'] ? ' selected' : '' ?>><?= $option['name'] === null ? t('artist.list.noName') : htmlspecialchars($option['name']) ?></option>
-				<?php endforeach ?>
-			</select>
-			<label for="filterAlbum"><?= t('song.list.filterAlbum') ?></label>
-			<select id="filterAlbum" name="album">
-				<option value=""><?= t('song.list.filterAnyAlbum') ?></option>
-				<?php foreach ($globalData['albumOptions'] as $option): ?>
-					<?php
-						$inScope = $globalData['filterArtist'] !== null
-							? (int)$option['artist_id'] === $globalData['filterArtist']
-							: $option['artist_id'] === null;
-					?>
-					<?php if ($inScope): ?>
-						<option value="<?= (int)$option['id'] ?>"<?= (int)$option['id'] === $globalData['filterAlbum'] ? ' selected' : '' ?>><?= $option['name'] === null ? t('album.list.noName') : htmlspecialchars($option['name']) ?></option>
-					<?php endif ?>
-				<?php endforeach ?>
-			</select>
+			<div class="filterRow">
+				<div class="filterGroup">
+					<label for="filterArtist"><?= t('song.list.filterArtist') ?></label>
+					<select id="filterArtist" name="artist">
+						<option value=""><?= t('song.list.filterAllArtists') ?></option>
+						<?php foreach ($globalData['artistOptions'] as $option): ?>
+							<option value="<?= (int)$option['id'] ?>"<?= (int)$option['id'] === $globalData['filterArtist'] ? ' selected' : '' ?>><?= $option['name'] === null ? t('artist.list.noName') : htmlspecialchars($option['name']) ?></option>
+						<?php endforeach ?>
+					</select>
+				</div>
+				<div class="filterGroup">
+					<label for="filterAlbum"><?= t('song.list.filterAlbum') ?></label>
+					<select id="filterAlbum" name="album">
+						<option value=""><?= t('song.list.filterAnyAlbum') ?></option>
+						<?php foreach ($globalData['albumOptions'] as $option): ?>
+							<?php
+								$inScope = $globalData['filterArtist'] !== null
+									? (int)$option['artist_id'] === $globalData['filterArtist']
+									: $option['artist_id'] === null;
+							?>
+							<?php if ($inScope): ?>
+								<option value="<?= (int)$option['id'] ?>"<?= (int)$option['id'] === $globalData['filterAlbum'] ? ' selected' : '' ?>><?= $option['name'] === null ? t('album.list.noName') : htmlspecialchars($option['name']) ?></option>
+							<?php endif ?>
+						<?php endforeach ?>
+					</select>
+				</div>
+			</div>
 			<button type="submit"><?= t('song.list.filterApply') ?></button>
 		</form>
 
