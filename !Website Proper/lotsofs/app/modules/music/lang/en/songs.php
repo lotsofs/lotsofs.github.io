@@ -38,6 +38,11 @@ return [
 	'song.list.sortBy' => 'Sort by',
 	'song.list.raterScoreLabel' => '{name} score',
 	'song.list.raterNoteLabel' => '{name} note',
+	'song.list.tapToEnter' => 'Tap to enter',
+	'song.list.notePreviewHeader' => '{name} rated {song} with {score}:',
+	'song.list.notePreviewClear' => 'Clear',
+	'song.list.cardViewToggleOn' => 'Card view',
+	'song.list.cardViewToggleOff' => 'Table view',
 
 	'song.list.filterHeading' => 'Filter',
 	'song.list.filterArtist' => 'Artist',

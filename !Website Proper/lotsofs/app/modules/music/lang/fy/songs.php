@@ -38,6 +38,11 @@ return [
 	'song.list.sortBy' => 'Sortearje op',
 	'song.list.raterScoreLabel' => '{name} skoare',
 	'song.list.raterNoteLabel' => '{name} notysje',
+	'song.list.tapToEnter' => 'Tik om yn te fieren',
+	'song.list.notePreviewHeader' => '{name} beoardiele {song} mei {score}:',
+	'song.list.notePreviewClear' => 'Wiskje',
+	'song.list.cardViewToggleOn' => 'Kaartwerjefte',
+	'song.list.cardViewToggleOff' => 'Tabelwerjefte',
 
 	'song.list.filterHeading' => 'Filter',
 	'song.list.filterArtist' => 'Artyst',

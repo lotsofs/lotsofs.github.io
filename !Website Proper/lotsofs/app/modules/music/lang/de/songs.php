@@ -38,6 +38,11 @@ return [
 	'song.list.sortBy' => 'Sortieren nach',
 	'song.list.raterScoreLabel' => '{name} Wertung',
 	'song.list.raterNoteLabel' => '{name} Notiz',
+	'song.list.tapToEnter' => 'Zum Eingeben tippen',
+	'song.list.notePreviewHeader' => '{name} bewertete {song} mit {score}:',
+	'song.list.notePreviewClear' => 'Leeren',
+	'song.list.cardViewToggleOn' => 'Kartenansicht',
+	'song.list.cardViewToggleOff' => 'Tabellenansicht',
 
 	'song.list.filterHeading' => 'Filter',
 	'song.list.filterArtist' => 'Interpret',

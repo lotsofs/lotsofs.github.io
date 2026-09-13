@@ -10,12 +10,37 @@ const songAlbumSelect = document.getElementById("filterAlbum");
 const songNoMatch = document.getElementById("songNoMatch");
 const songMobileSortKey = document.getElementById("songMobileSortKey");
 const songMobileSortDir = document.getElementById("songMobileSortDir");
+const songCardViewToggle = document.getElementById("songCardViewToggle");
 const songNotePreview = document.getElementById("songNotePreview");
+const songNotePreviewHeader = document.getElementById("songNotePreviewHeader");
 const songNotePreviewText = document.getElementById("songNotePreviewText");
+const songNotePreviewClear = document.getElementById("songNotePreviewClear");
 const songNotePreviewEmptyText = songNotePreviewText.textContent;
 const songListHeading = document.getElementById("songListHeading");
 const songAlbumData = JSON.parse(document.getElementById("songAlbumData").textContent);
 const songTrackAliases = JSON.parse(document.getElementById("songTrackAliases").textContent);
+
+const songCardViewMedia = window.matchMedia("(max-width: 700px)");
+let songCardViewManual = false;
+
+function setCardView(enabled) {
+	document.documentElement.classList.toggle("songCardView", enabled);
+	songCardViewToggle.setAttribute("aria-pressed", String(enabled));
+	songCardViewToggle.textContent = enabled ? t("song.list.cardViewToggleOff") : t("song.list.cardViewToggleOn");
+}
+
+setCardView(songCardViewMedia.matches);
+
+songCardViewMedia.addEventListener("change", event => {
+	if (!songCardViewManual) {
+		setCardView(event.matches);
+	}
+});
+
+songCardViewToggle.addEventListener("click", () => {
+	songCardViewManual = true;
+	setCardView(!document.documentElement.classList.contains("songCardView"));
+});
 
 function songQuery(sort, dir) {
 	const params = new URLSearchParams();
@@ -366,25 +391,53 @@ function handleEdit(event, viaDoubleClick) {
 	beginCellEdit(cell, spec);
 }
 
-songListBody.addEventListener("click", event => handleEdit(event, false));
-songListBody.addEventListener("dblclick", event => handleEdit(event, true));
-
 let previewedNoteCell = null;
 
 function showNotePreview(cell) {
 	previewedNoteCell = cell;
 	const text = cell.title;
-	songNotePreviewText.textContent = text || songNotePreviewEmptyText;
+
+	if (text) {
+		const song = cell.closest("tr").querySelector(".songTitleCell").textContent.trim();
+		const scoreCell = cell.previousElementSibling;
+		const score = (scoreCell && scoreCell.textContent.trim()) || "–";
+
+		songNotePreviewHeader.textContent = t("song.list.notePreviewHeader", {
+			name: cell.dataset.raterName,
+			song: song,
+			score: score
+		});
+		songNotePreviewText.textContent = text;
+	}
+	else {
+		songNotePreviewHeader.textContent = "";
+		songNotePreviewText.textContent = songNotePreviewEmptyText;
+	}
+
 	songNotePreview.classList.toggle("songNotePreviewEmpty", !text);
+	flashCell(cell);
+	flashCell(songNotePreview);
 }
 
+function clearNotePreview() {
+	previewedNoteCell = null;
+	songNotePreviewHeader.textContent = "";
+	songNotePreviewText.textContent = songNotePreviewEmptyText;
+	songNotePreview.classList.add("songNotePreviewEmpty");
+}
+
+songNotePreviewClear.addEventListener("click", clearNotePreview);
+
 songListBody.addEventListener("click", event => {
-	const cell = event.target.closest("td.songRatingNoteCell");
-	if (!cell || cell.querySelector("input")) {
-		return;
+	const noteCell = event.target.closest("td.songRatingNoteCell");
+	if (noteCell && !noteCell.querySelector("input")) {
+		showNotePreview(noteCell);
 	}
-	showNotePreview(cell);
+
+	handleEdit(event, false);
 });
+
+songListBody.addEventListener("dblclick", event => handleEdit(event, true));
 
 const RATING_POLL_ENDPOINT = "/music/ajax/song-rating-poll";
 const RATING_POLL_INTERVAL = 3000;
