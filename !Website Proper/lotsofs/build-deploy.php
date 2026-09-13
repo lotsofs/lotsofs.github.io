@@ -35,7 +35,11 @@ $excludeRel = [
 $excludeName = ['.git', '.gitinclude', '.DS_Store', 'Thumbs.db'];
 $excludeExt = ['sqlite', 'sqlite-journal', 'sqlite-wal', 'db', 'log', 'bak'];
 
+$deleted = 0;
+
 function rrmdir($dir) {
+	global $deleted;
+
 	if (!is_dir($dir)) {
 		return;
 	}
@@ -44,7 +48,13 @@ function rrmdir($dir) {
 			continue;
 		}
 		$path = $dir . '/' . $entry;
-		is_dir($path) ? rrmdir($path) : unlink($path);
+		if (is_dir($path)) {
+			rrmdir($path);
+		}
+		else {
+			unlink($path);
+			$deleted++;
+		}
 	}
 	rmdir($dir);
 }
@@ -90,18 +100,17 @@ foreach ($roots as $srcName => $dstName) {
 	copyTree($root . '/' . $srcName, $out . '/' . $dstName, '', $excludeRel[$srcName]);
 }
 
+echo "Deleted {$deleted} files from the previous _deploy/\n";
 echo "Copied {$copied} files into _deploy/\n";
 sort($skipped);
 echo 'Skipped: ' . implode(', ', $skipped) . "\n";
 
 $mustExist = [
-	'lotsofs.com/.htaccess',
 	'lotsofs.com/index.php',
 	'lotsofs.com/favicon.ico',
 	'lotsofs.com/js/util.js',
 	'lotsofs.com/modules/music/css/styles.css',
 	'lotsofs.com/raw/ktane/translated.html',
-	'app/.htaccess',
 	'app/util.php',
 	'app/router.php',
 	'app/session.php',

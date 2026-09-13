@@ -1,7 +1,9 @@
 <?php
 
-require __DIR__ . '/../app/util.php';
+$appRoot = is_dir('/home/lotsofs/app') ? '/home/lotsofs/app' : __DIR__ . '/../app';
 
-require __DIR__ . '/../app/classes/Database.php';
+require $appRoot . '/util.php';
 
-require __DIR__ . '/../app/router.php';
+require $appRoot . '/classes/Database.php';
+
+require $appRoot . '/router.php';
