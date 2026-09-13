@@ -8,6 +8,9 @@ let songDir = new URLSearchParams(location.search).get("dir") === "desc" ? "desc
 const songArtistSelect = document.getElementById("filterArtist");
 const songAlbumSelect = document.getElementById("filterAlbum");
 const songNoMatch = document.getElementById("songNoMatch");
+const songNotePreview = document.getElementById("songNotePreview");
+const songNotePreviewText = document.getElementById("songNotePreviewText");
+const songNotePreviewEmptyText = songNotePreviewText.textContent;
 const songListHeading = document.getElementById("songListHeading");
 const songAlbumData = JSON.parse(document.getElementById("songAlbumData").textContent);
 const songTrackAliases = JSON.parse(document.getElementById("songTrackAliases").textContent);
@@ -336,6 +339,23 @@ function handleEdit(event, viaDoubleClick) {
 songListBody.addEventListener("click", event => handleEdit(event, false));
 songListBody.addEventListener("dblclick", event => handleEdit(event, true));
 
+let previewedNoteCell = null;
+
+function showNotePreview(cell) {
+	previewedNoteCell = cell;
+	const text = cell.title;
+	songNotePreviewText.textContent = text || songNotePreviewEmptyText;
+	songNotePreview.classList.toggle("songNotePreviewEmpty", !text);
+}
+
+songListBody.addEventListener("click", event => {
+	const cell = event.target.closest("td.songRatingNoteCell");
+	if (!cell || cell.querySelector("input")) {
+		return;
+	}
+	showNotePreview(cell);
+});
+
 const RATING_POLL_ENDPOINT = "/music/ajax/song-rating-poll";
 const RATING_POLL_INTERVAL = 3000;
 const RATING_POLL_BACKOFF = 60000;
@@ -383,6 +403,10 @@ function applyRatingHalf(row, index, spec, value) {
 
 	setCellValue(cell, spec, value);
 	flashCell(cell);
+
+	if (cell === previewedNoteCell) {
+		showNotePreview(cell);
+	}
 }
 
 function applyRatingChange(change) {

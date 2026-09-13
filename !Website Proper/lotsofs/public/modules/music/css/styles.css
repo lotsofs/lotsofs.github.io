@@ -118,6 +118,22 @@ th, td {
 	overflow-x: auto;
 }
 
+.songNotePreview {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	background-color: #000000;
+	border: 1px solid #555555;
+	padding: 0.4em 0.6em;
+	margin-bottom: 0.6em;
+	word-break: break-word;
+}
+
+.songNotePreview.songNotePreviewEmpty {
+	opacity: 0.6;
+	font-style: italic;
+}
+
 @keyframes songRatingFlash {
 	from {
 		background-color: #555555;

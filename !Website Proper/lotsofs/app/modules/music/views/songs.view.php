@@ -62,6 +62,9 @@
 		</form>
 
 		<div class="songListArea">
+			<div id="songNotePreview" class="songNotePreview songNotePreviewEmpty">
+				<span id="songNotePreviewText"><?= t('song.list.notePreviewEmpty') ?></span>
+			</div>
 			<p id="songEditHint"><?= $globalData['isAdmin'] ? t('song.list.editHintAdmin') : t('song.list.editHint') ?></p>
 			<table id="songListTable" class="hideResultColumn"<?= $globalData['isAdmin'] ? ' data-can-edit="1"' : '' ?>>
 				<thead>

@@ -34,6 +34,7 @@ return [
 	'song.list.sortDescending' => 'Ôfrinnend sortearje',
 	'song.list.editHint' => 'Klik op jo eigen skoare- of notysjesel om dy te bewurkjen.',
 	'song.list.editHintAdmin' => 'Klik op jo eigen skoare- of notysjesel om dy te bewurkjen. Dûbelklik op in titel om dy foar elkenien te feroarjen.',
+	'song.list.notePreviewEmpty' => 'Klik op in notysje om de folsleine tekst hjir te sjen.',
 
 	'song.list.filterHeading' => 'Filter',
 	'song.list.filterArtist' => 'Artyst',
