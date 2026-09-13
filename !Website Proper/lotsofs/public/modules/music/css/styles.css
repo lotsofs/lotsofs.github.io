@@ -1,4 +1,4 @@
-:root {
+﻿:root {
 	color-scheme: dark;
 }
 
@@ -9,7 +9,7 @@ body {
 	background: linear-gradient(
 		45deg,
 		#000000,
-		#0f0000,
+		#00000f,
 		#000000
 	);
 	font-family: 'Noto Sans', sans-serif;
@@ -21,24 +21,27 @@ body {
 	src: url('/modules/music/fonts/NotoSans-VariableFont_wdth,wght.ttf') format('truetype');
 }
 
+nav a,
+nav .navMenuButton,
+nav .navLogout button,
+.songFilters button[type="submit"],
+.songCardViewToggle {
+	border: solid 1px #000000;
+	border-radius: 16px;
+	background-color: #00002f;
+	padding: .4em .8em;
+	color: #ffffff;
+	font: inherit;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
 nav {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
 	padding: 1.5em 0;
-	margin-top: 0;
-
-	a,
-	.navMenuButton,
-	.navLogout button {
-		border: solid 1px #000000;
-		border-radius: 16px;
-		background-color: #2f0000;
-		padding: .4em .8em;
-		text-decoration: none;
-		color: #ffffff;
-		white-space: nowrap;
-	}
 
 	a {
 		margin-right: 1em;
@@ -49,7 +52,7 @@ nav {
 	}
 
 	a.navCurrent {
-		color: #ff9999;
+		color: #9999ff;
 	}
 
 	.navRight {
@@ -58,10 +61,9 @@ nav {
 		margin-left: auto;
 		gap: 1em;
 	}
-	
+
 	.navMenuButton {
 		list-style: none;
-		cursor: pointer;
 	}
 
 	.navMenuButton::-webkit-details-marker,
@@ -69,27 +71,12 @@ nav {
 		display: none;
 	}
 
-	.navAccountMenu {
-		position: relative;
-	}
-	
-	.navLogout {
-		position: absolute;
-		top: 100%;
-		right: 0;
-		margin-top: 0.4em;
-		z-index: 1;
-	}
-	
-	.navLogout button {
-		font: inherit;
-		cursor: pointer;
-	}
-	
+	.navAccountMenu,
 	.navLanguage {
 		position: relative;
 	}
 
+	.navLogout,
 	.navLanguage form {
 		position: absolute;
 		top: 100%;
@@ -97,18 +84,18 @@ nav {
 		margin-top: 0.4em;
 		z-index: 1;
 	}
-	
+
 	.navLanguageMenu {
 		display: flex;
 		flex-direction: column;
 		gap: 0.3em;
-		background-color: #2f0000;
+		background-color: #00002f;
 		border: solid 1px #000000;
 		border-radius: 12px;
 		padding: 0.4em;
 		min-width: 8em;
 	}
-	
+
 	.navLanguageOption {
 		border: solid 1px transparent;
 		border-radius: 8px;
@@ -120,24 +107,24 @@ nav {
 		cursor: pointer;
 		white-space: nowrap;
 	}
-	
+
 	.navLanguageOption:hover {
 		border-color: #000000;
 	}
-	
+
 	.navLanguageOption.navLanguageOptionActive {
-		color: #ff9999;
+		color: #9999ff;
 		border-color: #000000;
 	}
 }
 
 .formError {
-	color: #ff0000;
+	color: #0000ff;
 }
 
 h1 {
 	margin: 0;
-	text-shadow: 0 0 10px #ff0000;
+	text-shadow: 0 0 10px #0000ff;
 }
 
 h2 {
@@ -180,20 +167,39 @@ th, td {
 }
 
 .songLayout {
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-columns: 22em minmax(0, 1fr);
+	grid-template-rows: auto auto;
 	gap: 1.5em;
-	align-items: flex-start;
 }
 
 .songFilters {
-	flex: 0 0 auto;
+	grid-column: 1;
+	grid-row: 1;
+	align-self: start;
 	display: flex;
 	flex-direction: column;
-	gap: 0.4em;
+	gap: 0.8em;
+	background-color: #00001a;
+	border: solid 1px #000000;
+	border-radius: 12px;
+	padding: 1em;
+
+	h2 {
+		margin: 0;
+		font-size: 1.1em;
+	}
 
 	label {
 		min-width: 0;
+	}
+
+	button[type="submit"] {
+		padding: .5em .8em;
+
+		&:hover {
+			background-color: #000040;
+		}
 	}
 }
 
@@ -205,19 +211,56 @@ th, td {
 .filterGroup {
 	display: flex;
 	flex-direction: column;
-	gap: 0.2em;
+	gap: 0.3em;
 	flex: 1 1 0;
 	min-width: 0;
 
+	label {
+		font-size: 0.85em;
+		opacity: 0.75;
+	}
+
 	select {
 		width: 100%;
+		border: solid 1px #000000;
+		border-radius: 8px;
+		background-color: #00002f;
+		color: #ffffff;
+		padding: .4em .6em;
+	}
+}
+
+.songSidePanel {
+	grid-column: 2;
+	grid-row: 1 / span 2;
+	display: flex;
+	flex-direction: column;
+	gap: 0.8em;
+	min-width: 0;
+	pointer-events: none;
+
+	> * {
+		pointer-events: auto;
+	}
+}
+
+.songCardViewToggle {
+	align-self: flex-start;
+
+	&:hover {
+		background-color: #000040;
+	}
+
+	&[aria-pressed="true"] {
+		background-color: #333333;
+		border-color: #999999;
 	}
 }
 
 .songListArea {
-	flex: 1 1 auto;
+	grid-column: 1 / -1;
+	grid-row: 2;
 	min-width: 0;
-	align-self: stretch;
 }
 
 .songTableScroll {
@@ -232,20 +275,40 @@ th, td {
 	position: sticky;
 	top: 0;
 	z-index: 2;
+	max-width: 40em;
 	background-color: #000000;
 	border: 1px solid #555555;
 	padding: 0.4em 0.6em;
-	margin-bottom: 0.6em;
-	max-width: 40em;
-	margin-inline: auto;
 	word-break: break-word;
-}
 
-.songNotePreview.songRatingFlash {
-	animation: songNotePreviewFlash 1.2s ease-out;
+	.songNotePreviewHeader {
+		display: block;
+		font-weight: bold;
+	}
 
-	@media (prefers-reduced-motion: reduce) {
-		animation: none;
+	.songNotePreviewClear {
+		display: block;
+		margin-top: 0.4em;
+	}
+
+	&.songRatingFlash {
+		animation: songNotePreviewFlash 1.2s ease-out;
+
+		@media (prefers-reduced-motion: reduce) {
+			animation: none;
+		}
+	}
+
+	&.songNotePreviewEmpty {
+		font-style: italic;
+
+		#songNotePreviewText {
+			opacity: 0.6;
+		}
+
+		.songNotePreviewClear {
+			display: none;
+		}
 	}
 }
 
@@ -256,28 +319,6 @@ th, td {
 	to {
 		background-color: #000000;
 	}
-}
-
-.songNotePreviewHeader {
-	display: block;
-	font-weight: bold;
-}
-
-.songNotePreview.songNotePreviewEmpty {
-	font-style: italic;
-}
-
-.songNotePreview.songNotePreviewEmpty #songNotePreviewText {
-	opacity: 0.6;
-}
-
-.songNotePreviewClear {
-	display: block;
-	margin-top: 0.4em;
-}
-
-.songNotePreview.songNotePreviewEmpty .songNotePreviewClear {
-	display: none;
 }
 
 @keyframes songRatingFlash {
@@ -377,144 +418,12 @@ th, td {
 	}
 
 	td.songResultCell {
-		color: #ff8a80;
+		color: #808aff;
 	}
 
 	&.hideResultColumn .songResultCell {
 		display: none;
 	}
-}
-
-#albumScrollSpace {
-	height: 75vh;
-}
-
-#artistMatchTable {
-	max-width: 100%;
-
-	&.hideExtrasColumn .extrasCell {
-		display: none;
-	}
-
-	.artistSelectCell {
-		width: 32em;
-	}
-}
-
-#artistMatchRows {
-	select {
-		width: 100%;
-	}
-
-	.providedName {
-		display: block;
-		max-width: 20em;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.rowExtras {
-		display: flex;
-		gap: 0.4em;
-		align-items: center;
-
-		input[type="text"] {
-			flex: 0 0 auto;
-			width: 14em;
-		}
-
-		.rawNamePreview {
-			flex: 0 1 auto;
-			max-width: 20em;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-		}
-
-		label {
-			flex: 0 0 auto;
-			white-space: nowrap;
-		}
-	}
-
-	.aliasNameInLabel {
-		display: inline-block;
-		max-width: 14em;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		vertical-align: bottom;
-	}
-}
-
-@media (max-width: 700px) {
-	body {
-		padding: 0 0.5em;
-	}
-
-	nav {
-		row-gap: 0.4em;
-		column-gap: 0.8em;
-	}
-
-	nav a {
-		margin-right: 0;
-	}
-
-	nav .navRight {
-		margin-left: 0;
-	}
-
-	nav .navLanguage form {
-		left: 0;
-		right: auto;
-	}
-
-	nav .navLogout {
-		left: 0;
-		right: auto;
-	}
-
-	form label {
-		display: block;
-		min-width: 0;
-		margin-top: 0.6em;
-	}
-
-	#artistListTable,
-	#albumListTable,
-	#accountTable,
-	#artistMatchTable,
-	#songTable,
-	#albumTable {
-		display: block;
-		max-width: 100%;
-		overflow-x: auto;
-		-webkit-overflow-scrolling: touch;
-	}
-
-	#pasteInput {
-		width: 100%;
-	}
-
-	#artistMatchRows .rowExtras {
-		flex-wrap: wrap;
-	}
-
-	#artistMatchRows .rowExtras input[type="text"],
-	#artistMatchRows .rawNamePreview {
-		max-width: 100%;
-	}
-}
-
-.songCardViewToggle {
-	margin-bottom: 0.8em;
-}
-
-.songCardViewToggle[aria-pressed="true"] {
-	background-color: #333333;
-	border-color: #999999;
 }
 
 .songCardView .songNotePreview {
@@ -628,5 +537,139 @@ th, td {
 		box-shadow: none;
 		border-left: 3px solid #999999;
 		padding-left: 0.5em;
+	}
+}
+
+#albumScrollSpace {
+	height: 75vh;
+}
+
+#artistMatchTable {
+	max-width: 100%;
+
+	&.hideExtrasColumn .extrasCell {
+		display: none;
+	}
+
+	.artistSelectCell {
+		width: 32em;
+	}
+}
+
+#artistMatchRows {
+	select {
+		width: 100%;
+	}
+
+	.providedName {
+		display: block;
+		max-width: 20em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.rowExtras {
+		display: flex;
+		gap: 0.4em;
+		align-items: center;
+
+		input[type="text"] {
+			flex: 0 0 auto;
+			width: 14em;
+		}
+
+		.rawNamePreview {
+			flex: 0 1 auto;
+			max-width: 20em;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		label {
+			flex: 0 0 auto;
+			white-space: nowrap;
+		}
+	}
+
+	.aliasNameInLabel {
+		display: inline-block;
+		max-width: 14em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		vertical-align: bottom;
+	}
+}
+
+@media (max-width: 700px) {
+	body {
+		padding: 0 0.5em;
+	}
+
+	nav {
+		row-gap: 0.4em;
+		column-gap: 0.8em;
+	}
+
+	nav a {
+		margin-right: 0;
+	}
+
+	nav .navRight {
+		margin-left: 0;
+	}
+
+	nav .navLogout,
+	nav .navLanguage form {
+		left: 0;
+		right: auto;
+	}
+
+	.songLayout {
+		grid-template-columns: 1fr;
+	}
+
+	.songFilters,
+	.songSidePanel,
+	.songListArea {
+		grid-column: auto;
+		grid-row: auto;
+	}
+
+	.songSidePanel {
+		pointer-events: auto;
+	}
+
+	form label {
+		display: block;
+		min-width: 0;
+		margin-top: 0.6em;
+	}
+
+	#artistListTable,
+	#albumListTable,
+	#accountTable,
+	#artistMatchTable,
+	#songTable,
+	#albumTable {
+		display: block;
+		max-width: 100%;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	#pasteInput {
+		width: 100%;
+	}
+
+	#artistMatchRows .rowExtras {
+		flex-wrap: wrap;
+	}
+
+	#artistMatchRows .rowExtras input[type="text"],
+	#artistMatchRows .rawNamePreview {
+		max-width: 100%;
 	}
 }

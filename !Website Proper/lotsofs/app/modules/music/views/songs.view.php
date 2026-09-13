@@ -61,13 +61,16 @@
 			<button type="submit"><?= t('song.list.filterApply') ?></button>
 		</form>
 
-		<div class="songListArea">
+		<div class="songSidePanel">
 			<button type="button" id="songCardViewToggle" class="songCardViewToggle" aria-pressed="false"><?= t('song.list.cardViewToggleOn') ?></button>
 			<div id="songNotePreview" class="songNotePreview songNotePreviewEmpty">
 				<strong id="songNotePreviewHeader" class="songNotePreviewHeader"></strong>
 				<span id="songNotePreviewText"><?= t('song.list.notePreviewEmpty') ?></span>
 				<button type="button" id="songNotePreviewClear" class="songNotePreviewClear"><?= t('song.list.notePreviewClear') ?></button>
 			</div>
+		</div>
+
+		<div class="songListArea">
 			<div class="songMobileSort">
 				<label for="songMobileSortKey"><?= t('song.list.sortBy') ?></label>
 				<select id="songMobileSortKey"></select>
@@ -76,7 +79,6 @@
 					<option value="desc"><?= t('song.list.sortDescending') ?></option>
 				</select>
 			</div>
-			<p id="songEditHint"><?= $globalData['isAdmin'] ? t('song.list.editHintAdmin') : t('song.list.editHint') ?></p>
 			<div class="songTableScroll">
 				<table id="songListTable" class="hideResultColumn"<?= $globalData['isAdmin'] ? ' data-can-edit="1"' : '' ?>>
 					<thead>
@@ -136,6 +138,7 @@
 			<p id="songNoMatch"<?= $visibleCount > 0 ? ' hidden' : '' ?>><?= t('song.list.noMatch') ?></p>
 		</div>
 	</div>
+	<p id="songEditHint"><?= $globalData['isAdmin'] ? t('song.list.editHintAdmin') : t('song.list.editHint') ?></p>
 	<script id="songAlbumData" type="application/json"><?= json_encode($globalData['albumOptions'], JSON_HEX_TAG) ?></script>
 	<script id="songTrackAliases" type="application/json"><?= json_encode($globalData['trackAliases'], JSON_HEX_TAG) ?></script>
 	<script id="songRatingCursor" type="application/json"><?= (int)$globalData['ratingCursor'] ?></script>

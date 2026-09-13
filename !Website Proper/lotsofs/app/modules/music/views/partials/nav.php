@@ -18,7 +18,7 @@
 
 	<div class="navRight">
 		<details class="navLanguage">
-			<summary class="navMenuButton" aria-label="<?= t('nav.language') ?>">🌐</summary>
+			<summary class="navMenuButton" aria-label="<?= t('nav.language') ?>">🌐&#xFE0E;</summary>
 			<form method="post" action="/music/language" class="navLanguageMenu">
 				<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken()) ?>">
 				<input type="hidden" name="return" value="<?= htmlspecialchars(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) ?>">
