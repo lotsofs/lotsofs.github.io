@@ -7,7 +7,7 @@ body {
 	margin: 0;
 	padding: 0 1.5em;
 	background: linear-gradient(
-		45deg,
+		-45deg,
 		#000000,
 		#00000f,
 		#000000
@@ -38,10 +38,14 @@ nav .navLogout button,
 }
 
 nav {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	background-color: #000000;
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
-	padding: 1.5em 0;
+	padding: 0.5em 0;
 
 	a {
 		margin-right: 1em;
@@ -273,7 +277,7 @@ th, td {
 
 .songNotePreview {
 	position: sticky;
-	top: 0;
+	top: 3.35em;
 	z-index: 2;
 	max-width: 40em;
 	background-color: #000000;
@@ -466,6 +470,7 @@ th, td {
 	}
 
 	tr {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		border: 1px solid #555555;
@@ -474,6 +479,10 @@ th, td {
 		margin-bottom: 0.8em;
 		max-width: 40em;
 		margin-inline: auto;
+
+		&[hidden] {
+			display: none;
+		}
 	}
 
 	td {
@@ -499,7 +508,19 @@ th, td {
 	}
 
 	.songIdCell {
-		display: none;
+		position: absolute;
+		top: 0.5em;
+		right: 0.7em;
+		width: auto;
+		padding: 0;
+		font-size: 0.75em;
+		opacity: 0.6;
+
+		&::before {
+			content: "#";
+			display: inline;
+			margin-top: 0;
+		}
 	}
 
 	.songRatingScoreCell,

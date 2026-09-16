@@ -10,6 +10,13 @@ $dbPath = __DATA__ . '/' . $dbFile;
 
 $dbIsNew = !file_exists($dbPath);
 
+if ($dbFile === 'music_test.sqlite' && $dbIsNew) {
+	$liveDbPath = __DATA__ . '/music.sqlite';
+	if (file_exists($liveDbPath)) {
+		copy($liveDbPath, $dbPath);
+	}
+}
+
 $db = new Database($dbPath);
 
 if ($dbIsNew) {
