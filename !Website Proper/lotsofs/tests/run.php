@@ -210,6 +210,14 @@ class TestContext {
 		return $row ? $row['name'] : null;
 	}
 
+	public function songArtistId($songId) {
+		$stmt = $this->db()->prepare("SELECT artist_id FROM song_artist WHERE song_id = ?");
+		$stmt->execute([$songId]);
+		$row = $stmt->fetch();
+
+		return $row ? (int)$row['artist_id'] : 0;
+	}
+
 	public function songCount($title) {
 		$stmt = $this->db()->prepare("SELECT COUNT(*) c FROM song s JOIN song_alias sa ON sa.song_id = s.id WHERE sa.name = ?");
 		$stmt->execute([$title]);

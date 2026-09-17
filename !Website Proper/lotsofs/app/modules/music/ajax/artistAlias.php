@@ -138,7 +138,8 @@ foreach ($results as $index => $result) {
 			SELECT s.id, sa.name, sa.is_actual
 			FROM song s
 			JOIN song_alias sa ON sa.song_id = s.id
-			WHERE s.artist_id = ?
+			JOIN song_artist art ON art.song_id = s.id
+			WHERE art.artist_id = ?
 			ORDER BY sa.name COLLATE NOCASE
 		", [$artistId])->fetchAll();
 	}

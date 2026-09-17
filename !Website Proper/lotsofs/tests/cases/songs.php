@@ -63,8 +63,7 @@ return [
 		$songId = $ctx->songId('First Track');
 		assertTrue($songId > 0, 'the song exists');
 
-		$song = $ctx->db()->query("SELECT artist_id FROM song WHERE id = {$songId}")->fetch();
-		assertSame($artistId, (int)$song['artist_id'], 'attached to the right artist');
+		assertSame($artistId, $ctx->songArtistId($songId), 'attached to the right artist');
 		assertSame('First Track', $ctx->songTitle($songId), 'its actual name is the pasted title');
 	},
 
@@ -126,8 +125,10 @@ return [
 
 		$stored = $ctx->db()->query("
 			SELECT sa.name
-			FROM song s JOIN song_alias sa ON sa.song_id = s.id
-			WHERE s.artist_id = {$artistId}
+			FROM song s
+			JOIN song_alias sa ON sa.song_id = s.id
+			JOIN song_artist art ON art.song_id = s.id
+			WHERE art.artist_id = {$artistId}
 		")->fetchAll(PDO::FETCH_COLUMN);
 		foreach ($titles as $title) {
 			assertTrue(in_array($title, $stored, true), "stored form of {$title}");
@@ -157,7 +158,7 @@ return [
 		$names = $ctx->db()->query("SELECT name FROM song_alias WHERE song_id = {$songId} ORDER BY name")->fetchAll(PDO::FETCH_COLUMN);
 		assertSame(['Bohemian Rapsody', 'Bohemian Rhapsody'], $names, 'both spellings hang off one song');
 
-		$songCount = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song WHERE artist_id = {$artistId}")->fetch()['c'];
+		$songCount = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song_artist WHERE artist_id = {$artistId}")->fetch()['c'];
 		assertSame(1, $songCount, 'no second song was created');
 	},
 
@@ -313,7 +314,7 @@ return [
 
 		assertSame('duplicate', $response['json'][0]['status'], 'the second attempt is refused');
 
-		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song WHERE artist_id = {$artistId}")->fetch()['c'];
+		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song_artist WHERE artist_id = {$artistId}")->fetch()['c'];
 		assertSame(1, $count, 'the check that replaced idx_song_unique still holds');
 	},
 
@@ -638,69 +639,6 @@ return [
 
 		$stored = $ctx->songTitle($songId);
 		assertSame('Untouched By Bad Field', $stored, 'the row is untouched');
-	},
-
-	'a note can be set and changed' => function ($ctx) {
-		$ctx->ensureLoggedIn();
-
-		$artistId = $ctx->makeArtist('Note Owner');
-		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Gets A Note']]);
-		$songId = $ctx->songId('Gets A Note');
-
-		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'first thoughts']);
-		assertSame('ok', $response['json']['status'], 'status');
-		assertSame('first thoughts', $response['json']['value'], 'echoed note');
-
-		$ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'second thoughts']);
-
-		$stored = $ctx->db()->query("SELECT objective_note FROM song WHERE id = {$songId}")->fetch()['objective_note'];
-		assertSame('second thoughts', $stored, 'stored note');
-	},
-
-	'an emptied note is stored as null' => function ($ctx) {
-		$ctx->ensureLoggedIn();
-
-		$artistId = $ctx->makeArtist('Cleared Note Owner');
-		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Loses Its Note']]);
-		$songId = $ctx->songId('Loses Its Note');
-
-		$ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'to be removed']);
-		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => '   ']);
-		assertSame('ok', $response['json']['status'], 'status');
-
-		$stored = $ctx->db()->query("SELECT objective_note FROM song WHERE id = {$songId}")->fetch()['objective_note'];
-		assertSame(null, $stored, 'stored as null rather than an empty string');
-	},
-
-	'two songs may share a note' => function ($ctx) {
-		$ctx->ensureLoggedIn();
-
-		$artistId = $ctx->makeArtist('Shared Note Owner');
-		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Shares A Note One']]);
-		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Shares A Note Two']]);
-
-		foreach (['Shares A Note One', 'Shares A Note Two'] as $title) {
-			$songId = $ctx->songId($title);
-			$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'same note']);
-			assertSame('ok', $response['json']['status'], "note on {$title}");
-		}
-	},
-
-	'the shared note is still stored while its column is hidden' => function ($ctx) {
-		$ctx->ensureLoggedIn();
-
-		$artistId = $ctx->makeArtist('Rendered Note Owner');
-		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Note Is Rendered']]);
-		$songId = $ctx->songId('Note Is Rendered');
-
-		$ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'kept out of sight']);
-
-		$stored = $ctx->db()->query("SELECT objective_note FROM song WHERE id = {$songId}")->fetch()['objective_note'];
-		assertSame('kept out of sight', $stored, 'the note is still saved');
-
-		$body = $ctx->get('/music/songs')['body'];
-		assertTrue(strpos($body, 'kept out of sight') === false, 'but it is not rendered');
-		assertTrue(strpos($body, 'songNoteCell') === false, 'and the column is gone');
 	},
 
 	'a score and subjective note are stored against the rater' => function ($ctx) {

@@ -19,14 +19,14 @@ $id = is_int($rawId) || (is_string($rawId) && ctype_digit($rawId)) ? (int)$rawId
 $field = is_string($data['field'] ?? null) ? $data['field'] : '';
 $value = is_string($data['value'] ?? null) ? trim($data['value']) : '';
 
-if ($field !== 'title' && $field !== 'note') {
+if ($field !== 'title') {
 	http_response_code(400);
 	echo json_encode(['error' => 'Unknown field']);
 	exit;
 }
 
 $song = $db->query("
-	SELECT s.artist_id, s.objective_note, st.name AS title
+	SELECT (SELECT artist_id FROM song_artist WHERE song_id = s.id LIMIT 1) AS artist_id, st.name AS title
 	FROM song s
 	LEFT JOIN song_alias st ON st.song_id = s.id AND st.is_actual = 1
 	WHERE s.id = ?
@@ -34,12 +34,6 @@ $song = $db->query("
 
 if (!$song) {
 	echo json_encode(['status' => 'error', 'value' => '', 'message' => t('song.result.notFound')]);
-	exit;
-}
-
-if ($field === 'note') {
-	$db->query("UPDATE song SET objective_note = ? WHERE id = ?", [$value === '' ? null : $value, $id]);
-	echo json_encode(['status' => 'ok', 'value' => $value, 'message' => '']);
 	exit;
 }
 
@@ -52,7 +46,8 @@ $clash = $db->query("
 	SELECT s.id
 	FROM song s
 	JOIN song_alias sa ON sa.song_id = s.id
-	WHERE s.artist_id = ? AND sa.name = ? AND s.id != ?
+	JOIN song_artist art ON art.song_id = s.id
+	WHERE art.artist_id = ? AND sa.name = ? AND s.id != ?
 ", [$song['artist_id'], $value, $id])->fetch();
 
 if ($clash) {

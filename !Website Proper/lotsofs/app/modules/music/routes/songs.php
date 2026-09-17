@@ -35,9 +35,6 @@ $sortable = [
 	'album' => 'albums COLLATE NOCASE',
 ];
 
-if ($globalData['showSharedNote']) {
-	$sortable['note'] = 's.objective_note COLLATE NOCASE';
-}
 
 $joins = '';
 $selects = '';
@@ -135,7 +132,7 @@ $globalData['ratingCursor'] = (int)$db->query("SELECT COALESCE(MAX(updated_at), 
 $globalData['songs'] = $db->query("
 	SELECT
 		s.id,
-		s.artist_id,
+		(SELECT artist_id FROM song_artist WHERE song_id = s.id LIMIT 1) AS artist_id,
 		(SELECT group_concat(album_id) FROM album_track WHERE song_id = s.id) AS album_ids,
 		(SELECT group_concat(album_name, ', ') FROM (
 			SELECT (SELECT name FROM album_alias
@@ -151,9 +148,8 @@ $globalData['songs'] = $db->query("
 			WHERE song_id = s.id
 			ORDER BY is_actual DESC, name COLLATE NOCASE
 		)) AS all_names,
-		s.objective_note,
 		(SELECT name FROM artist_alias
-			WHERE artist_id = s.artist_id
+			WHERE artist_id = (SELECT artist_id FROM song_artist WHERE song_id = s.id LIMIT 1)
 			ORDER BY is_actual DESC LIMIT 1) AS artist
 		{$selects}
 	FROM song s

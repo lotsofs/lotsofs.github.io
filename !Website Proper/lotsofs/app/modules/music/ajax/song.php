@@ -49,7 +49,7 @@ foreach ($data as $datum) {
 	if ($rawId !== SONG_ID_NEW) {
 		$songId = (int)$rawId;
 
-		if (!$db->query("SELECT id FROM song WHERE id = ? AND artist_id = ?", [$songId, $artistId])->fetch()) {
+		if (!$db->query("SELECT id FROM song WHERE id = ? AND EXISTS (SELECT 1 FROM song_artist WHERE song_id = song.id AND artist_id = ?)", [$songId, $artistId])->fetch()) {
 			$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'title' => $providedName, 'status' => 'error', 'message' => t('song.result.notFound')];
 			continue;
 		}
@@ -76,7 +76,8 @@ foreach ($data as $datum) {
 		SELECT s.id
 		FROM song s
 		JOIN song_alias sa ON sa.song_id = s.id
-		WHERE s.artist_id = ? AND sa.name = ?
+		JOIN song_artist art ON art.song_id = s.id
+		WHERE art.artist_id = ? AND sa.name = ?
 	", [$artistId, $aliasName])->fetch();
 
 	if ($existing) {
@@ -84,8 +85,9 @@ foreach ($data as $datum) {
 		continue;
 	}
 
-	$db->query("INSERT INTO song (artist_id) VALUES (?)", [$artistId]);
+	$db->query("INSERT INTO song DEFAULT VALUES");
 	$songId = (int)$db->pdo->lastInsertId();
+	$db->query("INSERT INTO song_artist (song_id, artist_id) VALUES (?, ?)", [$songId, $artistId]);
 	$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 1)", [$songId, $aliasName]);
 
 	$message = t('song.result.added', ['title' => $aliasName, 'artist' => $artistName]);
