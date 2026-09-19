@@ -25,7 +25,6 @@ const songTrackAliases = JSON.parse(document.getElementById("songTrackAliases").
 const songCardModal = document.getElementById("songCardModal");
 const songCardModalBody = document.getElementById("songCardModalBody");
 const songCardModalClose = document.getElementById("songCardModalClose");
-const songCardModalEdit = document.getElementById("songCardModalEdit");
 
 // The table and the card list are two independently rendered representations of
 // the same songs, kept in sync by pairing each song id to its <tr> and its card.
@@ -111,6 +110,7 @@ const SONG_ARTIST_ENDPOINT = "/music/ajax/song-artist";
 const SONG_ALBUM_ENDPOINT = "/music/ajax/song-album";
 const SONG_LINK_ENDPOINT = "/music/ajax/song-link";
 const SONG_YEAR_ENDPOINT = "/music/ajax/song-year";
+const SONG_DURATION_ENDPOINT = "/music/ajax/song-duration";
 
 function postJson(endpoint, body) {
 	return fetch(endpoint, {
@@ -567,11 +567,65 @@ const yearFieldEditor = {
 	},
 };
 
+function formatDuration(seconds) {
+	return Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
+}
+
+function displayDurationFor(card) {
+	return card.dataset.duration === "" ? "" : formatDuration(Number(card.dataset.duration));
+}
+
+const durationFieldEditor = {
+	enter(card) {
+		const cell = fieldCell(card, "duration");
+		cell.textContent = "";
+
+		const input = document.createElement("input");
+		input.type = "text";
+		input.value = displayDurationFor(card);
+
+		function save() {
+			const songId = card.dataset.songId;
+			const value = input.value.trim();
+
+			if (value === displayDurationFor(card)) {
+				return;
+			}
+
+			input.disabled = true;
+			postJson(SONG_DURATION_ENDPOINT, { song_id: songId, value })
+				.then(result => {
+					input.disabled = false;
+					if (result.status === "ok") {
+						card.dataset.duration = result.value === null ? "" : String(result.value);
+					}
+					else {
+						syncResult(songId, result.message);
+					}
+					input.value = displayDurationFor(card);
+				})
+				.catch(error => {
+					input.disabled = false;
+					input.value = displayDurationFor(card);
+					syncResult(songId, t("status.submitFailed", { error: error.message }));
+				});
+		}
+
+		input.addEventListener("blur", save);
+		cell.appendChild(input);
+	},
+	exit(card) {
+		const cell = fieldCell(card, "duration");
+		cell.textContent = displayDurationFor(card);
+	},
+};
+
 function enterCardEditMode(card) {
 	card.dataset.editing = "1";
 	artistFieldEditor.enter(card);
 	albumFieldEditor.enter(card);
 	yearFieldEditor.enter(card);
+	durationFieldEditor.enter(card);
 	linkFieldEditor.enter(card);
 }
 
@@ -583,25 +637,29 @@ function exitCardEditMode(card) {
 	artistFieldEditor.exit(card);
 	albumFieldEditor.exit(card);
 	yearFieldEditor.exit(card);
+	durationFieldEditor.exit(card);
 	linkFieldEditor.exit(card);
 }
 
-if (songCardModalEdit) {
-	songCardModalEdit.addEventListener("click", () => {
-		const card = songCardModalBody.firstElementChild;
-		if (!card) {
-			return;
-		}
+function handleCardEditClick(event) {
+	const button = event.target.closest(".songCardEditBtn");
+	if (!button) {
+		return;
+	}
 
-		const titleCell = fieldCell(card, "title");
-		if (titleCell && !isBeingEdited(titleCell) && !titleCell.classList.contains("songTitleAliased")) {
-			beginCellEdit(titleCell, TITLE_SPEC);
-		}
+	const card = button.closest("[data-song-id]");
+	if (!card) {
+		return;
+	}
 
-		if (card.dataset.editing !== "1") {
-			enterCardEditMode(card);
-		}
-	});
+	const titleCell = fieldCell(card, "title");
+	if (titleCell && !isBeingEdited(titleCell) && !titleCell.classList.contains("songTitleAliased")) {
+		beginCellEdit(titleCell, TITLE_SPEC);
+	}
+
+	if (card.dataset.editing !== "1") {
+		enterCardEditMode(card);
+	}
 }
 
 songCardModal.addEventListener("click", event => {
@@ -637,6 +695,16 @@ songCardViewToggle.addEventListener("click", () => {
 	songCardViewManual = true;
 	setCardView(!document.documentElement.classList.contains("songCardView"));
 });
+
+const songNav = document.querySelector("nav");
+
+const songStickyOffsets = new ResizeObserver(() => {
+	document.documentElement.style.setProperty("--songNavHeight", songNav.getBoundingClientRect().height + "px");
+	document.documentElement.style.setProperty("--songHeaderHeight", songListTable.tHead.getBoundingClientRect().height + "px");
+});
+
+songStickyOffsets.observe(songNav);
+songStickyOffsets.observe(songListTable.tHead);
 
 function songQuery(sort, dir) {
 	const params = new URLSearchParams();
@@ -764,12 +832,20 @@ songAlbumSelect.addEventListener("change", () => {
 	history.replaceState(null, "", songQuery(songSort, songDir));
 });
 
+function durationSeconds(text) {
+	const [minutes, seconds] = text.split(":");
+	return Number(minutes) * 60 + Number(seconds);
+}
+
 function compareCells(a, b, type) {
 	if (a === "" || b === "") {
 		return a === b ? 0 : (a === "" ? -1 : 1);
 	}
 	if (type === "number") {
 		return Number(a) - Number(b);
+	}
+	if (type === "duration") {
+		return durationSeconds(a) - durationSeconds(b);
 	}
 	const x = a.toLowerCase();
 	const y = b.toLowerCase();
@@ -924,6 +1000,7 @@ function beginCellEdit(cell, spec) {
 
 	syncResult(songId, "");
 	value.textContent = "";
+	cell.classList.remove("songCellEmpty");
 	cell.removeAttribute("title");
 	value.appendChild(input);
 	input.focus();
@@ -1084,6 +1161,7 @@ function handleListClick(event) {
 		showFilepathPreview(pathAbbr);
 	}
 
+	handleCardEditClick(event);
 	handleEdit(event);
 }
 

@@ -13,6 +13,7 @@
 		$artistLabel = htmlspecialchars(t('song.column.artist'));
 		$albumLabel = htmlspecialchars(t('song.column.album'));
 		$yearLabel = htmlspecialchars(t('song.column.year'));
+		$durationLabel = htmlspecialchars(t('song.column.duration'));
 		$linksLabel = htmlspecialchars(t('song.column.links'));
 		$resultLabel = htmlspecialchars(t('song.column.result'));
 		$tapToEnterAttr = ' data-placeholder="' . htmlspecialchars(t('song.list.tapToEnter')) . '"';
@@ -66,6 +67,10 @@
 			$song['fallbackYearAttr'] = htmlspecialchars($song['fallback_year'] !== null ? (string)(int)$song['fallback_year'] : '');
 			$displayYear = $song['song_year'] ?? $song['fallback_year'];
 			$song['displayYearValue'] = htmlspecialchars($displayYear !== null ? (string)(int)$displayYear : '');
+
+			$duration = $song['duration'] !== null ? (int)$song['duration'] : null;
+			$song['durationAttr'] = htmlspecialchars($duration !== null ? (string)$duration : '');
+			$song['durationValue'] = $duration === null ? '' : sprintf('%d:%02d', intdiv($duration, 60), $duration % 60);
 
 			$song['spotifyTrackId'] = null;
 			if (!empty($song['spotify_url'])) {
@@ -254,6 +259,7 @@
 								<td class="songTitleCell<?= $song['titleAliasedClass'] ?>" data-field="title" data-canonical-title="<?= $song['canonicalTitleAttr'] ?>"<?= $song['titleTooltipAttr'] ?>><?= $song['titleValue'] ?></td>
 								<td class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><?= $song['albumsValue'] ?></td>
 								<td class="songYearCell" data-field="year"><?= $song['displayYearValue'] ?></td>
+								<td class="songDurationCell" data-field="duration"><?= $song['durationValue'] ?></td>
 								<td class="songLinksCell" data-field="links">
 									<?php foreach ($song['linkAbbrs'] as $abbr): ?>
 										<?php if ($abbr['isPath']): ?>
@@ -287,8 +293,13 @@
 				</table>
 				<div id="songCards" class="hideResultColumn">
 					<?php foreach ($songRows as $song): ?>
-						<dl class="songCard" data-song-id="<?= (int)$song['id'] ?>" data-artist-id="<?= (int)$song['artist_id'] ?>" data-artist-ids="<?= $song['artistIdsAttr'] ?>" data-album-ids="<?= $song['albumIdsAttr'] ?>" data-links="<?= $song['linksAttr'] ?>" data-song-year="<?= $song['songYearAttr'] ?>" data-fallback-year="<?= $song['fallbackYearAttr'] ?>"<?= $song['hiddenAttr'] ?>>
-							<dd class="songIdCell" data-field="id"><?= htmlspecialchars($song['id']) ?></dd>
+						<dl class="songCard" data-song-id="<?= (int)$song['id'] ?>" data-artist-id="<?= (int)$song['artist_id'] ?>" data-artist-ids="<?= $song['artistIdsAttr'] ?>" data-album-ids="<?= $song['albumIdsAttr'] ?>" data-links="<?= $song['linksAttr'] ?>" data-song-year="<?= $song['songYearAttr'] ?>" data-fallback-year="<?= $song['fallbackYearAttr'] ?>" data-duration="<?= $song['durationAttr'] ?>"<?= $song['hiddenAttr'] ?>>
+							<div class="songCardIdRow">
+								<dd class="songIdCell" data-field="id"><?= htmlspecialchars($song['id']) ?></dd>
+								<?php if ($globalData['isAdmin']): ?>
+									<button type="button" class="songCardEditBtn"><?= htmlspecialchars(t('song.list.cardModalEdit')) ?></button>
+								<?php endif ?>
+							</div>
 							<dd class="songTitleCell<?= $song['titleAliasedClass'] ?>" data-field="title" data-canonical-title="<?= $song['canonicalTitleAttr'] ?>"<?= $song['titleTooltipAttr'] ?>><?= $song['titleValue'] ?></dd>
 							<div class="songCardMeta">
 								<div class="songCardInfo">
@@ -298,6 +309,8 @@
 									<dd class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><?= $song['albumsValue'] ?></dd>
 									<dt><?= $yearLabel ?></dt>
 									<dd class="songYearCell" data-field="year"><?= $song['displayYearValue'] ?></dd>
+									<dt><?= $durationLabel ?></dt>
+									<dd class="songDurationCell" data-field="duration"><?= $song['durationValue'] ?></dd>
 								</div>
 								<div class="songCardLinksCol">
 									<dt><?= $linksLabel ?></dt>
@@ -345,9 +358,6 @@
 				<div id="songCardModal" class="songCardModal hideResultColumn" hidden>
 					<div class="songCardModalDialog">
 						<div class="songCardModalActions">
-							<?php if ($globalData['isAdmin']): ?>
-								<button type="button" id="songCardModalEdit" class="songCardModalEdit"><?= htmlspecialchars(t('song.list.cardModalEdit')) ?></button>
-							<?php endif ?>
 							<button type="button" id="songCardModalClose" class="songCardModalClose"><?= htmlspecialchars(t('song.list.cardModalClose')) ?></button>
 						</div>
 						<div id="songCardModalBody"></div>

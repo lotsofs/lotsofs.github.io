@@ -267,18 +267,13 @@ th, td {
 	min-width: 0;
 }
 
-.songListScroll {
-	overflow-x: auto;
-	max-width: 100%;
-}
-
 .songMobileSort {
 	display: none;
 }
 
 .songNotePreview {
 	position: sticky;
-	top: 3.35em;
+	top: calc(var(--songNavHeight, 3.35em) + var(--songHeaderHeight, 0px) - 1px);
 	z-index: 2;
 	max-width: 40em;
 	background-color: #000000;
@@ -359,6 +354,39 @@ th, td {
 }
 
 #songListTable {
+	thead {
+		position: sticky;
+		top: var(--songNavHeight, 3.35em);
+		z-index: 3;
+		background-color: #000000;
+	}
+
+	thead th {
+		border: none;
+		background-color: #000000;
+		box-shadow: inset -1px 0 0 #555555, inset 0 1px 0 #555555, inset 0 -1px 0 #555555;
+	}
+
+	thead .songIdCell {
+		box-shadow: inset 1px 0 0 #555555, inset -1px 0 0 #555555, inset 0 1px 0 #555555, inset 0 -1px 0 #555555;
+	}
+
+	thead .songRaterGroup {
+		box-shadow: inset -1px 0 0 #555555, inset 0 1px 0 #555555;
+	}
+
+	thead .songMineGroup {
+		box-shadow: inset 1px 0 0 #999999, inset -1px 0 0 #999999, inset 0 1px 0 #999999;
+	}
+
+	thead .songMyScoreCell {
+		box-shadow: inset 1px 0 0 #999999, inset -1px 0 0 #555555, inset 0 1px 0 #555555, inset 0 -1px 0 #555555;
+	}
+
+	thead .songMyNoteCell {
+		box-shadow: inset -1px 0 0 #999999, inset 0 1px 0 #555555, inset 0 -1px 0 #555555;
+	}
+
 	th a {
 		color: inherit;
 		text-decoration: none;
@@ -568,15 +596,36 @@ th, td {
 		font-style: italic;
 	}
 
-	.songIdCell {
+	.songCardIdRow {
 		position: absolute;
 		top: 0.5em;
 		right: 0.7em;
+		display: flex;
+		align-items: center;
+		gap: 0.4em;
+	}
+
+	.songIdCell {
 		font-size: 1em;
 		opacity: 0.6;
 
 		&::before {
 			content: "#";
+		}
+	}
+
+	.songCardEditBtn {
+		border: solid 1px #000000;
+		border-radius: 16px;
+		background-color: #00002f;
+		padding: 0.1em 0.6em;
+		color: #ffffff;
+		font: inherit;
+		font-size: 0.8em;
+		cursor: pointer;
+
+		&:hover {
+			background-color: #000040;
 		}
 	}
 
@@ -613,6 +662,10 @@ th, td {
 	}
 
 	dt:has(+ .songYearCell:empty) {
+		display: none;
+	}
+
+	dt:has(+ .songDurationCell:empty) {
 		display: none;
 	}
 
@@ -759,8 +812,7 @@ th, td {
 	gap: 0.4em;
 }
 
-.songCardModalClose,
-.songCardModalEdit {
+.songCardModalClose {
 	border: solid 1px #000000;
 	border-radius: 16px;
 	background-color: #00002f;

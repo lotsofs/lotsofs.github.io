@@ -32,6 +32,7 @@ $sortable = [
 	'title' => 'title COLLATE NOCASE',
 	'album' => 'albums COLLATE NOCASE',
 	'year' => 'COALESCE(song_year, fallback_year)',
+	'duration' => 's.duration',
 ];
 
 
@@ -162,6 +163,7 @@ $globalData['songs'] = $db->query("
 		(SELECT youtube_url FROM song_link WHERE song_id = s.id) AS youtube_url,
 		(SELECT soundcloud_url FROM song_link WHERE song_id = s.id) AS soundcloud_url,
 		s.year AS song_year,
+		s.duration,
 		(SELECT MIN(al.release_year) FROM album_track at
 			JOIN album al ON al.id = at.album_id
 			WHERE at.song_id = s.id AND al.release_year IS NOT NULL) AS fallback_year
@@ -225,6 +227,7 @@ $columns = [
 	['key' => 'title', 'type' => 'text', 'class' => 'songTitleCell', 'label' => t('song.column.title')],
 	['key' => 'album', 'type' => 'text', 'class' => 'songAlbumCell', 'label' => t('song.column.album')],
 	['key' => 'year', 'type' => 'number', 'class' => 'songYearCell', 'label' => t('song.column.year')],
+	['key' => 'duration', 'type' => 'duration', 'class' => 'songDurationCell', 'label' => t('song.column.duration')],
 ];
 
 foreach ($raters as $index => $rater) {

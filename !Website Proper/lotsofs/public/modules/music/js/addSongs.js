@@ -34,6 +34,7 @@ const COLUMN_ROLES = [
 	{ value: "album", label: t("song.column.album") },
 	{ value: "track", label: t("addSongs.column.track") },
 	{ value: "year", label: t("album.column.year") },
+	{ value: "duration", label: t("song.column.duration") },
 	{ value: "spotify_url", label: t("song.link.spotify") },
 	{ value: "youtube_url", label: t("song.link.youtube") },
 	{ value: "soundcloud_url", label: t("song.link.soundcloud") },
@@ -51,6 +52,9 @@ function defaultRoleForColumnIndex(index) {
 
 function guessRoleForColumn(index, example) {
 	const value = example.trim();
+	if (/^\d+:[0-5]\d$/.test(value)) {
+		return "duration";
+	}
 	if (/open\.spotify\.com/.test(value) || /^[A-Za-z0-9]{22}$/.test(value)) {
 		return "spotify_url";
 	}
@@ -178,6 +182,7 @@ function buildPastedRowsFromMapping() {
 	const albumIndex = roles.indexOf("album");
 	const trackIndex = roles.indexOf("track");
 	const yearIndex = roles.indexOf("year");
+	const durationIndex = roles.indexOf("duration");
 	const linkIndexByRole = new Map();
 	LINK_COLUMN_ROLES.forEach(role => {
 		const index = roles.indexOf(role);
@@ -209,6 +214,7 @@ function buildPastedRowsFromMapping() {
 			Album: albumIndex !== -1 ? (fields[albumIndex] || "").trim() : "",
 			Track: /^\d+$/.test(trackRaw) ? Number(trackRaw) : null,
 			Year: yearIndex !== -1 ? (fields[yearIndex] || "").trim() : "",
+			Duration: durationIndex !== -1 ? (fields[durationIndex] || "").trim() : "",
 			Links: links,
 		});
 	});
@@ -1078,6 +1084,7 @@ const submitExtrasButton = document.getElementById("submitExtrasButton");
 
 let currentLinkRoles = [];
 let currentExtrasHasYear = false;
+let currentExtrasHasDuration = false;
 
 function hideExtrasTable() {
 	extrasTableHead.innerHTML = "";
@@ -1088,6 +1095,7 @@ function hideExtrasTable() {
 	submitExtrasButton.disabled = false;
 	currentLinkRoles = [];
 	currentExtrasHasYear = false;
+	currentExtrasHasDuration = false;
 	hideAlbumTable();
 }
 
@@ -1098,7 +1106,8 @@ function collectSongExtras(songResults) {
 	pastedRows.forEach(item => {
 		const hasLinks = item.Links && Object.keys(item.Links).length > 0;
 		const hasYear = !!item.Year;
-		if (!hasLinks && !hasYear) {
+		const hasDuration = !!item.Duration;
+		if (!hasLinks && !hasYear && !hasDuration) {
 			return;
 		}
 		const artistId = artistIdByProvidedName.get(item.Artist);
@@ -1111,6 +1120,7 @@ function collectSongExtras(songResults) {
 			artistId,
 			title: item.Title,
 			year: item.Year || "",
+			duration: item.Duration || "",
 			links: item.Links || {},
 		});
 	});
@@ -1127,10 +1137,12 @@ function buildExtrasTable(songResults) {
 	const entries = collectSongExtras(songResults);
 	const usedRoles = LINK_COLUMN_ROLES.filter(role => entries.some(entry => entry.links[role]));
 	const hasYear = entries.some(entry => entry.year);
+	const hasDuration = entries.some(entry => entry.duration);
 	currentLinkRoles = usedRoles;
 	currentExtrasHasYear = hasYear;
+	currentExtrasHasDuration = hasDuration;
 
-	if (entries.length === 0 || (usedRoles.length === 0 && !hasYear)) {
+	if (entries.length === 0 || (usedRoles.length === 0 && !hasYear && !hasDuration)) {
 		extrasTable.hidden = true;
 		submitExtrasButton.hidden = true;
 		buildAlbumTable(songResults);
@@ -1143,6 +1155,9 @@ function buildExtrasTable(songResults) {
 	appendChildToElement(headRow, "th", t("song.column.song"));
 	if (hasYear) {
 		appendChildToElement(headRow, "th", t("album.column.year"));
+	}
+	if (hasDuration) {
+		appendChildToElement(headRow, "th", t("song.column.duration"));
 	}
 	usedRoles.forEach(role => {
 		appendChildToElement(headRow, "th", COLUMN_ROLE_LABEL_BY_VALUE.get(role));
@@ -1161,6 +1176,11 @@ function buildExtrasTable(songResults) {
 		if (hasYear) {
 			const yearCell = appendChildToElement(row, "td", entry.year);
 			yearCell.classList.add("extraValueCell", "yearValueCell");
+		}
+
+		if (hasDuration) {
+			const durationCell = appendChildToElement(row, "td", entry.duration);
+			durationCell.classList.add("extraValueCell", "durationValueCell");
 		}
 
 		usedRoles.forEach(role => {
@@ -1200,6 +1220,14 @@ submitExtrasButton.addEventListener("click", () => {
 			const yearValue = yearCell ? yearCell.textContent.trim() : "";
 			if (yearValue !== "") {
 				writes.push({ endpoint: "/music/ajax/song-year", body: { song_id: songId, value: yearValue } });
+			}
+		}
+
+		if (currentExtrasHasDuration) {
+			const durationCell = row.querySelector(".durationValueCell");
+			const durationValue = durationCell ? durationCell.textContent.trim() : "";
+			if (durationValue !== "") {
+				writes.push({ endpoint: "/music/ajax/song-duration", body: { song_id: songId, value: durationValue } });
 			}
 		}
 

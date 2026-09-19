@@ -8,6 +8,7 @@ const SONG_ARTIST_ENDPOINT = '/music/ajax/song-artist';
 const SONG_ALBUM_ENDPOINT = '/music/ajax/song-album';
 const SONG_LINK_ENDPOINT = '/music/ajax/song-link';
 const SONG_YEAR_ENDPOINT = '/music/ajax/song-year';
+const SONG_DURATION_ENDPOINT = '/music/ajax/song-duration';
 
 function songsMakeAlbum($ctx, $name, $artistId, $tracks) {
 	$response = $ctx->post('/music/ajax/album', [[
@@ -1823,6 +1824,84 @@ return [
 
 		$response = $ctx->post(SONG_YEAR_ENDPOINT, ['song_id' => 999999, 'value' => '2000']);
 		assertSame('error', $response['json']['status'], 'status');
+	},
+
+	'a duration given as mm:ss is stored as seconds' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Duration Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Duration Song']]);
+		$songId = $ctx->songId('Duration Song');
+
+		$response = $ctx->post(SONG_DURATION_ENDPOINT, ['song_id' => $songId, 'value' => '3:45']);
+		assertSame('ok', $response['json']['status'], 'status');
+		assertSame(225, $response['json']['value'], 'the response echoes the stored seconds');
+
+		$stored = $ctx->db()->query("SELECT duration FROM song WHERE id = {$songId}")->fetch();
+		assertSame(225, (int)$stored['duration'], 'stored duration');
+	},
+
+	'a duration can be given as bare seconds past a minute' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Seconds Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Seconds Song']]);
+		$songId = $ctx->songId('Seconds Song');
+
+		$response = $ctx->post(SONG_DURATION_ENDPOINT, ['song_id' => $songId, 'value' => '90']);
+		assertSame('ok', $response['json']['status'], 'status');
+		assertSame(90, $response['json']['value'], 'ninety seconds is ninety seconds, not ninety minutes');
+	},
+
+	'a song duration can be cleared' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Duration Clear Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Duration Clear Song']]);
+		$songId = $ctx->songId('Duration Clear Song');
+		$ctx->post(SONG_DURATION_ENDPOINT, ['song_id' => $songId, 'value' => '2:00']);
+
+		$response = $ctx->post(SONG_DURATION_ENDPOINT, ['song_id' => $songId, 'value' => '']);
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$stored = $ctx->db()->query("SELECT duration FROM song WHERE id = {$songId}")->fetch();
+		assertSame(null, $stored['duration'], 'duration cleared back to null');
+	},
+
+	'a malformed duration is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Bad Duration Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bad Duration Song']]);
+		$songId = $ctx->songId('Bad Duration Song');
+
+		foreach (['three minutes', '3:7', '3:60', '3:45:10'] as $bad) {
+			$response = $ctx->post(SONG_DURATION_ENDPOINT, ['song_id' => $songId, 'value' => $bad]);
+			assertSame('error', $response['json']['status'], "refused {$bad}");
+		}
+
+		$stored = $ctx->db()->query("SELECT duration FROM song WHERE id = {$songId}")->fetch();
+		assertSame(null, $stored['duration'], 'nothing was stored');
+	},
+
+	'setting a duration on an unknown song is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$response = $ctx->post(SONG_DURATION_ENDPOINT, ['song_id' => 999999, 'value' => '3:45']);
+		assertSame('error', $response['json']['status'], 'status');
+	},
+
+	'the songs page shows a duration as mm:ss' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Shown Duration Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Shown Duration Song']]);
+		$songId = $ctx->songId('Shown Duration Song');
+		$ctx->post(SONG_DURATION_ENDPOINT, ['song_id' => $songId, 'value' => '605']);
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertSame('10:05', songsCellValue(songsRowFor($body, $songId), 'duration'), 'the table pads the seconds');
+		assertContains('>10:05<', songsCardFor($body, $songId), 'the card shows it too');
 	},
 
 ];
