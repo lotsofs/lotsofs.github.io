@@ -267,8 +267,9 @@ th, td {
 	min-width: 0;
 }
 
-.songTableScroll {
+.songListScroll {
 	overflow-x: auto;
+	max-width: 100%;
 }
 
 .songMobileSort {
@@ -334,6 +335,29 @@ th, td {
 	}
 }
 
+.songRatingNoteCell {
+	position: relative;
+}
+
+.songNoteEditor {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 5;
+	width: 32em;
+	max-width: min(32em, 90vw);
+	height: 8em;
+	resize: vertical;
+	box-sizing: border-box;
+	font: inherit;
+	color: inherit;
+	background-color: #000000;
+	border: 1px solid #999999;
+	border-radius: 4px;
+	padding: 0.3em 0.4em;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
 #songListTable {
 	th a {
 		color: inherit;
@@ -391,7 +415,7 @@ th, td {
 		box-shadow: inset 1px 0 0 #999999, inset -1px 0 0 #999999, inset 0 1px 0 #999999;
 	}
 
-	tbody tr:last-child {
+	.songRowLast {
 		.songMyScoreCell {
 			box-shadow: inset 1px 0 0 #999999, inset 0 -1px 0 #999999;
 		}
@@ -409,12 +433,43 @@ th, td {
 		}
 	}
 
+	tbody .songTitleCell {
+		cursor: pointer;
+
+		&:hover {
+			background-color: #262626;
+		}
+	}
+
 	tbody .songRatingCell.songRatingFlash {
 		animation: songRatingFlash 1.2s ease-out;
 
 		@media (prefers-reduced-motion: reduce) {
 			animation: none;
 		}
+	}
+
+	.songLinksCell {
+		white-space: nowrap;
+	}
+
+	.songLinkAbbr {
+		display: inline-block;
+		margin-right: 0.4em;
+		color: inherit;
+	}
+
+	.songLinkAbbr:last-child {
+		margin-right: 0;
+	}
+
+	.songLinkAbbrEmpty {
+		visibility: hidden;
+	}
+
+	abbr.songLinkAbbr {
+		text-decoration: underline dashed;
+		cursor: help;
 	}
 
 	.songResultCell {
@@ -457,19 +512,21 @@ th, td {
 	margin-inline: auto;
 }
 
+#songCards {
+	display: none;
+}
+
 .songCardView #songListTable {
+	display: none;
+}
+
+.songCardView #songCards {
 	display: block;
-	width: 100%;
+}
 
-	thead {
-		display: none;
-	}
-
-	tbody {
-		display: block;
-	}
-
-	tr {
+#songCards,
+#songCardModal {
+	.songCard {
 		position: relative;
 		display: flex;
 		flex-direction: column;
@@ -478,6 +535,7 @@ th, td {
 		padding: 0.5em 0.7em;
 		margin-bottom: 0.8em;
 		max-width: 40em;
+		min-width: 560px;
 		margin-inline: auto;
 
 		&[hidden] {
@@ -485,23 +543,26 @@ th, td {
 		}
 	}
 
-	td {
+	dt,
+	dd {
 		display: block;
-		border: none;
-		padding: 0.2em 0;
+		margin: 0;
 	}
 
-	td[data-label]::before {
-		content: attr(data-label) ":";
-		display: block;
+	dt {
 		font-size: 0.75em;
 		font-weight: bold;
 		opacity: 0.65;
 		margin-top: 0.5em;
 	}
 
-	.songMyScoreCell:empty::after,
-	.songMyNoteCell:has(.ratingNoteText:empty)::after {
+	dd input {
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.songMyScoreCell.songCellEmpty::after,
+	.songMyNoteCell.songCellEmpty::after {
 		content: attr(data-placeholder);
 		opacity: 0.5;
 		font-style: italic;
@@ -511,30 +572,16 @@ th, td {
 		position: absolute;
 		top: 0.5em;
 		right: 0.7em;
-		width: auto;
-		padding: 0;
-		font-size: 0.75em;
+		font-size: 1em;
 		opacity: 0.6;
 
 		&::before {
 			content: "#";
-			display: inline;
-			margin-top: 0;
 		}
 	}
 
-	.songRatingScoreCell,
-	.songRatingNoteCell,
-	.songResultCell {
-		width: auto;
-	}
-
-	td.songRatingScoreCell {
+	dd.songRatingScoreCell {
 		text-align: left;
-	}
-
-	.songRatingNoteCell {
-		white-space: normal;
 	}
 
 	.songTitleCell {
@@ -546,8 +593,66 @@ th, td {
 		border-bottom: 1px solid #555555;
 	}
 
+	.songCardMeta {
+		display: flex;
+		align-items: flex-start;
+		gap: 1em;
+	}
+
+	.songCardInfo {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.songCardLinksCol {
+		flex: 1;
+	}
+
+	.songCardLinksCol:has(> .songLinksArea:empty) {
+		display: none;
+	}
+
+	dt:has(+ .songYearCell:empty) {
+		display: none;
+	}
+
+	.songSpotifyEmbed,
+	.songYoutubeEmbed,
+	.songSoundcloudEmbed {
+		margin-bottom: 0.5em;
+
+		iframe {
+			display: block;
+			min-width: 280px;
+			max-width: 100%;
+			border-radius: 8px;
+		}
+	}
+
+	.songLinkChips {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2em;
+	}
+
+	.songLinkChip {
+		display: block;
+		min-width: 0;
+		max-width: 280px;
+		font-size: 0.9em;
+		color: inherit;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.songLinkChipWrap {
+		white-space: normal;
+		overflow-wrap: anywhere;
+	}
+
 	.ratingNoteText {
-		max-width: 60ch;
+		display: block;
 		overflow: visible;
 		text-overflow: clip;
 		white-space: normal;
@@ -555,9 +660,117 @@ th, td {
 
 	.songMyScoreCell,
 	.songMyNoteCell {
-		box-shadow: none;
 		border-left: 3px solid #999999;
 		padding-left: 0.5em;
+	}
+
+	&.hideResultColumn .songResultCell {
+		display: none;
+	}
+}
+
+.songEditFieldList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3em;
+}
+
+.songEditRow {
+	display: flex;
+	align-items: center;
+	gap: 0.3em;
+
+	select,
+	input {
+		flex: 1 1 auto;
+		min-width: 0;
+		font: inherit;
+		background-color: #000000;
+		color: inherit;
+		border: 1px solid #999999;
+		border-radius: 4px;
+		padding: 0.2em 0.3em;
+	}
+}
+
+.songEditRowLabel {
+	flex: 0 0 6em;
+	font-size: 0.85em;
+	opacity: 0.75;
+}
+
+.songEditRowRemove,
+.songEditRowAdd {
+	flex: 0 0 auto;
+	border: solid 1px #000000;
+	border-radius: 16px;
+	background-color: #00002f;
+	color: #ffffff;
+	font: inherit;
+	line-height: 1;
+	padding: .2em .6em;
+	cursor: pointer;
+
+	&:hover {
+		background-color: #000040;
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+}
+
+.songEditRowAdd {
+	align-self: flex-start;
+}
+
+#songCardModal {
+	position: fixed;
+	inset: 0;
+	z-index: 20;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1em;
+	background-color: rgba(0, 0, 0, 0.7);
+
+	&[hidden] {
+		display: none;
+	}
+}
+
+.songCardModalDialog {
+	position: relative;
+	max-width: 40em;
+	max-height: 100%;
+	overflow-y: auto;
+	background-color: #000000;
+	border: 1px solid #555555;
+	border-radius: 4px;
+	padding: 1.5em 0.7em 0.7em;
+}
+
+.songCardModalActions {
+	position: absolute;
+	top: 0.5em;
+	right: 0.7em;
+	display: flex;
+	gap: 0.4em;
+}
+
+.songCardModalClose,
+.songCardModalEdit {
+	border: solid 1px #000000;
+	border-radius: 16px;
+	background-color: #00002f;
+	padding: .2em .7em;
+	color: #ffffff;
+	font: inherit;
+	cursor: pointer;
+
+	&:hover {
+		background-color: #000040;
 	}
 }
 
@@ -577,17 +790,17 @@ th, td {
 	}
 }
 
+.providedName {
+	display: block;
+	max-width: 20em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 #artistMatchRows {
 	select {
 		width: 100%;
-	}
-
-	.providedName {
-		display: block;
-		max-width: 20em;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 	}
 
 	.rowExtras {
@@ -622,6 +835,59 @@ th, td {
 		white-space: nowrap;
 		vertical-align: bottom;
 	}
+}
+
+#columnMapping {
+	margin: 0.8em 0;
+
+	.columnMapRow {
+		display: flex;
+		gap: 0.6em;
+		align-items: center;
+		margin-bottom: 0.3em;
+
+		.columnMapLabel {
+			flex: 0 0 10em;
+		}
+
+		.columnMapExample {
+			flex: 1 1 16em;
+			max-width: 20em;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			opacity: 0.7;
+			font-style: italic;
+		}
+
+		select {
+			flex: 0 0 auto;
+		}
+	}
+}
+
+#extrasTable {
+	max-width: 100%;
+
+	.extraValueCell {
+		max-width: 16em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
+.tableProcessed {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+#submitButton:disabled,
+#submitSongsButton:disabled,
+#submitAlbumsButton:disabled,
+#columnMappingContinue:disabled {
+	opacity: 0.5;
+	cursor: default;
 }
 
 @media (max-width: 700px) {
@@ -663,6 +929,14 @@ th, td {
 		pointer-events: auto;
 	}
 
+	.songCardMeta {
+		flex-direction: column;
+	}
+
+	.songCard {
+		min-width: 280px;
+	}
+
 	form label {
 		display: block;
 		min-width: 0;
@@ -674,7 +948,8 @@ th, td {
 	#accountTable,
 	#artistMatchTable,
 	#songTable,
-	#albumTable {
+	#albumTable,
+	#extrasTable {
 		display: block;
 		max-width: 100%;
 		overflow-x: auto;
@@ -683,6 +958,10 @@ th, td {
 
 	#pasteInput {
 		width: 100%;
+	}
+
+	#columnMapping .columnMapRow {
+		flex-wrap: wrap;
 	}
 
 	#artistMatchRows .rowExtras {

@@ -21,7 +21,15 @@ return [
 
 	'addSongs.title' => 'Lieten tafoegje',
 	'addSongs.heading' => 'Lieten tafoegje',
-	'addSongs.pastePlaceholder' => "Foarbyld (artiest, titel, album and nûmer skieden troch tabs, the lêste twa opsjoneel):\nDream Theater\tBridges in the Sky\tBlack Clouds & Silver Linings\t3\nParamore\tThe Only Exception",
+	'addSongs.pastePlaceholder' => "Plak rigels, skieden troch tabs, ien liet per rigel:\nDream Theater\tBridges in the Sky\tBlack Clouds & Silver Linings\t3\nParamore\tThe Only Exception",
+
+	'addSongs.column.ignore' => 'Negearje',
+	'addSongs.column.track' => 'Nûmer',
+
+	'addSongs.columnMapping.heading' => 'Wat betsjut elke kolom?',
+	'addSongs.columnMapping.columnLabel' => 'Kolom {n}',
+	'addSongs.columnMapping.continue' => 'Trochgean',
+	'addSongs.columnMapping.needsArtistAndTitle' => 'Kies ien kolom foar Artyst en ien foar Titel foardat jo trochgeane.',
 
 	'ajax.notLoggedIn' => 'Do moatst oanmeld wêze.',
 	'ajax.badCsrf' => 'Dizze side is ferrûn, laad opnij en besykje it nochris.',
@@ -29,7 +37,7 @@ return [
 
 	'status.submitting' => 'Wurdt ferstjoerd …',
 	'status.submitFailed' => 'Ferstjoeren mislearre: {error}',
-	'status.albumsFailed' => 'Lieten binne tafoege, maar de albumtabel koe net oanmakke wurde: {error}',
+	'status.nextStepFailed' => 'Dizze stap slagge, maar de folgjende koe net oanmakke wurde: {error}',
 	'status.noResult' => '❓ Der kaam gjin ôfrin werom foar dizze rige',
 
 ];

@@ -21,7 +21,15 @@ return [
 
 	'addSongs.title' => 'Songs hinzufügen',
 	'addSongs.heading' => 'Songs hinzufügen',
-	'addSongs.pastePlaceholder' => "Beispiel (Interpret, Titel, Album und Titelnummer durch Tabs getrennt, die letzten beiden optional):\nDream Theater\tBridges in the Sky\tBlack Clouds & Silver Linings\t3\nParamore\tThe Only Exception",
+	'addSongs.pastePlaceholder' => "Füge Zeilen ein, durch Tabs getrennt, ein Song pro Zeile:\nDream Theater\tBridges in the Sky\tBlack Clouds & Silver Linings\t3\nParamore\tThe Only Exception",
+
+	'addSongs.column.ignore' => 'Ignorieren',
+	'addSongs.column.track' => 'Titelnummer',
+
+	'addSongs.columnMapping.heading' => 'Was bedeutet jede Spalte?',
+	'addSongs.columnMapping.columnLabel' => 'Spalte {n}',
+	'addSongs.columnMapping.continue' => 'Weiter',
+	'addSongs.columnMapping.needsArtistAndTitle' => 'Wähle eine Spalte für Interpret und eine für Titel, bevor du fortfährst.',
 
 	'ajax.notLoggedIn' => 'Du musst angemeldet sein.',
 	'ajax.badCsrf' => 'Diese Seite ist abgelaufen, bitte neu laden und erneut versuchen.',
@@ -29,7 +37,7 @@ return [
 
 	'status.submitting' => 'Wird gesendet …',
 	'status.submitFailed' => 'Senden fehlgeschlagen: {error}',
-	'status.albumsFailed' => 'Songs wurden hinzugefügt, aber die Album-Tabelle konnte nicht erstellt werden: {error}',
+	'status.nextStepFailed' => 'Dieser Schritt war erfolgreich, aber der nächste konnte nicht erstellt werden: {error}',
 	'status.noResult' => '❓ Für diese Zeile kam kein Ergebnis zurück',
 
 ];

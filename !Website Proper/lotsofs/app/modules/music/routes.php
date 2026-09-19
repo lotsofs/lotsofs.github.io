@@ -18,4 +18,8 @@ $routes += [
 	"/music/ajax/song-rating" => __MODULES__ . "/music/ajax/songRating.php",
 	"/music/ajax/song-rating-poll" => __MODULES__ . "/music/ajax/songRatingPoll.php",
 	"/music/ajax/album" => __MODULES__ . "/music/ajax/album.php",
+	"/music/ajax/song-artist" => __MODULES__ . "/music/ajax/songArtist.php",
+	"/music/ajax/song-album" => __MODULES__ . "/music/ajax/songAlbum.php",
+	"/music/ajax/song-link" => __MODULES__ . "/music/ajax/songLink.php",
+	"/music/ajax/song-year" => __MODULES__ . "/music/ajax/songYear.php",
 ];

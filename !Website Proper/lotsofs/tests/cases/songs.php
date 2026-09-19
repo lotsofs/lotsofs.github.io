@@ -4,6 +4,10 @@ const SONG_ENDPOINT = '/music/ajax/song';
 const EDIT_ENDPOINT = '/music/ajax/song-edit';
 const RATING_ENDPOINT = '/music/ajax/song-rating';
 const RATING_POLL_ENDPOINT = '/music/ajax/song-rating-poll';
+const SONG_ARTIST_ENDPOINT = '/music/ajax/song-artist';
+const SONG_ALBUM_ENDPOINT = '/music/ajax/song-album';
+const SONG_LINK_ENDPOINT = '/music/ajax/song-link';
+const SONG_YEAR_ENDPOINT = '/music/ajax/song-year';
 
 function songsMakeAlbum($ctx, $name, $artistId, $tracks) {
 	$response = $ctx->post('/music/ajax/album', [[
@@ -18,11 +22,47 @@ function songsMakeAlbum($ctx, $name, $artistId, $tracks) {
 	return (int)$response['json'][0]['album_id'];
 }
 
-function songsTitleCellFor($body, $songId) {
-	$pattern = '/<td class="songIdCell">' . (int)$songId . '<\/td>.*?'
-		. '<td class="songTitleCell([^"]*)" data-canonical-title="([^"]*)"( title="([^"]*)")?>([^<]*)<\/td>/s';
+// each chunk starts right after the row's data-song-id value, so the song id
+// is the leading digits and the rest runs up to the next row
+function songsRowChunks($body) {
+	$chunks = explode('<tr data-song-id="', $body);
+	array_shift($chunks);
+	return $chunks;
+}
 
-	if (!preg_match($pattern, $body, $m)) {
+function songsRowFor($body, $songId) {
+	foreach (songsRowChunks($body) as $chunk) {
+		if (strpos($chunk, (int)$songId . '"') === 0) {
+			return $chunk;
+		}
+	}
+	return null;
+}
+
+// works for a <td data-field="x">value</td> cell and for a note cell's
+// <td data-field="x" ...><span class="ratingNoteText">value</span></td> alike
+function songsCellValue($chunk, $field) {
+	$pattern = '/data-field="' . preg_quote($field, '/') . '"[^>]*>(?:<span class="ratingNoteText">)?([^<]*)/';
+	return preg_match($pattern, $chunk, $m) ? $m[1] : null;
+}
+
+function songsValuesInOrder($body, $field) {
+	$values = [];
+	foreach (songsRowChunks($body) as $chunk) {
+		$values[] = songsCellValue($chunk, $field);
+	}
+	return $values;
+}
+
+function songsTitleCellFor($body, $songId) {
+	$chunk = songsRowFor($body, $songId);
+	if ($chunk === null) {
+		return null;
+	}
+
+	$pattern = '/<td class="songTitleCell([^"]*)" data-field="title" data-canonical-title="([^"]*)"( title="([^"]*)")?>([^<]*)<\/td>/';
+
+	if (!preg_match($pattern, $chunk, $m)) {
 		return null;
 	}
 
@@ -35,16 +75,29 @@ function songsTitleCellFor($body, $songId) {
 }
 
 function songsAlbumCellFor($body, $songId) {
-	$pattern = '/<td class="songIdCell">' . (int)$songId . '<\/td>.*?<td class="songAlbumCell"[^>]*>([^<]*)<\/td>/s';
-	return preg_match($pattern, $body, $m) ? $m[1] : null;
+	$chunk = songsRowFor($body, $songId);
+	return $chunk === null ? null : songsCellValue($chunk, 'album');
+}
+
+// smoke-check helper for the separate #songCards tree: the table is the
+// primary thing tested throughout this file, cards are checked only lightly
+function songsCardFor($body, $songId) {
+	$chunks = explode('<dl class="songCard" data-song-id="', $body);
+	array_shift($chunks);
+	foreach ($chunks as $chunk) {
+		if (strpos($chunk, (int)$songId . '"') === 0) {
+			return $chunk;
+		}
+	}
+	return null;
 }
 
 function songsVisibleTitles($body) {
-	preg_match_all('/<tr data-artist-id="\d+" data-album-ids="[^"]*"( hidden)?>.*?<td class="songTitleCell[^"]*"[^>]*>([^<]*)<\/td>/s', $body, $rows, PREG_SET_ORDER);
 	$visible = [];
-	foreach ($rows as $row) {
-		if ($row[1] === '') {
-			$visible[] = $row[2];
+	foreach (songsRowChunks($body) as $chunk) {
+		$attributes = substr($chunk, 0, strpos($chunk, '>'));
+		if (strpos($attributes, ' hidden') === false) {
+			$visible[] = songsCellValue($chunk, 'title');
 		}
 	}
 	return $visible;
@@ -405,6 +458,11 @@ return [
 		assertContains('Listed Track', $body, 'song title');
 		assertContains('Listed Owner', $body, 'artist name');
 		assertContains(">{$songId}<", $body, 'song id');
+
+		$card = songsCardFor($body, $songId);
+		assertTrue($card !== null, 'the card list has a matching card');
+		assertSame('Listed Track', songsCellValue($card, 'title'), 'the card shows the same title');
+		assertSame('Listed Owner', songsCellValue($card, 'artist'), 'the card shows the same artist');
 	},
 
 	'the songs page shows its column headings' => function ($ctx) {
@@ -422,9 +480,10 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 
-		assertContains('<table id="songListTable" class="hideResultColumn" data-can-edit="1">', $body, 'table starts with the column hidden');
-		assertContains('<th rowspan="2" class="songResultCell">', $body, 'result header carries no sort attributes');
-		assertContains('<td class="songResultCell">', $body, 'rows carry a result cell');
+		assertTrue(preg_match('/<table id="songListTable" class="hideResultColumn"[^>]*data-can-edit="1">/', $body) === 1, 'table starts with the column hidden');
+		assertTrue(preg_match('/<th rowspan="2" class="songResultCell">/', $body) === 1, 'result header carries no sort attributes');
+		assertTrue(strpos($body, 'data-sort-key="result"') === false, 'the result header is not sortable');
+		assertContains('<td class="songResultCell" data-field="result"></td>', $body, 'rows carry a result cell');
 		assertTrue(strpos($body, 'sort=result') === false, 'nothing links to sorting by result');
 	},
 
@@ -449,8 +508,8 @@ return [
 		}
 
 		$titlesInOrder = function ($path) use ($ctx, $mine) {
-			preg_match_all('/<td class="songTitleCell[^"]*"[^>]*>([^<]*)<\/td>/', $ctx->get($path)['body'], $m);
-			return array_values(array_filter($m[1], fn($t) => in_array($t, $mine, true)));
+			$titles = songsValuesInOrder($ctx->get($path)['body'], 'title');
+			return array_values(array_filter($titles, fn($t) => in_array($t, $mine, true)));
 		};
 
 		$ascending = $titlesInOrder('/music/songs?sort=title&dir=asc');
@@ -463,8 +522,8 @@ return [
 	'the songs page defaults to id order' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		preg_match_all('/<td class="songIdCell">([0-9]+)<\/td>/', $ctx->get('/music/songs')['body'], $m);
-		$ids = array_map('intval', $m[1]);
+		$ids = array_map('intval', songsValuesInOrder($ctx->get('/music/songs')['body'], 'id'));
+		assertTrue(count($ids) > 1, 'there are rows to order');
 
 		$sorted = $ids;
 		sort($sorted);
@@ -477,8 +536,9 @@ return [
 		$response = $ctx->get('/music/songs?sort=nonsense&dir=sideways');
 		assertSame(200, $response['status'], 'page still renders');
 
-		preg_match_all('/<td class="songIdCell">([0-9]+)<\/td>/', $response['body'], $m);
-		$ids = array_map('intval', $m[1]);
+		$ids = array_map('intval', songsValuesInOrder($response['body'], 'id'));
+		assertTrue(count($ids) > 1, 'there are rows to order');
+
 		$sorted = $ids;
 		sort($sorted);
 		assertSame($sorted, $ids, 'fell back to id order');
@@ -491,8 +551,9 @@ return [
 		assertSame(200, $response['status'], 'page still renders');
 		assertTrue(strpos($response['body'], 'TypeError') === false, 'no type error leaked');
 
-		preg_match_all('/<td class="songIdCell">([0-9]+)<\/td>/', $response['body'], $m);
-		$ids = array_map('intval', $m[1]);
+		$ids = array_map('intval', songsValuesInOrder($response['body'], 'id'));
+		assertTrue(count($ids) > 1, 'there are rows to order');
+
 		$sorted = $ids;
 		sort($sorted);
 		assertSame($sorted, $ids, 'fell back to id order');
@@ -658,9 +719,12 @@ return [
 		assertSame(8.5, (float)$row['score'], 'stored score');
 		assertSame('grower', $row['subjective_note'], 'stored note');
 
-		$body = $ctx->get('/music/songs')['body'];
-		assertContains('<td class="songRatingCell songRatingScoreCell songMineCell songMyScoreCell">8.5</td>', $body, 'your score has its own cell');
-		assertContains('<td class="songRatingCell songRatingNoteCell songMineCell songMyNoteCell" title="grower"><span class="ratingNoteText">grower</span></td>', $body, 'your note has its own cell');
+		$chunk = songsRowFor($ctx->get('/music/songs')['body'], $songId);
+		assertSame('8.5', songsCellValue($chunk, "score_{$accountId}"), 'your score has its own cell');
+		assertSame('grower', songsCellValue($chunk, "note_{$accountId}"), 'your note has its own cell');
+		assertTrue(preg_match('/data-field="score_' . $accountId . '"[^>]*>/', $chunk) === 1, 'the score cell is addressable by field');
+		assertContains('songMyScoreCell', $chunk, 'your score cell is marked as yours');
+		assertContains('songMyNoteCell', $chunk, 'your note cell is marked as yours');
 	},
 
 	'a long note is clipped in the cell but readable on hover' => function ($ctx) {
@@ -736,8 +800,11 @@ return [
 		assertSame(null, $row['score'], 'score is emptied');
 		assertSame(null, $row['subjective_note'], 'note is emptied');
 
-		$body = $ctx->get('/music/songs')['body'];
-		assertContains('<td class="songRatingCell songRatingScoreCell songMineCell songMyScoreCell"></td>', $body, 'an emptied rating renders exactly like no rating');
+		$accountId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
+		$chunk = songsRowFor($ctx->get('/music/songs')['body'], $songId);
+
+		assertSame('', songsCellValue($chunk, "score_{$accountId}"), 'an emptied rating renders exactly like no rating');
+		assertTrue(preg_match('/<td class="[^"]*songCellEmpty"[^>]*data-field="score_' . $accountId . '"/', $chunk) === 1, 'the emptied cell is marked empty');
 	},
 
 	'a note without a score is allowed' => function ($ctx) {
@@ -849,30 +916,32 @@ return [
 		}
 	},
 
-	'the sort index is explicit and matches the cell order' => function ($ctx) {
+	'every header appears once, in the right order, and matches a real cell' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
 		$body = $ctx->get('/music/songs')['body'];
-
-		preg_match_all('/data-sort-key="([^"]+)" data-sort-type="[^"]+" data-sort-index="(\d+)"/', $body, $m, PREG_SET_ORDER);
-
-		$byKey = [];
-		foreach ($m as $match) {
-			$byKey[$match[1]] = (int)$match[2];
-		}
-
 		$mine = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
 
-		assertSame(0, $byKey['id'], 'id is the first cell');
-		assertSame(1, $byKey['artist'], 'artist is the second');
-		assertSame(2, $byKey['title'], 'title is the third');
-		assertSame(3, $byKey['album'], 'album is the fourth');
-		assertTrue(!isset($byKey['note']), 'the shared note column is hidden');
-		assertSame(4, $byKey["score_{$mine}"], 'your score column comes first among the raters');
-		assertSame(5, $byKey["note_{$mine}"], 'your note column sits beside it');
+		preg_match_all('/data-sort-key="([^"]+)" data-sort-type="[^"]+">/', $body, $m);
+		$keys = $m[1];
 
-		$indexes = array_values($byKey);
-		assertSame(count($indexes), count(array_unique($indexes)), 'every column has its own index');
+		assertSame(count($keys), count(array_unique($keys)), 'every sort key appears exactly once');
+		assertTrue(!in_array('note', $keys, true), 'the shared note column is gone');
+
+		$positions = array_flip($keys);
+		assertTrue(
+			$positions['id'] < $positions['artist']
+				&& $positions['artist'] < $positions['title']
+				&& $positions['title'] < $positions['album']
+				&& $positions['album'] < $positions["score_{$mine}"],
+			'fixed columns precede the raters, in order'
+		);
+		assertSame($positions["score_{$mine}"] + 1, $positions["note_{$mine}"], 'your note column sits right beside your score column');
+
+		$chunk = songsRowChunks($body)[0];
+		foreach ($keys as $key) {
+			assertTrue(songsCellValue($chunk, $key) !== null, "rows carry a {$key} cell");
+		}
 	},
 
 	'an account with no ratings still gets a column' => function ($ctx) {
@@ -909,6 +978,22 @@ return [
 		$visible = songsVisibleTitles($ctx->get("/music/songs?artist={$one}")['body']);
 		assertTrue(in_array('Kept By Filter', $visible, true), 'the chosen artists song shows');
 		assertTrue(!in_array('Dropped By Filter', $visible, true), 'the other artists song is hidden');
+	},
+
+	'the artist filter matches a song by any of its linked artists, not just the first' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$primary = $ctx->makeArtist('Filter Primary Artist');
+		$featured = $ctx->makeArtist('Filter Featured Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $primary, 'title' => 'Featuring Song']]);
+		$songId = $ctx->songId('Featuring Song');
+		$ctx->post(SONG_ARTIST_ENDPOINT, ['song_id' => $songId, 'artist_id' => $featured, 'action' => 'add']);
+
+		$visibleByPrimary = songsVisibleTitles($ctx->get("/music/songs?artist={$primary}")['body']);
+		assertTrue(in_array('Featuring Song', $visibleByPrimary, true), 'shows when filtered by the primary artist');
+
+		$visibleByFeatured = songsVisibleTitles($ctx->get("/music/songs?artist={$featured}")['body']);
+		assertTrue(in_array('Featuring Song', $visibleByFeatured, true), 'also shows when filtered by the featured artist');
 	},
 
 	'a compilation album filters the list to its tracklist' => function ($ctx) {
@@ -1017,11 +1102,10 @@ return [
 		songsMakeAlbum($ctx, 'Zzz Column Record', $artistId, [['song_id' => $songId, 'position' => 1]]);
 
 		$body = $ctx->get('/music/songs')['body'];
-		preg_match_all('/<td class="songTitleCell[^"]*"[^>]*>([^<]*)<\/td>\s*<td class="songAlbumCell"[^>]*>([^<]*)<\/td>/', $body, $m, PREG_SET_ORDER);
 
 		$albumsByTitle = [];
-		foreach ($m as $row) {
-			$albumsByTitle[$row[1]] = $row[2];
+		foreach (songsRowChunks($body) as $chunk) {
+			$albumsByTitle[songsCellValue($chunk, 'title')] = songsCellValue($chunk, 'album');
 		}
 
 		assertSame('Aaa Column Record, Zzz Column Record', $albumsByTitle['On Two Records'] ?? '', 'both albums are listed');
@@ -1058,12 +1142,12 @@ return [
 
 		$retitled = $cell("/music/songs?artist={$artistId}&album={$odd}");
 		assertSame('Sleeve Version', $retitled['text'], 'the odd release retitles it');
-		assertSame('songTitleAliased', $retitled['classes'], 'and the cell is marked so editing stays off');
+		assertSame('songTitleAliased', $retitled['classes'], 'and the cell is marked as showing an alias');
 		assertSame('Studio Version', $retitled['canonical'], 'the real title is kept on the cell');
 
 		$ordinary = $cell("/music/songs?artist={$artistId}&album={$plain}");
 		assertSame('Studio Version', $ordinary['text'], 'a release with no odd title leaves it alone');
-		assertSame('', $ordinary['classes'], 'and leaves the cell editable');
+		assertSame('', $ordinary['classes'], 'and is not marked as an alias');
 	},
 
 	'the album column lists album names only' => function ($ctx) {
@@ -1119,8 +1203,8 @@ return [
 		songsMakeAlbum($ctx, 'Zzz Sorting Album', $artistId, [['song_id' => $ctx->songId('Sorted By Zzz'), 'position' => 1]]);
 
 		$body = $ctx->get("/music/songs?artist={$artistId}&sort=album&dir=asc")['body'];
-		preg_match_all('/<td class="songAlbumCell"[^>]*>([^<]*)<\/td>/', $body, $m);
-		$mine = array_values(array_filter($m[1], fn($a) => strpos($a, 'Sorting Album') !== false));
+		$albums = songsValuesInOrder($body, 'album');
+		$mine = array_values(array_filter($albums, fn($a) => $a !== null && strpos($a, 'Sorting Album') !== false));
 
 		assertSame(['Aaa Sorting Album', 'Mmm Sorting Album', 'Zzz Sorting Album'], $mine, 'ascending by album name');
 	},
@@ -1344,6 +1428,401 @@ return [
 		foreach (['Warning:', 'Notice:', 'Fatal error', 'Undefined variable', 'Undefined index'] as $sign) {
 			assertTrue(strpos($body, $sign) === false, "page contains '{$sign}'");
 		}
+	},
+
+	'a song can gain a second artist' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$first = $ctx->makeArtist('Aaa Second Artist Owner');
+		$second = $ctx->makeArtist('Zzz Second Artist Guest');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $first, 'title' => 'Two Artist Song']]);
+		$songId = $ctx->songId('Two Artist Song');
+
+		$response = $ctx->post(SONG_ARTIST_ENDPOINT, ['song_id' => $songId, 'artist_id' => $second, 'action' => 'add']);
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$linked = $ctx->db()->query("SELECT artist_id FROM song_artist WHERE song_id = {$songId} ORDER BY artist_id")->fetchAll(PDO::FETCH_COLUMN);
+		assertSame([$first, $second], array_map('intval', $linked), 'both artists are linked');
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+		assertSame('Aaa Second Artist Owner, Zzz Second Artist Guest', songsCellValue($card, 'artist'), 'the display shows both artists');
+	},
+
+	'adding the same artist twice is a duplicate' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Repeat Artist Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Repeat Artist Song']]);
+		$songId = $ctx->songId('Repeat Artist Song');
+
+		$response = $ctx->post(SONG_ARTIST_ENDPOINT, ['song_id' => $songId, 'artist_id' => $artistId, 'action' => 'add']);
+		assertSame('duplicate', $response['json']['status'], 'status');
+
+		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song_artist WHERE song_id = {$songId}")->fetch()['c'];
+		assertSame(1, $count, 'no second row was created');
+	},
+
+	'linking a nonexistent artist is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Bad Artist Link Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bad Artist Link Song']]);
+		$songId = $ctx->songId('Bad Artist Link Song');
+
+		$response = $ctx->post(SONG_ARTIST_ENDPOINT, ['song_id' => $songId, 'artist_id' => 999999, 'action' => 'add']);
+		assertSame('error', $response['json']['status'], 'status');
+	},
+
+	'linking to an unknown song is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Orphan Link Artist');
+		$response = $ctx->post(SONG_ARTIST_ENDPOINT, ['song_id' => 999999, 'artist_id' => $artistId, 'action' => 'add']);
+		assertSame('error', $response['json']['status'], 'status');
+	},
+
+	'an artist can be removed from a song' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$first = $ctx->makeArtist('Stays Linked Artist');
+		$second = $ctx->makeArtist('Gets Unlinked Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $first, 'title' => 'Unlink Artist Song']]);
+		$songId = $ctx->songId('Unlink Artist Song');
+		$ctx->post(SONG_ARTIST_ENDPOINT, ['song_id' => $songId, 'artist_id' => $second, 'action' => 'add']);
+
+		$response = $ctx->post(SONG_ARTIST_ENDPOINT, ['song_id' => $songId, 'artist_id' => $second, 'action' => 'remove']);
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$linked = $ctx->db()->query("SELECT artist_id FROM song_artist WHERE song_id = {$songId}")->fetchAll(PDO::FETCH_COLUMN);
+		assertSame([$first], array_map('intval', $linked), 'only the first artist remains');
+	},
+
+	'a song can be added to a second album' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Second Album Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Two Album Song']]);
+		$songId = $ctx->songId('Two Album Song');
+		$firstAlbum = songsMakeAlbum($ctx, 'First Linked Album', $artistId, [['song_id' => $songId, 'position' => 1]]);
+		$secondAlbum = songsMakeAlbum($ctx, 'Second Linked Album', $artistId, []);
+
+		$response = $ctx->post(SONG_ALBUM_ENDPOINT, ['song_id' => $songId, 'album_id' => $secondAlbum, 'action' => 'add']);
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$albums = $ctx->db()->query("SELECT album_id FROM album_track WHERE song_id = {$songId} ORDER BY album_id")->fetchAll(PDO::FETCH_COLUMN);
+		assertSame([$firstAlbum, $secondAlbum], array_map('intval', $albums), 'the song is on both albums');
+	},
+
+	'adding the same album twice is a duplicate' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Repeat Album Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Repeat Album Song']]);
+		$songId = $ctx->songId('Repeat Album Song');
+		$albumId = songsMakeAlbum($ctx, 'Repeat Album', $artistId, [['song_id' => $songId, 'position' => 1]]);
+
+		$response = $ctx->post(SONG_ALBUM_ENDPOINT, ['song_id' => $songId, 'album_id' => $albumId, 'action' => 'add']);
+		assertSame('duplicate', $response['json']['status'], 'status');
+	},
+
+	'adding a song to a nonexistent album is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Bad Album Link Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bad Album Link Song']]);
+		$songId = $ctx->songId('Bad Album Link Song');
+
+		$response = $ctx->post(SONG_ALBUM_ENDPOINT, ['song_id' => $songId, 'album_id' => 999999, 'action' => 'add']);
+		assertSame('error', $response['json']['status'], 'status');
+	},
+
+	'a song can be removed from an album' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Unlink Album Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Unlink Album Song']]);
+		$songId = $ctx->songId('Unlink Album Song');
+		$albumId = songsMakeAlbum($ctx, 'Unlink Album', $artistId, [['song_id' => $songId, 'position' => 1]]);
+
+		$response = $ctx->post(SONG_ALBUM_ENDPOINT, ['song_id' => $songId, 'album_id' => $albumId, 'action' => 'remove']);
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM album_track WHERE song_id = {$songId} AND album_id = {$albumId}")->fetch()['c'];
+		assertSame(0, $count, 'the track row is gone');
+	},
+
+	'a song link field can be set' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Link Set Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Link Set Song']]);
+		$songId = $ctx->songId('Link Set Song');
+
+		$response = $ctx->post(SONG_LINK_ENDPOINT, [
+			'song_id' => $songId, 'field' => 'spotify_url',
+			'value' => 'https://open.spotify.com/track/aaaaaaaaaaaaaaaaaaaaaa',
+		]);
+		assertSame('ok', $response['json']['status'], 'status');
+		assertSame('aaaaaaaaaaaaaaaaaaaaaa', $response['json']['value'], 'the response echoes the stripped id');
+
+		$stored = $ctx->db()->query("SELECT spotify_url FROM song_link WHERE song_id = {$songId}")->fetch();
+		assertSame('aaaaaaaaaaaaaaaaaaaaaa', $stored['spotify_url'], 'only the id is stored, not the full url');
+	},
+
+	'setting a second field on the same song fills in the other column' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Link Second Field Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Link Second Field Song']]);
+		$songId = $ctx->songId('Link Second Field Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'spotify_url', 'value' => 'https://open.spotify.com/track/bbbbbbbbbbbbbbbbbbbbbb']);
+
+		$response = $ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'youtube_url', 'value' => 'https://youtube.com/watch?v=xyz']);
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$stored = $ctx->db()->query("SELECT spotify_url, youtube_url FROM song_link WHERE song_id = {$songId}")->fetch();
+		assertSame('bbbbbbbbbbbbbbbbbbbbbb', $stored['spotify_url'], 'spotify_url untouched');
+		assertSame('xyz', $stored['youtube_url'], 'youtube_url stored on the same row, stripped to its id');
+	},
+
+	'a link field can be updated in place' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Link Update Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Link Update Song']]);
+		$songId = $ctx->songId('Link Update Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'other_url', 'value' => 'https://example.com/old']);
+
+		$response = $ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'other_url', 'value' => 'https://example.com/new']);
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$stored = $ctx->db()->query("SELECT other_url FROM song_link WHERE song_id = {$songId}")->fetch();
+		assertSame('https://example.com/new', $stored['other_url'], 'other_url updated');
+	},
+
+	'a link field can be cleared' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Link Clear Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Link Clear Song']]);
+		$songId = $ctx->songId('Link Clear Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'filepath', 'value' => 'D:\\Music\\song.mp3']);
+
+		$response = $ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'filepath', 'value' => '']);
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$stored = $ctx->db()->query("SELECT filepath FROM song_link WHERE song_id = {$songId}")->fetch();
+		assertSame(null, $stored['filepath'], 'filepath cleared back to null');
+	},
+
+	'setting an unknown link field is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Link Bad Field Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Link Bad Field Song']]);
+		$songId = $ctx->songId('Link Bad Field Song');
+
+		foreach (['url', 'label', 'apple_music_url', '', ['spotify_url']] as $field) {
+			$response = $ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => $field, 'value' => 'https://example.com']);
+			assertSame(400, $response['status'], 'status');
+			assertTrue(isset($response['json']['error']), 'body carries an error key');
+		}
+	},
+
+	'setting a link field on an unknown song is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$response = $ctx->post(SONG_LINK_ENDPOINT, ['song_id' => 999999, 'field' => 'spotify_url', 'value' => 'https://open.spotify.com/track/cccccccccccccccccccccc']);
+		assertSame('error', $response['json']['status'], 'status');
+	},
+
+	'the songs page carries a song\'s links as json for the edit card' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Data Links Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Data Links Song']]);
+		$songId = $ctx->songId('Data Links Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'other_url', 'value' => 'https://example.com/data-link']);
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+		assertTrue(preg_match('/data-links="([^"]*)"/', $card, $m) === 1, 'the card carries a data-links attribute');
+
+		$links = json_decode(html_entity_decode($m[1], ENT_QUOTES), true);
+		assertSame([
+			'spotify_url' => null,
+			'youtube_url' => null,
+			'soundcloud_url' => null,
+			'bandcamp_url' => null,
+			'filepath' => null,
+			'other_url' => 'https://example.com/data-link',
+		], $links, 'the attribute decodes to the stored links, fixed columns included');
+	},
+
+	'a spotify link renders as an embed on the card' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Embed Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Embed Song']]);
+		$songId = $ctx->songId('Embed Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'spotify_url', 'value' => 'https://open.spotify.com/track/ddddddddddddddddddddddd']);
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+		assertContains('songSpotifyEmbed', $card, 'the embed container is present');
+		assertContains('/embed/track/ddddddddddddddddddddddd', $card, 'the iframe points at the right track');
+	},
+
+	'a bare spotify track id embeds without a full url' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Bare Spotify Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bare Spotify Song']]);
+		$songId = $ctx->songId('Bare Spotify Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'spotify_url', 'value' => '4iV5W9uYEdYUVa79Axb7Rh']);
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+		assertContains('songSpotifyEmbed', $card, 'the embed container is present');
+		assertContains('/embed/track/4iV5W9uYEdYUVa79Axb7Rh', $card, 'the iframe points at the pasted id');
+
+		$stored = $ctx->db()->query("SELECT spotify_url FROM song_link WHERE song_id = {$songId}")->fetch();
+		assertSame('4iV5W9uYEdYUVa79Axb7Rh', $stored['spotify_url'], 'the bare id is stored as-is, not expanded into a url');
+	},
+
+	'a bare youtube video id embeds without a full url' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Bare Youtube Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bare Youtube Song']]);
+		$songId = $ctx->songId('Bare Youtube Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'youtube_url', 'value' => 'dQw4w9WgXcQ']);
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+		assertContains('songYoutubeEmbed', $card, 'the embed container is present');
+		assertContains('/embed/dQw4w9WgXcQ', $card, 'the iframe points at the pasted id');
+
+		$stored = $ctx->db()->query("SELECT youtube_url FROM song_link WHERE song_id = {$songId}")->fetch();
+		assertSame('dQw4w9WgXcQ', $stored['youtube_url'], 'the bare id is stored as-is, not expanded into a url');
+	},
+
+	'a youtube link renders as an embed too' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Youtube Embed Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Youtube Embed Song']]);
+		$songId = $ctx->songId('Youtube Embed Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'youtube_url', 'value' => 'https://youtube.com/watch?v=86cl_p3uw5E']);
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+		assertContains('songYoutubeEmbed', $card, 'the embed container is present');
+		assertContains('/embed/86cl_p3uw5E', $card, 'the iframe points at the right video');
+		assertContains('width="280"', $card, 'the youtube embed matches the other embeds\' width');
+	},
+
+	'a soundcloud link renders as an embed too' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Soundcloud Embed Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Soundcloud Embed Song']]);
+		$songId = $ctx->songId('Soundcloud Embed Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'soundcloud_url', 'value' => 'https://soundcloud.com/artist/track']);
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+		assertContains('songSoundcloudEmbed', $card, 'the embed container is present');
+		assertContains('w.soundcloud.com/player/?url=' . urlencode('https://soundcloud.com/artist/track'), $card, 'the iframe points at the right track');
+	},
+
+	'an other link renders as a plain chip, not an embed' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Chip Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Chip Song']]);
+		$songId = $ctx->songId('Chip Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'other_url', 'value' => 'https://example.com/track']);
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+		assertContains('href="https://example.com/track"', $card, 'the chip links straight to the stored url');
+		assertContains('>https://example.com/track<', $card, 'the chip text is the raw link, not the "Other" label');
+		assertTrue(strpos($card, 'songSpotifyEmbed') === false, 'no spotify embed is built');
+		assertTrue(strpos($card, 'songYoutubeEmbed') === false, 'no youtube embed is built');
+		assertTrue(strpos($card, 'songSoundcloudEmbed') === false, 'no soundcloud embed is built');
+	},
+
+	'a bandcamp link renders as a plain, labelled chip' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Bandcamp Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bandcamp Song']]);
+		$songId = $ctx->songId('Bandcamp Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'bandcamp_url', 'value' => 'https://example.bandcamp.com/album/example']);
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+		assertContains('href="https://example.bandcamp.com/album/example"', $card, 'the chip links straight to the stored url');
+		assertContains('>Bandcamp<', $card, 'the chip text is the field label, not the raw link');
+		assertTrue(strpos($card, 'songSpotifyEmbed') === false, 'no spotify embed is built');
+		assertTrue(strpos($card, 'songYoutubeEmbed') === false, 'no youtube embed is built');
+		assertTrue(strpos($card, 'songSoundcloudEmbed') === false, 'no soundcloud embed is built');
+	},
+
+	'a filepath link shows its value on the card, not just a bare label' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Filepath Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Filepath Song']]);
+		$songId = $ctx->songId('Filepath Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'filepath', 'value' => 'blah/foo/bar']);
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+		assertContains('>File path: blah/foo/bar<', $card, 'the chip text carries the actual path, not just the label');
+	},
+
+	'a song year can be set' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Year Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Year Song']]);
+		$songId = $ctx->songId('Year Song');
+
+		$response = $ctx->post(SONG_YEAR_ENDPOINT, ['song_id' => $songId, 'value' => '1995']);
+		assertSame('ok', $response['json']['status'], 'status');
+		assertSame(1995, $response['json']['value'], 'the response echoes the stored year');
+
+		$stored = $ctx->db()->query("SELECT year FROM song WHERE id = {$songId}")->fetch();
+		assertSame(1995, (int)$stored['year'], 'stored year');
+	},
+
+	'a song year can be cleared' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Year Clear Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Year Clear Song']]);
+		$songId = $ctx->songId('Year Clear Song');
+		$ctx->post(SONG_YEAR_ENDPOINT, ['song_id' => $songId, 'value' => '2001']);
+
+		$response = $ctx->post(SONG_YEAR_ENDPOINT, ['song_id' => $songId, 'value' => '']);
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$stored = $ctx->db()->query("SELECT year FROM song WHERE id = {$songId}")->fetch();
+		assertSame(null, $stored['year'], 'year cleared back to null');
+	},
+
+	'a non-numeric song year is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Bad Year Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bad Year Song']]);
+		$songId = $ctx->songId('Bad Year Song');
+
+		$response = $ctx->post(SONG_YEAR_ENDPOINT, ['song_id' => $songId, 'value' => 'nineteen-ninety-five']);
+		assertSame('error', $response['json']['status'], 'status');
+
+		$stored = $ctx->db()->query("SELECT year FROM song WHERE id = {$songId}")->fetch();
+		assertSame(null, $stored['year'], 'nothing was stored');
+	},
+
+	'setting a year on an unknown song is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$response = $ctx->post(SONG_YEAR_ENDPOINT, ['song_id' => 999999, 'value' => '2000']);
+		assertSame('error', $response['json']['status'], 'status');
 	},
 
 ];

@@ -7,8 +7,15 @@
 </h1>
 <textarea id="pasteInput" placeholder="<?= htmlspecialchars(t('addSongs.pastePlaceholder')) ?>">
 </textarea>
-<p id="statusMessage"></p>
-<table id="artistMatchTable">
+
+<div id="columnMapping" hidden>
+	<h2><?= t('addSongs.columnMapping.heading') ?></h2>
+	<div id="columnMappingRows"></div>
+	<p id="columnMappingError" class="formError"></p>
+	<button id="columnMappingContinue"><?= t('addSongs.columnMapping.continue') ?></button>
+</div>
+
+<table id="artistMatchTable" hidden>
 	<thead>
 		<tr>
 			<th class="providedNameCell"><?= t('artist.column.providedName') ?></th>
@@ -21,7 +28,8 @@
 
 	</tbody>
 </table>
-<button id="submitButton"><?= t('artist.submit') ?></button>
+<button id="submitButton" hidden><?= t('artist.submit') ?></button>
+<p id="artistStatusMessage"></p>
 
 <table id="songTable" hidden>
 	<thead>
@@ -38,6 +46,17 @@
 	</tbody>
 </table>
 <button id="submitSongsButton" hidden><?= t('song.submit') ?></button>
+<p id="songStatusMessage"></p>
+
+<table id="extrasTable" hidden>
+	<thead id="extrasTableHead">
+	</thead>
+	<tbody id="extrasRows">
+
+	</tbody>
+</table>
+<button id="submitExtrasButton" hidden><?= t('song.extras.submit') ?></button>
+<p id="extrasStatusMessage"></p>
 
 <table id="albumTable" hidden>
 	<thead>
@@ -56,6 +75,7 @@
 	</tbody>
 </table>
 <button id="submitAlbumsButton" hidden><?= t('album.submit') ?></button>
+<p id="albumStatusMessage"></p>
 <div id="albumScrollSpace" hidden></div>
 
 <script id="artistNamesData" type="application/json"><?= json_encode($globalData['artistNames']) ?></script>

@@ -160,13 +160,13 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 		assertContains('action="/music/language"', $body, 'the switcher form is present');
-		assertContains('<option value="en" selected>English</option>', $body, 'english UI: english is "English", active');
-		assertContains('<option value="de">German</option>', $body, 'english UI: german is "German"');
+		assertTrue(preg_match('/<button[^>]*value="en"[^>]*class="navLanguageOption navLanguageOptionActive"[^>]*>\s*English\s*<\/button>/', $body) === 1, 'english UI: english is "English", active');
+		assertTrue(preg_match('/<button[^>]*value="de"[^>]*class="navLanguageOption"[^>]*>\s*German\s*<\/button>/', $body) === 1, 'english UI: german is "German", not active');
 
 		switchLanguage($ctx, 'de');
 		$german = $ctx->get('/music/songs')['body'];
-		assertContains('<option value="de" selected>Deutsch</option>', $german, 'german UI: german is "Deutsch", active');
-		assertContains('<option value="en">Englisch</option>', $german, 'german UI: english is "Englisch"');
+		assertTrue(preg_match('/<button[^>]*value="de"[^>]*class="navLanguageOption navLanguageOptionActive"[^>]*>\s*Deutsch\s*<\/button>/', $german) === 1, 'german UI: german is "Deutsch", active');
+		assertTrue(preg_match('/<button[^>]*value="en"[^>]*class="navLanguageOption"[^>]*>\s*Englisch\s*<\/button>/', $german) === 1, 'german UI: english is "Englisch", not active');
 	},
 
 	'every locale names every available language' => function ($ctx) {

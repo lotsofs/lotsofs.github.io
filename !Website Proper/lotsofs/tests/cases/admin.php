@@ -4,6 +4,10 @@ const ADMIN_ENDPOINTS = [
 	'/music/ajax/artist-alias',
 	'/music/ajax/song',
 	'/music/ajax/song-edit',
+	'/music/ajax/song-artist',
+	'/music/ajax/song-album',
+	'/music/ajax/song-link',
+	'/music/ajax/song-year',
 ];
 
 const ADMIN_PAGES = ['/music/add-songs', '/music/invites', '/music/accounts'];

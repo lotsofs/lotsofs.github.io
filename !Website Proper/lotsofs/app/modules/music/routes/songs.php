@@ -26,13 +26,12 @@ $raters = $db->query("
 	ORDER BY a.id = ? DESC, a.account_name COLLATE NOCASE
 ", [$accountId])->fetchAll();
 
-$globalData['showSharedNote'] = false;
-
 $sortable = [
 	'id' => 's.id',
 	'artist' => 'artist COLLATE NOCASE',
 	'title' => 'title COLLATE NOCASE',
 	'album' => 'albums COLLATE NOCASE',
+	'year' => 'COALESCE(song_year, fallback_year)',
 ];
 
 
@@ -132,7 +131,10 @@ $globalData['ratingCursor'] = (int)$db->query("SELECT COALESCE(MAX(updated_at), 
 $globalData['songs'] = $db->query("
 	SELECT
 		s.id,
-		(SELECT artist_id FROM song_artist WHERE song_id = s.id LIMIT 1) AS artist_id,
+		(SELECT artist_id FROM song_artist WHERE song_id = s.id ORDER BY id LIMIT 1) AS artist_id,
+		(SELECT group_concat(artist_id) FROM (
+			SELECT artist_id FROM song_artist WHERE song_id = s.id ORDER BY id
+		)) AS artist_ids,
 		(SELECT group_concat(album_id) FROM album_track WHERE song_id = s.id) AS album_ids,
 		(SELECT group_concat(album_name, ', ') FROM (
 			SELECT (SELECT name FROM album_alias
@@ -148,15 +150,51 @@ $globalData['songs'] = $db->query("
 			WHERE song_id = s.id
 			ORDER BY is_actual DESC, name COLLATE NOCASE
 		)) AS all_names,
-		(SELECT name FROM artist_alias
-			WHERE artist_id = (SELECT artist_id FROM song_artist WHERE song_id = s.id LIMIT 1)
-			ORDER BY is_actual DESC LIMIT 1) AS artist
+		(SELECT group_concat(artist_name, ', ') FROM (
+			SELECT (SELECT name FROM artist_alias
+				WHERE artist_id = sa.artist_id
+				ORDER BY is_actual DESC LIMIT 1) AS artist_name
+			FROM song_artist sa
+			WHERE sa.song_id = s.id
+			ORDER BY sa.id
+		)) AS artist,
+		(SELECT spotify_url FROM song_link WHERE song_id = s.id) AS spotify_url,
+		(SELECT youtube_url FROM song_link WHERE song_id = s.id) AS youtube_url,
+		(SELECT soundcloud_url FROM song_link WHERE song_id = s.id) AS soundcloud_url,
+		s.year AS song_year,
+		(SELECT MIN(al.release_year) FROM album_track at
+			JOIN album al ON al.id = at.album_id
+			WHERE at.song_id = s.id AND al.release_year IS NOT NULL) AS fallback_year
 		{$selects}
 	FROM song s
 	LEFT JOIN song_alias st ON st.song_id = s.id AND st.is_actual = 1
 	{$joins}
 	ORDER BY {$sortable[$sort]} {$dir}, s.id
 ")->fetchAll();
+
+$linkFields = [
+	['key' => 'spotify_url', 'label' => t('song.link.spotify'), 'abbr' => t('song.link.abbr.spotify')],
+	['key' => 'youtube_url', 'label' => t('song.link.youtube'), 'abbr' => t('song.link.abbr.youtube')],
+	['key' => 'soundcloud_url', 'label' => t('song.link.soundcloud'), 'abbr' => t('song.link.abbr.soundcloud')],
+	['key' => 'bandcamp_url', 'label' => t('song.link.bandcamp'), 'abbr' => t('song.link.abbr.bandcamp')],
+	['key' => 'filepath', 'label' => t('song.link.filepath'), 'abbr' => t('song.link.abbr.filepath')],
+	['key' => 'other_url', 'label' => t('song.link.other'), 'abbr' => t('song.link.abbr.other')],
+];
+$globalData['linkFields'] = $linkFields;
+
+$songLinksBySong = [];
+foreach ($db->query("SELECT song_id, spotify_url, youtube_url, soundcloud_url, bandcamp_url, filepath, other_url FROM song_link")->fetchAll() as $row) {
+	$songLinksBySong[(int)$row['song_id']] = [
+		'spotify_url' => $row['spotify_url'],
+		'youtube_url' => $row['youtube_url'],
+		'soundcloud_url' => $row['soundcloud_url'],
+		'bandcamp_url' => $row['bandcamp_url'],
+		'filepath' => $row['filepath'],
+		'other_url' => $row['other_url'],
+	];
+}
+
+$globalData['songLinksBySong'] = $songLinksBySong;
 
 $trackAliases = [];
 foreach ($db->query("
@@ -186,11 +224,8 @@ $columns = [
 	['key' => 'artist', 'type' => 'text', 'class' => 'songArtistCell', 'label' => t('song.column.artist')],
 	['key' => 'title', 'type' => 'text', 'class' => 'songTitleCell', 'label' => t('song.column.title')],
 	['key' => 'album', 'type' => 'text', 'class' => 'songAlbumCell', 'label' => t('song.column.album')],
+	['key' => 'year', 'type' => 'number', 'class' => 'songYearCell', 'label' => t('song.column.year')],
 ];
-
-if ($globalData['showSharedNote']) {
-	$columns[] = ['key' => 'note', 'type' => 'text', 'class' => 'songNoteCell', 'label' => t('song.column.note')];
-}
 
 foreach ($raters as $index => $rater) {
 	$id = (int)$rater['id'];

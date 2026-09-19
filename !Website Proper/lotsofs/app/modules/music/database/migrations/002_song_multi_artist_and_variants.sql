@@ -6,8 +6,9 @@
 --    its original job as the sole source of a song's name/title history.
 -- 3. Adds song_relationship: directed duplicate/variant links between
 --    songs (e.g. "radio edit of", "CD release of"), free-text described.
--- 4. Adds song_link: external links for a song (Spotify, YouTube,
---    SoundCloud, iTunes, a local file path, etc.), free-text labelled.
+-- 4. Adds song_link: external links for a song, one row per song with a
+--    fixed column per platform (Spotify, YouTube, SoundCloud, a local file
+--    path, and a catch-all "other").
 --
 -- This needs a full table rebuild rather than a plain ALTER TABLE:
 -- SQLite refuses to DROP COLUMN artist_id because it's part of a FOREIGN
@@ -104,18 +105,18 @@ CREATE TABLE IF NOT EXISTS song_relationship (
 CREATE UNIQUE INDEX IF NOT EXISTS idx_song_relationship_unique ON song_relationship (variant_song_id, target_song_id);
 CREATE INDEX IF NOT EXISTS idx_song_relationship_target ON song_relationship (target_song_id);
 
--- Step 7: song links - Spotify, YouTube, SoundCloud, iTunes, a local file
--- path, etc. label is free text by design (e.g. "Spotify", "YouTube",
--- "local file"), same as relationship_note above; no enum/CHECK on it.
+-- Step 7: song links - one row per song, a fixed column per platform
+-- (Spotify and YouTube get embedded players; the rest are plain links).
 -- Created empty.
 CREATE TABLE IF NOT EXISTS song_link (
-    id INTEGER PRIMARY KEY,
-    song_id INTEGER NOT NULL,
-    url TEXT NOT NULL,
-    label TEXT,
+    song_id INTEGER PRIMARY KEY,
+    spotify_url TEXT,
+    youtube_url TEXT,
+    soundcloud_url TEXT,
+    bandcamp_url TEXT,
+    filepath TEXT,
+    other_url TEXT,
     FOREIGN KEY (song_id) REFERENCES song(id)
 );
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_song_link_unique ON song_link (song_id, url);
 
 PRAGMA foreign_key_check;

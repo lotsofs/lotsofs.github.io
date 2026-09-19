@@ -26,7 +26,7 @@ if ($field !== 'title') {
 }
 
 $song = $db->query("
-	SELECT (SELECT artist_id FROM song_artist WHERE song_id = s.id LIMIT 1) AS artist_id, st.name AS title
+	SELECT (SELECT artist_id FROM song_artist WHERE song_id = s.id ORDER BY id LIMIT 1) AS artist_id, st.name AS title
 	FROM song s
 	LEFT JOIN song_alias st ON st.song_id = s.id AND st.is_actual = 1
 	WHERE s.id = ?
