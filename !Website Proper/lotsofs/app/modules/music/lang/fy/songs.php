@@ -68,6 +68,13 @@ return [
 	'song.list.notePreviewClear' => 'Wiskje',
 	'song.list.cardViewToggleOn' => 'Kaartwerjefte',
 	'song.list.cardViewToggleOff' => 'Tabelwerjefte',
+	'song.list.toastScore' => '{name} joech {song} in {value}',
+	'song.list.toastNote' => '{name} skreau in notysje oer {song}: {value}',
+	'song.list.toastScoreUpdated' => '{name} wizige de wurdearring foar {song} fan {previous} nei {value}',
+	'song.list.toastNoteUpdated' => '{name} wizige de notysje oer {song}: {value}',
+	'song.list.toastScoreCleared' => '{name} wiske de wurdearring foar {song}',
+	'song.list.toastNoteCleared' => '{name} wiske de notysje oer {song}',
+
 	'song.list.cardModalClose' => 'Slute',
 	'song.list.cardModalEdit' => 'Bewurkje',
 

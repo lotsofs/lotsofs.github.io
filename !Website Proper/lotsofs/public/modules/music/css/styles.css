@@ -321,6 +321,68 @@ th, td {
 	}
 }
 
+.songToasts {
+	position: fixed;
+	top: calc(var(--songNavHeight, 3.35em) + 0.5em);
+	right: 0.5em;
+	z-index: 30;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4em;
+	max-width: min(24em, 90vw);
+	pointer-events: none;
+}
+
+.songToast {
+	pointer-events: auto;
+	cursor: pointer;
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5em;
+	background-color: #000000;
+	border: 1px solid #555555;
+	border-radius: 4px;
+	padding: 0.4em 0.6em;
+	word-break: break-word;
+	animation: songToastIn 0.2s ease-out;
+
+	@media (prefers-reduced-motion: reduce) {
+		animation: none;
+	}
+
+	.songToastText {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.songToastClose {
+		flex: none;
+		border: none;
+		background: none;
+		padding: 0;
+		color: inherit;
+		font: inherit;
+		line-height: 1;
+		opacity: 0.6;
+		cursor: pointer;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+}
+
+@keyframes songToastIn {
+	from {
+		opacity: 0;
+		transform: translateX(0.5em);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
 @keyframes songRatingFlash {
 	from {
 		background-color: #555555;
@@ -791,6 +853,10 @@ th, td {
 	&[hidden] {
 		display: none;
 	}
+}
+
+#songCardModalBody .songCard[hidden] {
+	display: flex;
 }
 
 .songCardModalDialog {

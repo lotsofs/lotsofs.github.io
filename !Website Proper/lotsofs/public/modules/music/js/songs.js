@@ -1184,9 +1184,83 @@ const RATING_POLL_INTERVAL = 3000;
 const RATING_POLL_BACKOFF = 60000;
 
 let ratingCursor = Number(JSON.parse(document.getElementById("songRatingCursor").textContent)) || 0;
+let ratingAuditCursor = Number(JSON.parse(document.getElementById("songAuditCursor").textContent)) || 0;
 let ratingPollTimer = null;
 let ratingPollInFlight = false;
 let ratingPollFailures = 0;
+
+const songToasts = document.getElementById("songToasts");
+const TOAST_SHOW_OWN_EVENTS = true;
+const TOAST_DURATION = 60000;
+const TOAST_LIMIT = 140;
+const TOAST_VALUE_MAX = 140;
+
+const toastTimers = new Map();
+
+function dismissToast(toast) {
+	clearTimeout(toastTimers.get(toast));
+	toastTimers.delete(toast);
+	toast.remove();
+}
+
+function showToast(text, songId) {
+	while (songToasts.children.length >= TOAST_LIMIT) {
+		dismissToast(songToasts.firstElementChild);
+	}
+
+	const toast = appendChildToElement(songToasts, "div");
+	toast.className = "songToast";
+	appendChildToElement(toast, "span", text).className = "songToastText";
+
+	const close = appendChildToElement(toast, "button", "×");
+	close.className = "songToastClose";
+	close.type = "button";
+	close.title = t("song.list.cardModalClose");
+
+	close.addEventListener("click", event => {
+		event.stopPropagation();
+		dismissToast(toast);
+	});
+
+	toast.addEventListener("click", () => {
+		openCardModal(songId);
+		dismissToast(toast);
+	});
+
+	toastTimers.set(toast, setTimeout(() => dismissToast(toast), TOAST_DURATION));
+}
+
+function showRatingEvent(event) {
+	if (!TOAST_SHOW_OWN_EVENTS && event.mine) {
+		return;
+	}
+
+	const params = { name: event.name, song: event.songLabel };
+
+	if (event.value === null) {
+		showToast(event.field === "score"
+			? t("song.list.toastScoreCleared", params)
+			: t("song.list.toastNoteCleared", params), event.songId);
+		return;
+	}
+
+	params.value = event.value.length > TOAST_VALUE_MAX
+		? event.value.slice(0, TOAST_VALUE_MAX) + "…"
+		: event.value;
+
+	if (event.previousValue === null) {
+		showToast(event.field === "score"
+			? t("song.list.toastScore", params)
+			: t("song.list.toastNote", params), event.songId);
+		return;
+	}
+
+	params.previous = event.previousValue;
+
+	showToast(event.field === "score"
+		? t("song.list.toastScoreUpdated", params)
+		: t("song.list.toastNoteUpdated", params), event.songId);
+}
 
 function flashCell(cell) {
 	cell.classList.remove("songRatingFlash");
@@ -1240,12 +1314,14 @@ function pollRatings() {
 			"Content-Type": "application/json",
 			"X-CSRF-Token": CSRF_TOKEN
 		},
-		body: JSON.stringify({ since: ratingCursor })
+		body: JSON.stringify({ since: ratingCursor, sinceAudit: ratingAuditCursor })
 	})
 	.then(response => response.ok ? response.json() : Promise.reject(new Error(response.status)))
 	.then(result => {
 		result.changes.forEach(applyRatingChange);
+		result.events.slice(-TOAST_LIMIT).forEach(showRatingEvent);
 		ratingCursor = result.cursor;
+		ratingAuditCursor = result.auditCursor;
 		ratingPollFailures = 0;
 	})
 	.catch(() => {

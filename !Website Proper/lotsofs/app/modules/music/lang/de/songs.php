@@ -68,6 +68,13 @@ return [
 	'song.list.notePreviewClear' => 'Leeren',
 	'song.list.cardViewToggleOn' => 'Kartenansicht',
 	'song.list.cardViewToggleOff' => 'Tabellenansicht',
+	'song.list.toastScore' => '{name} bewertete {song} mit {value}',
+	'song.list.toastNote' => '{name} schrieb eine Notiz zu {song}: {value}',
+	'song.list.toastScoreUpdated' => '{name} änderte die Wertung für {song} von {previous} auf {value}',
+	'song.list.toastNoteUpdated' => '{name} änderte die Notiz zu {song}: {value}',
+	'song.list.toastScoreCleared' => '{name} löschte die eigene Wertung für {song}',
+	'song.list.toastNoteCleared' => '{name} löschte die eigene Notiz zu {song}',
+
 	'song.list.cardModalClose' => 'Schließen',
 	'song.list.cardModalEdit' => 'Bearbeiten',
 

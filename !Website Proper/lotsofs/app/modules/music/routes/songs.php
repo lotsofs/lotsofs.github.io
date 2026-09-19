@@ -128,6 +128,7 @@ $globalData['listHeading'] = $listHeading;
 $pageTitle = $listHeading;
 
 $globalData['ratingCursor'] = (int)$db->query("SELECT COALESCE(MAX(updated_at), 0) c FROM account_song")->fetch()['c'];
+$globalData['auditCursor'] = (int)$db->query("SELECT COALESCE(MAX(id), 0) c FROM rating_audit")->fetch()['c'];
 
 $globalData['songs'] = $db->query("
 	SELECT

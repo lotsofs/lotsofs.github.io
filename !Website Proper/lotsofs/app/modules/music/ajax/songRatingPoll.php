@@ -19,8 +19,13 @@ if (!musicAccount($db)) {
 	exit;
 }
 
+$accountId = (int)currentAccountId();
+
 $rawSince = $data['since'] ?? null;
 $since = is_int($rawSince) || (is_string($rawSince) && ctype_digit($rawSince)) ? (int)$rawSince : 0;
+
+$rawSinceAudit = $data['sinceAudit'] ?? null;
+$sinceAudit = is_int($rawSinceAudit) || (is_string($rawSinceAudit) && ctype_digit($rawSinceAudit)) ? (int)$rawSinceAudit : 0;
 
 $rows = $db->query("
 	SELECT song_id, account_id, score, subjective_note, updated_at
@@ -43,4 +48,48 @@ foreach ($rows as $row) {
 	];
 }
 
-echo json_encode(['cursor' => $cursor, 'changes' => $changes]);
+$auditRows = $db->query("
+	SELECT ra.id, ra.account_id, ra.song_id, ra.field, ra.value, ra.previous_value,
+		a.account_name,
+		(SELECT name FROM song_alias WHERE song_id = ra.song_id
+			ORDER BY is_actual DESC LIMIT 1) AS song_title,
+		(SELECT group_concat(artist_name, ', ') FROM (
+			SELECT (SELECT name FROM artist_alias WHERE artist_id = sa.artist_id
+				ORDER BY is_actual DESC LIMIT 1) AS artist_name
+			FROM song_artist sa WHERE sa.song_id = ra.song_id ORDER BY sa.id
+		)) AS artists
+	FROM rating_audit ra
+	JOIN account a ON a.id = ra.account_id
+	WHERE ra.id > ?
+	ORDER BY ra.id
+	LIMIT 50
+", [$sinceAudit])->fetchAll();
+
+$auditCursor = $sinceAudit;
+$events = [];
+
+foreach ($auditRows as $row) {
+	$auditCursor = max($auditCursor, (int)$row['id']);
+
+	$title = $row['song_title'] ?? '';
+	$artists = $row['artists'] ?? '';
+
+	$events[] = [
+		'id' => (int)$row['id'],
+		'account' => (int)$row['account_id'],
+		'name' => $row['account_name'],
+		'songId' => (int)$row['song_id'],
+		'songLabel' => $artists === '' ? $title : $artists . ' — ' . $title,
+		'field' => $row['field'],
+		'value' => $row['value'],
+		'previousValue' => $row['previous_value'],
+		'mine' => (int)$row['account_id'] === $accountId,
+	];
+}
+
+echo json_encode([
+	'cursor' => $cursor,
+	'changes' => $changes,
+	'auditCursor' => $auditCursor,
+	'events' => $events,
+]);

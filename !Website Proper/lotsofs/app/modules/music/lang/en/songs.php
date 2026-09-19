@@ -68,6 +68,13 @@ return [
 	'song.list.notePreviewClear' => 'Clear',
 	'song.list.cardViewToggleOn' => 'Card view',
 	'song.list.cardViewToggleOff' => 'Table view',
+	'song.list.toastScore' => '{name} scored {song} a {value}',
+	'song.list.toastNote' => '{name} wrote a note about {song}: {value}',
+	'song.list.toastScoreUpdated' => '{name} updated their score for {song} from {previous} to {value}',
+	'song.list.toastNoteUpdated' => '{name} updated their note about {song}: {value}',
+	'song.list.toastScoreCleared' => '{name} cleared their score for {song}',
+	'song.list.toastNoteCleared' => '{name} cleared their note about {song}',
+
 	'song.list.cardModalClose' => 'Close',
 	'song.list.cardModalEdit' => 'Edit',
 

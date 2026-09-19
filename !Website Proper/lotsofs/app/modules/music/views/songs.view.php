@@ -367,11 +367,13 @@
 			<p id="songNoMatch"<?= $visibleCount > 0 ? ' hidden' : '' ?>><?= t('song.list.noMatch') ?></p>
 		</div>
 	</div>
+	<div id="songToasts" class="songToasts" role="status" aria-live="polite"></div>
 	<script id="songArtistData" type="application/json"><?= json_encode($globalData['artistOptions'], JSON_HEX_TAG) ?></script>
 	<script id="songAlbumData" type="application/json"><?= json_encode($globalData['albumOptions'], JSON_HEX_TAG) ?></script>
 	<script id="songLinkFieldData" type="application/json"><?= json_encode($globalData['linkFields'], JSON_HEX_TAG) ?></script>
 	<script id="songTrackAliases" type="application/json"><?= json_encode($globalData['trackAliases'], JSON_HEX_TAG) ?></script>
 	<script id="songRatingCursor" type="application/json"><?= (int)$globalData['ratingCursor'] ?></script>
+	<script id="songAuditCursor" type="application/json"><?= (int)$globalData['auditCursor'] ?></script>
 	<script src="/modules/music/js/songs.js"></script>
 <?php endif ?>
 

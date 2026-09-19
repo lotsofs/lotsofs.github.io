@@ -1826,6 +1826,147 @@ return [
 		assertSame('error', $response['json']['status'], 'status');
 	},
 
+	'writing a score logs an audit row' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Audit Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Audit Song']]);
+		$songId = $ctx->songId('Audit Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '7']);
+
+		$row = $ctx->db()->query("SELECT * FROM rating_audit WHERE song_id = {$songId}")->fetch();
+		assertTrue($row !== false, 'an audit row was written');
+		assertSame('score', $row['field'], 'the field is recorded');
+		assertSame('7', $row['value'], 'the new value is recorded');
+		assertSame(null, $row['previous_value'], 'there was nothing there before');
+		assertTrue((int)$row['created_at'] > 0, 'stamped with a time');
+	},
+
+	'editing a rating keeps the earlier value as history' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Audit History Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Audit History Song']]);
+		$songId = $ctx->songId('Audit History Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '4']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '9']);
+
+		$rows = $ctx->db()->query("SELECT value, previous_value FROM rating_audit WHERE song_id = {$songId} ORDER BY id")->fetchAll();
+		assertSame(2, count($rows), 'the edit is a second row, not an overwrite');
+		assertSame('9', $rows[1]['value'], 'the newer value');
+		assertSame('4', $rows[1]['previous_value'], 'and what it replaced');
+	},
+
+	'rewriting the same value logs nothing' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Audit Repeat Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Audit Repeat Song']]);
+		$songId = $ctx->songId('Audit Repeat Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'same']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'same']);
+
+		$count = (int)$ctx->db()->query("SELECT COUNT(*) c FROM rating_audit WHERE song_id = {$songId}")->fetch()['c'];
+		assertSame(1, $count, 'a resubmitted identical value is not an event');
+	},
+
+	'clearing a rating logs an empty value' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Audit Clear Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Audit Clear Song']]);
+		$songId = $ctx->songId('Audit Clear Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'temporary']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => '']);
+
+		$row = $ctx->db()->query("SELECT value, previous_value FROM rating_audit WHERE song_id = {$songId} ORDER BY id DESC LIMIT 1")->fetch();
+		assertSame(null, $row['value'], 'the clear is recorded as empty');
+		assertSame('temporary', $row['previous_value'], 'with what was wiped');
+	},
+
+	'the poll hands back each audit event exactly once' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Audit Poll Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Audit Poll Song']]);
+		$songId = $ctx->songId('Audit Poll Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '5']);
+
+		$eventsFor = function ($response) use ($songId) {
+			return array_values(array_filter($response['json']['events'], fn($event) => $event['songId'] === $songId));
+		};
+
+		$first = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => 0]);
+		assertSame(1, count($eventsFor($first)), 'the event arrives');
+
+		$second = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => $first['json']['auditCursor']]);
+		assertSame(0, count($eventsFor($second)), 'and is not delivered again');
+	},
+
+	'an audit event names the rater and the song' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Audit Label Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Audit Label Song']]);
+		$songId = $ctx->songId('Audit Label Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '8']);
+
+		$ctx->ensureLoggedIn('audit_watcher', 'test password', false);
+		$events = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => 0])['json']['events'];
+
+		$seen = null;
+		foreach ($events as $event) {
+			if ($event['songId'] === $songId) {
+				$seen = $event;
+			}
+		}
+
+		assertTrue($seen !== null, 'the other accounts write is visible');
+		assertSame('test_runner', $seen['name'], 'attributed by name');
+		assertSame('Audit Label Artist — Audit Label Song', $seen['songLabel'], 'labelled artist and title');
+		assertSame('8', $seen['value'], 'with the value written');
+		assertSame(false, $seen['mine'], 'and marked as somebody elses');
+	},
+
+	'an edit event carries what the value used to be' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Audit Previous Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Audit Previous Song']]);
+		$songId = $ctx->songId('Audit Previous Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '2']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '6']);
+
+		$events = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => 0])['json']['events'];
+		$mine = array_values(array_filter($events, fn($event) => $event['songId'] === $songId));
+
+		assertSame(2, count($mine), 'both writes came back');
+		assertSame(null, $mine[0]['previousValue'], 'the first write replaced nothing');
+		assertSame('2', $mine[1]['previousValue'], 'the second carries what it replaced');
+		assertSame('6', $mine[1]['value'], 'alongside the new value');
+	},
+
+	'the songs page seeds the audit cursor' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Audit Seed Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Audit Seed Song']]);
+		$songId = $ctx->songId('Audit Seed Song');
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '3']);
+
+		$latest = (int)$ctx->db()->query("SELECT MAX(id) m FROM rating_audit")->fetch()['m'];
+		$body = $ctx->get('/music/songs')['body'];
+
+		assertContains('<script id="songAuditCursor" type="application/json">' . $latest . '</script>', $body, 'the page starts from the newest event');
+	},
+
 	'a duration given as mm:ss is stored as seconds' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
