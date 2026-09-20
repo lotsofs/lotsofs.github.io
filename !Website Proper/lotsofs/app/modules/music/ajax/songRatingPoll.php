@@ -35,10 +35,10 @@ $auditRows = $db->query("
 	SELECT ra.id, ra.account_id, ra.song_id, ra.field, ra.value, ra.previous_value,
 		a.account_name,
 		(SELECT name FROM song_alias WHERE song_id = ra.song_id
-			ORDER BY is_actual DESC LIMIT 1) AS song_title,
+			ORDER BY is_actual DESC, id LIMIT 1) AS song_title,
 		(SELECT group_concat(artist_name, ', ') FROM (
 			SELECT (SELECT name FROM artist_alias WHERE artist_id = sa.artist_id
-				ORDER BY is_actual DESC LIMIT 1) AS artist_name
+				ORDER BY is_actual DESC, id LIMIT 1) AS artist_name
 			FROM song_artist sa WHERE sa.song_id = ra.song_id ORDER BY sa.id
 		)) AS artists
 	FROM rating_audit ra

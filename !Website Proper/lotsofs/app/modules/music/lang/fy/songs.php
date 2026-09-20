@@ -22,6 +22,7 @@ return [
 	'song.result.duplicate' => '✅ Liet bestie al',
 	'song.result.required' => '❌ Artyst en titel binne fereaske',
 	'song.result.notFound' => '❌ Dat liet bestiet net mear',
+	'song.result.renameClash' => '❌ In oar liet fan dizze artyst hat dy titel al',
 	'song.result.skipped' => '🗑️ Oerslein',
 	'song.result.aliased' => '🔗 "{name}" tafoege as alias fan "{title}"',
 	'song.result.aliasDuplicate' => '✅ Al in alias fan "{title}"',
@@ -76,6 +77,9 @@ return [
 
 	'song.list.cardModalClose' => 'Slute',
 	'song.list.cardModalEdit' => 'Bewurkje',
+	'song.list.cardModalDone' => 'Klear',
+	'song.list.cardModalPrev' => '‹ Foarige',
+	'song.list.cardModalNext' => 'Folgjende ›',
 
 	'song.list.filterHeading' => 'Filter',
 	'song.list.filterArtist' => 'Artyst',

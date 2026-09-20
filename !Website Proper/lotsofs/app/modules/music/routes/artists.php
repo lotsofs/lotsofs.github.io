@@ -21,10 +21,11 @@ $globalData['isAdmin'] = musicIsAdmin($db);
 $globalData['artists'] = $db->query("
 	SELECT
 		a.id,
-		(SELECT name FROM artist_alias WHERE artist_id = a.id AND is_actual = 1) AS name,
+		(SELECT name FROM artist_alias WHERE artist_id = a.id ORDER BY is_actual DESC, id LIMIT 1) AS name,
 		(SELECT group_concat(name, ', ') FROM (
 			SELECT name FROM artist_alias
-			WHERE artist_id = a.id AND is_actual = 0
+			WHERE artist_id = a.id
+				AND id != (SELECT id FROM artist_alias WHERE artist_id = a.id ORDER BY is_actual DESC, id LIMIT 1)
 			ORDER BY name COLLATE NOCASE
 		)) AS aliases
 	FROM artist a

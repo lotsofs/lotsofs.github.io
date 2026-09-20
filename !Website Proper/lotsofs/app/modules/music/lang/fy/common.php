@@ -34,6 +34,8 @@ return [
 	'ajax.notLoggedIn' => 'Do moatst oanmeld wêze.',
 	'ajax.badCsrf' => 'Dizze side is ferrûn, laad opnij en besykje it nochris.',
 	'ajax.notAdmin' => 'Dêrfoar is in adminakkount nedich.',
+	'ajax.badMethod' => 'Dat einpunt akseptearret allinne POST.',
+	'ajax.badBody' => 'De ynhâld fan it fersyk wie gjin jildige JSON.',
 
 	'status.submitting' => 'Wurdt ferstjoerd …',
 	'status.submitFailed' => 'Ferstjoeren mislearre: {error}',

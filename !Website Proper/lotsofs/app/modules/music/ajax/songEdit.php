@@ -39,7 +39,7 @@ $clash = $db->query("
 ", [$song['artist_id'], $value, $id])->fetch();
 
 if ($clash) {
-	echo json_encode(['status' => 'duplicate', 'value' => $song['title'] ?? '', 'message' => t('song.result.duplicate')]);
+	echo json_encode(['status' => 'error', 'value' => $song['title'] ?? '', 'message' => t('song.result.renameClash')]);
 	exit;
 }
 

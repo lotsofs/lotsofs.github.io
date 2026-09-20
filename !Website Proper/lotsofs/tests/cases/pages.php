@@ -54,6 +54,32 @@ return [
 		}
 	},
 
+	'a signed out caller is told to log in before anything else is judged' => function ($ctx) {
+		$ctx->newSession();
+
+		$wrongMethod = $ctx->get(MUSIC_AJAX_ENDPOINTS[0]);
+		assertSame(401, $wrongMethod['status'], 'a GET while signed out is a 401, not a 405');
+
+		$ctx->newSession();
+		$badBody = $ctx->post(MUSIC_AJAX_ENDPOINTS[0], 'null');
+		assertSame(401, $badBody['status'], 'a malformed body while signed out is a 401, not a 400');
+
+		$ctx->newSession();
+		$noCsrf = $ctx->postWithoutCsrf(MUSIC_AJAX_ENDPOINTS[0], []);
+		assertSame(401, $noCsrf['status'], 'a missing token while signed out is a 401, not a 403');
+	},
+
+	'a signed in caller still gets the specific complaint' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+		assertSame(405, $ctx->get(MUSIC_AJAX_ENDPOINTS[0])['status'], 'a GET is a 405 once you are known');
+
+		$ctx->ensureLoggedIn();
+		assertSame(403, $ctx->postWithoutCsrf(MUSIC_AJAX_ENDPOINTS[0], [])['status'], 'a missing token is a 403');
+
+		$ctx->ensureLoggedIn();
+		assertSame(400, $ctx->post(MUSIC_AJAX_ENDPOINTS[0], 'null')['status'], 'a malformed body is a 400');
+	},
+
 	'the music endpoints reject posts without a csrf token' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 

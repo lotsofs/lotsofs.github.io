@@ -22,6 +22,7 @@ return [
 	'song.result.duplicate' => '✅ Song already existed',
 	'song.result.required' => '❌ Artist and title are required',
 	'song.result.notFound' => '❌ That song no longer exists',
+	'song.result.renameClash' => '❌ Another song by this artist already has that title',
 	'song.result.skipped' => '🗑️ Skipped',
 	'song.result.aliased' => '🔗 Added "{name}" as an alias of "{title}"',
 	'song.result.aliasDuplicate' => '✅ Already an alias of "{title}"',
@@ -76,6 +77,9 @@ return [
 
 	'song.list.cardModalClose' => 'Close',
 	'song.list.cardModalEdit' => 'Edit',
+	'song.list.cardModalDone' => 'Done',
+	'song.list.cardModalPrev' => '‹ Previous',
+	'song.list.cardModalNext' => 'Next ›',
 
 	'song.list.filterHeading' => 'Filter',
 	'song.list.filterArtist' => 'Artist',

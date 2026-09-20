@@ -34,6 +34,8 @@ return [
 	'ajax.notLoggedIn' => 'You need to be logged in.',
 	'ajax.badCsrf' => 'That page expired, please reload it and try again.',
 	'ajax.notAdmin' => 'That needs an admin account.',
+	'ajax.badMethod' => 'That endpoint only accepts POST.',
+	'ajax.badBody' => 'That request body was not valid JSON.',
 
 	'status.submitting' => 'Submitting...',
 	'status.submitFailed' => 'Submit failed: {error}',

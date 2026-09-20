@@ -61,7 +61,7 @@ $rawAlbum = filter_input(INPUT_GET, 'album', FILTER_VALIDATE_INT);
 
 $artistOptions = $db->query("
 	SELECT a.id,
-		(SELECT name FROM artist_alias WHERE artist_id = a.id ORDER BY is_actual DESC LIMIT 1) AS name
+		(SELECT name FROM artist_alias WHERE artist_id = a.id ORDER BY is_actual DESC, id LIMIT 1) AS name
 	FROM artist a
 	ORDER BY name COLLATE NOCASE, a.id
 ")->fetchAll();
@@ -75,7 +75,7 @@ foreach ($artistOptions as $option) {
 
 $albumOptions = $db->query("
 	SELECT al.id, al.artist_id,
-		(SELECT name FROM album_alias WHERE album_id = al.id ORDER BY is_actual DESC LIMIT 1) AS name
+		(SELECT name FROM album_alias WHERE album_id = al.id ORDER BY is_actual DESC, id LIMIT 1) AS name
 	FROM album al
 	ORDER BY name COLLATE NOCASE, al.id
 ")->fetchAll();
@@ -141,7 +141,7 @@ $globalData['songs'] = $db->query("
 		(SELECT group_concat(album_name, ', ') FROM (
 			SELECT (SELECT name FROM album_alias
 				WHERE album_id = at.album_id
-				ORDER BY is_actual DESC LIMIT 1) AS album_name
+				ORDER BY is_actual DESC, id LIMIT 1) AS album_name
 			FROM album_track at
 			WHERE at.song_id = s.id
 			ORDER BY album_name COLLATE NOCASE
@@ -155,7 +155,7 @@ $globalData['songs'] = $db->query("
 		(SELECT group_concat(artist_name, ', ') FROM (
 			SELECT (SELECT name FROM artist_alias
 				WHERE artist_id = sa.artist_id
-				ORDER BY is_actual DESC LIMIT 1) AS artist_name
+				ORDER BY is_actual DESC, id LIMIT 1) AS artist_name
 			FROM song_artist sa
 			WHERE sa.song_id = s.id
 			ORDER BY sa.id

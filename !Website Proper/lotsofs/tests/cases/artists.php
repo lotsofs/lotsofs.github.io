@@ -245,6 +245,52 @@ return [
 		assertSame('Shifting Band Renamed', $actual[0]['name'], 'the newer name won');
 	},
 
+	'an artist with no actual spelling falls back to the one spelling it has' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$response = $ctx->post(ARTIST_ENDPOINT, [[
+			'artist_id' => 'new',
+			'group' => 'Unmarked Band',
+			'og_name' => 'Unmarked Band',
+			'provided_name' => 'Unmarked Band',
+			'is_actual' => false,
+		]]);
+		$artistId = (int)$response['json'][0]['artist_id'];
+
+		$actualCount = (int)$ctx->db()->query("SELECT COUNT(*) c FROM artist_alias WHERE artist_id = {$artistId} AND is_actual = 1")->fetch()['c'];
+		assertSame(0, $actualCount, 'the artist really has no alias marked actual');
+
+		$body = $ctx->get('/music/artists')['body'];
+
+		assertContains('<a href="/music/songs?artist=' . $artistId . '">Unmarked Band</a>', $body, 'the name cell falls back to the only spelling there is');
+		assertSame(1, substr_count($body, 'Unmarked Band'), 'the fallback name is not also repeated in its own alias column');
+	},
+
+	'an album with no actual spelling falls back the same way' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Unmarked Album Owner');
+
+		$response = $ctx->post('/music/ajax/album', [[
+			'provided_name' => 'Unmarked Record',
+			'album_id' => 'new',
+			'og_name' => 'Unmarked Record',
+			'is_actual' => false,
+			'artist_id' => $artistId,
+			'release_year' => '',
+			'tracks' => [],
+		]]);
+		$albumId = (int)$response['json'][0]['album_id'];
+
+		$actualCount = (int)$ctx->db()->query("SELECT COUNT(*) c FROM album_alias WHERE album_id = {$albumId} AND is_actual = 1")->fetch()['c'];
+		assertSame(0, $actualCount, 'the album really has no alias marked actual');
+
+		$body = $ctx->get('/music/albums')['body'];
+
+		assertContains('>Unmarked Record</a>', $body, 'the name cell falls back to the only spelling there is');
+		assertSame(1, substr_count($body, 'Unmarked Record'), 'the fallback name is not also repeated in its own alias column');
+	},
+
 	'a nameless row is rejected' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 

@@ -23,15 +23,16 @@ $globalData['albums'] = $db->query("
 		al.id,
 		al.artist_id,
 		al.release_year,
-		(SELECT name FROM album_alias WHERE album_id = al.id AND is_actual = 1) AS name,
+		(SELECT name FROM album_alias WHERE album_id = al.id ORDER BY is_actual DESC, id LIMIT 1) AS name,
 		(SELECT group_concat(name, ', ') FROM (
 			SELECT name FROM album_alias
-			WHERE album_id = al.id AND is_actual = 0
+			WHERE album_id = al.id
+				AND id != (SELECT id FROM album_alias WHERE album_id = al.id ORDER BY is_actual DESC, id LIMIT 1)
 			ORDER BY name COLLATE NOCASE
 		)) AS aliases,
 		(SELECT name FROM artist_alias
 			WHERE artist_id = al.artist_id
-			ORDER BY is_actual DESC LIMIT 1) AS artist
+			ORDER BY is_actual DESC, id LIMIT 1) AS artist
 	FROM album al
 	ORDER BY name COLLATE NOCASE, al.id
 ")->fetchAll();

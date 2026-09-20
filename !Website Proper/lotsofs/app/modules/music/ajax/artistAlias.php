@@ -51,7 +51,7 @@ try {
 		$storeName = $createdArtist || !isset($datum['store_name']) || !empty($datum['store_name']);
 
 		if (!$storeName) {
-			$matchedRow = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC LIMIT 1", [$id])->fetch();
+			$matchedRow = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC, id LIMIT 1", [$id])->fetch();
 			$matchedName = $matchedRow ? $matchedRow['name'] : $aliasName;
 			$results[] = [
 				'provided_name' => $providedName,
@@ -86,7 +86,7 @@ try {
 			$outcome = $createdArtist ? 'created' : 'added';
 		}
 
-		$artistNameRow = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC LIMIT 1", [$id])->fetch();
+		$artistNameRow = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC, id LIMIT 1", [$id])->fetch();
 		$artistName = $artistNameRow ? $artistNameRow['name'] : $aliasName;
 
 		$params = ['name' => $aliasName, 'artist' => $artistName];

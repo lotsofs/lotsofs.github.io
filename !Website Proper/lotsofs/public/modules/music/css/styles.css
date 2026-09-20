@@ -30,16 +30,42 @@ nav a,
 nav .navMenuButton,
 nav .navLogout button,
 .songFilters button[type="submit"],
-.songCardViewToggle {
+.songCardViewToggle,
+#songCards .songCardEditBtn,
+#songCardModal .songCardEditBtn,
+.songEditRowRemove,
+.songEditRowAdd,
+.songCardModalClose,
+.songCardModalNav {
 	border: solid 1px #000000;
 	border-radius: 16px;
 	background-color: var(--buttonFill);
-	padding: .4em .8em;
 	color: #ffffff;
 	font: inherit;
+	cursor: pointer;
+}
+
+#songListTable .ratingNoteText,
+#songCards .songLinkChip,
+#songCardModal .songLinkChip,
+.providedName,
+#artistMatchRows .rowExtras .rawNamePreview,
+#artistMatchRows .aliasNameInLabel,
+#columnMapping .columnMapRow .columnMapExample,
+#extrasTable .extraValueCell {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+nav a,
+nav .navMenuButton,
+nav .navLogout button,
+.songFilters button[type="submit"],
+.songCardViewToggle {
+	padding: .4em .8em;
 	text-decoration: none;
 	white-space: nowrap;
-	cursor: pointer;
 }
 
 nav {
@@ -360,6 +386,10 @@ th, td {
 		min-width: 0;
 	}
 
+	.songToastScore {
+		font-weight: bold;
+	}
+
 	.songToastClose {
 		flex: none;
 		border: none;
@@ -485,9 +515,6 @@ th, td {
 	.ratingNoteText {
 		display: block;
 		max-width: 12em;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 	}
 
 	.songRaterGroup {
@@ -678,14 +705,8 @@ th, td {
 	}
 
 	.songCardEditBtn {
-		border: solid 1px #000000;
-		border-radius: 16px;
-		background-color: var(--buttonFill);
 		padding: 0.1em 0.6em;
-		color: #ffffff;
-		font: inherit;
 		font-size: 0.8em;
-		cursor: pointer;
 
 		&:hover {
 			background-color: var(--buttonFillHover);
@@ -757,9 +778,6 @@ th, td {
 		max-width: 280px;
 		font-size: 0.9em;
 		color: inherit;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
 	}
 
 	.songLinkChipWrap {
@@ -818,14 +836,8 @@ th, td {
 .songEditRowRemove,
 .songEditRowAdd {
 	flex: 0 0 auto;
-	border: solid 1px #000000;
-	border-radius: 16px;
-	background-color: var(--buttonFill);
-	color: #ffffff;
-	font: inherit;
 	line-height: 1;
 	padding: .2em .6em;
-	cursor: pointer;
 
 	&:hover {
 		background-color: var(--buttonFillHover);
@@ -879,14 +891,21 @@ th, td {
 	gap: 0.4em;
 }
 
-.songCardModalClose {
-	border: solid 1px #000000;
-	border-radius: 16px;
-	background-color: var(--buttonFill);
+.songCardModalNav {
 	padding: .2em .7em;
-	color: #ffffff;
-	font: inherit;
-	cursor: pointer;
+
+	&:hover:not(:disabled) {
+		background-color: var(--buttonFillHover);
+	}
+
+	&:disabled {
+		opacity: 0.4;
+		cursor: default;
+	}
+}
+
+.songCardModalClose {
+	padding: .2em .7em;
 
 	&:hover {
 		background-color: var(--buttonFillHover);
@@ -912,9 +931,6 @@ th, td {
 .providedName {
 	display: block;
 	max-width: 20em;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
 }
 
 #artistMatchRows {
@@ -935,9 +951,6 @@ th, td {
 		.rawNamePreview {
 			flex: 0 1 auto;
 			max-width: 20em;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
 		}
 
 		label {
@@ -949,9 +962,6 @@ th, td {
 	.aliasNameInLabel {
 		display: inline-block;
 		max-width: 14em;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 		vertical-align: bottom;
 	}
 }
@@ -972,9 +982,6 @@ th, td {
 		.columnMapExample {
 			flex: 1 1 16em;
 			max-width: 20em;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
 			opacity: 0.7;
 			font-style: italic;
 		}
@@ -990,9 +997,6 @@ th, td {
 
 	.extraValueCell {
 		max-width: 16em;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 	}
 }
 

@@ -34,7 +34,7 @@ try {
 			continue;
 		}
 
-		$artistRow = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC LIMIT 1", [$artistId])->fetch();
+		$artistRow = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC, id LIMIT 1", [$artistId])->fetch();
 		$artistName = $artistRow ? $artistRow['name'] : $artistId;
 
 		if ($rawId !== SONG_ID_NEW) {

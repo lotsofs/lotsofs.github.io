@@ -34,6 +34,8 @@ return [
 	'ajax.notLoggedIn' => 'Du musst angemeldet sein.',
 	'ajax.badCsrf' => 'Diese Seite ist abgelaufen, bitte neu laden und erneut versuchen.',
 	'ajax.notAdmin' => 'Dafür wird ein Admin-Konto benötigt.',
+	'ajax.badMethod' => 'Dieser Endpunkt akzeptiert nur POST.',
+	'ajax.badBody' => 'Der Anfrageinhalt war kein gültiges JSON.',
 
 	'status.submitting' => 'Wird gesendet …',
 	'status.submitFailed' => 'Senden fehlgeschlagen: {error}',

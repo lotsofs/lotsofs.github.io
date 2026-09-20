@@ -67,7 +67,7 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 
-		assertTrue(strpos($body, 'data-can-edit') === false, 'no edit flag for title and note editing');
+		assertTrue(strpos($body, 'songCardEditBtn') === false, 'no edit button, which is what gates artist/album/year/link editing');
 
 		assertContains('songTitleCell', $body, 'the table still renders');
 		assertContains('?sort=title', $body, 'the columns still sort');

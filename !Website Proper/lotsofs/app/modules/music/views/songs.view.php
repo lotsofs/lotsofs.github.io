@@ -28,8 +28,6 @@
 			];
 		}
 
-		$canEditAttr = $globalData['isAdmin'] ? ' data-can-edit="1"' : '';
-
 		$emptyLinks = array_fill_keys(array_column($globalData['linkFields'], 'key'), null);
 
 		// One pass to derive every value/class/attribute either tree needs, so the
@@ -225,7 +223,7 @@
 				</select>
 			</div>
 			<div class="songListScroll">
-				<table id="songListTable" class="hideResultColumn"<?= $canEditAttr ?>>
+				<table id="songListTable" class="hideResultColumn">
 					<thead>
 						<tr>
 							<?php foreach ($globalData['columns'] as $column): ?>
@@ -360,6 +358,8 @@
 				<div id="songCardModal" class="songCardModal hideResultColumn" hidden>
 					<div class="songCardModalDialog">
 						<div class="songCardModalActions">
+							<button type="button" id="songCardModalPrev" class="songCardModalNav"><?= htmlspecialchars(t('song.list.cardModalPrev')) ?></button>
+							<button type="button" id="songCardModalNext" class="songCardModalNav"><?= htmlspecialchars(t('song.list.cardModalNext')) ?></button>
 							<button type="button" id="songCardModalClose" class="songCardModalClose"><?= htmlspecialchars(t('song.list.cardModalClose')) ?></button>
 						</div>
 						<div id="songCardModalBody"></div>

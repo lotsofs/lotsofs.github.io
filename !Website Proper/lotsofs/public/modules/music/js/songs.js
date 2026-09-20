@@ -25,6 +25,8 @@ const songTrackAliases = JSON.parse(document.getElementById("songTrackAliases").
 const songCardModal = document.getElementById("songCardModal");
 const songCardModalBody = document.getElementById("songCardModalBody");
 const songCardModalClose = document.getElementById("songCardModalClose");
+const songCardModalPrev = document.getElementById("songCardModalPrev");
+const songCardModalNext = document.getElementById("songCardModalNext");
 
 // The table and the card list are two independently rendered representations of
 // the same songs, kept in sync by pairing each song id to its <tr> and its card.
@@ -103,6 +105,7 @@ function openCardModal(songId) {
 	modalCardReturnAnchor = pair.card.nextElementSibling;
 	songCardModalBody.appendChild(pair.card);
 	songCardModal.hidden = false;
+	refreshCardModalNav();
 }
 
 function closeCardModal() {
@@ -115,7 +118,43 @@ function closeCardModal() {
 	songCardModal.hidden = true;
 }
 
+// While the modal is open its card is out of the list, so modalCardReturnAnchor
+// marks the gap it left: the next card starts at the anchor, the previous one
+// starts just before it.
+function modalNeighbour(forward) {
+	let node = forward
+		? modalCardReturnAnchor
+		: (modalCardReturnAnchor ? modalCardReturnAnchor.previousElementSibling : songCardList.lastElementChild);
+
+	while (node) {
+		if (!node.hidden) {
+			return node;
+		}
+		node = forward ? node.nextElementSibling : node.previousElementSibling;
+	}
+
+	return null;
+}
+
+function refreshCardModalNav() {
+	songCardModalPrev.disabled = modalNeighbour(false) === null;
+	songCardModalNext.disabled = modalNeighbour(true) === null;
+}
+
+function stepCardModal(forward) {
+	if (songCardModal.hidden) {
+		return;
+	}
+
+	const target = modalNeighbour(forward);
+	if (target) {
+		openCardModal(target.dataset.songId);
+	}
+}
+
 songCardModalClose.addEventListener("click", closeCardModal);
+songCardModalPrev.addEventListener("click", () => stepCardModal(false));
+songCardModalNext.addEventListener("click", () => stepCardModal(true));
 
 const SONG_ARTIST_ENDPOINT = "/music/ajax/song-artist";
 const SONG_ALBUM_ENDPOINT = "/music/ajax/song-album";
@@ -613,8 +652,16 @@ const durationFieldEditor = {
 	},
 };
 
+function setCardEditLabel(card, editing) {
+	const button = card.querySelector(".songCardEditBtn");
+	if (button) {
+		button.textContent = editing ? t("song.list.cardModalDone") : t("song.list.cardModalEdit");
+	}
+}
+
 function enterCardEditMode(card) {
 	card.dataset.editing = "1";
+	setCardEditLabel(card, true);
 	artistFieldEditor.enter(card);
 	albumFieldEditor.enter(card);
 	yearFieldEditor.enter(card);
@@ -627,6 +674,7 @@ function exitCardEditMode(card) {
 		return;
 	}
 	delete card.dataset.editing;
+	setCardEditLabel(card, false);
 	artistFieldEditor.exit(card);
 	albumFieldEditor.exit(card);
 	yearFieldEditor.exit(card);
@@ -645,14 +693,17 @@ function handleCardEditClick(event) {
 		return;
 	}
 
+	if (card.dataset.editing === "1") {
+		exitCardEditMode(card);
+		return;
+	}
+
 	const titleCell = fieldCell(card, "title");
 	if (titleCell && !isBeingEdited(titleCell) && !titleCell.classList.contains("songTitleAliased")) {
 		beginCellEdit(titleCell, TITLE_SPEC);
 	}
 
-	if (card.dataset.editing !== "1") {
-		enterCardEditMode(card);
-	}
+	enterCardEditMode(card);
 }
 
 songCardModal.addEventListener("click", event => {
@@ -662,8 +713,26 @@ songCardModal.addEventListener("click", event => {
 });
 
 document.addEventListener("keydown", event => {
-	if (event.key === "Escape" && !songCardModal.hidden) {
+	if (songCardModal.hidden) {
+		return;
+	}
+
+	if (event.key === "Escape") {
 		closeCardModal();
+		return;
+	}
+
+	if (event.target.closest("input, textarea, select")) {
+		return;
+	}
+
+	if (event.key === "ArrowLeft") {
+		event.preventDefault();
+		stepCardModal(false);
+	}
+	if (event.key === "ArrowRight") {
+		event.preventDefault();
+		stepCardModal(true);
 	}
 });
 
@@ -953,6 +1022,11 @@ const EDITABLE_CELLS = {
 // handler below).
 const TITLE_SPEC = { field: "title", endpoint: SONG_EDIT_ENDPOINT, required: true };
 
+function scoreColour(score) {
+	const clamped = Math.min(10, Math.max(0, score));
+	return "hsl(" + clamped * 12 + ", 75%, 55%)";
+}
+
 function colorScoreCell(cell) {
 	const text = cellText(cell).trim();
 	const score = Number(text);
@@ -962,8 +1036,7 @@ function colorScoreCell(cell) {
 		return;
 	}
 
-	const clamped = Math.min(10, Math.max(0, score));
-	cell.style.color = "hsl(" + clamped * 12 + ", 75%, 55%)";
+	cell.style.color = scoreColour(score);
 }
 
 function setCellValue(cell, spec, value) {
@@ -1173,7 +1246,7 @@ let ratingPollFailures = 0;
 
 const songToasts = document.getElementById("songToasts");
 const TOAST_SHOW_OWN_EVENTS = true;
-const TOAST_DURATION = 60000;
+const TOAST_DURATION = 180000;
 const TOAST_LIMIT = 140;
 const TOAST_VALUE_MAX = 140;
 
@@ -1185,14 +1258,60 @@ function dismissToast(toast) {
 	toast.remove();
 }
 
-function showToast(text, songId) {
+function toastStrong(text) {
+	const element = document.createElement("strong");
+	element.textContent = text;
+	return element;
+}
+
+function toastQuote(text) {
+	const element = document.createElement("q");
+	element.textContent = text;
+	return element;
+}
+
+function toastScore(text) {
+	const element = document.createElement("span");
+	element.className = "songToastScore";
+	element.textContent = text;
+
+	const score = Number(text);
+	if (text !== "" && !Number.isNaN(score)) {
+		element.style.color = scoreColour(score);
+	}
+
+	return element;
+}
+
+function fillFromTemplate(container, template, parts) {
+	const pattern = /\{(\w+)\}/g;
+	let last = 0;
+	let match;
+
+	while ((match = pattern.exec(template)) !== null) {
+		if (match.index > last) {
+			container.appendChild(document.createTextNode(template.slice(last, match.index)));
+		}
+
+		const part = parts[match[1]];
+		container.appendChild(part ? part() : document.createTextNode(match[0]));
+		last = match.index + match[0].length;
+	}
+
+	container.appendChild(document.createTextNode(template.slice(last)));
+}
+
+function showToast(fill, songId) {
 	while (songToasts.children.length >= TOAST_LIMIT) {
 		dismissToast(songToasts.firstElementChild);
 	}
 
 	const toast = appendChildToElement(songToasts, "div");
 	toast.className = "songToast";
-	appendChildToElement(toast, "span", text).className = "songToastText";
+
+	const text = appendChildToElement(toast, "span");
+	text.className = "songToastText";
+	fill(text);
 
 	const close = appendChildToElement(toast, "button", "×");
 	close.className = "songToastClose";
@@ -1217,31 +1336,36 @@ function showRatingEvent(event) {
 		return;
 	}
 
-	const params = { name: event.name, song: event.songLabel };
+	const isScore = event.field === "score";
+	const emphasise = isScore ? toastScore : toastQuote;
+
+	const parts = {
+		name: () => toastStrong(event.name),
+		song: () => toastStrong(event.songLabel),
+	};
+
+	let template;
 
 	if (event.value === null) {
-		showToast(event.field === "score"
-			? t("song.list.toastScoreCleared", params)
-			: t("song.list.toastNoteCleared", params), event.songId);
-		return;
+		template = isScore ? t("song.list.toastScoreCleared") : t("song.list.toastNoteCleared");
+	}
+	else {
+		const shown = event.value.length > TOAST_VALUE_MAX
+			? event.value.slice(0, TOAST_VALUE_MAX) + "…"
+			: event.value;
+
+		parts.value = () => emphasise(shown);
+
+		if (event.previousValue === null) {
+			template = isScore ? t("song.list.toastScore") : t("song.list.toastNote");
+		}
+		else {
+			parts.previous = () => emphasise(event.previousValue);
+			template = isScore ? t("song.list.toastScoreUpdated") : t("song.list.toastNoteUpdated");
+		}
 	}
 
-	params.value = event.value.length > TOAST_VALUE_MAX
-		? event.value.slice(0, TOAST_VALUE_MAX) + "…"
-		: event.value;
-
-	if (event.previousValue === null) {
-		showToast(event.field === "score"
-			? t("song.list.toastScore", params)
-			: t("song.list.toastNote", params), event.songId);
-		return;
-	}
-
-	params.previous = event.previousValue;
-
-	showToast(event.field === "score"
-		? t("song.list.toastScoreUpdated", params)
-		: t("song.list.toastNoteUpdated", params), event.songId);
+	showToast(container => fillFromTemplate(container, template, parts), event.songId);
 }
 
 function flashCell(cell) {

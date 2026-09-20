@@ -22,6 +22,7 @@ return [
 	'song.result.duplicate' => '✅ Song existierte bereits',
 	'song.result.required' => '❌ Interpret und Titel sind erforderlich',
 	'song.result.notFound' => '❌ Diesen Song gibt es nicht mehr',
+	'song.result.renameClash' => '❌ Ein anderer Song dieses Interpreten hat diesen Titel bereits',
 	'song.result.skipped' => '🗑️ Übersprungen',
 	'song.result.aliased' => '🔗 "{name}" als Alias von "{title}" hinzugefügt',
 	'song.result.aliasDuplicate' => '✅ Bereits ein Alias von "{title}"',
@@ -76,6 +77,9 @@ return [
 
 	'song.list.cardModalClose' => 'Schließen',
 	'song.list.cardModalEdit' => 'Bearbeiten',
+	'song.list.cardModalDone' => 'Fertig',
+	'song.list.cardModalPrev' => '‹ Zurück',
+	'song.list.cardModalNext' => 'Weiter ›',
 
 	'song.list.filterHeading' => 'Filter',
 	'song.list.filterArtist' => 'Interpret',

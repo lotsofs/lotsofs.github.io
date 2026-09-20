@@ -8,26 +8,27 @@ set_exception_handler(function ($e) {
 	echo json_encode(['error' => $e->getMessage()]);
 });
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-	http_response_code(405);
-	echo json_encode(['error' => 'Method not allowed']);
-	exit;
-}
-
-$data = json_decode(file_get_contents('php://input'), true);
-
-if (!is_array($data)) {
-	http_response_code(400);
-	echo json_encode(['error' => 'Expected a JSON array']);
-	exit;
-}
-
 require_once __ROOT__ . '/session.php';
 sessionScope('music');
 
 stringCatalogue('music');
 requireLoginJson(t('ajax.notLoggedIn'));
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+	http_response_code(405);
+	echo json_encode(['error' => t('ajax.badMethod')]);
+	exit;
+}
+
 requireCsrfJson(t('ajax.badCsrf'));
+
+$data = json_decode(file_get_contents('php://input'), true);
+
+if (!is_array($data)) {
+	http_response_code(400);
+	echo json_encode(['error' => t('ajax.badBody')]);
+	exit;
+}
 
 $db = require __MODULES__ . '/music/db.php';
 

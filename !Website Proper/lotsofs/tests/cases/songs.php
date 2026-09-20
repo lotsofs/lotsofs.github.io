@@ -481,7 +481,8 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 
-		assertTrue(preg_match('/<table id="songListTable" class="hideResultColumn"[^>]*data-can-edit="1">/', $body) === 1, 'table starts with the column hidden');
+		assertTrue(preg_match('/<table id="songListTable" class="hideResultColumn">/', $body) === 1, 'table starts with the column hidden');
+		assertContains('songCardEditBtn', $body, 'an admin does get the edit button, so the non admin check has something to miss');
 		assertTrue(preg_match('/<th rowspan="2" class="songResultCell">/', $body) === 1, 'result header carries no sort attributes');
 		assertTrue(strpos($body, 'data-sort-key="result"') === false, 'the result header is not sortable');
 		assertContains('<td class="songResultCell" data-field="result"></td>', $body, 'rows carry a result cell');
@@ -635,7 +636,8 @@ return [
 		$songId = $ctx->songId('Clash Two');
 
 		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'title', 'value' =>'Clash One']);
-		assertSame('duplicate', $response['json']['status'], 'status');
+		assertSame('error', $response['json']['status'], 'a refused write is an error, not a duplicate');
+		assertContains('❌', $response['json']['message'], 'and it reads as a failure, not a green tick');
 		assertSame('Clash Two', $response['json']['value'], 'hands back the unchanged title');
 
 		$stored = $ctx->songTitle($songId);
@@ -2043,6 +2045,22 @@ return [
 		$body = $ctx->get('/music/songs')['body'];
 		assertSame('10:05', songsCellValue(songsRowFor($body, $songId), 'duration'), 'the table pads the seconds');
 		assertContains('>10:05<', songsCardFor($body, $songId), 'the card shows it too');
+	},
+
+	'the card modal carries previous and next buttons alongside close' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$body = $ctx->get('/music/songs')['body'];
+
+		assertContains('id="songCardModalPrev"', $body, 'the modal offers a previous button');
+		assertContains('id="songCardModalNext"', $body, 'the modal offers a next button');
+		assertContains('id="songCardModalClose"', $body, 'and still offers close');
+
+		$actions = substr($body, strpos($body, 'songCardModalActions'));
+		$prev = strpos($actions, 'songCardModalPrev');
+		$next = strpos($actions, 'songCardModalNext');
+		$close = strpos($actions, 'songCardModalClose');
+		assertTrue($prev < $next && $next < $close, 'they read previous, next, close');
 	},
 
 	'sorting by a rater score puts unrated and cleared songs first ascending and last descending' => function ($ctx) {

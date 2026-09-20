@@ -27,7 +27,7 @@ $globalData['albumNames'] = $db->query("
 		al.is_actual,
 		(SELECT name FROM artist_alias
 			WHERE artist_id = a.artist_id
-			ORDER BY is_actual DESC LIMIT 1) AS artist_name
+			ORDER BY is_actual DESC, id LIMIT 1) AS artist_name
 	FROM album_alias al
 	JOIN album a ON a.id = al.album_id
 ")->fetchAll();
