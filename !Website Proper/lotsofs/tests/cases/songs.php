@@ -2045,4 +2045,201 @@ return [
 		assertContains('>10:05<', songsCardFor($body, $songId), 'the card shows it too');
 	},
 
+	'sorting by a rater score puts unrated and cleared songs first ascending and last descending' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Score Sort Owner');
+		$mine = ['Score Sort High', 'Score Sort Low', 'Score Sort Never', 'Score Sort Cleared'];
+		foreach ($mine as $title) {
+			$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => $title]]);
+		}
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Score Sort High'), 'field' => 'score', 'value' => '9']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Score Sort Low'), 'field' => 'score', 'value' => '2']);
+
+		$clearedId = $ctx->songId('Score Sort Cleared');
+		$ctx->post(RATING_ENDPOINT, ['id' => $clearedId, 'field' => 'score', 'value' => '7']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $clearedId, 'field' => 'score', 'value' => '']);
+
+		$neverId = $ctx->songId('Score Sort Never');
+		$hasRow = (int)$ctx->db()->query("SELECT COUNT(*) c FROM account_song WHERE song_id = {$neverId}")->fetch()['c'];
+		assertSame(0, $hasRow, 'the unrated song has no account_song row at all');
+		$clearedRow = $ctx->db()->query("SELECT score FROM account_song WHERE song_id = {$clearedId}")->fetch();
+		assertSame(null, $clearedRow['score'], 'the cleared song has a row with a null score');
+
+		$accountId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
+
+		$ordered = function ($dir) use ($ctx, $mine, $accountId) {
+			$titles = songsValuesInOrder($ctx->get("/music/songs?sort=score_{$accountId}&dir={$dir}")['body'], 'title');
+			return array_values(array_filter($titles, fn($t) => in_array($t, $mine, true)));
+		};
+
+		assertSame(
+			['Score Sort Never', 'Score Sort Cleared', 'Score Sort Low', 'Score Sort High'],
+			$ordered('asc'),
+			'ascending puts both kinds of empty first, in id order, then the scores'
+		);
+
+		assertSame(
+			['Score Sort High', 'Score Sort Low', 'Score Sort Never', 'Score Sort Cleared'],
+			$ordered('desc'),
+			'descending reverses the scores but the empty block stays in ascending id order'
+		);
+	},
+
+	'sorting by a rater note ignores case and puts songs without a note first' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Note Sort Owner');
+		$mine = ['Note Sort Banana', 'Note Sort Apple', 'Note Sort None'];
+		foreach ($mine as $title) {
+			$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => $title]]);
+		}
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Note Sort Banana'), 'field' => 'note', 'value' => 'Banana']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Note Sort Apple'), 'field' => 'note', 'value' => 'apple']);
+
+		$accountId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
+
+		$ordered = function ($dir) use ($ctx, $mine, $accountId) {
+			$titles = songsValuesInOrder($ctx->get("/music/songs?sort=note_{$accountId}&dir={$dir}")['body'], 'title');
+			return array_values(array_filter($titles, fn($t) => in_array($t, $mine, true)));
+		};
+
+		assertSame(
+			['Note Sort None', 'Note Sort Apple', 'Note Sort Banana'],
+			$ordered('asc'),
+			'lowercase apple sorts before uppercase Banana, so the sort is case insensitive'
+		);
+
+		assertSame(
+			['Note Sort Banana', 'Note Sort Apple', 'Note Sort None'],
+			$ordered('desc'),
+			'descending reverses it and leaves the unnoted song last'
+		);
+	},
+
+	'each rater score column sorts by that rater only' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Two Rater Owner');
+		$mine = ['Two Rater First', 'Two Rater Second'];
+		foreach ($mine as $title) {
+			$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => $title]]);
+		}
+
+		$firstId = $ctx->songId('Two Rater First');
+		$secondId = $ctx->songId('Two Rater Second');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $firstId, 'field' => 'score', 'value' => '1']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $secondId, 'field' => 'score', 'value' => '9']);
+
+		$ctx->ensureLoggedIn('second_rater', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $firstId, 'field' => 'score', 'value' => '9']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $secondId, 'field' => 'score', 'value' => '1']);
+
+		$ctx->ensureLoggedIn();
+
+		$ids = $ctx->db()->query("SELECT id, account_name FROM account WHERE account_name IN ('test_runner', 'second_rater')")->fetchAll();
+		$byName = [];
+		foreach ($ids as $row) {
+			$byName[$row['account_name']] = (int)$row['id'];
+		}
+
+		$ordered = function ($accountId) use ($ctx, $mine) {
+			$titles = songsValuesInOrder($ctx->get("/music/songs?sort=score_{$accountId}&dir=asc")['body'], 'title');
+			return array_values(array_filter($titles, fn($t) => in_array($t, $mine, true)));
+		};
+
+		assertSame(['Two Rater First', 'Two Rater Second'], $ordered($byName['test_runner']), 'your column sorts by your scores');
+		assertSame(['Two Rater Second', 'Two Rater First'], $ordered($byName['second_rater']), 'their column sorts by theirs, the other way round');
+
+		$chunk = songsRowFor($ctx->get('/music/songs')['body'], $firstId);
+		assertSame('1', songsCellValue($chunk, "score_{$byName['test_runner']}"), 'your cell holds your score');
+		assertSame('9', songsCellValue($chunk, "score_{$byName['second_rater']}"), 'their cell holds theirs, not yours');
+	},
+
+	'the songs page renders exactly one row per song' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$songs = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song")->fetch()['c'];
+		assertTrue($songs > 1, 'there are songs to count');
+
+		$rows = count(songsRowChunks($ctx->get('/music/songs')['body']));
+		assertSame($songs, $rows, 'one row per song, so no join multiplies a song into several');
+	},
+
+	'sorting by a rater column keeps every song on the page' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$accountId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
+
+		$byId = array_map('intval', songsValuesInOrder($ctx->get('/music/songs?sort=id&dir=asc')['body'], 'id'));
+		$byScore = array_map('intval', songsValuesInOrder($ctx->get("/music/songs?sort=score_{$accountId}&dir=asc")['body'], 'id'));
+
+		assertTrue(count($byId) > 1, 'there are rows to compare');
+
+		sort($byId);
+		sort($byScore);
+		assertSame($byId, $byScore, 'sorting by a rater score drops no song, so the join stays a left join');
+	},
+
+	'a song nobody has rated still carries an empty cell for every rater' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Unrated Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Unrated By Anyone']]);
+		$songId = $ctx->songId('Unrated By Anyone');
+
+		$chunk = songsRowFor($ctx->get('/music/songs')['body'], $songId);
+		assertTrue($chunk !== null, 'the song has a row');
+
+		$accounts = $ctx->db()->query("SELECT id FROM account")->fetchAll(PDO::FETCH_COLUMN);
+		assertTrue(count($accounts) > 1, 'there is more than one rater to check');
+
+		foreach ($accounts as $accountId) {
+			assertSame('', songsCellValue($chunk, "score_{$accountId}"), "account {$accountId} has an empty score cell");
+			assertSame('', songsCellValue($chunk, "note_{$accountId}"), "account {$accountId} has an empty note cell");
+		}
+	},
+
+	'the songs page sorts by year and by duration' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Year Sort Owner');
+		$mine = ['Year Sort Late', 'Year Sort Early', 'Year Sort None'];
+		foreach ($mine as $title) {
+			$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => $title]]);
+		}
+
+		$ctx->post(SONG_YEAR_ENDPOINT, ['song_id' => $ctx->songId('Year Sort Late'), 'value' => '2010']);
+		$ctx->post(SONG_YEAR_ENDPOINT, ['song_id' => $ctx->songId('Year Sort Early'), 'value' => '1990']);
+
+		$ctx->post(SONG_DURATION_ENDPOINT, ['song_id' => $ctx->songId('Year Sort Late'), 'value' => '5:00']);
+		$ctx->post(SONG_DURATION_ENDPOINT, ['song_id' => $ctx->songId('Year Sort Early'), 'value' => '1:00']);
+
+		$ordered = function ($path) use ($ctx, $mine) {
+			$titles = songsValuesInOrder($ctx->get($path)['body'], 'title');
+			return array_values(array_filter($titles, fn($t) => in_array($t, $mine, true)));
+		};
+
+		assertSame(
+			['Year Sort None', 'Year Sort Early', 'Year Sort Late'],
+			$ordered('/music/songs?sort=year&dir=asc'),
+			'ascending by year puts the song with no year first'
+		);
+
+		assertSame(
+			['Year Sort Late', 'Year Sort Early', 'Year Sort None'],
+			$ordered('/music/songs?sort=year&dir=desc'),
+			'descending by year reverses it'
+		);
+
+		assertSame(
+			['Year Sort None', 'Year Sort Early', 'Year Sort Late'],
+			$ordered('/music/songs?sort=duration&dir=asc'),
+			'ascending by duration puts the song with no duration first'
+		);
+	},
+
 ];

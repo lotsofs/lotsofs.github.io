@@ -2,22 +2,7 @@
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
 
-stringCatalogue('music');
-
-require_once __ROOT__ . '/session.php';
-sessionScope('music');
-requireLoginJson(t('ajax.notLoggedIn'));
-requireCsrfJson(t('ajax.badCsrf'));
-
-$db = require __MODULES__ . '/music/db.php';
-
-require_once __MODULES__ . '/music/auth.php';
-
-if (!musicAccount($db)) {
-	http_response_code(403);
-	echo json_encode(['error' => t('ajax.notLoggedIn')]);
-	exit;
-}
+requireMusicAccountJson($db, t('ajax.notLoggedIn'));
 
 $accountId = (int)currentAccountId();
 
@@ -26,10 +11,9 @@ $fields = [
 	'note' => 'subjective_note',
 ];
 
-$rawId = $data['id'] ?? null;
-$songId = is_int($rawId) || (is_string($rawId) && ctype_digit($rawId)) ? (int)$rawId : 0;
-$field = is_string($data['field'] ?? null) ? $data['field'] : '';
-$value = is_string($data['value'] ?? null) ? trim($data['value']) : '';
+$songId = ajaxInt($data['id'] ?? null);
+$field = ajaxText($data['field'] ?? null);
+$value = ajaxTrimmed($data['value'] ?? null);
 
 if (!isset($fields[$field])) {
 	http_response_code(400);
@@ -37,10 +21,7 @@ if (!isset($fields[$field])) {
 	exit;
 }
 
-if (!$db->query("SELECT id FROM song WHERE id = ?", [$songId])->fetch()) {
-	echo json_encode(['status' => 'error', 'value' => '', 'message' => t('song.result.notFound')]);
-	exit;
-}
+requireSongJson($db, $songId, ['value' => '']);
 
 $existing = $db->query("SELECT score, subjective_note FROM account_song WHERE account_id = ? AND song_id = ?", [$accountId, $songId])->fetch();
 

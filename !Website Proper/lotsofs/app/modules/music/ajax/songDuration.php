@@ -1,27 +1,12 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
-
-stringCatalogue('music');
-
-require_once __ROOT__ . '/session.php';
-sessionScope('music');
-requireLoginJson(t('ajax.notLoggedIn'));
-requireCsrfJson(t('ajax.badCsrf'));
-
-$db = require __MODULES__ . '/music/db.php';
-
-require_once __MODULES__ . '/music/auth.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
-$rawSongId = $data['song_id'] ?? null;
-$songId = is_int($rawSongId) || (is_string($rawSongId) && ctype_digit($rawSongId)) ? (int)$rawSongId : 0;
-$value = is_string($data['value'] ?? null) ? trim($data['value']) : '';
+$songId = ajaxInt($data['song_id'] ?? null);
+$value = ajaxTrimmed($data['value'] ?? null);
 
-if (!$db->query("SELECT id FROM song WHERE id = ?", [$songId])->fetch()) {
-	echo json_encode(['status' => 'error', 'message' => t('song.result.notFound')]);
-	exit;
-}
+requireSongJson($db, $songId);
 
 $duration = null;
 

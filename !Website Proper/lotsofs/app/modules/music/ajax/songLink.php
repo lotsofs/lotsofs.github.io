@@ -1,17 +1,6 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
-
-stringCatalogue('music');
-
-require_once __ROOT__ . '/session.php';
-sessionScope('music');
-requireLoginJson(t('ajax.notLoggedIn'));
-requireCsrfJson(t('ajax.badCsrf'));
-
-$db = require __MODULES__ . '/music/db.php';
-
-require_once __MODULES__ . '/music/auth.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 $allowedFields = ['spotify_url', 'youtube_url', 'soundcloud_url', 'bandcamp_url', 'filepath', 'other_url'];
@@ -30,10 +19,9 @@ function youtubeIdOnly($value) {
 	return $value;
 }
 
-$rawSongId = $data['song_id'] ?? null;
-$songId = is_int($rawSongId) || (is_string($rawSongId) && ctype_digit($rawSongId)) ? (int)$rawSongId : 0;
-$field = is_string($data['field'] ?? null) ? $data['field'] : '';
-$value = is_string($data['value'] ?? null) ? trim($data['value']) : '';
+$songId = ajaxInt($data['song_id'] ?? null);
+$field = ajaxText($data['field'] ?? null);
+$value = ajaxTrimmed($data['value'] ?? null);
 
 if (!in_array($field, $allowedFields, true)) {
 	http_response_code(400);
@@ -48,10 +36,7 @@ elseif ($field === 'youtube_url' && $value !== '') {
 	$value = youtubeIdOnly($value);
 }
 
-if (!$db->query("SELECT id FROM song WHERE id = ?", [$songId])->fetch()) {
-	echo json_encode(['status' => 'error', 'message' => t('song.result.notFound')]);
-	exit;
-}
+requireSongJson($db, $songId);
 
 $storedValue = $value === '' ? null : $value;
 

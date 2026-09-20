@@ -360,13 +360,21 @@ function buildArtistTable(data_userInput) {
 
 		dropDown_Element.addEventListener('change', refreshAllRows);
 		keepRawAliasCheckBox_Element.addEventListener('change', refreshAllRows);
-		textInput_Element.addEventListener('input', refreshAllRows);
+		textInput_Element.addEventListener('input', refreshAllRowsSoon);
 	});
 
 	refreshAllRows();
 }
 
+let refreshAllRowsTimer = null;
+
+function refreshAllRowsSoon() {
+	clearTimeout(refreshAllRowsTimer);
+	refreshAllRowsTimer = setTimeout(refreshAllRows, 120);
+}
+
 function refreshAllRows() {
+	clearTimeout(refreshAllRowsTimer);
 	refreshPendingArtistOptions();
 	artistMatchRows.querySelectorAll("tr[data_artist]").forEach(row => {
 		syncRowInputToSelection(
@@ -552,21 +560,7 @@ submitButton.addEventListener('click', () => {
 		return;
 	}
 	artistStatusMessage.innerHTML = t("status.submitting");
-	fetch("/music/ajax/artist-alias", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"X-CSRF-Token": CSRF_TOKEN
-		},
-		body: JSON.stringify(newArtists)
-	})
-	.then(async response => {
-		const body = await response.json().catch(() => null);
-		if (!response.ok) {
-			throw new Error(body && body.error ? body.error : `HTTP ${response.status}`);
-		}
-		return body;
-	})
+	postJson("/music/ajax/artist-alias", newArtists)
 	.then(results => {
 		artistStatusMessage.innerHTML = "";
 		results.forEach(result => {
@@ -757,21 +751,7 @@ submitSongsButton.addEventListener('click', () => {
 		return;
 	}
 	songStatusMessage.innerHTML = t("status.submitting");
-	fetch("/music/ajax/song", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"X-CSRF-Token": CSRF_TOKEN
-		},
-		body: JSON.stringify(songs)
-	})
-	.then(async response => {
-		const body = await response.json().catch(() => null);
-		if (!response.ok) {
-			throw new Error(body && body.error ? body.error : `HTTP ${response.status}`);
-		}
-		return body;
-	})
+	postJson("/music/ajax/song", songs)
 	.then(results => {
 		songStatusMessage.innerHTML = "";
 		results.forEach(result => {
@@ -1039,21 +1019,7 @@ submitAlbumsButton.addEventListener('click', () => {
 	}
 
 	albumStatusMessage.innerHTML = t("status.submitting");
-	fetch("/music/ajax/album", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"X-CSRF-Token": CSRF_TOKEN
-		},
-		body: JSON.stringify(albums)
-	})
-	.then(async response => {
-		const body = await response.json().catch(() => null);
-		if (!response.ok) {
-			throw new Error(body && body.error ? body.error : `HTTP ${response.status}`);
-		}
-		return body;
-	})
+	postJson("/music/ajax/album", albums)
 	.then(results => {
 		albumStatusMessage.innerHTML = "";
 		results.forEach(result => {
@@ -1231,23 +1197,7 @@ submitExtrasButton.addEventListener("click", () => {
 			}
 		}
 
-		const requests = writes.map(write =>
-			fetch(write.endpoint, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					"X-CSRF-Token": CSRF_TOKEN
-				},
-				body: JSON.stringify(write.body)
-			})
-			.then(async response => {
-				const body = await response.json().catch(() => null);
-				if (!response.ok) {
-					throw new Error(body && body.error ? body.error : `HTTP ${response.status}`);
-				}
-				return body;
-			})
-		);
+		const requests = writes.map(write => postJson(write.endpoint, write.body));
 
 		return Promise.all(requests)
 			.then(results => {

@@ -4,6 +4,25 @@ const LANG_STRINGS = LANG_STRINGS_ELEMENT ? JSON.parse(LANG_STRINGS_ELEMENT.text
 const CSRF_TOKEN_ELEMENT = document.querySelector('meta[name="csrfToken"]');
 const CSRF_TOKEN = CSRF_TOKEN_ELEMENT ? CSRF_TOKEN_ELEMENT.content : "";
 
+function postJson(endpoint, body, options = {}) {
+    return fetch(endpoint, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": CSRF_TOKEN
+        },
+        body: JSON.stringify(body),
+        signal: options.signal
+    })
+    .then(async response => {
+        const result = await response.json().catch(() => null);
+        if (!response.ok) {
+            throw new Error(result && result.error ? result.error : `HTTP ${response.status}`);
+        }
+        return result;
+    });
+}
+
 function t(key, params = {}) {
     let text = LANG_STRINGS[key] ?? key;
     Object.entries(params).forEach(([name, value]) => {

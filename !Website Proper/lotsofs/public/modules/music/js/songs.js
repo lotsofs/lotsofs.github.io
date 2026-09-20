@@ -67,10 +67,21 @@ function syncField(songId, field, apply) {
 	});
 }
 
+const songsShowingResult = new Set();
+
 function syncResult(songId, message) {
 	syncField(songId, "result", cell => valueElement(cell).textContent = message);
 
-	const anyShown = rowPairs().some(pair => cellText(fieldCell(pair.tr, "result")) !== "");
+	if (rowsBySongId.has(String(songId))) {
+		if (message === "") {
+			songsShowingResult.delete(String(songId));
+		}
+		else {
+			songsShowingResult.add(String(songId));
+		}
+	}
+
+	const anyShown = songsShowingResult.size > 0;
 	songListTable.classList.toggle("hideResultColumn", !anyShown);
 	songCardList.classList.toggle("hideResultColumn", !anyShown);
 	songCardModal.classList.toggle("hideResultColumn", !anyShown);
@@ -111,24 +122,6 @@ const SONG_ALBUM_ENDPOINT = "/music/ajax/song-album";
 const SONG_LINK_ENDPOINT = "/music/ajax/song-link";
 const SONG_YEAR_ENDPOINT = "/music/ajax/song-year";
 const SONG_DURATION_ENDPOINT = "/music/ajax/song-duration";
-
-function postJson(endpoint, body) {
-	return fetch(endpoint, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"X-CSRF-Token": CSRF_TOKEN
-		},
-		body: JSON.stringify(body)
-	})
-	.then(async response => {
-		const result = await response.json().catch(() => null);
-		if (!response.ok) {
-			throw new Error(result && result.error ? result.error : `HTTP ${response.status}`);
-		}
-		return result;
-	});
-}
 
 function idsFromAttr(card, attr) {
 	return (card.dataset[attr] || "").split(",").filter(Boolean);
@@ -860,19 +853,24 @@ function fieldValue(container, field) {
 function sortRows(key, type) {
 	closeCardModal();
 
-	const pairs = rowPairs();
 	const flip = songDir === "desc" ? -1 : 1;
 
-	pairs.sort((pairA, pairB) => {
-		const result = compareCells(fieldValue(pairA.tr, key), fieldValue(pairB.tr, key), type) * flip;
-		return result !== 0 ? result : Number(pairA.tr.dataset.songId) - Number(pairB.tr.dataset.songId);
+	const decorated = rowPairs().map(pair => ({
+		pair: pair,
+		value: fieldValue(pair.tr, key),
+		songId: Number(pair.tr.dataset.songId)
+	}));
+
+	decorated.sort((a, b) => {
+		const result = compareCells(a.value, b.value, type) * flip;
+		return result !== 0 ? result : a.songId - b.songId;
 	});
 
 	const tableFragment = document.createDocumentFragment();
 	const cardFragment = document.createDocumentFragment();
-	pairs.forEach(pair => {
-		tableFragment.appendChild(pair.tr);
-		cardFragment.appendChild(pair.card);
+	decorated.forEach(entry => {
+		tableFragment.appendChild(entry.pair.tr);
+		cardFragment.appendChild(entry.pair.card);
 	});
 	songListBody.appendChild(tableFragment);
 	songCardList.appendChild(cardFragment);
@@ -945,8 +943,8 @@ const SCORE_SPEC = { selectOnFocus: true };
 const NOTE_SPEC = { syncTitle: true, multiline: true };
 
 const EDITABLE_CELLS = {
-	songMyScoreCell: { ...SCORE_SPEC, field: "score", endpoint: RATING_ENDPOINT, required: false, needsAdmin: false },
-	songMyNoteCell: { ...NOTE_SPEC, field: "note", endpoint: RATING_ENDPOINT, required: false, needsAdmin: false },
+	songMyScoreCell: { ...SCORE_SPEC, field: "score", endpoint: RATING_ENDPOINT, required: false },
+	songMyNoteCell: { ...NOTE_SPEC, field: "note", endpoint: RATING_ENDPOINT, required: false },
 };
 
 // Not in EDITABLE_CELLS on purpose: title editing is only ever started
@@ -1045,21 +1043,7 @@ function beginCellEdit(cell, spec) {
 function saveCell(songId, domField, cell, spec, original, value) {
 	cell.dataset.pending = "1";
 
-	fetch(spec.endpoint, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"X-CSRF-Token": CSRF_TOKEN
-		},
-		body: JSON.stringify({ id: songId, field: spec.field, value: value })
-	})
-	.then(async response => {
-		const body = await response.json().catch(() => null);
-		if (!response.ok) {
-			throw new Error(body && body.error ? body.error : `HTTP ${response.status}`);
-		}
-		return body;
-	})
+	postJson(spec.endpoint, { id: songId, field: spec.field, value: value })
 	.then(result => {
 		delete cell.dataset.pending;
 		syncField(songId, domField, target => setCellValue(target, spec, String(result.value)));
@@ -1091,10 +1075,6 @@ function handleEdit(event) {
 	if (!spec) {
 		return;
 	}
-	if (spec.needsAdmin && !songListTable.dataset.canEdit) {
-		return;
-	}
-
 	beginCellEdit(cell, spec);
 }
 
@@ -1182,6 +1162,8 @@ songListBody.addEventListener("click", event => {
 const RATING_POLL_ENDPOINT = "/music/ajax/song-rating-poll";
 const RATING_POLL_INTERVAL = 3000;
 const RATING_POLL_BACKOFF = 60000;
+const RATING_POLL_JITTER = 15000;
+const RATING_POLL_TIMEOUT = 10000;
 
 let ratingCursor = Number(JSON.parse(document.getElementById("songRatingCursor").textContent)) || 0;
 let ratingAuditCursor = Number(JSON.parse(document.getElementById("songAuditCursor").textContent)) || 0;
@@ -1302,21 +1284,27 @@ function scheduleRatingPoll(delay) {
 	ratingPollTimer = setTimeout(pollRatings, delay);
 }
 
+function nextRatingPollDelay() {
+	if (ratingPollFailures > 2) {
+		return RATING_POLL_BACKOFF + Math.floor(Math.random() * RATING_POLL_JITTER);
+	}
+	return RATING_POLL_INTERVAL;
+}
+
 function pollRatings() {
-	if (document.visibilityState !== "visible" || ratingPollInFlight) {
+	if (ratingPollInFlight) {
+		return;
+	}
+	if (document.visibilityState !== "visible") {
+		clearTimeout(ratingPollTimer);
 		return;
 	}
 	ratingPollInFlight = true;
 
-	fetch(RATING_POLL_ENDPOINT, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"X-CSRF-Token": CSRF_TOKEN
-		},
-		body: JSON.stringify({ since: ratingCursor, sinceAudit: ratingAuditCursor })
-	})
-	.then(response => response.ok ? response.json() : Promise.reject(new Error(response.status)))
+	const controller = new AbortController();
+	const timeout = setTimeout(() => controller.abort(), RATING_POLL_TIMEOUT);
+
+	postJson(RATING_POLL_ENDPOINT, { since: ratingCursor, sinceAudit: ratingAuditCursor }, { signal: controller.signal })
 	.then(result => {
 		result.changes.forEach(applyRatingChange);
 		result.events.slice(-TOAST_LIMIT).forEach(showRatingEvent);
@@ -1328,8 +1316,9 @@ function pollRatings() {
 		ratingPollFailures++;
 	})
 	.finally(() => {
+		clearTimeout(timeout);
 		ratingPollInFlight = false;
-		scheduleRatingPoll(ratingPollFailures > 2 ? RATING_POLL_BACKOFF : RATING_POLL_INTERVAL);
+		scheduleRatingPoll(nextRatingPollDelay());
 	});
 }
 

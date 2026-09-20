@@ -29,6 +29,7 @@
 		}
 
 		$canEditAttr = $globalData['isAdmin'] ? ' data-can-edit="1"' : '';
+
 		$emptyLinks = array_fill_keys(array_column($globalData['linkFields'], 'key'), null);
 
 		// One pass to derive every value/class/attribute either tree needs, so the
@@ -72,33 +73,34 @@
 			$song['durationAttr'] = htmlspecialchars($duration !== null ? (string)$duration : '');
 			$song['durationValue'] = $duration === null ? '' : sprintf('%d:%02d', intdiv($duration, 60), $duration % 60);
 
+			$songLinks = $globalData['songLinksBySong'][$song['id']] ?? $emptyLinks;
+
 			$song['spotifyTrackId'] = null;
-			if (!empty($song['spotify_url'])) {
-				if (preg_match('#/track/([A-Za-z0-9]+)#', $song['spotify_url'], $spotifyMatch)) {
+			if (!empty($songLinks['spotify_url'])) {
+				if (preg_match('#/track/([A-Za-z0-9]+)#', $songLinks['spotify_url'], $spotifyMatch)) {
 					$song['spotifyTrackId'] = $spotifyMatch[1];
 				}
-				elseif (preg_match('#^[A-Za-z0-9]+$#', trim($song['spotify_url']))) {
-					$song['spotifyTrackId'] = trim($song['spotify_url']);
+				elseif (preg_match('#^[A-Za-z0-9]+$#', trim($songLinks['spotify_url']))) {
+					$song['spotifyTrackId'] = trim($songLinks['spotify_url']);
 				}
 			}
 
 			$song['youtubeTrackId'] = null;
-			if (!empty($song['youtube_url'])) {
-				if (preg_match('#(?:youtube\.com/(?:watch\?v=|embed/)|youtu\.be/)([A-Za-z0-9_-]+)#', $song['youtube_url'], $youtubeMatch)) {
+			if (!empty($songLinks['youtube_url'])) {
+				if (preg_match('#(?:youtube\.com/(?:watch\?v=|embed/)|youtu\.be/)([A-Za-z0-9_-]+)#', $songLinks['youtube_url'], $youtubeMatch)) {
 					$song['youtubeTrackId'] = $youtubeMatch[1];
 				}
-				elseif (preg_match('#^[A-Za-z0-9_-]+$#', trim($song['youtube_url']))) {
-					$song['youtubeTrackId'] = trim($song['youtube_url']);
+				elseif (preg_match('#^[A-Za-z0-9_-]+$#', trim($songLinks['youtube_url']))) {
+					$song['youtubeTrackId'] = trim($songLinks['youtube_url']);
 				}
 			}
 
 			$song['soundcloudEmbedUrl'] = null;
-			if (!empty($song['soundcloud_url'])) {
-				$song['soundcloudEmbedUrl'] = 'https://w.soundcloud.com/player/?url=' . urlencode($song['soundcloud_url'])
+			if (!empty($songLinks['soundcloud_url'])) {
+				$song['soundcloudEmbedUrl'] = 'https://w.soundcloud.com/player/?url=' . urlencode($songLinks['soundcloud_url'])
 					. '&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true';
 			}
 
-			$songLinks = $globalData['songLinksBySong'][$song['id']] ?? $emptyLinks;
 			$song['linksAttr'] = htmlspecialchars(json_encode($songLinks));
 
 			$song['linkChips'] = [];
@@ -161,7 +163,7 @@
 		}
 	</script>
 	<div class="songLayout">
-		<form id="songFilterForm" class="songFilters" method="get" action="/music/songs">
+		<form class="songFilters" method="get" action="/music/songs">
 			<h2><?= t('song.list.filterHeading') ?></h2>
 			<input type="hidden" name="sort" value="<?= htmlspecialchars($globalData['sort']) ?>">
 			<input type="hidden" name="dir" value="<?= htmlspecialchars($globalData['dir']) ?>">

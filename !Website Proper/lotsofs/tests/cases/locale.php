@@ -169,6 +169,19 @@ return [
 		assertTrue(preg_match('/<button[^>]*value="en"[^>]*class="navLanguageOption"[^>]*>\s*Englisch\s*<\/button>/', $german) === 1, 'german UI: english is "Englisch", not active');
 	},
 
+	'an ajax error message comes back in the chosen language, not the site default' => function ($ctx) {
+		$ctx->ensureLoggedIn('ajax_locale_viewer');
+
+		switchLanguage($ctx, 'de');
+		$german = $ctx->post('/music/ajax/song-year', ['song_id' => 999999, 'value' => '1990']);
+		assertSame('error', $german['json']['status'], 'the endpoint reports the failure');
+		assertSame('❌ Diesen Song gibt es nicht mehr', $german['json']['message'], 'the message is German because the session is read before the catalogue is built');
+
+		switchLanguage($ctx, 'en');
+		$english = $ctx->post('/music/ajax/song-year', ['song_id' => 999999, 'value' => '1990']);
+		assertSame('❌ That song no longer exists', $english['json']['message'], 'and English again once the account switches back');
+	},
+
 	'every locale names every available language' => function ($ctx) {
 		$codes = array_map(fn($f) => basename($f, '.php'), glob(langDir() . '/*.php'));
 

@@ -51,7 +51,6 @@ return [
 	'song.link.abbr.other' => 'O',
 	'song.extras.submit' => 'Ekstra\'s ferstjoere',
 
-	'song.list.title' => 'Lieten',
 	'song.list.heading' => 'Alle lieten',
 	'song.list.headingAlbumBy' => '{artist} — {album}',
 	'song.list.empty' => 'Noch gjin lieten.',

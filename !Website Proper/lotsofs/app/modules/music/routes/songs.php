@@ -6,8 +6,6 @@ requireLogin();
 
 stringCatalogue("music");
 
-$pageTitle = t("song.list.title");
-
 $db = require __MODULES__ . '/music/db.php';
 
 require_once __MODULES__ . '/music/migrate.php';
@@ -36,18 +34,20 @@ $sortable = [
 ];
 
 
-$joins = '';
+$aggregates = '';
 $selects = '';
 
 foreach ($raters as $rater) {
 	$id = (int)$rater['id'];
 
-	$joins .= " LEFT JOIN account_song r{$id} ON r{$id}.song_id = s.id AND r{$id}.account_id = {$id}";
-	$selects .= ", r{$id}.score AS score_{$id}, r{$id}.subjective_note AS note_{$id}";
+	$aggregates .= ", MAX(CASE WHEN account_id = {$id} THEN score END) AS score_{$id}, MAX(CASE WHEN account_id = {$id} THEN subjective_note END) AS note_{$id}";
+	$selects .= ", r.score_{$id} AS score_{$id}, r.note_{$id} AS note_{$id}";
 
 	$sortable["score_{$id}"] = "score_{$id}";
 	$sortable["note_{$id}"] = "note_{$id} COLLATE NOCASE";
 }
+
+$joins = " LEFT JOIN (SELECT song_id{$aggregates} FROM account_song GROUP BY song_id) r ON r.song_id = s.id";
 
 $requested = is_string($_GET['sort'] ?? null) ? $_GET['sort'] : '';
 $sort = isset($sortable[$requested]) ? $requested : 'id';
@@ -160,9 +160,6 @@ $globalData['songs'] = $db->query("
 			WHERE sa.song_id = s.id
 			ORDER BY sa.id
 		)) AS artist,
-		(SELECT spotify_url FROM song_link WHERE song_id = s.id) AS spotify_url,
-		(SELECT youtube_url FROM song_link WHERE song_id = s.id) AS youtube_url,
-		(SELECT soundcloud_url FROM song_link WHERE song_id = s.id) AS soundcloud_url,
 		s.year AS song_year,
 		s.duration,
 		(SELECT MIN(al.release_year) FROM album_track at
@@ -266,7 +263,6 @@ $filterQuery = ($filterArtist !== null ? '&artist=' . $filterArtist : '')
 
 $globalData['columns'] = [];
 foreach ($columns as $index => $column) {
-	$column['index'] = $index;
 
 	$isActive = $column['key'] === $sort;
 	$nextDir = $isActive && $globalData['dir'] === 'asc' ? 'desc' : 'asc';

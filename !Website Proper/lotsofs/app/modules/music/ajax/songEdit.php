@@ -1,23 +1,11 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
-
-stringCatalogue('music');
-
-require_once __ROOT__ . '/session.php';
-sessionScope('music');
-requireLoginJson(t('ajax.notLoggedIn'));
-requireCsrfJson(t('ajax.badCsrf'));
-
-$db = require __MODULES__ . '/music/db.php';
-
-require_once __MODULES__ . '/music/auth.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
-$rawId = $data['id'] ?? null;
-$id = is_int($rawId) || (is_string($rawId) && ctype_digit($rawId)) ? (int)$rawId : 0;
-$field = is_string($data['field'] ?? null) ? $data['field'] : '';
-$value = is_string($data['value'] ?? null) ? trim($data['value']) : '';
+$id = ajaxInt($data['id'] ?? null);
+$field = ajaxText($data['field'] ?? null);
+$value = ajaxTrimmed($data['value'] ?? null);
 
 if ($field !== 'title') {
 	http_response_code(400);

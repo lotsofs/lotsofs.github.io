@@ -21,3 +21,35 @@ if (!is_array($data)) {
 	echo json_encode(['error' => 'Expected a JSON array']);
 	exit;
 }
+
+require_once __ROOT__ . '/session.php';
+sessionScope('music');
+
+stringCatalogue('music');
+requireLoginJson(t('ajax.notLoggedIn'));
+requireCsrfJson(t('ajax.badCsrf'));
+
+$db = require __MODULES__ . '/music/db.php';
+
+require_once __MODULES__ . '/music/auth.php';
+
+function ajaxInt($raw) {
+	return is_int($raw) || (is_string($raw) && ctype_digit($raw)) ? (int)$raw : 0;
+}
+
+function ajaxText($raw) {
+	return is_string($raw) ? $raw : '';
+}
+
+function ajaxTrimmed($raw) {
+	return is_string($raw) ? trim($raw) : '';
+}
+
+function requireSongJson($db, $songId, $extra = []) {
+	if ($db->query("SELECT id FROM song WHERE id = ?", [$songId])->fetch()) {
+		return;
+	}
+
+	echo json_encode(array_merge(['status' => 'error'], $extra, ['message' => t('song.result.notFound')]));
+	exit;
+}

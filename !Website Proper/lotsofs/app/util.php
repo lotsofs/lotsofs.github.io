@@ -7,8 +7,6 @@ define('__DATA__', is_dir('/home/lotsofs') ? '/home/lotsofs/data' : dirname(__DI
 
 $globalData = [];
 
-$config = require __DIR__ . '/config.php';
-
 const AVAILABLE_LOCALES = ['en', 'de', 'fy'];
 
 function activeLocale() {

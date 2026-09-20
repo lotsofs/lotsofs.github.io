@@ -22,9 +22,9 @@ if ($path !== $canonicalUri) {
 	exit;
 }
 
-route($canonicalUri, $routes, $globalData, $config);
+route($canonicalUri, $routes, $globalData);
 
-function route($uri, $routes, $globalData, $config) {
+function route($uri, $routes, $globalData) {
 	if (array_key_exists($uri, $routes)) {
 		require $routes[$uri];
 	}

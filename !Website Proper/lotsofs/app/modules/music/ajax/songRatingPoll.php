@@ -2,30 +2,13 @@
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
 
-stringCatalogue('music');
-
-require_once __ROOT__ . '/session.php';
-sessionScope('music');
-requireLoginJson(t('ajax.notLoggedIn'));
-requireCsrfJson(t('ajax.badCsrf'));
-
-$db = require __MODULES__ . '/music/db.php';
-
-require_once __MODULES__ . '/music/auth.php';
-
-if (!musicAccount($db)) {
-	http_response_code(403);
-	echo json_encode(['error' => t('ajax.notLoggedIn')]);
-	exit;
-}
+requireMusicAccountJson($db, t('ajax.notLoggedIn'));
 
 $accountId = (int)currentAccountId();
 
-$rawSince = $data['since'] ?? null;
-$since = is_int($rawSince) || (is_string($rawSince) && ctype_digit($rawSince)) ? (int)$rawSince : 0;
+$since = ajaxInt($data['since'] ?? null);
 
-$rawSinceAudit = $data['sinceAudit'] ?? null;
-$sinceAudit = is_int($rawSinceAudit) || (is_string($rawSinceAudit) && ctype_digit($rawSinceAudit)) ? (int)$rawSinceAudit : 0;
+$sinceAudit = ajaxInt($data['sinceAudit'] ?? null);
 
 $rows = $db->query("
 	SELECT song_id, account_id, score, subjective_note, updated_at

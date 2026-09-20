@@ -38,6 +38,14 @@ function requireMusicAdmin($db, $path) {
 	}
 }
 
+function requireMusicAccountJson($db, $message) {
+	if (!musicAccount($db)) {
+		http_response_code(403);
+		echo json_encode(['error' => $message]);
+		exit;
+	}
+}
+
 function requireMusicAdminJson($db, $message) {
 	if (!musicIsAdmin($db)) {
 		http_response_code(403);

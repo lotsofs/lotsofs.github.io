@@ -51,7 +51,6 @@ return [
 	'song.link.abbr.other' => 'A',
 	'song.extras.submit' => 'Extras senden',
 
-	'song.list.title' => 'Songs',
 	'song.list.heading' => 'Alle Songs',
 	'song.list.headingAlbumBy' => '{artist} — {album}',
 	'song.list.empty' => 'Noch keine Songs.',

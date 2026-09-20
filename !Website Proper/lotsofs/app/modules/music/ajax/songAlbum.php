@@ -1,29 +1,13 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
-
-stringCatalogue('music');
-
-require_once __ROOT__ . '/session.php';
-sessionScope('music');
-requireLoginJson(t('ajax.notLoggedIn'));
-requireCsrfJson(t('ajax.badCsrf'));
-
-$db = require __MODULES__ . '/music/db.php';
-
-require_once __MODULES__ . '/music/auth.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
-$rawSongId = $data['song_id'] ?? null;
-$songId = is_int($rawSongId) || (is_string($rawSongId) && ctype_digit($rawSongId)) ? (int)$rawSongId : 0;
-$rawAlbumId = $data['album_id'] ?? null;
-$albumId = is_int($rawAlbumId) || (is_string($rawAlbumId) && ctype_digit($rawAlbumId)) ? (int)$rawAlbumId : 0;
-$action = is_string($data['action'] ?? null) ? $data['action'] : '';
+$songId = ajaxInt($data['song_id'] ?? null);
+$albumId = ajaxInt($data['album_id'] ?? null);
+$action = ajaxText($data['action'] ?? null);
 
-if (!$db->query("SELECT id FROM song WHERE id = ?", [$songId])->fetch()) {
-	echo json_encode(['status' => 'error', 'message' => t('song.result.notFound')]);
-	exit;
-}
+requireSongJson($db, $songId);
 
 if ($action === 'remove') {
 	$db->query("DELETE FROM album_track WHERE song_id = ? AND album_id = ?", [$songId, $albumId]);
