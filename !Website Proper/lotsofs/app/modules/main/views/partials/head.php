@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title><?= $pageTitle ?> - LotsOfS</title>
-	<link rel="stylesheet" href="/modules/main/css/styles.css">
-	<script src="/js/util.js"></script>
+	<link rel="stylesheet" href="<?= asset('/modules/main/css/styles.css') ?>">
+	<script src="<?= asset('/js/util.js') ?>"></script>
 </head>
 <body>

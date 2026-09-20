@@ -80,6 +80,6 @@
 
 <script id="artistNamesData" type="application/json"><?= json_encode($globalData['artistNames']) ?></script>
 <script id="albumNamesData" type="application/json"><?= json_encode($globalData['albumNames']) ?></script>
-<script src="/modules/music/js/addSongs.js"></script>
+<script src="<?= asset('/modules/music/js/addSongs.js') ?>"></script>
 
 <?php require(__MODULES__ . '/music/views/partials/foot.php') ?>

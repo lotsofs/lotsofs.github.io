@@ -27,7 +27,7 @@
 <p id="exchangeRateReadError">
 </p>
 
-<script src="modules/main/js/exchangeRates.js"></script>
+<script src="<?= asset('/modules/main/js/exchangeRates.js') ?>"></script>
 <script>
 	processExchangeRates()
 </script>

@@ -161,4 +161,28 @@ return [
 		assertSame(200, $ctx->get('/modules/music/js/addSongs.js')['status'], 'music script');
 	},
 
+	'assets are referenced with a cache busting stamp that still serves' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$body = $ctx->get('/music/songs')['body'];
+
+		$patterns = [
+			'the stylesheet' => '#href="(/modules/music/css/styles\.css\?v=\d+)"#',
+			'the page script' => '#src="(/modules/music/js/songs\.js\?v=\d+)"#',
+			'the shared script' => '#src="(/js/util\.js\?v=\d+)"#',
+		];
+
+		foreach ($patterns as $what => $pattern) {
+			assertTrue(preg_match($pattern, $body, $match) === 1, "{$what} carries a version stamp");
+			assertSame(200, $ctx->get($match[1])['status'], "{$what} still serves at its stamped url");
+		}
+	},
+
+	'the html is never cached, so a new asset stamp is always seen' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$headers = $ctx->get('/music/songs')['headers'] ?? '';
+		assertTrue(stripos($headers, 'no-cache') !== false, 'pages send a no-cache header, which is what makes the stamp reach the browser');
+	},
+
 ];

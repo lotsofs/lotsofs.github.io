@@ -46,7 +46,7 @@
 	<li>Use my <a class="links-link" href="music">music thing</a>.</li>
 </ul>
 
-<script src="modules/main/js/exchangeRates.js"></script>
+<script src="<?= asset('/modules/main/js/exchangeRates.js') ?>"></script>
 <script>
 	currencyWhiteList = ["ALL", "CHF", "DKK", "EUR", "GBP", "IDR", "MYR", "NOK", "NPR", "SEK", "TRY", "USD"]
 	processExchangeRates()

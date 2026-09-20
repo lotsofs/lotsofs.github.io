@@ -64,6 +64,16 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       an invite. Alternatives: deny `/music/register` in `router.php` until you
       have registered (`.htaccess` doesn't work on this host), or require a
       bootstrap secret from `config.php`.
+- [ ] **Check the asset cache stamps actually appear on the host.** Added
+      2026-09-20: `asset()` in `app/util.php` appends `?v=<filemtime>` to every
+      css/js link so a new deploy busts the browser cache. It resolves the file
+      on disk from `$_SERVER['DOCUMENT_ROOT']` (falling back to
+      `dirname(SCRIPT_FILENAME)`), which is the public dir locally and should be
+      `lotsofs.com/` on the host — but that is assumed, not verified there. If
+      the host sets `DOCUMENT_ROOT` to something else, `filemtime` fails and the
+      function **silently returns the bare path**: no broken links, no error, no
+      cache busting either. View source on a live page and confirm the `?v=`
+      numbers are present and change after a deploy.
 - [ ] **Check the secure cookie flag actually engages.** `session.php` decides
       from `$_SERVER['HTTPS']`, but behind a proxy or CDN PHP often sees plain
       HTTP even when the visitor is on HTTPS, so the session cookie would ship

@@ -68,6 +68,17 @@ function dd($value) {
 	die();
 }
 
+function asset($path) {
+	$root = $_SERVER['DOCUMENT_ROOT'] ?? '';
+	if ($root === '' && isset($_SERVER['SCRIPT_FILENAME'])) {
+		$root = dirname($_SERVER['SCRIPT_FILENAME']);
+	}
+
+	$stamp = @filemtime($root . $path);
+
+	return $stamp ? $path . '?v=' . $stamp : $path;
+}
+
 function urlIs($value) {
 	return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) === $value;
 }

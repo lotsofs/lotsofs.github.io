@@ -162,6 +162,7 @@ class TestContext {
 		return [
 			'status' => $status,
 			'body' => $content,
+			'headers' => $headers,
 			'location' => $location,
 			'json' => json_decode($content, true),
 		];
