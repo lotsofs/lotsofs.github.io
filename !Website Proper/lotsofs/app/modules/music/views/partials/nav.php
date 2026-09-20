@@ -22,7 +22,7 @@
 			<form method="post" action="/music/language" class="navLanguageMenu">
 				<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken()) ?>">
 				<input type="hidden" name="return" value="<?= htmlspecialchars(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) ?>">
-				<?php foreach (AVAILABLE_LOCALES as $code): ?>
+				<?php foreach (moduleLocales('music') as $code): ?>
 					<button type="submit" name="lang" value="<?= $code ?>" class="navLanguageOption<?= activeLocale() === $code ? ' navLanguageOptionActive' : '' ?>">
 						<?= htmlspecialchars(stringCatalogue()['language.' . $code] ?? strtoupper($code)) ?>
 					</button>

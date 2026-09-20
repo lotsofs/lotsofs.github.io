@@ -4,7 +4,7 @@ require_once __ROOT__ . '/session.php';
 sessionScope('music');
 requireLogin();
 
-stringCatalogue("music");
+loadStringCatalogue('music');
 
 $pageTitle = t("artist.list.title");
 

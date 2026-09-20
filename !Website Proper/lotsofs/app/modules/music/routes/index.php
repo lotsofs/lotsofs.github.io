@@ -3,7 +3,7 @@
 require_once __ROOT__ . '/session.php';
 sessionScope('music');
 
-stringCatalogue("music");
+loadStringCatalogue('music');
 
 $pageTitle = t("music.title");
 

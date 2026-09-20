@@ -182,6 +182,19 @@ return [
 		assertSame('❌ That song no longer exists', $english['json']['message'], 'and English again once the account switches back');
 	},
 
+	'the module config lists exactly the locales it ships catalogues for' => function ($ctx) {
+		$config = require realpath(__DIR__ . '/../../app/modules/music/config.php');
+
+		$listed = $config['locales'];
+		sort($listed);
+
+		$onDisk = array_map(fn($f) => basename($f, '.php'), glob(langDir() . '/*.php'));
+		sort($onDisk);
+
+		assertSame($onDisk, $listed, 'config locales and the lang/*.php files must agree');
+		assertTrue(in_array($config['defaultLocale'], $listed, true), 'the fallback locale is one the module actually ships');
+	},
+
 	'every locale names every available language' => function ($ctx) {
 		$codes = array_map(fn($f) => basename($f, '.php'), glob(langDir() . '/*.php'));
 

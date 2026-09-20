@@ -33,7 +33,7 @@ echo "copying project to a scratch copy\n";
 copyProject($projectRoot, $tempRoot);
 
 echo "serving scratch copy on port {$port}\n";
-putenv('LOTSOFS_DEFAULT_LOCALE=en');
+putenv('LOTSOFS_LOCALE=en');
 $server = proc_open(
 	escapeshellarg(PHP_BINARY) . " -S localhost:{$port} -t " . escapeshellarg($tempRoot . '/public'),
 	[1 => ['file', $serverLog, 'a'], 2 => ['file', $serverLog, 'a']],

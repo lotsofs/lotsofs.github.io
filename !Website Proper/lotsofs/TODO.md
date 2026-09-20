@@ -64,31 +64,30 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       an invite. Alternatives: deny `/music/register` in `router.php` until you
       have registered (`.htaccess` doesn't work on this host), or require a
       bootstrap secret from `config.php`.
-- [ ] **Check the asset cache stamps actually appear on the host.** Added
+- [x] ~~Check the asset cache stamps actually appear on the host.~~ Added
       2026-09-20: `asset()` in `app/util.php` appends `?v=<filemtime>` to every
-      css/js link so a new deploy busts the browser cache. It resolves the file
-      on disk from `$_SERVER['DOCUMENT_ROOT']` (falling back to
-      `dirname(SCRIPT_FILENAME)`), which is the public dir locally and should be
-      `lotsofs.com/` on the host — but that is assumed, not verified there. If
-      the host sets `DOCUMENT_ROOT` to something else, `filemtime` fails and the
-      function **silently returns the bare path**: no broken links, no error, no
-      cache busting either. View source on a live page and confirm the `?v=`
-      numbers are present and change after a deploy.
+      css/js link so a deploy busts the browser cache. It resolves the file on
+      disk from `$_SERVER['DOCUMENT_ROOT']`; the operator confirmed the host
+      won't change that, so there is nothing to verify. (If it ever did change,
+      the failure is quiet rather than loud — `filemtime` fails and the function
+      returns the bare path, so links keep working but stop busting.)
 - [ ] **Check the secure cookie flag actually engages.** `session.php` decides
       from `$_SERVER['HTTPS']`, but behind a proxy or CDN PHP often sees plain
       HTTP even when the visitor is on HTTPS, so the session cookie would ship
       without `Secure`. Check whether the host sets `HTTP_X_FORWARDED_PROTO`.
 - [x] ~~Confirm `music.sqlite` is not web readable.~~ It lives under
       `/home/lotsofs/`, entirely outside the web root — no URL reaches it.
-- [ ] `config.php` (in `app/`, currently `return [];`) ships with every deploy.
-      If it ever holds a real secret, move it to `data/config.php` (never
-      deployed, already denied) or an env var, and add a `config.example.php`
-      template then. **As of 2026-09-20 nothing loads it at all** — `$config`
-      was read in `app/util.php` and threaded through `route()` as a fourth
-      argument that no route file ever touched, so all three lines were removed.
-      The file is still there and still deployed; whoever first puts a real
-      value in it has to add the `require` back (and should do that at the same
-      time as moving it somewhere undeployed).
+- [ ] `app/config.php` (currently `return [];`) ships with every deploy and
+      **nothing loads it** — `$config` was read in `app/util.php` and threaded
+      through `route()` as a fourth argument no route file ever touched, so all
+      three lines were removed on 2026-09-20. The file is still there and still
+      deployed. Settings since then have gone into **per-module** configs
+      instead (`app/modules/<name>/config.php`, read by `moduleConfig()`), which
+      is where the music locale list and fallback now live. Decide whether
+      `app/config.php` still has a purpose: if a genuinely site-wide setting
+      turns up, add the `require` back; if a secret turns up, it belongs in
+      `data/config.php` (never deployed) or an env var, with a
+      `config.example.php` template. Otherwise delete it.
 
 ## Music module
 
@@ -104,8 +103,8 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       `fy` is the **site default** — a visitor who has never touched the nav
       switcher sees Frysk, browser `Accept-Language` is ignored entirely. English
       stays the source catalogue and the test-suite language (the harness sets
-      `LOTSOFS_DEFAULT_LOCALE=en`; set that env var on any host where you want a
-      different default).
+      `LOTSOFS_LOCALE=en`; setting that env var on a host overrides the
+      module's own fallback without editing its config).
 - [ ] **Password reset.** There is none, and there is now a real account. Being
       locked out means editing a `0640` database file through the file manager.
 - [ ] Logout takes two redirects: `/music/logout` -> `/music/songs` ->

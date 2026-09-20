@@ -3,7 +3,7 @@
 require_once __ROOT__ . '/session.php';
 sessionScope('music');
 
-stringCatalogue("music");
+loadStringCatalogue('music');
 
 $pageTitle = t("login.title");
 
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		if ($account && password_verify($password, $account['password_hash'])) {
 			clearLoginFailures($db, $ip);
 			logIn($account['id'], $account['account_name']);
-			if (in_array($account['lang'], AVAILABLE_LOCALES, true)) {
+			if (in_array($account['lang'], moduleLocales('music'), true)) {
 				$_SESSION['lang'] = $account['lang'];
 			}
 			header('Location: /music/songs', true, 302);

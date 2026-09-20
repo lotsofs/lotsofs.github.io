@@ -11,7 +11,7 @@ set_exception_handler(function ($e) {
 require_once __ROOT__ . '/session.php';
 sessionScope('music');
 
-stringCatalogue('music');
+loadStringCatalogue('music');
 requireLoginJson(t('ajax.notLoggedIn'));
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
