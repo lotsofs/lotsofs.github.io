@@ -56,7 +56,8 @@
 			$allNames = $song['all_names'] ?? '';
 			$song['titleAliasedClass'] = $listedAs === null ? '' : ' songTitleAliased';
 			$song['canonicalTitleAttr'] = htmlspecialchars($canonicalTitle);
-			$song['titleTooltipAttr'] = $allNames === $canonicalTitle ? '' : ' title="' . htmlspecialchars($allNames) . '"';
+			$titleTooltip = $allNames !== '' ? $allNames : $canonicalTitle;
+			$song['titleTooltipAttr'] = $titleTooltip === '' ? '' : ' title="' . htmlspecialchars($titleTooltip) . '"';
 			$song['titleValue'] = htmlspecialchars($listedAs ?? $canonicalTitle);
 
 			$song['albumsValue'] = htmlspecialchars($song['albums'] ?? '');
@@ -119,6 +120,7 @@
 				$song['linkChips'][] = [
 					'label' => htmlspecialchars($field['label']),
 					'url' => htmlspecialchars($linkValue),
+					'href' => htmlspecialchars(songLinkHref($linkValue, $field['urlPrefix'])),
 					'isPath' => $field['key'] === 'filepath',
 					'isOther' => $field['key'] === 'other_url',
 				];
@@ -131,6 +133,7 @@
 					'abbr' => htmlspecialchars($field['abbr']),
 					'label' => htmlspecialchars($field['label']),
 					'url' => $linkValue !== null && $linkValue !== '' ? htmlspecialchars($linkValue) : null,
+					'href' => htmlspecialchars(songLinkHref($linkValue, $field['urlPrefix'])),
 					'isPath' => $field['key'] === 'filepath',
 				];
 			}
@@ -206,7 +209,7 @@
 		<div class="songSidePanel">
 			<button type="button" id="songCardViewToggle" class="songCardViewToggle" aria-pressed="false"><?= t('song.list.cardViewToggleOn') ?></button>
 			<p id="songEditHint"><?= t('song.list.editHint') ?></p>
-			<div id="songNotePreview" class="songNotePreview songNotePreviewEmpty">
+			<div id="songNotePreview" class="songNotePreview songNotePreviewEmpty" hidden>
 				<strong id="songNotePreviewHeader" class="songNotePreviewHeader"></strong>
 				<span id="songNotePreviewText"><?= t('song.list.notePreviewEmpty') ?></span>
 				<button type="button" id="songNotePreviewClear" class="songNotePreviewClear"><?= t('song.list.notePreviewClear') ?></button>
@@ -255,9 +258,9 @@
 						<?php foreach ($songRows as $song): ?>
 							<tr data-song-id="<?= (int)$song['id'] ?>" data-artist-id="<?= (int)$song['artist_id'] ?>" data-artist-ids="<?= $song['artistIdsAttr'] ?>" data-album-ids="<?= $song['albumIdsAttr'] ?>"<?= $song['hiddenAttr'] ?>>
 								<td class="songIdCell" data-field="id"><?= htmlspecialchars($song['id']) ?></td>
-								<td class="songArtistCell" data-field="artist"><?= $song['artistValue'] ?></td>
-								<td class="songTitleCell<?= $song['titleAliasedClass'] ?>" data-field="title" data-canonical-title="<?= $song['canonicalTitleAttr'] ?>"<?= $song['titleTooltipAttr'] ?>><?= $song['titleValue'] ?></td>
-								<td class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><?= $song['albumsValue'] ?></td>
+								<td class="songArtistCell" data-field="artist" title="<?= $song['artistValue'] ?>"><span class="songCellText"><?= $song['artistValue'] ?></span></td>
+								<td class="songTitleCell<?= $song['titleAliasedClass'] ?>" data-field="title" data-canonical-title="<?= $song['canonicalTitleAttr'] ?>"<?= $song['titleTooltipAttr'] ?>><span class="songCellText"><?= $song['titleValue'] ?></span></td>
+								<td class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><span class="songCellText"><?= $song['albumsValue'] ?></span></td>
 								<td class="songYearCell" data-field="year"><?= $song['displayYearValue'] ?></td>
 								<td class="songDurationCell" data-field="duration"><?= $song['durationValue'] ?></td>
 								<td class="songLinksCell" data-field="links">
@@ -270,7 +273,7 @@
 											<?php endif ?>
 										<?php else: ?>
 											<?php if ($abbr['url'] !== null): ?>
-												<a class="songLinkAbbr" href="<?= $abbr['url'] ?>" target="_blank" rel="noopener" title="<?= $abbr['label'] ?>"><?= $abbr['abbr'] ?></a>
+												<a class="songLinkAbbr" href="<?= $abbr['href'] ?>" target="_blank" rel="noopener" title="<?= $abbr['label'] ?>"><?= $abbr['abbr'] ?></a>
 											<?php else: ?>
 												<span class="songLinkAbbr songLinkAbbrEmpty"><?= $abbr['abbr'] ?></span>
 											<?php endif ?>
@@ -332,7 +335,7 @@
 												<?php if ($chip['isPath']): ?>
 													<span class="songLinkChip songLinkChipWrap" title="<?= $chip['url'] ?>"><?= $chip['label'] ?>: <?= $chip['url'] ?></span>
 												<?php else: ?>
-													<a class="songLinkChip" href="<?= $chip['url'] ?>" target="_blank" rel="noopener" title="<?= $chip['url'] ?>"><?= $chip['isOther'] ? $chip['url'] : $chip['label'] ?></a>
+													<a class="songLinkChip" href="<?= $chip['href'] ?>" target="_blank" rel="noopener" title="<?= $chip['url'] ?>"><?= $chip['isOther'] ? $chip['url'] : $chip['label'] ?></a>
 												<?php endif ?>
 											<?php endforeach ?>
 										</div>

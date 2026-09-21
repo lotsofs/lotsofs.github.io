@@ -6,6 +6,7 @@ return [
 	'nav.songs' => 'Songs',
 	'nav.artists' => 'Artists',
 	'nav.albums' => 'Albums',
+	'nav.audit' => 'History',
 	'nav.invites' => 'Invites',
 	'nav.accounts' => 'Accounts',
 	'nav.login' => 'Log In',

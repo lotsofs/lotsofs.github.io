@@ -6,6 +6,7 @@ return [
 	'nav.songs' => 'Lieten',
 	'nav.artists' => 'Artysten',
 	'nav.albums' => 'Albums',
+	'nav.audit' => 'Skiednis',
 	'nav.invites' => 'Útnûgings',
 	'nav.accounts' => 'Akkounts',
 	'nav.login' => 'Oanmelde',

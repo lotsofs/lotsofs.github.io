@@ -13,7 +13,7 @@ return [
 	'song.column.nameToStore' => 'Zu speichernder Name',
 	'song.column.result' => 'Ergebnis',
 	'song.column.id' => 'ID',
-	'song.column.ratingScore' => 'Wertung', // ? "Punkte" / "Bewertung"
+	'song.column.ratingScore' => 'Wert.', // ? short for "Wertung" / "Punkte" / "Bewertung"
 	'song.column.ratingNote' => 'Notiz',
 
 	'song.submit' => 'Songs senden',
@@ -57,6 +57,7 @@ return [
 	'song.list.empty' => 'Noch keine Songs.',
 	'song.list.sortAscending' => 'Aufsteigend sortieren',
 	'song.list.sortDescending' => 'Absteigend sortieren',
+	'song.list.columnSortHint' => '{column} (zum Sortieren klicken)',
 	'song.list.editHint' => 'Klicke auf deine eigene Wertung oder Notiz, um sie zu bearbeiten. Klicke einen Titel an, um alle Details zu sehen.',
 	'song.list.notePreviewEmpty' => 'Klicke auf eine Notiz, um ihren vollständigen Text hier zu sehen.',
 	'song.list.sortBy' => 'Sortieren nach',

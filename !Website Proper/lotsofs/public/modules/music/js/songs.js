@@ -39,8 +39,11 @@ function rowPairs() {
 	return Array.from(rowsBySongId.values());
 }
 
+/// Cells whose text is clipped keep it in an inner block, because a max-width
+/// on a table cell does nothing under table-layout: auto. Reads and writes go
+/// through that inner element where it exists.
 function valueElement(cell) {
-	return cell.querySelector(".ratingNoteText") || cell;
+	return cell.querySelector(".ratingNoteText, .songCellText") || cell;
 }
 
 function isBeingEdited(cell) {
@@ -417,6 +420,17 @@ function currentLinks(card) {
 	return JSON.parse(card.dataset.links || "{}");
 }
 
+/// Mirrors songLinkHref() in routes/songs.php, reading the same urlPrefix out
+/// of songLinkFieldData. Spotify and YouTube store a bare id, which without a
+/// prefix would resolve against /music/ instead of leaving the site.
+function linkHref(value, prefix) {
+	if (/^https?:\/\//i.test(value)) {
+		return value;
+	}
+
+	return (prefix || "https://") + value;
+}
+
 function renderLinkDisplay(links) {
 	const container = document.createElement("div");
 
@@ -464,7 +478,7 @@ function renderLinkDisplay(links) {
 
 		const chip = document.createElement("a");
 		chip.className = "songLinkChip";
-		chip.href = value;
+		chip.href = linkHref(value, field.urlPrefix);
 		chip.target = "_blank";
 		chip.rel = "noopener";
 		chip.title = value;
@@ -955,7 +969,6 @@ function refreshHeaders() {
 
 		link.textContent = link.dataset.baseLabel + (isActive ? (songDir === "asc" ? " ▲" : " ▼") : "");
 		link.href = songQuery(key, nextDir);
-		link.title = nextDir === "asc" ? t("song.list.sortAscending") : t("song.list.sortDescending");
 	});
 }
 
@@ -1151,6 +1164,17 @@ function handleEdit(event) {
 	beginCellEdit(cell, spec);
 }
 
+/// Set false to retire the sticky preview panel: note clicks open the song's
+/// card and flash the note there instead. Set true to bring the panel back and
+/// restore the old click behaviour. The filepath preview rides on the same
+/// panel and follows the same switch. The panel ships hidden from the view, so
+/// nothing flashes on screen before this runs.
+const NOTE_PREVIEW_ENABLED = false;
+
+if (NOTE_PREVIEW_ENABLED) {
+	songNotePreview.hidden = false;
+}
+
 let previewedNoteCell = null;
 
 function setPreview(header, text) {
@@ -1203,15 +1227,40 @@ function clearNotePreview() {
 
 songNotePreviewClear.addEventListener("click", clearNotePreview);
 
-function handleListClick(event) {
-	const noteCell = event.target.closest("td.songRatingNoteCell, dd.songRatingNoteCell");
-	if (noteCell && !isBeingEdited(noteCell)) {
-		showNotePreview(noteCell);
+/// Opens a song's card and flashes whichever part of it $findTarget picks out,
+/// so a value clipped in the table reads in full without a panel taking up
+/// room above the list. Any flash still running is cleared before the move,
+/// because opening the modal relocates the card and restarts its animations.
+function openCardAndFlash(songId, findTarget) {
+	const pair = rowsBySongId.get(String(songId));
+
+	if (pair) {
+		pair.card.querySelectorAll(".songRatingFlash").forEach(cell => cell.classList.remove("songRatingFlash"));
 	}
 
-	const pathAbbr = event.target.closest("abbr.songLinkAbbr");
-	if (pathAbbr) {
-		showFilepathPreview(pathAbbr);
+	openCardModal(songId);
+
+	if (!pair) {
+		return;
+	}
+
+	const target = findTarget(pair.card);
+	if (target) {
+		flashCell(target);
+	}
+}
+
+function handleListClick(event) {
+	if (NOTE_PREVIEW_ENABLED) {
+		const noteCell = event.target.closest("td.songRatingNoteCell, dd.songRatingNoteCell");
+		if (noteCell && !isBeingEdited(noteCell)) {
+			showNotePreview(noteCell);
+		}
+
+		const pathAbbr = event.target.closest("abbr.songLinkAbbr");
+		if (pathAbbr) {
+			showFilepathPreview(pathAbbr);
+		}
 	}
 
 	handleCardEditClick(event);
@@ -1223,6 +1272,20 @@ songListBody.addEventListener("click", event => {
 	if (titleCell) {
 		openCardModal(titleCell.closest("[data-song-id]").dataset.songId);
 		return;
+	}
+
+	if (!NOTE_PREVIEW_ENABLED) {
+		const noteCell = event.target.closest("td.songRatingNoteCell");
+		if (noteCell && !editableCell(noteCell) && !isBeingEdited(noteCell)) {
+			openCardAndFlash(noteCell.closest("[data-song-id]").dataset.songId, card => fieldCell(card, noteCell.dataset.field));
+			return;
+		}
+
+		const pathAbbr = event.target.closest("abbr.songLinkAbbr[data-path]");
+		if (pathAbbr) {
+			openCardAndFlash(pathAbbr.closest("[data-song-id]").dataset.songId, card => card.querySelector(".songLinkChipWrap"));
+			return;
+		}
 	}
 
 	handleListClick(event);
@@ -1368,10 +1431,14 @@ function showRatingEvent(event) {
 	showToast(container => fillFromTemplate(container, template, parts), event.songId);
 }
 
+/// Clears the class once the animation finishes. Leaving it on would re-fire
+/// the flash every time the element is moved in the DOM - opening the modal
+/// moves a whole card, and sorting re-appends every row.
 function flashCell(cell) {
 	cell.classList.remove("songRatingFlash");
 	void cell.offsetWidth;
 	cell.classList.add("songRatingFlash");
+	cell.addEventListener("animationend", () => cell.classList.remove("songRatingFlash"), { once: true });
 }
 
 function applyRatingHalf(pair, field, spec, value) {

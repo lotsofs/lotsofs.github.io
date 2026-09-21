@@ -13,7 +13,7 @@ return [
 	'song.column.nameToStore' => 'Name To Store',
 	'song.column.result' => 'Result',
 	'song.column.id' => 'ID',
-	'song.column.ratingScore' => 'Score',
+	'song.column.ratingScore' => 'Sc.',
 	'song.column.ratingNote' => 'Note',
 
 	'song.submit' => 'Submit Songs',
@@ -57,6 +57,7 @@ return [
 	'song.list.empty' => 'No songs yet.',
 	'song.list.sortAscending' => 'Sort ascending',
 	'song.list.sortDescending' => 'Sort descending',
+	'song.list.columnSortHint' => '{column} (click to sort)',
 	'song.list.editHint' => 'Click your own score or note cell to edit it. Click a title to see its full details.',
 	'song.list.notePreviewEmpty' => 'Click a note to see its full text here.',
 	'song.list.sortBy' => 'Sort by',

@@ -8,7 +8,8 @@ if (php_sapi_name() !== 'cli') {
 }
 
 $langDir = realpath(__DIR__ . '/../app/modules/music/lang');
-$parts = ['common', 'accounts', 'artists', 'albums', 'songs'];
+$parts = array_map(fn($f) => basename($f, '.php'), glob("{$langDir}/en/*.php"));
+sort($parts);
 
 $keyFile = [];
 $baseOrder = [];

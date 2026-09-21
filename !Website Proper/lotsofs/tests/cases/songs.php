@@ -43,7 +43,7 @@ function songsRowFor($body, $songId) {
 // works for a <td data-field="x">value</td> cell and for a note cell's
 // <td data-field="x" ...><span class="ratingNoteText">value</span></td> alike
 function songsCellValue($chunk, $field) {
-	$pattern = '/data-field="' . preg_quote($field, '/') . '"[^>]*>(?:<span class="ratingNoteText">)?([^<]*)/';
+	$pattern = '/data-field="' . preg_quote($field, '/') . '"[^>]*>(?:<span class="[^"]*">)?([^<]*)/';
 	return preg_match($pattern, $chunk, $m) ? $m[1] : null;
 }
 
@@ -61,7 +61,7 @@ function songsTitleCellFor($body, $songId) {
 		return null;
 	}
 
-	$pattern = '/<td class="songTitleCell([^"]*)" data-field="title" data-canonical-title="([^"]*)"( title="([^"]*)")?>([^<]*)<\/td>/';
+	$pattern = '/<td class="songTitleCell([^"]*)" data-field="title" data-canonical-title="([^"]*)"( title="([^"]*)")?><span class="songCellText">([^<]*)<\/span><\/td>/';
 
 	if (!preg_match($pattern, $chunk, $m)) {
 		return null;
@@ -825,6 +825,38 @@ return [
 		assertSame('not scored yet', $row['subjective_note'], 'note is stored');
 	},
 
+	'a score typed with a comma decimal is accepted' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Comma Score Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Comma Scored Song']]);
+		$songId = $ctx->songId('Comma Scored Song');
+		$accountId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
+
+		$response = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '8,5']);
+		assertSame('ok', $response['json']['status'], 'status');
+		assertSame(8.5, (float)$response['json']['value'], 'the comma is read as a decimal point');
+
+		$row = $ctx->db()->query("SELECT score FROM account_song WHERE song_id = {$songId}")->fetch();
+		assertSame(8.5, (float)$row['score'], 'and that is what gets stored');
+
+		$chunk = songsRowFor($ctx->get('/music/songs')['body'], $songId);
+		assertSame('8.5', songsCellValue($chunk, "score_{$accountId}"), 'the cell shows the canonical dot form');
+	},
+
+	'a note keeps its commas' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Comma Note Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Comma Noted Song']]);
+		$songId = $ctx->songId('Comma Noted Song');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'slow, then loud, then slow']);
+
+		$row = $ctx->db()->query("SELECT subjective_note FROM account_song WHERE song_id = {$songId}")->fetch();
+		assertSame('slow, then loud, then slow', $row['subjective_note'], 'only scores swap commas for dots');
+	},
+
 	'a score that is not a number is refused' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
@@ -895,6 +927,37 @@ return [
 		assertSame('test_runner', $rows[1]['account_name'], 'the first rater still has theirs');
 		assertSame(3.0, (float)$rows[1]['score'], 'the original score is untouched');
 		assertSame('mine', $rows[1]['subjective_note'], 'the original note is untouched');
+	},
+
+	'a column header names itself on hover instead of explaining the sort' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$mine = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
+		$body = $ctx->get('/music/songs')['body'];
+
+		assertTrue(preg_match('/data-sort-key="title"[^>]*>\s*<a [^>]*title="Title \(click to sort\)"/', $body) === 1, 'a fixed column hovers as its own name');
+		assertTrue(preg_match('/data-sort-key="score_' . $mine . '"[^>]*>\s*<a [^>]*title="test_runner score \(click to sort\)"/', $body) === 1, 'a rater column names the rater, which the abbreviated header cannot');
+
+		assertTrue(strpos($body, 'title="Sort ascending"') === false, 'no header explains the sort direction any more');
+		assertContains('<option value="asc">Sort ascending</option>', $body, 'the mobile sort dropdown still says it, which is why the strings stay');
+	},
+
+	'rater columns run in account id order, with your own pulled to the front' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$mine = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
+
+		$expected = array_map('intval', $ctx->db()->query("
+			SELECT id FROM account ORDER BY id = {$mine} DESC, id
+		")->fetchAll(PDO::FETCH_COLUMN));
+
+		assertTrue(count($expected) > 2, 'there are enough accounts for the order to be meaningful');
+
+		preg_match_all('/data-sort-key="score_(\d+)"/', $ctx->get('/music/songs')['body'], $m);
+		$shown = array_values(array_unique(array_map('intval', $m[1])));
+
+		assertSame($expected, $shown, 'columns follow account id, not account name');
+		assertSame($mine, $shown[0], 'your own column still comes first');
 	},
 
 	'the songs page shows a column per account but marks only your own editable' => function ($ctx) {
@@ -1191,7 +1254,7 @@ return [
 		$body = $ctx->get("/music/songs?artist={$artistId}")['body'];
 
 		assertSame('Tooltip Actual, Tooltip Other', songsTitleCellFor($body, $songId)['tooltip'], 'actual name first, then aliases');
-		assertSame(null, songsTitleCellFor($body, $lonelyId)['tooltip'], 'a song with only one name gets no tooltip');
+		assertSame('Tooltip Lonely', songsTitleCellFor($body, $lonelyId)['tooltip'], 'a song with one name still gets a tooltip, so a clipped title is always readable');
 	},
 
 	'the songs page sorts by album' => function ($ctx) {
@@ -1765,6 +1828,28 @@ return [
 		assertTrue(strpos($card, 'songSoundcloudEmbed') === false, 'no soundcloud embed is built');
 	},
 
+	'a link in the table points at the platform, not back at this site' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Outward Link Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Outward Link Song']]);
+		$songId = $ctx->songId('Outward Link Song');
+
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'spotify_url', 'value' => '4cOdK2wGLETKBW3PvgPWqT']);
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'youtube_url', 'value' => 'dQw4w9WgXcQ']);
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'bandcamp_url', 'value' => 'https://band.example/track/y']);
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'other_url', 'value' => 'example.com/thing']);
+
+		$row = songsRowFor($ctx->get('/music/songs')['body'], $songId);
+
+		assertContains('href="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"', $row, 'a bare spotify id becomes a spotify url');
+		assertContains('href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"', $row, 'a bare youtube id becomes a youtube url');
+		assertContains('href="https://band.example/track/y"', $row, 'a stored url is left as it is');
+		assertContains('href="https://example.com/thing"', $row, 'a url with no scheme gets one rather than going relative');
+
+		assertTrue(strpos($row, 'href="dQw4w9WgXcQ"') === false, 'the bare id is never used as the href, which would resolve against /music/');
+	},
+
 	'a filepath link shows its value on the card, not just a bare label' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
@@ -1775,6 +1860,23 @@ return [
 
 		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
 		assertContains('>File path: blah/foo/bar<', $card, 'the chip text carries the actual path, not just the label');
+	},
+
+	'the filepath carries the hooks that open and flash its card' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Path Hook Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Path Hook Song']]);
+		$songId = $ctx->songId('Path Hook Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'filepath', 'value' => 'blah/hook/path']);
+
+		$body = $ctx->get('/music/songs')['body'];
+
+		$row = songsRowFor($body, $songId);
+		assertTrue(preg_match('/<abbr class="songLinkAbbr" data-path="blah\/hook\/path"/', $row) === 1, 'the table abbr is the click target the js looks for');
+
+		$card = songsCardFor($body, $songId);
+		assertContains('songLinkChipWrap', $card, 'the card chip is the element the flash lands on');
 	},
 
 	'a song year can be set' => function ($ctx) {

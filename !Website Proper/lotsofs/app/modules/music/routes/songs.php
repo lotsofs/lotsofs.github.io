@@ -21,7 +21,7 @@ $accountId = (int)currentAccountId();
 $raters = $db->query("
 	SELECT a.id, a.account_name
 	FROM account a
-	ORDER BY a.id = ? DESC, a.account_name COLLATE NOCASE
+	ORDER BY a.id = ? DESC, a.id
 ", [$accountId])->fetchAll();
 
 $sortable = [
@@ -172,13 +172,29 @@ $globalData['songs'] = $db->query("
 	ORDER BY {$sortable[$sort]} {$dir}, s.id
 ")->fetchAll();
 
+/// Spotify and YouTube are stored as a bare track/video id, which is not a
+/// usable href on its own - a relative one resolves against /music/. urlPrefix
+/// rebuilds the outward link; a value that already carries a scheme is used
+/// untouched. songs.js reads the same prefixes out of songLinkFieldData.
+function songLinkHref($value, $prefix) {
+	if ($value === null || $value === '') {
+		return null;
+	}
+
+	if (preg_match('#^https?://#i', $value)) {
+		return $value;
+	}
+
+	return ($prefix === '' ? 'https://' : $prefix) . $value;
+}
+
 $linkFields = [
-	['key' => 'spotify_url', 'label' => t('song.link.spotify'), 'abbr' => t('song.link.abbr.spotify')],
-	['key' => 'youtube_url', 'label' => t('song.link.youtube'), 'abbr' => t('song.link.abbr.youtube')],
-	['key' => 'soundcloud_url', 'label' => t('song.link.soundcloud'), 'abbr' => t('song.link.abbr.soundcloud')],
-	['key' => 'bandcamp_url', 'label' => t('song.link.bandcamp'), 'abbr' => t('song.link.abbr.bandcamp')],
-	['key' => 'filepath', 'label' => t('song.link.filepath'), 'abbr' => t('song.link.abbr.filepath')],
-	['key' => 'other_url', 'label' => t('song.link.other'), 'abbr' => t('song.link.abbr.other')],
+	['key' => 'spotify_url', 'label' => t('song.link.spotify'), 'abbr' => t('song.link.abbr.spotify'), 'urlPrefix' => 'https://open.spotify.com/track/'],
+	['key' => 'youtube_url', 'label' => t('song.link.youtube'), 'abbr' => t('song.link.abbr.youtube'), 'urlPrefix' => 'https://www.youtube.com/watch?v='],
+	['key' => 'soundcloud_url', 'label' => t('song.link.soundcloud'), 'abbr' => t('song.link.abbr.soundcloud'), 'urlPrefix' => ''],
+	['key' => 'bandcamp_url', 'label' => t('song.link.bandcamp'), 'abbr' => t('song.link.abbr.bandcamp'), 'urlPrefix' => ''],
+	['key' => 'filepath', 'label' => t('song.link.filepath'), 'abbr' => t('song.link.abbr.filepath'), 'urlPrefix' => ''],
+	['key' => 'other_url', 'label' => t('song.link.other'), 'abbr' => t('song.link.abbr.other'), 'urlPrefix' => ''],
 ];
 $globalData['linkFields'] = $linkFields;
 
@@ -241,6 +257,7 @@ foreach ($raters as $index => $rater) {
 		'type' => 'number',
 		'class' => $raters[$index]['scoreClass'],
 		'label' => t('song.column.ratingScore'),
+		'name' => t('song.list.raterScoreLabel', ['name' => $rater['account_name']]),
 		'group' => "rater_{$id}",
 		'groupStart' => true,
 		'groupLabel' => $rater['account_name'],
@@ -251,6 +268,7 @@ foreach ($raters as $index => $rater) {
 		'type' => 'text',
 		'class' => $raters[$index]['noteClass'],
 		'label' => t('song.column.ratingNote'),
+		'name' => t('song.list.raterNoteLabel', ['name' => $rater['account_name']]),
 		'group' => "rater_{$id}",
 	];
 }
@@ -269,7 +287,7 @@ foreach ($columns as $index => $column) {
 
 	$column['link'] = '?sort=' . $column['key'] . '&dir=' . $nextDir . $filterQuery;
 	$column['indicator'] = $isActive ? ($globalData['dir'] === 'asc' ? ' ▲' : ' ▼') : '';
-	$column['title'] = $nextDir === 'asc' ? t('song.list.sortAscending') : t('song.list.sortDescending');
+	$column['title'] = t('song.list.columnSortHint', ['column' => $column['name'] ?? $column['label']]);
 
 	$globalData['columns'][] = $column;
 }

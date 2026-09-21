@@ -105,6 +105,19 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       stays the source catalogue and the test-suite language (the harness sets
       `LOTSOFS_LOCALE=en`; setting that env var on a host overrides the
       module's own fallback without editing its config).
+- [ ] **Decide whether the note preview panel comes back, then delete or
+      restore it.** `NOTE_PREVIEW_ENABLED` in `songs.js` is `false` as of
+      2026-09-20 (shipped): the sticky panel above the song list is hidden and
+      clicking someone else's note opens that song's card and flashes the note
+      there instead. The panel's markup, CSS and functions (`setPreview`,
+      `showNotePreview`, `showFilepathPreview`, `clearNotePreview`) are all
+      still in place, kept deliberately in case the old behaviour is wanted
+      back — flipping the flag to `true` restores the panel and reverts the
+      click behaviour in one move, since the two are mutually exclusive.
+      The filepath preview rode the same panel; clicking `P` now also opens the
+      card and flashes the path chip, so nothing was lost there. Once the new
+      behaviour has had some use, either delete the panel and its four
+      functions or drop the flag and keep it.
 - [ ] **Password reset.** There is none, and there is now a real account. Being
       locked out means editing a `0640` database file through the file manager.
 - [ ] Logout takes two redirects: `/music/logout` -> `/music/songs` ->

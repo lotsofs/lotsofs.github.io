@@ -25,13 +25,17 @@ requireSongJson($db, $songId, ['value' => '']);
 
 $existing = $db->query("SELECT score, subjective_note FROM account_song WHERE account_id = ? AND song_id = ?", [$accountId, $songId])->fetch();
 
-if ($field === 'score' && $value !== '' && !is_numeric($value)) {
-	echo json_encode([
-		'status' => 'error',
-		'value' => $existing && $existing['score'] !== null ? (float)$existing['score'] : '',
-		'message' => t('song.result.badScore'),
-	]);
-	exit;
+if ($field === 'score' && $value !== '') {
+	$value = str_replace(',', '.', $value);
+
+	if (!is_numeric($value)) {
+		echo json_encode([
+			'status' => 'error',
+			'value' => $existing && $existing['score'] !== null ? (float)$existing['score'] : '',
+			'message' => t('song.result.badScore'),
+		]);
+		exit;
+	}
 }
 
 $stored = $value === '' ? null : ($field === 'score' ? (float)$value : $value);

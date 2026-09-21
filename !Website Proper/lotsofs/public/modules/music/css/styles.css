@@ -52,7 +52,10 @@ nav .navLogout button,
 #artistMatchRows .rowExtras .rawNamePreview,
 #artistMatchRows .aliasNameInLabel,
 #columnMapping .columnMapRow .columnMapExample,
-#extrasTable .extraValueCell {
+#extrasTable .extraValueCell,
+#auditTable .auditSongCell,
+#auditTable .auditValueCell,
+#songListTable .songCellText {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -514,7 +517,23 @@ th, td {
 
 	.ratingNoteText {
 		display: block;
-		max-width: 12em;
+		max-width: 10em;
+	}
+
+	.songCellText {
+		display: block;
+	}
+
+	.songArtistCell .songCellText {
+		max-width: 14em;
+	}
+
+	.songTitleCell .songCellText {
+		max-width: 14em;
+	}
+
+	.songAlbumCell .songCellText {
+		max-width: 10em;
 	}
 
 	.songRaterGroup {
@@ -575,6 +594,8 @@ th, td {
 		display: inline-block;
 		margin-right: 0.4em;
 		color: inherit;
+		text-decoration: underline;
+		cursor: pointer;
 	}
 
 	.songLinkAbbr:last-child {
@@ -583,11 +604,6 @@ th, td {
 
 	.songLinkAbbrEmpty {
 		visibility: hidden;
-	}
-
-	abbr.songLinkAbbr {
-		text-decoration: underline dashed;
-		cursor: help;
 	}
 
 	.songResultCell {
@@ -677,6 +693,14 @@ th, td {
 	dd input {
 		width: 100%;
 		box-sizing: border-box;
+	}
+
+	.songRatingFlash {
+		animation: songRatingFlash 1.2s ease-out;
+
+		@media (prefers-reduced-motion: reduce) {
+			animation: none;
+		}
 	}
 
 	.songMyScoreCell.songCellEmpty::after,
@@ -1072,7 +1096,8 @@ th, td {
 	#artistMatchTable,
 	#songTable,
 	#albumTable,
-	#extrasTable {
+	#extrasTable,
+	#auditTable {
 		display: block;
 		max-width: 100%;
 		overflow-x: auto;
@@ -1095,4 +1120,23 @@ th, td {
 	#artistMatchRows .rawNamePreview {
 		max-width: 100%;
 	}
+}
+
+#auditTable {
+	.auditWhenCell {
+		white-space: nowrap;
+	}
+
+	.auditSongCell {
+		max-width: 26em;
+	}
+
+	.auditValueCell {
+		max-width: 18em;
+	}
+}
+
+.auditPaging {
+	display: flex;
+	gap: 1em;
 }

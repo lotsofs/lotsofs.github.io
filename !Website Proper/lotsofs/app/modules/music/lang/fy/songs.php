@@ -13,7 +13,7 @@ return [
 	'song.column.nameToStore' => 'Op te slaan namme',
 	'song.column.result' => 'Resultaat',
 	'song.column.id' => 'ID',
-	'song.column.ratingScore' => 'Wurdearring',
+	'song.column.ratingScore' => 'Wurd.',
 	'song.column.ratingNote' => 'Notysje',
 
 	'song.submit' => 'Lieten ferstjoere',
@@ -57,6 +57,7 @@ return [
 	'song.list.empty' => 'Noch gjin lieten.',
 	'song.list.sortAscending' => 'Oprinnend sortearje',
 	'song.list.sortDescending' => 'Ôfrinnend sortearje',
+	'song.list.columnSortHint' => '{column} (klik om te sortearjen)',
 	'song.list.editHint' => 'Klik op jo eigen skoare- of notysjesel om dy te bewurkjen. Klik op in titel om alle details te sjen.',
 	'song.list.notePreviewEmpty' => 'Klik op in notysje om de folsleine tekst hjir te sjen.',
 	'song.list.sortBy' => 'Sortearje op',

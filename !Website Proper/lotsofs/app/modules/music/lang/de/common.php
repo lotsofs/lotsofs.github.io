@@ -6,6 +6,7 @@ return [
 	'nav.songs' => 'Songs',
 	'nav.artists' => 'Interpreten', // ? oder "Künstler"
 	'nav.albums' => 'Alben',
+	'nav.audit' => 'Verlauf',
 	'nav.invites' => 'Einladungen',
 	'nav.accounts' => 'Konten',
 	'nav.login' => 'Anmelden',

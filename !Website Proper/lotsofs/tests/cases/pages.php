@@ -24,6 +24,7 @@ return [
 			'/music/songs?artist=1&album=1' => 200,
 			'/music/artists' => 200,
 			'/music/albums' => 200,
+			'/music/audit' => 200,
 			'/music/accounts' => 200,
 			'/swat4/2' => 200,
 			'/ss2/11' => 200,
@@ -147,7 +148,7 @@ return [
 	'pages carry no php warnings' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		foreach (['/', '/contact', '/exchange-rates', '/music/add-songs', '/music/songs', '/ss2/11'] as $path) {
+		foreach (['/', '/contact', '/exchange-rates', '/music/add-songs', '/music/songs', '/music/audit', '/ss2/11'] as $path) {
 			$body = $ctx->get($path)['body'];
 			foreach (['Warning:', 'Notice:', 'Fatal error', 'Undefined variable'] as $sign) {
 				assertTrue(strpos($body, $sign) === false, "{$path} contains '{$sign}'");

@@ -6,6 +6,7 @@ $routes += [
 	"/music/songs" => __MODULES__ . "/music/routes/songs.php",
 	"/music/artists" => __MODULES__ . "/music/routes/artists.php",
 	"/music/albums" => __MODULES__ . "/music/routes/albums.php",
+	"/music/audit" => __MODULES__ . "/music/routes/audit.php",
 	"/music/register" => __MODULES__ . "/music/routes/register.php",
 	"/music/login" => __MODULES__ . "/music/routes/login.php",
 	"/music/logout" => __MODULES__ . "/music/routes/logout.php",
