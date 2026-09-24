@@ -12,11 +12,6 @@ const songNoMatch = document.getElementById("songNoMatch");
 const songMobileSortKey = document.getElementById("songMobileSortKey");
 const songMobileSortDir = document.getElementById("songMobileSortDir");
 const songCardViewToggle = document.getElementById("songCardViewToggle");
-const songNotePreview = document.getElementById("songNotePreview");
-const songNotePreviewHeader = document.getElementById("songNotePreviewHeader");
-const songNotePreviewText = document.getElementById("songNotePreviewText");
-const songNotePreviewClear = document.getElementById("songNotePreviewClear");
-const songNotePreviewEmptyText = songNotePreviewText.textContent;
 const songListHeading = document.getElementById("songListHeading");
 const songArtistData = JSON.parse(document.getElementById("songArtistData").textContent);
 const songAlbumData = JSON.parse(document.getElementById("songAlbumData").textContent);
@@ -303,14 +298,24 @@ function createIdListEditor(config) {
 		},
 		exit(card) {
 			const cell = fieldCell(card, config.field);
-			const names = idsFromAttr(card, config.attr)
-				.map(id => {
-					const option = config.options.find(candidate => String(candidate.id) === id);
-					return option ? optionLabel(option) : "";
-				})
+			const options = idsFromAttr(card, config.attr)
+				.map(id => config.options.find(candidate => String(candidate.id) === id))
 				.filter(Boolean);
+			const names = options.map(optionLabel);
 
-			cell.textContent = names.join(", ");
+			cell.textContent = "";
+			if (config.renderItem) {
+				options.forEach((option, index) => {
+					if (index > 0) {
+						cell.appendChild(document.createTextNode(", "));
+					}
+					cell.appendChild(config.renderItem(option, optionLabel(option)));
+				});
+			}
+			else {
+				cell.textContent = names.join(", ");
+			}
+
 			if (config.hasTooltip) {
 				cell.title = names.join(", ");
 			}
@@ -327,6 +332,22 @@ const artistFieldEditor = createIdListEditor({
 	hasTooltip: false,
 });
 
+function albumSongsHref(albumId, artistId) {
+	return "/music/songs?" + (artistId === null || artistId === undefined ? "" : "artist=" + Number(artistId) + "&") + "album=" + Number(albumId);
+}
+
+// Leaving edit mode rebuilds the album names as links again, so the album card
+// keeps opening from a card whose albums were just changed (albumCard.js picks
+// them up by data-album-card-id, wherever they are on the page).
+function albumNameLink(albumId, artistId, label) {
+	const link = document.createElement("a");
+	link.className = "songAlbumLink";
+	link.href = albumSongsHref(albumId, artistId);
+	link.dataset.albumCardId = String(albumId);
+	link.textContent = label;
+	return link;
+}
+
 const albumFieldEditor = createIdListEditor({
 	field: "album",
 	attr: "albumIds",
@@ -334,6 +355,7 @@ const albumFieldEditor = createIdListEditor({
 	idKey: "album_id",
 	options: songAlbumData,
 	hasTooltip: true,
+	renderItem: (option, label) => albumNameLink(option.id, option.artist_id, label),
 });
 
 function spotifyTrackId(value) {
@@ -774,13 +796,14 @@ songCardViewToggle.addEventListener("click", () => {
 
 const songNav = document.querySelector("nav");
 
+// Measured rather than hardcoded because the nav wraps: getBoundingClientRect,
+// not offsetHeight, which rounds to whole pixels and left a seam the table rows
+// showed through.
 const songStickyOffsets = new ResizeObserver(() => {
 	document.documentElement.style.setProperty("--songNavHeight", songNav.getBoundingClientRect().height + "px");
-	document.documentElement.style.setProperty("--songHeaderHeight", songListTable.tHead.getBoundingClientRect().height + "px");
 });
 
 songStickyOffsets.observe(songNav);
-songStickyOffsets.observe(songListTable.tHead);
 
 function songQuery(sort, dir) {
 	const params = new URLSearchParams();
@@ -1164,69 +1187,6 @@ function handleEdit(event) {
 	beginCellEdit(cell, spec);
 }
 
-/// Set false to retire the sticky preview panel: note clicks open the song's
-/// card and flash the note there instead. Set true to bring the panel back and
-/// restore the old click behaviour. The filepath preview rides on the same
-/// panel and follows the same switch. The panel ships hidden from the view, so
-/// nothing flashes on screen before this runs.
-const NOTE_PREVIEW_ENABLED = false;
-
-if (NOTE_PREVIEW_ENABLED) {
-	songNotePreview.hidden = false;
-}
-
-let previewedNoteCell = null;
-
-function setPreview(header, text) {
-	songNotePreviewHeader.textContent = header || "";
-	songNotePreviewText.textContent = text || songNotePreviewEmptyText;
-	songNotePreview.classList.toggle("songNotePreviewEmpty", !text);
-}
-
-function showNotePreview(cell) {
-	previewedNoteCell = cell;
-	const text = cell.title;
-
-	if (text) {
-		const container = cell.closest("[data-song-id]");
-		const scoreCell = fieldCell(container, "score_" + cell.dataset.accountId);
-
-		setPreview(t("song.list.notePreviewHeader", {
-			name: cell.dataset.raterName,
-			song: cellText(fieldCell(container, "title")).trim(),
-			score: (scoreCell && cellText(scoreCell).trim()) || "–"
-		}), text);
-	}
-	else {
-		setPreview("", "");
-	}
-
-	flashCell(cell);
-	flashCell(songNotePreview);
-}
-
-function showFilepathPreview(abbr) {
-	const path = abbr.dataset.path;
-	if (!path) {
-		return;
-	}
-
-	previewedNoteCell = null;
-	const container = abbr.closest("[data-song-id]");
-	setPreview(t("song.list.pathPreviewHeader", {
-		song: cellText(fieldCell(container, "title")).trim()
-	}), path);
-
-	flashCell(songNotePreview);
-}
-
-function clearNotePreview() {
-	previewedNoteCell = null;
-	setPreview("", "");
-}
-
-songNotePreviewClear.addEventListener("click", clearNotePreview);
-
 /// Opens a song's card and flashes whichever part of it $findTarget picks out,
 /// so a value clipped in the table reads in full without a panel taking up
 /// room above the list. Any flash still running is cleared before the move,
@@ -1251,18 +1211,6 @@ function openCardAndFlash(songId, findTarget) {
 }
 
 function handleListClick(event) {
-	if (NOTE_PREVIEW_ENABLED) {
-		const noteCell = event.target.closest("td.songRatingNoteCell, dd.songRatingNoteCell");
-		if (noteCell && !isBeingEdited(noteCell)) {
-			showNotePreview(noteCell);
-		}
-
-		const pathAbbr = event.target.closest("abbr.songLinkAbbr");
-		if (pathAbbr) {
-			showFilepathPreview(pathAbbr);
-		}
-	}
-
 	handleCardEditClick(event);
 	handleEdit(event);
 }
@@ -1274,18 +1222,16 @@ songListBody.addEventListener("click", event => {
 		return;
 	}
 
-	if (!NOTE_PREVIEW_ENABLED) {
-		const noteCell = event.target.closest("td.songRatingNoteCell");
-		if (noteCell && !editableCell(noteCell) && !isBeingEdited(noteCell)) {
-			openCardAndFlash(noteCell.closest("[data-song-id]").dataset.songId, card => fieldCell(card, noteCell.dataset.field));
-			return;
-		}
+	const noteCell = event.target.closest("td.songRatingNoteCell");
+	if (noteCell && !editableCell(noteCell) && !isBeingEdited(noteCell)) {
+		openCardAndFlash(noteCell.closest("[data-song-id]").dataset.songId, card => fieldCell(card, noteCell.dataset.field));
+		return;
+	}
 
-		const pathAbbr = event.target.closest("abbr.songLinkAbbr[data-path]");
-		if (pathAbbr) {
-			openCardAndFlash(pathAbbr.closest("[data-song-id]").dataset.songId, card => card.querySelector(".songLinkChipWrap"));
-			return;
-		}
+	const pathAbbr = event.target.closest("abbr.songLinkAbbr[data-path]");
+	if (pathAbbr) {
+		openCardAndFlash(pathAbbr.closest("[data-song-id]").dataset.songId, card => card.querySelector(".songLinkChipWrap"));
+		return;
 	}
 
 	handleListClick(event);
@@ -1453,10 +1399,6 @@ function applyRatingHalf(pair, field, spec, value) {
 
 		setCellValue(cell, spec, value);
 		flashCell(cell);
-
-		if (cell === previewedNoteCell) {
-			showNotePreview(cell);
-		}
 	});
 }
 

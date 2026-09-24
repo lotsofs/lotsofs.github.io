@@ -172,31 +172,9 @@ $globalData['songs'] = $db->query("
 	ORDER BY {$sortable[$sort]} {$dir}, s.id
 ")->fetchAll();
 
-/// Spotify and YouTube are stored as a bare track/video id, which is not a
-/// usable href on its own - a relative one resolves against /music/. urlPrefix
-/// rebuilds the outward link; a value that already carries a scheme is used
-/// untouched. songs.js reads the same prefixes out of songLinkFieldData.
-function songLinkHref($value, $prefix) {
-	if ($value === null || $value === '') {
-		return null;
-	}
+require_once __MODULES__ . '/music/links.php';
 
-	if (preg_match('#^https?://#i', $value)) {
-		return $value;
-	}
-
-	return ($prefix === '' ? 'https://' : $prefix) . $value;
-}
-
-$linkFields = [
-	['key' => 'spotify_url', 'label' => t('song.link.spotify'), 'abbr' => t('song.link.abbr.spotify'), 'urlPrefix' => 'https://open.spotify.com/track/'],
-	['key' => 'youtube_url', 'label' => t('song.link.youtube'), 'abbr' => t('song.link.abbr.youtube'), 'urlPrefix' => 'https://www.youtube.com/watch?v='],
-	['key' => 'soundcloud_url', 'label' => t('song.link.soundcloud'), 'abbr' => t('song.link.abbr.soundcloud'), 'urlPrefix' => ''],
-	['key' => 'bandcamp_url', 'label' => t('song.link.bandcamp'), 'abbr' => t('song.link.abbr.bandcamp'), 'urlPrefix' => ''],
-	['key' => 'filepath', 'label' => t('song.link.filepath'), 'abbr' => t('song.link.abbr.filepath'), 'urlPrefix' => ''],
-	['key' => 'other_url', 'label' => t('song.link.other'), 'abbr' => t('song.link.abbr.other'), 'urlPrefix' => ''],
-];
-$globalData['linkFields'] = $linkFields;
+$globalData['linkFields'] = songLinkFields();
 
 $songLinksBySong = [];
 foreach ($db->query("SELECT song_id, spotify_url, youtube_url, soundcloud_url, bandcamp_url, filepath, other_url FROM song_link")->fetchAll() as $row) {
@@ -211,6 +189,26 @@ foreach ($db->query("SELECT song_id, spotify_url, youtube_url, soundcloud_url, b
 }
 
 $globalData['songLinksBySong'] = $songLinksBySong;
+
+/// The song row's albums column is one group_concat of names and its album_ids
+/// another of ids, in unrelated orders, so neither can tell which name belongs
+/// to which album. This pairs them up so each name can be its own link.
+$albumsBySong = [];
+foreach ($db->query("
+	SELECT at.song_id, at.album_id, al.artist_id,
+		(SELECT name FROM album_alias WHERE album_id = al.id ORDER BY is_actual DESC, id LIMIT 1) AS name
+	FROM album_track at
+	JOIN album al ON al.id = at.album_id
+	ORDER BY name COLLATE NOCASE
+")->fetchAll() as $row) {
+	$albumsBySong[(int)$row['song_id']][] = [
+		'id' => (int)$row['album_id'],
+		'artist_id' => $row['artist_id'] === null ? null : (int)$row['artist_id'],
+		'name' => $row['name'],
+	];
+}
+
+$globalData['albumsBySong'] = $albumsBySong;
 
 $trackAliases = [];
 foreach ($db->query("

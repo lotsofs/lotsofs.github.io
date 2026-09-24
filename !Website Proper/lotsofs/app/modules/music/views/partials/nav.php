@@ -18,6 +18,20 @@
 	<?php endif ?>
 
 	<div class="navRight">
+		<details class="navColour" id="navColour">
+			<summary class="navMenuButton" aria-label="<?= t('nav.colour') ?>"><span class="navColourSwatch"></span></summary>
+			<form method="post" action="/music/colour" class="navColourMenu">
+				<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken()) ?>">
+				<input type="hidden" name="return" value="<?= htmlspecialchars(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) ?>">
+				<label for="navColourInput"><?= t('colour.hue') ?></label>
+				<div class="navColourRow">
+					<input type="range" id="navColourInput" name="hue" min="0" max="359" value="<?= musicActiveHue() ?>">
+					<output id="navColourValue" for="navColourInput"><?= musicActiveHue() ?></output>
+				</div>
+				<button type="submit"><?= t('colour.save') ?></button>
+			</form>
+		</details>
+
 		<details class="navLanguage">
 			<summary class="navMenuButton" aria-label="<?= t('nav.language') ?>">🌐&#xFE0E;</summary>
 			<form method="post" action="/music/language" class="navLanguageMenu">
@@ -42,3 +56,4 @@
 		<?php endif ?>
 	</div>
 </nav>
+<script src="<?= asset('/modules/music/js/colour.js') ?>"></script>

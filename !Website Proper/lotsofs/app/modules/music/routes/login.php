@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$globalData['formError'] = t('login.error.tooMany');
 	}
 	else {
-		$account = $db->query("SELECT id, account_name, password_hash, lang FROM account WHERE account_name = ?", [$accountName])->fetch();
+		$account = $db->query("SELECT id, account_name, password_hash, lang, hue FROM account WHERE account_name = ?", [$accountName])->fetch();
 
 		if ($account && password_verify($password, $account['password_hash'])) {
 			clearLoginFailures($db, $ip);
@@ -45,6 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			if (in_array($account['lang'], moduleLocales('music'), true)) {
 				$_SESSION['lang'] = $account['lang'];
 			}
+			require_once __MODULES__ . '/music/hue.php';
+			$_SESSION['hue'] = musicHueOf($account['id'], $account['hue']);
 			header('Location: /music/songs', true, 302);
 			exit;
 		}

@@ -100,24 +100,42 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       choices (Interpret/Künstler, Wertung/Punkte, Titel/Tracks, Widerrufen) but
       the rest wasn't flagged either. Needs a native-speaker pass over both,
       not just the marked spots.
+      **Start with the three abbreviations.** As of 2026-09-22 the score column
+      header is shortened per locale — `Sc.` / `Wert.` / `Wurd.` — and those
+      were invented, not translated. An abbreviation that reads wrong is more
+      jarring than a slightly-off word, and `Wurd.` in particular could just as
+      well be read as the start of a different word.
       `fy` is the **site default** — a visitor who has never touched the nav
       switcher sees Frysk, browser `Accept-Language` is ignored entirely. English
       stays the source catalogue and the test-suite language (the harness sets
       `LOTSOFS_LOCALE=en`; setting that env var on a host overrides the
       module's own fallback without editing its config).
-- [ ] **Decide whether the note preview panel comes back, then delete or
-      restore it.** `NOTE_PREVIEW_ENABLED` in `songs.js` is `false` as of
-      2026-09-20 (shipped): the sticky panel above the song list is hidden and
-      clicking someone else's note opens that song's card and flashes the note
-      there instead. The panel's markup, CSS and functions (`setPreview`,
-      `showNotePreview`, `showFilepathPreview`, `clearNotePreview`) are all
-      still in place, kept deliberately in case the old behaviour is wanted
-      back — flipping the flag to `true` restores the panel and reverts the
-      click behaviour in one move, since the two are mutually exclusive.
-      The filepath preview rode the same panel; clicking `P` now also opens the
-      card and flashes the path chip, so nothing was lost there. Once the new
-      behaviour has had some use, either delete the panel and its four
-      functions or drop the flag and keep it.
+- [x] ~~**Decide whether the note preview panel comes back, then delete or
+      restore it.**~~ Deleted on 2026-09-25, after the card-and-flash behaviour
+      had been live since 2026-09-20. Gone: the `#songNotePreview` markup, its
+      CSS and `songNotePreviewFlash` keyframes, the `NOTE_PREVIEW_ENABLED` flag
+      and both of its branches, `setPreview`/`showNotePreview`/
+      `showFilepathPreview`/`clearNotePreview`, the `previewedNoteCell` the
+      rating poll kept in step, four catalogue keys in three locales, and the
+      `--songHeaderHeight` custom property, whose only reader was the panel's
+      sticky offset. Clicking a note or a filepath opens that song's card and
+      flashes the value there, which is now the only behaviour.
+- [ ] **The album card can only add album names, never remove one.** Clicking an
+      album name — in the song table, on a song card, or in the album list —
+      opens the album's card in a modal, rendered server-side by
+      `views/partials/albumCard.php` and fetched through `/music/ajax/album-card`
+      (fetched fresh every time, deliberately not cached: the song list can move
+      songs on and off an album while the page is open, and leaving edit mode
+      re-fetches rather than patching the DOM). Admin edit mode covers the name,
+      the artist, the year and the track list (add/remove a song, renumber it,
+      pick which of the song's names this release credits it under) via
+      `/music/ajax/album-edit` and `/music/ajax/album-track`. Renaming keeps the
+      old name as a non-actual `album_alias` row, which is the point — but
+      nothing in the UI can then **delete** a wrong alias or promote one back
+      without typing it out again, and a typo'd rename is therefore permanent
+      clutter in the "also known as" line. An artist card would be the same
+      shape again (partial + one endpoint + the same `data-album-card-id`-style
+      trigger `albumCard.js` delegates).
 - [ ] **Password reset.** There is none, and there is now a real account. Being
       locked out means editing a `0640` database file through the file manager.
 - [ ] Logout takes two redirects: `/music/logout` -> `/music/songs` ->
@@ -147,18 +165,15 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       "Share/Embed" URL specifically (which does contain the ID, extractable
       with a plain regex, same as Spotify/YouTube — no network call needed) or
       re-test whether oEmbed works from wherever the app actually deploys.
-- [ ] **Fold into `006` whenever one gets written for a real reason:** drop
-      `idx_rating_audit_song` and `idx_rating_audit_created`. Both were created
-      by `005` and neither is used — every query against `rating_audit` goes via
-      the rowid primary key (`WHERE ra.id > ?` in `songRatingPoll.php`, the
-      INSERT in `songRating.php`, `MAX(id)` in `routes/songs.php`), so
-      `song_id` and `created_at` appear in no `WHERE` or `ORDER BY`. They cost
-      an extra B-tree write per rating change and buy nothing. Deliberately
-      parked rather than done: `005` is frozen, and spending a whole migration
-      on deleting two indexes from a table this small isn't worth it on its own.
-      Same goes for `idx_song_relationship_unique` / `idx_song_relationship_target`
-      from `002` — the `song_relationship` table is referenced by zero lines of
-      application code.
+- [x] ~~**Fold into `006` whenever one gets written for a real reason:** drop
+      the four unused indexes.~~ Done: `006_account_hue.sql` adds `account.hue`
+      and drops `idx_rating_audit_song`, `idx_rating_audit_created`,
+      `idx_song_relationship_unique` and `idx_song_relationship_target` in the
+      same migration. None of the four appeared in any `WHERE` or `ORDER BY` —
+      every `rating_audit` query goes by rowid and `song_relationship` is
+      referenced by zero lines of application code — so they only cost a B-tree
+      write per rating change. `006` shipped on 2026-09-25 and is frozen with
+      the rest; `007` is the next free number.
 
 ## Site wide
 
@@ -188,6 +203,12 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       `sessionScope('ss2')`, its own account table, separate accounts.
 - [ ] JS tests. The pure functions in `addSongs.js` are testable, but there is
       no Node on this machine and therefore no runner.
+- [ ] Two gaps left open on `/music/audit` (shipped 2026-09-22), neither asked
+      for, both cheap if they start to matter: the song is plain text rather
+      than a link, because there is no per-song page and no anchor on the songs
+      table to jump to (adding `id="song-<n>"` there would give one); and there
+      is no filtering by rater or by song, which a log that only ever grows will
+      eventually want. The paging and the indexes are already in place for it.
 
 ---
 
@@ -266,6 +287,17 @@ All found the hard way, all cost a debugging cycle.
   styling from card view (i.e. mobile), where nothing in the suite looks. When
   rewriting a selector, resolve its chain by walking *up* through every line of
   the group, not just the one with the brace.
+- **CSS has no `//` comments, and using one is silently destructive.** Every
+  other file in this repo takes `//` or `///`, so it is an easy reflex. In a
+  stylesheet the parser hits the slashes, treats them as a bad token, and
+  recovers by consuming everything up to and including the *next* rule's
+  closing brace — so the rule underneath the comment vanishes while still
+  reading perfectly in the file. This ate `.card`'s background and border,
+  `.cardModalDialog`'s background and `#albumCardModal`'s z-index at once, and
+  presented as "the card modal is transparent", which looks like a colour
+  problem and is not. `/* ... */` only. A test in `tests/cases/catalogue.php`
+  now fails on any line starting with `//` in `styles.css`; the brace counter
+  never saw it, because the braces do still balance.
 - **Nothing on this machine executes JavaScript or renders CSS.** There is no
   node (see "JS tests" above), so a JS syntax error or a broken cascade reaches
   production unless a human opens the page. `php tests/run.php` fetches pages

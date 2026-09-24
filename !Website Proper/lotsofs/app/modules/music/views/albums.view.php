@@ -23,7 +23,7 @@
 			<?php foreach ($globalData['albums'] as $album): ?>
 				<tr>
 					<td class="listIdCell"><?= htmlspecialchars($album['id']) ?></td>
-					<td class="listNameCell"><a href="<?= htmlspecialchars('/music/songs?' . ($album['artist_id'] === null ? '' : 'artist=' . (int)$album['artist_id'] . '&') . 'album=' . (int)$album['id']) ?>"><?= $album['name'] === null ? t('album.list.noName') : htmlspecialchars($album['name']) ?></a></td>
+					<td class="listNameCell"><a href="<?= htmlspecialchars(albumSongsHref($album['id'], $album['artist_id'])) ?>" data-album-card-id="<?= (int)$album['id'] ?>"><?= $album['name'] === null ? t('album.list.noName') : htmlspecialchars($album['name']) ?></a></td>
 					<td class="listAliasCell"><?= htmlspecialchars($album['aliases'] ?? '') ?></td>
 					<td class="listArtistCell"><?= $album['artist'] === null ? t('album.list.noArtist') : htmlspecialchars($album['artist']) ?></td>
 					<td class="listYearCell"><?= htmlspecialchars($album['release_year'] ?? '') ?></td>
@@ -31,6 +31,7 @@
 			<?php endforeach ?>
 		</tbody>
 	</table>
+	<?php require(__MODULES__ . '/music/views/partials/albumCardModal.php') ?>
 <?php endif ?>
 
 <?php require(__MODULES__ . '/music/views/partials/foot.php') ?>

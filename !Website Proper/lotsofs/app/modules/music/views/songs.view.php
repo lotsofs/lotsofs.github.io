@@ -9,155 +9,7 @@
 <?php if (!$globalData['songs']): ?>
 	<p><?= t('song.list.empty') ?></p>
 <?php else: ?>
-	<?php
-		$artistLabel = htmlspecialchars(t('song.column.artist'));
-		$albumLabel = htmlspecialchars(t('song.column.album'));
-		$yearLabel = htmlspecialchars(t('song.column.year'));
-		$durationLabel = htmlspecialchars(t('song.column.duration'));
-		$linksLabel = htmlspecialchars(t('song.column.links'));
-		$resultLabel = htmlspecialchars(t('song.column.result'));
-		$tapToEnterAttr = ' data-placeholder="' . htmlspecialchars(t('song.list.tapToEnter')) . '"';
-
-		$raterLabels = [];
-		foreach ($globalData['raters'] as $rater) {
-			$raterLabels[(int)$rater['id']] = [
-				'score' => htmlspecialchars(t('song.list.raterScoreLabel', ['name' => $rater['account_name']])),
-				'note' => htmlspecialchars(t('song.list.raterNoteLabel', ['name' => $rater['account_name']])),
-				'name' => htmlspecialchars($rater['account_name']),
-				'placeholder' => $rater['isMine'] ? $tapToEnterAttr : '',
-			];
-		}
-
-		$emptyLinks = array_fill_keys(array_column($globalData['linkFields'], 'key'), null);
-
-		// One pass to derive every value/class/attribute either tree needs, so the
-		// table and card loops below just read $song['x'] rather than recomputing it.
-		$songRows = [];
-		$visibleCount = 0;
-		foreach ($globalData['songs'] as $song) {
-			$albumIds = $song['album_ids'] === null ? [] : explode(',', $song['album_ids']);
-			$artistIds = $song['artist_ids'] === null ? [] : explode(',', $song['artist_ids']);
-			if ($globalData['filterAlbum'] !== null) {
-				$song['hidden'] = !in_array((string)$globalData['filterAlbum'], $albumIds, true);
-			}
-			else {
-				$song['hidden'] = $globalData['filterArtist'] !== null && !in_array((string)$globalData['filterArtist'], $artistIds, true);
-			}
-			if (!$song['hidden']) {
-				$visibleCount++;
-			}
-
-			$song['hiddenAttr'] = $song['hidden'] ? ' hidden' : '';
-			$song['albumIdsAttr'] = htmlspecialchars($song['album_ids'] ?? '');
-			$song['artistValue'] = htmlspecialchars($song['artist'] ?? '');
-
-			$canonicalTitle = $song['title'] ?? '';
-			$listedAs = $globalData['listedAsBySong'][(int)$song['id']] ?? null;
-			$allNames = $song['all_names'] ?? '';
-			$song['titleAliasedClass'] = $listedAs === null ? '' : ' songTitleAliased';
-			$song['canonicalTitleAttr'] = htmlspecialchars($canonicalTitle);
-			$titleTooltip = $allNames !== '' ? $allNames : $canonicalTitle;
-			$song['titleTooltipAttr'] = $titleTooltip === '' ? '' : ' title="' . htmlspecialchars($titleTooltip) . '"';
-			$song['titleValue'] = htmlspecialchars($listedAs ?? $canonicalTitle);
-
-			$song['albumsValue'] = htmlspecialchars($song['albums'] ?? '');
-			$song['artistIdsAttr'] = htmlspecialchars($song['artist_ids'] ?? '');
-
-			$song['songYearAttr'] = htmlspecialchars($song['song_year'] !== null ? (string)(int)$song['song_year'] : '');
-			$song['fallbackYearAttr'] = htmlspecialchars($song['fallback_year'] !== null ? (string)(int)$song['fallback_year'] : '');
-			$displayYear = $song['song_year'] ?? $song['fallback_year'];
-			$song['displayYearValue'] = htmlspecialchars($displayYear !== null ? (string)(int)$displayYear : '');
-
-			$duration = $song['duration'] !== null ? (int)$song['duration'] : null;
-			$song['durationAttr'] = htmlspecialchars($duration !== null ? (string)$duration : '');
-			$song['durationValue'] = $duration === null ? '' : sprintf('%d:%02d', intdiv($duration, 60), $duration % 60);
-
-			$songLinks = $globalData['songLinksBySong'][$song['id']] ?? $emptyLinks;
-
-			$song['spotifyTrackId'] = null;
-			if (!empty($songLinks['spotify_url'])) {
-				if (preg_match('#/track/([A-Za-z0-9]+)#', $songLinks['spotify_url'], $spotifyMatch)) {
-					$song['spotifyTrackId'] = $spotifyMatch[1];
-				}
-				elseif (preg_match('#^[A-Za-z0-9]+$#', trim($songLinks['spotify_url']))) {
-					$song['spotifyTrackId'] = trim($songLinks['spotify_url']);
-				}
-			}
-
-			$song['youtubeTrackId'] = null;
-			if (!empty($songLinks['youtube_url'])) {
-				if (preg_match('#(?:youtube\.com/(?:watch\?v=|embed/)|youtu\.be/)([A-Za-z0-9_-]+)#', $songLinks['youtube_url'], $youtubeMatch)) {
-					$song['youtubeTrackId'] = $youtubeMatch[1];
-				}
-				elseif (preg_match('#^[A-Za-z0-9_-]+$#', trim($songLinks['youtube_url']))) {
-					$song['youtubeTrackId'] = trim($songLinks['youtube_url']);
-				}
-			}
-
-			$song['soundcloudEmbedUrl'] = null;
-			if (!empty($songLinks['soundcloud_url'])) {
-				$song['soundcloudEmbedUrl'] = 'https://w.soundcloud.com/player/?url=' . urlencode($songLinks['soundcloud_url'])
-					. '&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true';
-			}
-
-			$song['linksAttr'] = htmlspecialchars(json_encode($songLinks));
-
-			$song['linkChips'] = [];
-			foreach ($globalData['linkFields'] as $field) {
-				$linkValue = $songLinks[$field['key']] ?? null;
-				if ($linkValue === null || $linkValue === '') {
-					continue;
-				}
-				if ($field['key'] === 'spotify_url' && $song['spotifyTrackId'] !== null) {
-					continue;
-				}
-				if ($field['key'] === 'youtube_url' && $song['youtubeTrackId'] !== null) {
-					continue;
-				}
-				if ($field['key'] === 'soundcloud_url' && $song['soundcloudEmbedUrl'] !== null) {
-					continue;
-				}
-				$song['linkChips'][] = [
-					'label' => htmlspecialchars($field['label']),
-					'url' => htmlspecialchars($linkValue),
-					'href' => htmlspecialchars(songLinkHref($linkValue, $field['urlPrefix'])),
-					'isPath' => $field['key'] === 'filepath',
-					'isOther' => $field['key'] === 'other_url',
-				];
-			}
-
-			$song['linkAbbrs'] = [];
-			foreach ($globalData['linkFields'] as $field) {
-				$linkValue = $songLinks[$field['key']] ?? null;
-				$song['linkAbbrs'][] = [
-					'abbr' => htmlspecialchars($field['abbr']),
-					'label' => htmlspecialchars($field['label']),
-					'url' => $linkValue !== null && $linkValue !== '' ? htmlspecialchars($linkValue) : null,
-					'href' => htmlspecialchars(songLinkHref($linkValue, $field['urlPrefix'])),
-					'isPath' => $field['key'] === 'filepath',
-				];
-			}
-
-			$song['ratings'] = [];
-			foreach ($globalData['raters'] as $rater) {
-				$raterId = (int)$rater['id'];
-
-				$score = $song['score_' . $raterId];
-				$score = $score === null ? '' : (string)(float)$score;
-
-				$note = $song['note_' . $raterId] ?? '';
-
-				$song['ratings'][$raterId] = [
-					'scoreValue' => htmlspecialchars($score),
-					'scoreEmptyClass' => $score === '' ? ' songCellEmpty' : '',
-					'noteValue' => htmlspecialchars($note),
-					'noteEmptyClass' => $note === '' ? ' songCellEmpty' : '',
-				];
-			}
-
-			$songRows[] = $song;
-		}
-	?>
+	<?php require(__MODULES__ . '/music/views/partials/songRows.php') ?>
 	<script>
 		if (window.matchMedia("(max-width: 700px)").matches) {
 			document.documentElement.classList.add("songCardView");
@@ -209,11 +61,6 @@
 		<div class="songSidePanel">
 			<button type="button" id="songCardViewToggle" class="songCardViewToggle" aria-pressed="false"><?= t('song.list.cardViewToggleOn') ?></button>
 			<p id="songEditHint"><?= t('song.list.editHint') ?></p>
-			<div id="songNotePreview" class="songNotePreview songNotePreviewEmpty" hidden>
-				<strong id="songNotePreviewHeader" class="songNotePreviewHeader"></strong>
-				<span id="songNotePreviewText"><?= t('song.list.notePreviewEmpty') ?></span>
-				<button type="button" id="songNotePreviewClear" class="songNotePreviewClear"><?= t('song.list.notePreviewClear') ?></button>
-			</div>
 		</div>
 
 		<div class="songListArea">
@@ -260,7 +107,7 @@
 								<td class="songIdCell" data-field="id"><?= htmlspecialchars($song['id']) ?></td>
 								<td class="songArtistCell" data-field="artist" title="<?= $song['artistValue'] ?>"><span class="songCellText"><?= $song['artistValue'] ?></span></td>
 								<td class="songTitleCell<?= $song['titleAliasedClass'] ?>" data-field="title" data-canonical-title="<?= $song['canonicalTitleAttr'] ?>"<?= $song['titleTooltipAttr'] ?>><span class="songCellText"><?= $song['titleValue'] ?></span></td>
-								<td class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><span class="songCellText"><?= $song['albumsValue'] ?></span></td>
+								<td class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><span class="songCellText"><?= $song['albumsHtml'] ?></span></td>
 								<td class="songYearCell" data-field="year"><?= $song['displayYearValue'] ?></td>
 								<td class="songDurationCell" data-field="duration"><?= $song['durationValue'] ?></td>
 								<td class="songLinksCell" data-field="links">
@@ -296,74 +143,15 @@
 				</table>
 				<div id="songCards" class="hideResultColumn">
 					<?php foreach ($songRows as $song): ?>
-						<dl class="songCard" data-song-id="<?= (int)$song['id'] ?>" data-artist-id="<?= (int)$song['artist_id'] ?>" data-artist-ids="<?= $song['artistIdsAttr'] ?>" data-album-ids="<?= $song['albumIdsAttr'] ?>" data-links="<?= $song['linksAttr'] ?>" data-song-year="<?= $song['songYearAttr'] ?>" data-fallback-year="<?= $song['fallbackYearAttr'] ?>" data-duration="<?= $song['durationAttr'] ?>"<?= $song['hiddenAttr'] ?>>
-							<div class="songCardIdRow">
-								<dd class="songIdCell" data-field="id"><?= htmlspecialchars($song['id']) ?></dd>
-								<?php if ($globalData['isAdmin']): ?>
-									<button type="button" class="songCardEditBtn"><?= htmlspecialchars(t('song.list.cardModalEdit')) ?></button>
-								<?php endif ?>
-							</div>
-							<dd class="songTitleCell<?= $song['titleAliasedClass'] ?>" data-field="title" data-canonical-title="<?= $song['canonicalTitleAttr'] ?>"<?= $song['titleTooltipAttr'] ?>><?= $song['titleValue'] ?></dd>
-							<div class="songCardMeta">
-								<div class="songCardInfo">
-									<dt><?= $artistLabel ?></dt>
-									<dd class="songArtistCell" data-field="artist"><?= $song['artistValue'] ?></dd>
-									<dt><?= $albumLabel ?></dt>
-									<dd class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><?= $song['albumsValue'] ?></dd>
-									<dt><?= $yearLabel ?></dt>
-									<dd class="songYearCell" data-field="year"><?= $song['displayYearValue'] ?></dd>
-									<dt><?= $durationLabel ?></dt>
-									<dd class="songDurationCell" data-field="duration"><?= $song['durationValue'] ?></dd>
-								</div>
-								<div class="songCardLinksCol">
-									<dt><?= $linksLabel ?></dt>
-									<div class="songLinksArea" data-field="links"><?php if ($song['spotifyTrackId'] !== null): ?>
-										<div class="songSpotifyEmbed">
-											<iframe src="https://open.spotify.com/embed/track/<?= htmlspecialchars($song['spotifyTrackId']) ?>?theme=0" width="280" height="80" frameborder="0" loading="lazy" allow="encrypted-media; clipboard-write" title="Spotify"></iframe>
-										</div>
-									<?php endif ?><?php if ($song['youtubeTrackId'] !== null): ?>
-										<div class="songYoutubeEmbed">
-											<iframe src="https://www.youtube.com/embed/<?= htmlspecialchars($song['youtubeTrackId']) ?>" width="280" height="158" frameborder="0" loading="lazy" allowfullscreen title="YouTube"></iframe>
-										</div>
-									<?php endif ?><?php if ($song['soundcloudEmbedUrl'] !== null): ?>
-										<div class="songSoundcloudEmbed">
-											<iframe src="<?= htmlspecialchars($song['soundcloudEmbedUrl']) ?>" width="280" height="166" frameborder="0" loading="lazy" allow="autoplay" title="SoundCloud"></iframe>
-										</div>
-									<?php endif ?><?php if ($song['linkChips']): ?>
-										<div class="songLinkChips">
-											<?php foreach ($song['linkChips'] as $chip): ?>
-												<?php if ($chip['isPath']): ?>
-													<span class="songLinkChip songLinkChipWrap" title="<?= $chip['url'] ?>"><?= $chip['label'] ?>: <?= $chip['url'] ?></span>
-												<?php else: ?>
-													<a class="songLinkChip" href="<?= $chip['href'] ?>" target="_blank" rel="noopener" title="<?= $chip['url'] ?>"><?= $chip['isOther'] ? $chip['url'] : $chip['label'] ?></a>
-												<?php endif ?>
-											<?php endforeach ?>
-										</div>
-									<?php endif ?></div>
-								</div>
-							</div>
-							<?php foreach ($globalData['raters'] as $rater): ?>
-								<?php
-									$raterId = (int)$rater['id'];
-									$labels = $raterLabels[$raterId];
-									$rating = $song['ratings'][$raterId];
-								?>
-								<dt><?= $labels['score'] ?></dt>
-								<dd class="<?= $rater['scoreClass'] ?><?= $rating['scoreEmptyClass'] ?>" data-field="score_<?= $raterId ?>" data-account-id="<?= $raterId ?>"<?= $labels['placeholder'] ?>><?= $rating['scoreValue'] ?></dd>
-								<dt><?= $labels['note'] ?></dt>
-								<dd class="<?= $rater['noteClass'] ?><?= $rating['noteEmptyClass'] ?>" data-field="note_<?= $raterId ?>" data-account-id="<?= $raterId ?>" data-rater-name="<?= $labels['name'] ?>"<?= $labels['placeholder'] ?> title="<?= $rating['noteValue'] ?>"><span class="ratingNoteText"><?= $rating['noteValue'] ?></span></dd>
-							<?php endforeach ?>
-							<dt class="songResultCell"><?= $resultLabel ?></dt>
-							<dd class="songResultCell" data-field="result"></dd>
-						</dl>
+						<?php require(__MODULES__ . '/music/views/partials/songCard.php') ?>
 					<?php endforeach ?>
 				</div>
-				<div id="songCardModal" class="songCardModal hideResultColumn" hidden>
-					<div class="songCardModalDialog">
-						<div class="songCardModalActions">
-							<button type="button" id="songCardModalPrev" class="songCardModalNav"><?= htmlspecialchars(t('song.list.cardModalPrev')) ?></button>
-							<button type="button" id="songCardModalNext" class="songCardModalNav"><?= htmlspecialchars(t('song.list.cardModalNext')) ?></button>
-							<button type="button" id="songCardModalClose" class="songCardModalClose"><?= htmlspecialchars(t('song.list.cardModalClose')) ?></button>
+				<div id="songCardModal" class="songCardModal cardModal hideResultColumn" hidden>
+					<div class="songCardModalDialog cardModalDialog">
+						<div class="songCardModalActions cardModalActions">
+							<button type="button" id="songCardModalPrev" class="songCardModalNav cardModalBtn"><?= htmlspecialchars(t('song.list.cardModalPrev')) ?></button>
+							<button type="button" id="songCardModalNext" class="songCardModalNav cardModalBtn"><?= htmlspecialchars(t('song.list.cardModalNext')) ?></button>
+							<button type="button" id="songCardModalClose" class="songCardModalClose cardModalBtn"><?= htmlspecialchars(t('song.list.cardModalClose')) ?></button>
 						</div>
 						<div id="songCardModalBody"></div>
 					</div>
@@ -373,6 +161,7 @@
 		</div>
 	</div>
 	<div id="songToasts" class="songToasts" role="status" aria-live="polite"></div>
+	<?php require(__MODULES__ . '/music/views/partials/albumCardModal.php') ?>
 	<script id="songArtistData" type="application/json"><?= json_encode($globalData['artistOptions'], JSON_HEX_TAG) ?></script>
 	<script id="songAlbumData" type="application/json"><?= json_encode($globalData['albumOptions'], JSON_HEX_TAG) ?></script>
 	<script id="songLinkFieldData" type="application/json"><?= json_encode($globalData['linkFields'], JSON_HEX_TAG) ?></script>

@@ -13,6 +13,9 @@ return [
 	'nav.register' => 'Registrearje',
 	'nav.logout' => 'Ôfmelde',
 	'nav.language' => 'Taal',
+	'nav.colour' => 'Kleur',
+	'colour.hue' => 'Sidekleur',
+	'colour.save' => 'Dizze kleur brûke',
 
 	'language.en' => 'Ingelsk',
 	'language.de' => 'Dútsk',

@@ -1,10 +1,16 @@
 ﻿:root {
 	color-scheme: dark;
 
+	/* Every blue on these pages is this hue. partials/head.php writes the
+	   signed in account's choice onto <html>, which overrides this; keeping a
+	   value here is what makes the hsl() declarations below still resolve when
+	   nothing does, and 240 is the site blue they were all written in. */
+	--hue: 240;
+
 	--border: #555555;
 	--mineAccent: #999999;
-	--buttonFill: #00002f;
-	--buttonFillHover: #000040;
+	--buttonFill: hsl(var(--hue), 100%, 9%);
+	--buttonFillHover: hsl(var(--hue), 100%, 13%);
 }
 
 body {
@@ -14,7 +20,7 @@ body {
 	background: linear-gradient(
 		-45deg,
 		#000000,
-		#00000f,
+		hsl(var(--hue), 100%, 3%),
 		#000000
 	);
 	font-family: 'Noto Sans', sans-serif;
@@ -31,12 +37,12 @@ nav .navMenuButton,
 nav .navLogout button,
 .songFilters button[type="submit"],
 .songCardViewToggle,
-#songCards .songCardEditBtn,
-#songCardModal .songCardEditBtn,
+.cardEditBtn,
+.cardModalBtn,
 .songEditRowRemove,
 .songEditRowAdd,
-.songCardModalClose,
-.songCardModalNav {
+.albumEditTrackAdd,
+.albumEditTrackRemove {
 	border: solid 1px #000000;
 	border-radius: 16px;
 	background-color: var(--buttonFill);
@@ -90,7 +96,7 @@ nav {
 	}
 
 	a.navCurrent {
-		color: #9999ff;
+		color: hsl(var(--hue), 100%, 80%);
 	}
 
 	.navRight {
@@ -110,12 +116,14 @@ nav {
 	}
 
 	.navAccountMenu,
-	.navLanguage {
+	.navLanguage,
+	.navColour {
 		position: relative;
 	}
 
 	.navLogout,
-	.navLanguage form {
+	.navLanguage form,
+	.navColour form {
 		position: absolute;
 		top: 100%;
 		right: 0;
@@ -151,18 +159,76 @@ nav {
 	}
 
 	.navLanguageOption.navLanguageOptionActive {
-		color: #9999ff;
+		color: hsl(var(--hue), 100%, 80%);
 		border-color: #000000;
+	}
+
+	.navColourMenu {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4em;
+		background-color: var(--buttonFill);
+		border: solid 1px #000000;
+		border-radius: 12px;
+		padding: 0.6em;
+		width: 14em;
+
+		label {
+			min-width: 0;
+			font-size: 0.85em;
+			opacity: 0.75;
+		}
+
+		button[type="submit"] {
+			padding: .4em .8em;
+
+			&:hover {
+				background-color: var(--buttonFillHover);
+			}
+		}
+	}
+
+	.navColourRow {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+
+		input[type="range"] {
+			flex: 1 1 auto;
+			min-width: 0;
+			accent-color: hsl(var(--hue), 100%, 60%);
+		}
+
+		output {
+			flex: 0 0 2.2em;
+			text-align: right;
+			font-variant-numeric: tabular-nums;
+		}
+	}
+
+	/* A swatch rather than a 🎨: the palette emoji has no text presentation, so
+	   it renders in its own colours and the button stops matching the ones
+	   either side of it. This is the same chrome as those, with the hue shown
+	   as content - and it follows the slider live, because the slider sets
+	   --hue on <html> and this reads it. */
+	.navColourSwatch {
+		display: inline-block;
+		width: 1em;
+		height: 1em;
+		border-radius: 50%;
+		background-color: hsl(var(--hue), 100%, 60%);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+		vertical-align: -0.15em;
 	}
 }
 
 .formError {
-	color: #0000ff;
+	color: hsl(var(--hue), 100%, 50%);
 }
 
 h1 {
 	margin: 0;
-	text-shadow: 0 0 10px #0000ff;
+	text-shadow: 0 0 10px hsl(var(--hue), 100%, 50%);
 }
 
 h2 {
@@ -218,7 +284,7 @@ th, td {
 	display: flex;
 	flex-direction: column;
 	gap: 0.8em;
-	background-color: #00001a;
+	background-color: hsl(var(--hue), 100%, 5%);
 	border: solid 1px #000000;
 	border-radius: 12px;
 	padding: 1em;
@@ -303,56 +369,6 @@ th, td {
 
 .songMobileSort {
 	display: none;
-}
-
-.songNotePreview {
-	position: sticky;
-	top: calc(var(--songNavHeight, 3.35em) + var(--songHeaderHeight, 0px) - 1px);
-	z-index: 2;
-	max-width: 40em;
-	background-color: #000000;
-	border: 1px solid var(--border);
-	padding: 0.4em 0.6em;
-	word-break: break-word;
-
-	.songNotePreviewHeader {
-		display: block;
-		font-weight: bold;
-	}
-
-	.songNotePreviewClear {
-		display: block;
-		margin-top: 0.4em;
-	}
-
-	&.songRatingFlash {
-		animation: songNotePreviewFlash 1.2s ease-out;
-
-		@media (prefers-reduced-motion: reduce) {
-			animation: none;
-		}
-	}
-
-	&.songNotePreviewEmpty {
-		font-style: italic;
-
-		#songNotePreviewText {
-			opacity: 0.6;
-		}
-
-		.songNotePreviewClear {
-			display: none;
-		}
-	}
-}
-
-@keyframes songNotePreviewFlash {
-	from {
-		background-color: var(--border);
-	}
-	to {
-		background-color: #000000;
-	}
 }
 
 .songToasts {
@@ -562,20 +578,13 @@ th, td {
 		}
 	}
 
-	tbody .songMineCell {
-		cursor: pointer;
-
-		&:hover {
-			background-color: #262626;
-		}
+	tbody td:hover {
+		background-color: #262626;
 	}
 
+	tbody .songMineCell,
 	tbody .songTitleCell {
 		cursor: pointer;
-
-		&:hover {
-			background-color: #262626;
-		}
 	}
 
 	tbody .songRatingCell.songRatingFlash {
@@ -611,16 +620,12 @@ th, td {
 	}
 
 	td.songResultCell {
-		color: #808aff;
+		color: hsl(var(--hue), 100%, 75%);
 	}
 
 	&.hideResultColumn .songResultCell {
 		display: none;
 	}
-}
-
-.songCardView .songNotePreview {
-	display: none;
 }
 
 .songCardView .songMobileSort {
@@ -658,24 +663,24 @@ th, td {
 	display: block;
 }
 
-#songCards,
-#songCardModal {
-	.songCard {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		border: 1px solid var(--border);
-		border-radius: 4px;
-		padding: 0.5em 0.7em;
-		margin-bottom: 0.8em;
-		max-width: 40em;
-		min-width: 560px;
-		margin-inline: auto;
+/* Song cards and album cards are the same object in two flavours, so the box
+   itself, its id/edit corner, its title bar and the modal they pop up in are
+   styled once here off neutral class names both of them carry. Only what is
+   genuinely particular to one of them - the song card's list sizing and field
+   layout, the album card's tables - lives in the blocks below.
 
-		&[hidden] {
-			display: none;
-		}
-	}
+   The background is the card's own, not the modal's: a card is shown over the
+   song table as often as it is shown in a modal, and a transparent one lets
+   the rows behind it read straight through its text. */
+.card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	background-color: #000000;
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 0.5em 0.7em;
+	margin: 0;
 
 	dt,
 	dd {
@@ -694,6 +699,108 @@ th, td {
 		width: 100%;
 		box-sizing: border-box;
 	}
+}
+
+.cardIdRow {
+	position: absolute;
+	top: 0.5em;
+	right: 0.7em;
+	display: flex;
+	align-items: center;
+	gap: 0.4em;
+}
+
+.cardIdCell {
+	font-size: 1em;
+	opacity: 0.6;
+
+	&::before {
+		content: "#";
+	}
+}
+
+.cardEditBtn {
+	padding: 0.1em 0.6em;
+	font-size: 0.8em;
+
+	&:hover {
+		background-color: var(--buttonFillHover);
+	}
+}
+
+.cardTitle {
+	font-size: 1.15em;
+	font-weight: bold;
+	padding-bottom: 0.3em;
+	padding-right: 5em;
+	margin-bottom: 0.3em;
+	border-bottom: 1px solid var(--border);
+}
+
+.cardModal {
+	position: fixed;
+	inset: 0;
+	z-index: 20;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1em;
+	background-color: rgba(0, 0, 0, 0.7);
+
+	&[hidden] {
+		display: none;
+	}
+}
+
+/* Top padding clears the action buttons pinned in the corner above, which is
+   also where the card's own id/edit row sits - without it the two land on top
+   of each other. */
+.cardModalDialog {
+	position: relative;
+	width: 38em;
+	max-width: 100%;
+	max-height: 100%;
+	overflow-y: auto;
+	box-sizing: border-box;
+	background-color: #000000;
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 2.4em 0.7em 0.7em;
+}
+
+.cardModalActions {
+	position: absolute;
+	top: 0.5em;
+	right: 0.7em;
+	display: flex;
+	gap: 0.4em;
+}
+
+.cardModalBtn {
+	padding: .2em .7em;
+
+	&:hover:not(:disabled) {
+		background-color: var(--buttonFillHover);
+	}
+
+	&:disabled {
+		opacity: 0.4;
+		cursor: default;
+	}
+}
+
+#songCards,
+#songCardModal {
+	.songCard {
+		margin-bottom: 0.8em;
+		max-width: 40em;
+		min-width: 560px;
+		margin-inline: auto;
+
+		&[hidden] {
+			display: none;
+		}
+	}
 
 	.songRatingFlash {
 		animation: songRatingFlash 1.2s ease-out;
@@ -710,44 +817,12 @@ th, td {
 		font-style: italic;
 	}
 
-	.songCardIdRow {
-		position: absolute;
-		top: 0.5em;
-		right: 0.7em;
-		display: flex;
-		align-items: center;
-		gap: 0.4em;
-	}
-
-	.songIdCell {
-		font-size: 1em;
-		opacity: 0.6;
-
-		&::before {
-			content: "#";
-		}
-	}
-
-	.songCardEditBtn {
-		padding: 0.1em 0.6em;
-		font-size: 0.8em;
-
-		&:hover {
-			background-color: var(--buttonFillHover);
-		}
-	}
-
 	dd.songRatingScoreCell {
 		text-align: left;
 	}
 
 	.songTitleCell {
 		order: -2;
-		font-size: 1.15em;
-		font-weight: bold;
-		padding-bottom: 0.3em;
-		margin-bottom: 0.3em;
-		border-bottom: 1px solid var(--border);
 	}
 
 	.songCardMeta {
@@ -877,63 +952,8 @@ th, td {
 	align-self: flex-start;
 }
 
-#songCardModal {
-	position: fixed;
-	inset: 0;
-	z-index: 20;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 1em;
-	background-color: rgba(0, 0, 0, 0.7);
-
-	&[hidden] {
-		display: none;
-	}
-}
-
 #songCardModalBody .songCard[hidden] {
 	display: flex;
-}
-
-.songCardModalDialog {
-	position: relative;
-	max-width: 40em;
-	max-height: 100%;
-	overflow-y: auto;
-	background-color: #000000;
-	border: 1px solid var(--border);
-	border-radius: 4px;
-	padding: 1.5em 0.7em 0.7em;
-}
-
-.songCardModalActions {
-	position: absolute;
-	top: 0.5em;
-	right: 0.7em;
-	display: flex;
-	gap: 0.4em;
-}
-
-.songCardModalNav {
-	padding: .2em .7em;
-
-	&:hover:not(:disabled) {
-		background-color: var(--buttonFillHover);
-	}
-
-	&:disabled {
-		opacity: 0.4;
-		cursor: default;
-	}
-}
-
-.songCardModalClose {
-	padding: .2em .7em;
-
-	&:hover {
-		background-color: var(--buttonFillHover);
-	}
 }
 
 #albumScrollSpace {
@@ -1139,4 +1159,291 @@ th, td {
 .auditPaging {
 	display: flex;
 	gap: 1em;
+}
+
+/* The hand covers the whole cell because the whole cell opens the card (see
+   albumCard.js), and only when there is an album in it to open. */
+.songAlbumCell:has(.songAlbumLink) {
+	cursor: pointer;
+}
+
+.songAlbumLink {
+	color: inherit;
+	text-decoration: none;
+	border-bottom: 1px dotted var(--border);
+	cursor: pointer;
+
+	&:hover {
+		border-bottom-color: currentColor;
+	}
+}
+
+/* Above the song card modal rather than beside it: an album card is opened
+   from a song card often enough that it has to stack on top of one. */
+#albumCardModal {
+	z-index: 25;
+}
+
+.albumCardMessage {
+	margin: 0;
+	opacity: 0.7;
+}
+
+.albumCard {
+	.albumCardInfo {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		align-items: baseline;
+		gap: 0.2em 0.8em;
+
+		dt {
+			margin-top: 0;
+		}
+	}
+
+	/* Same shape as the stats table below it, so the two read as one card
+	   rather than as a list and a table that happen to share a box. */
+	.albumTrackTable {
+		width: 100%;
+		margin-top: 0.2em;
+		font-size: 0.9em;
+
+		th {
+			font-size: 0.85em;
+			font-weight: bold;
+			opacity: 0.65;
+			text-align: left;
+		}
+
+		th.albumTrackPosition,
+		th.albumTrackScore,
+		th.albumTrackDeviation,
+		th.albumTrackRated,
+		th.albumTrackDuration {
+			text-align: right;
+		}
+	}
+
+	td.albumTrackPosition {
+		width: 2em;
+		text-align: right;
+		opacity: 0.6;
+	}
+
+	.albumTrackTitle {
+		max-width: 16em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	td.albumTrackArtist {
+		max-width: 10em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		opacity: 0.6;
+	}
+
+	td.albumTrackScore {
+		width: 3em;
+		text-align: right;
+		font-weight: bold;
+		white-space: nowrap;
+
+		&.albumTrackScoreEmpty {
+			font-weight: normal;
+			opacity: 0.4;
+		}
+	}
+
+	td.albumTrackDeviation {
+		width: 3em;
+		text-align: right;
+		white-space: nowrap;
+		opacity: 0.75;
+	}
+
+	td.albumTrackRated {
+		width: 3.2em;
+		text-align: right;
+		white-space: nowrap;
+		opacity: 0.6;
+	}
+
+	td.albumTrackDuration {
+		width: 3.5em;
+		text-align: right;
+		white-space: nowrap;
+		opacity: 0.6;
+	}
+
+	.albumNoTracks {
+		margin: 0.2em 0 0;
+		opacity: 0.7;
+	}
+
+	.albumCardActions {
+		margin-top: 0.9em;
+	}
+
+	.albumStatsTable {
+		width: 100%;
+		margin-top: 0.2em;
+		font-size: 0.9em;
+
+		th {
+			font-size: 0.85em;
+			font-weight: bold;
+			opacity: 0.65;
+			text-align: right;
+		}
+
+		th.albumStatsNameCell {
+			text-align: left;
+		}
+	}
+
+	.albumStatsNameCell {
+		max-width: 10em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	/* The swatch is what makes the stats table double as the graph's legend,
+	   so the graph needs no legend of its own. */
+	.albumStatsSwatch {
+		display: inline-block;
+		width: 0.6em;
+		height: 0.6em;
+		border-radius: 50%;
+		margin-right: 0.4em;
+		vertical-align: baseline;
+	}
+
+	.albumGraphCell {
+		margin-top: 0.2em;
+	}
+
+	.albumGraph {
+		display: block;
+		width: 100%;
+		height: auto;
+		overflow: visible;
+	}
+
+	.albumGraphGrid {
+		stroke: var(--border);
+		stroke-width: 0.5;
+		opacity: 0.35;
+	}
+
+	.albumGraphGridMark {
+		opacity: 0.7;
+	}
+
+	.albumGraphAxis {
+		fill: #ffffff;
+		opacity: 0.45;
+		font-size: 7px;
+	}
+
+	.albumGraphLine {
+		fill: none;
+		stroke-width: 1.2;
+		opacity: 0.45;
+	}
+
+	.albumGraphDot {
+		stroke: #000000;
+		stroke-width: 0.5;
+	}
+
+	td.albumStatsScoreCell {
+		text-align: right;
+		font-weight: bold;
+		white-space: nowrap;
+	}
+
+	td.albumStatsDeviationCell {
+		font-weight: normal;
+		opacity: 0.75;
+	}
+
+	td.albumStatsEmpty {
+		font-weight: normal;
+		opacity: 0.4;
+	}
+
+	td.albumStatsRatedCell {
+		text-align: right;
+		white-space: nowrap;
+		opacity: 0.6;
+	}
+
+	.albumCardStatus {
+		margin-top: 0.4em;
+
+		&:empty {
+			margin-top: 0;
+		}
+	}
+
+	.albumEditTrackList {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3em;
+		margin-top: 0.2em;
+	}
+
+	.albumEditTrackRow {
+		display: flex;
+		align-items: center;
+		gap: 0.4em;
+
+		select {
+			flex: 1 1 0;
+			min-width: 0;
+		}
+
+		.albumEditTrackAlias {
+			flex: 0 1 8em;
+		}
+	}
+
+	.albumEditName {
+		width: 100%;
+		box-sizing: border-box;
+		font: inherit;
+	}
+
+	.albumEditTrackPosition {
+		flex: 0 0 3em;
+		width: 3em;
+		box-sizing: border-box;
+		text-align: right;
+	}
+
+	.albumEditYear {
+		width: 6em;
+	}
+
+	.albumEditTrackAdd,
+	.albumEditTrackRemove {
+		padding: 0 0.6em;
+
+		&:hover:not(:disabled) {
+			background-color: var(--buttonFillHover);
+		}
+
+		&:disabled {
+			opacity: 0.5;
+			cursor: default;
+		}
+	}
+
+	.albumEditTrackAdd {
+		align-self: flex-start;
+	}
 }

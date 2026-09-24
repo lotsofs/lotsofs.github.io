@@ -13,6 +13,9 @@ return [
 	'nav.register' => 'Register',
 	'nav.logout' => 'Log Out',
 	'nav.language' => 'Language',
+	'nav.colour' => 'Colour',
+	'colour.hue' => 'Site colour',
+	'colour.save' => 'Use this colour',
 
 	'language.en' => 'English',
 	'language.de' => 'German',

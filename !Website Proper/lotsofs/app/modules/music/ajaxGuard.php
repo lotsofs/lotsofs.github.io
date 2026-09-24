@@ -46,11 +46,28 @@ function ajaxTrimmed($raw) {
 	return is_string($raw) ? trim($raw) : '';
 }
 
+/// For the fields where empty means "clear this" and anything else is a
+/// number: a caller that sends 3 rather than "3" would otherwise fall through
+/// ajaxTrimmed as an empty string and quietly wipe the value instead of
+/// setting it.
+function ajaxNumericText($raw) {
+	return is_int($raw) ? (string)$raw : ajaxTrimmed($raw);
+}
+
 function requireSongJson($db, $songId, $extra = []) {
 	if ($db->query("SELECT id FROM song WHERE id = ?", [$songId])->fetch()) {
 		return;
 	}
 
 	echo json_encode(array_merge(['status' => 'error'], $extra, ['message' => t('song.result.notFound')]));
+	exit;
+}
+
+function requireAlbumJson($db, $albumId, $extra = []) {
+	if ($db->query("SELECT id FROM album WHERE id = ?", [$albumId])->fetch()) {
+		return;
+	}
+
+	echo json_encode(array_merge(['status' => 'error'], $extra, ['message' => t('album.card.notFound')]));
 	exit;
 }

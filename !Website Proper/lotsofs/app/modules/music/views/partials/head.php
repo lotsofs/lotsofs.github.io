@@ -1,5 +1,6 @@
+<?php require_once __MODULES__ . '/music/hue.php' ?>
 <!DOCTYPE html>
-<html lang="<?= activeLocale() ?>">
+<html lang="<?= activeLocale() ?>" style="--hue: <?= musicActiveHue() ?>">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">

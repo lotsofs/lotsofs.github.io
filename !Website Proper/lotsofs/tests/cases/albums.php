@@ -1,6 +1,10 @@
 <?php
 
 const ALBUM_ENDPOINT = '/music/ajax/album';
+const ALBUM_CARD_ENDPOINT = '/music/ajax/album-card';
+const ALBUM_OPTIONS_ENDPOINT = '/music/ajax/album-options';
+const ALBUM_EDIT_ENDPOINT = '/music/ajax/album-edit';
+const ALBUM_TRACK_ENDPOINT = '/music/ajax/album-track';
 
 function withPositions($tracks) {
 	$claimed = [];
@@ -26,6 +30,19 @@ function withPositions($tracks) {
 	}
 
 	return $out;
+}
+
+function makeAlbum($ctx, $name, $artistId, $tracks) {
+	$response = $ctx->post(ALBUM_ENDPOINT, [[
+		'provided_name' => $name,
+		'album_id' => 'new',
+		'og_name' => $name,
+		'is_actual' => true,
+		'artist_id' => $artistId,
+		'release_year' => '',
+		'tracks' => $tracks,
+	]]);
+	return (int)$response['json'][0]['album_id'];
 }
 
 function makeSong($ctx, $artistId, $title) {
@@ -496,6 +513,483 @@ return [
 
 		$ctx->ensureLoggedIn();
 		assertSame(403, $ctx->postWithoutCsrf(ALBUM_ENDPOINT, [])['status'], 'no csrf token');
+	},
+
+	'the album card lists that album with its tracks in playing order' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Card Record Artist');
+		foreach (['Card Track Second', 'Card Track First'] as $title) {
+			$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => $title]]);
+		}
+
+		$albumId = (int)$ctx->post(ALBUM_ENDPOINT, [[
+			'provided_name' => 'Carded Record',
+			'album_id' => 'new',
+			'og_name' => 'Carded Record',
+			'is_actual' => true,
+			'artist_id' => $artistId,
+			'release_year' => '1998',
+			'tracks' => [
+				['song_id' => $ctx->songId('Card Track Second'), 'position' => 2],
+				['song_id' => $ctx->songId('Card Track First'), 'position' => 1],
+			],
+		]])['json'][0]['album_id'];
+
+		$response = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId]);
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$html = $response['json']['html'];
+		assertContains('data-album-id="' . $albumId . '"', $html, 'the card names its album');
+		assertContains('Carded Record', $html, 'the album name is on the card');
+		assertContains('Card Record Artist', $html, 'so is the artist');
+		assertContains('1998', $html, 'so is the release year');
+		assertContains('/music/songs?artist=' . $artistId . '&amp;album=' . $albumId, $html, 'the card links to the album filtered song list');
+
+		$first = strpos($html, 'Card Track First');
+		$second = strpos($html, 'Card Track Second');
+		assertTrue($first !== false && $second !== false, 'both tracks are listed');
+		assertTrue($first < $second, 'the tracks are listed by position, not by the order they were added');
+
+		foreach (['Warning:', 'Notice:', 'Fatal error', 'Undefined variable', 'Undefined index'] as $sign) {
+			assertTrue(strpos($response['body'], $sign) === false, "the rendered card contains '{$sign}'");
+		}
+	},
+
+	'the album card titles a track the way its album lists it' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Card Sleeve Artist');
+		$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Card Studio Title']]);
+		$songId = $ctx->songId('Card Studio Title');
+
+		$aliased = $ctx->post('/music/ajax/song', [[
+			'artist_id' => $artistId,
+			'title' => 'Card Sleeve Title',
+			'song_id' => $songId,
+			'also_alias_provided_name' => true,
+		]]);
+
+		$albumId = (int)$ctx->post(ALBUM_ENDPOINT, [[
+			'provided_name' => 'Card Sleeve Record',
+			'album_id' => 'new',
+			'og_name' => 'Card Sleeve Record',
+			'is_actual' => true,
+			'artist_id' => $artistId,
+			'release_year' => '',
+			'tracks' => [[
+				'song_id' => $songId,
+				'song_alias_id' => (int)$aliased['json'][0]['song_alias_id'],
+				'position' => 1,
+			]],
+		]])['json'][0]['album_id'];
+
+		$html = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+
+		assertContains('Card Sleeve Title', $html, 'the track shows the name this release credits it under');
+		assertTrue(strpos($html, 'Card Studio Title') === false, 'and not the song\'s own title');
+	},
+
+	'an album card for an album that is not there says so' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$response = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => 999999]);
+
+		assertSame('error', $response['json']['status'], 'status');
+		assertTrue(empty($response['json']['html']), 'no card comes back');
+	},
+
+	'the album card is open to raters, not just admins' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+		$artistId = $ctx->makeArtist('Card Viewer Artist');
+		$albumId = makeAlbum($ctx, 'Viewable Record', $artistId, []);
+
+		$ctx->ensureLoggedIn('album_card_viewer', 'test password', false);
+		$response = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId]);
+
+		assertSame('ok', $response['json']['status'], 'a non admin can open a card');
+		assertContains('Viewable Record', $response['json']['html'], 'and gets the album');
+
+		$ctx->newSession();
+		assertSame(401, $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['status'], 'signed out');
+	},
+
+	'the album card works out each rater\'s spread over the tracks they rated' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$titles = ['Averaged One', 'Averaged Two', 'Averaged Three', 'Averaged Four', 'Averaged Five'];
+
+		$tracks = [];
+		foreach ($titles as $index => $title) {
+			$ctx->post('/music/ajax/song', [['artist_id' => $ctx->makeArtist('Averaged Artist'), 'title' => $title]]);
+			$tracks[] = ['song_id' => $ctx->songId($title), 'position' => $index + 1];
+		}
+		$albumId = makeAlbum($ctx, 'Averaged Record', $ctx->makeArtist('Averaged Artist'), $tracks);
+
+		foreach (['Averaged One' => '8', 'Averaged Two' => '5', 'Averaged Three' => '8', 'Averaged Four' => '2'] as $title => $score) {
+			$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId($title), 'field' => 'score', 'value' => $score]);
+		}
+
+		$ctx->ensureLoggedIn('average_other_rater', 'test password', false);
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Averaged Five'), 'field' => 'score', 'value' => '3']);
+
+		$ctx->ensureLoggedIn();
+		$html = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+
+		preg_match_all('/<tr class="albumStatsRow"[^>]*>(.*?)<\/tr>/s', $html, $matches, PREG_SET_ORDER);
+		assertTrue(count($matches) > 2, 'every account gets a row, not just the ones who rated something');
+
+		$rows = [];
+		foreach ($matches as $match) {
+			preg_match_all('/<td[^>]*>(.*?)<\/td>/s', $match[1], $cells, PREG_SET_ORDER);
+			$values = array_map('strip_tags', array_column($cells, 1));
+			$rows[$values[0]] = [
+				'average' => $values[1],
+				'deviation' => $values[2],
+				'median' => $values[3],
+				'mode' => $values[4],
+				'rated' => $values[5],
+				'html' => $match[1],
+			];
+		}
+
+		// 8, 5, 8 and 2 out of five tracks: mean 5.75, middle pair 5 and 8,
+		// 8 twice, and a population sigma of sqrt(24.75 / 4)
+		assertSame('5.75', $rows['test_runner']['average'], 'the average is over the tracks that rater scored, not over every track');
+		assertSame('6.5', $rows['test_runner']['median'], 'the median is the middle pair averaged');
+		assertSame('8', $rows['test_runner']['mode'], 'the mode is the score given more than once');
+		assertSame('2.49', $rows['test_runner']['deviation'], 'and the spread is the standard deviation of those scores');
+		assertSame('4 / 5', $rows['test_runner']['rated'], 'with how many of the tracks that was');
+
+		assertContains('style="color: hsl(', $rows['test_runner']['html'], 'the scores are coloured on the same ramp the song list uses');
+
+		assertSame('3', $rows['average_other_rater']['average'], 'each rater is worked out separately');
+		assertSame('—', $rows['average_other_rater']['mode'], 'one score each is no mode at all, not a mode of everything');
+		assertSame('0', $rows['average_other_rater']['deviation'], 'a single score has no spread');
+
+		$never = null;
+		foreach ($rows as $row) {
+			if ($row['rated'] === '0 / 5') {
+				$never = $row;
+			}
+		}
+		assertTrue($never !== null, 'an account that rated nothing on this album still gets a row');
+		assertSame('—', $never['average'], 'and shows a dash rather than a zero');
+		assertTrue(strpos($never['html'], 'hsl(') === false, 'with nothing coloured in');
+	},
+
+	'the album card graphs every score that was given, and nothing else' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Graphed Artist');
+		$titles = ['Graphed One', 'Graphed Two', 'Graphed Three'];
+
+		$tracks = [];
+		foreach ($titles as $index => $title) {
+			$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => $title]]);
+			$tracks[] = ['song_id' => $ctx->songId($title), 'position' => $index + 1];
+		}
+		$albumId = makeAlbum($ctx, 'Graphed Record', $artistId, $tracks);
+
+		$unrated = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+		assertTrue(strpos($unrated, 'albumGraph') === false, 'an album nobody has scored draws no graph at all');
+
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Graphed One'), 'field' => 'score', 'value' => '9']);
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Graphed Three'), 'field' => 'score', 'value' => '4']);
+
+		$html = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+
+		assertContains('<svg class="albumGraph"', $html, 'one score is enough to draw the graph');
+		assertSame(2, substr_count($html, '<circle class="albumGraphDot"'), 'one dot per score given, and none for the track that was skipped');
+		assertContains('<title>test_runner — Graphed One: 9</title>', $html, 'a dot names the rater, the track and the score');
+		assertTrue(strpos($html, 'albumGraphLine') === false, 'no line is drawn across the unrated track in between');
+
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Graphed Two'), 'field' => 'score', 'value' => '6']);
+		$joined = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+		assertContains('albumGraphLine', $joined, 'filling the gap joins the dots up');
+
+		preg_match('/<tr class="albumStatsRow"[^>]*>(.*?)<\/tr>/s', $joined, $row);
+		preg_match('/albumStatsSwatch" style="background-color: (hsl\([^)]+\))"/', $row[1], $swatch);
+		assertTrue(!empty($swatch), 'the rater carries a colour swatch in the stats table, which is what makes it the graph legend');
+		assertContains('fill="' . $swatch[1] . '"', $joined, 'and the dots are drawn in that same colour');
+	},
+
+	'each track carries what the raters averaged it at' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Track Average Artist');
+		$titles = ['Track Average Agreed', 'Track Average Split', 'Track Average Ignored'];
+
+		$tracks = [];
+		foreach ($titles as $index => $title) {
+			$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => $title]]);
+			$tracks[] = ['song_id' => $ctx->songId($title), 'position' => $index + 1];
+		}
+		$albumId = makeAlbum($ctx, 'Track Average Record', $artistId, $tracks);
+
+		$unrated = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+		assertTrue(strpos($unrated, 'albumTrackScore') === false, 'an album nobody has scored shows no score column at all');
+
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Track Average Agreed'), 'field' => 'score', 'value' => '8']);
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Track Average Split'), 'field' => 'score', 'value' => '9']);
+
+		$ctx->ensureLoggedIn('track_average_other', 'test password', false);
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Track Average Agreed'), 'field' => 'score', 'value' => '8']);
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Track Average Split'), 'field' => 'score', 'value' => '4']);
+
+		$ctx->ensureLoggedIn();
+		$html = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+
+		$rows = [];
+		foreach (explode('<tr class="albumTrack"', $html) as $row) {
+			if (!preg_match('/albumTrackTitle">([^<]*)</', $row, $title)) {
+				continue;
+			}
+			preg_match('/albumTrackScore[^>]*>([^<]*)</', $row, $score);
+			preg_match('/albumTrackDeviation[^>]*>([^<]*)</', $row, $deviation);
+			preg_match('/albumTrackRated[^>]*>([^<]*)</', $row, $rated);
+			$rows[$title[1]] = [
+				'score' => $score[1] ?? null,
+				'deviation' => $deviation[1] ?? null,
+				'rated' => explode(' / ', $rated[1] ?? '')[0],
+			];
+		}
+
+		assertSame('8', $rows['Track Average Agreed']['score'], 'two raters agreeing average to what they both said');
+		assertSame('0', $rows['Track Average Agreed']['deviation'], 'agreement is a spread of nothing');
+		assertSame('2', $rows['Track Average Agreed']['rated'], 'and both of them are counted');
+
+		assertSame('6.5', $rows['Track Average Split']['score'], 'a 9 against a 4 averages between them');
+		assertSame('2.5', $rows['Track Average Split']['deviation'], 'and shows as a spread either side of it');
+		assertSame('2', $rows['Track Average Split']['rated'], 'from the same two people');
+
+		assertSame('—', $rows['Track Average Ignored']['score'], 'a track nobody scored shows a dash, not a zero');
+		assertSame('—', $rows['Track Average Ignored']['deviation'], 'with no spread either');
+		assertSame('0', $rows['Track Average Ignored']['rated'], 'and nobody counted');
+
+		assertContains('<td class="albumTrackScore" style="color: hsl(', $html, 'the averages are coloured on the score ramp');
+		assertContains('<th class="albumTrackScore">Avg</th>', $html, 'and the column says what it is');
+		assertContains('<th class="albumTrackTitle">Title</th>', $html, 'alongside the other track columns');
+	},
+
+	'an album can be renamed from its card, keeping the old name as an alias' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Renamed Album Artist');
+		$albumId = makeAlbum($ctx, 'Provisional Title', $artistId, []);
+
+		assertSame('ok', $ctx->post(ALBUM_EDIT_ENDPOINT, ['album_id' => $albumId, 'field' => 'name', 'value' => 'Settled Title'])['json']['status'], 'rename status');
+
+		$aliases = $ctx->db()->query("SELECT name, is_actual FROM album_alias WHERE album_id = {$albumId} ORDER BY is_actual DESC")->fetchAll();
+		assertSame(2, count($aliases), 'the old name is still there');
+		assertSame('Settled Title', $aliases[0]['name'], 'the new name is the actual one');
+		assertSame(1, (int)$aliases[0]['is_actual'], 'and it is marked as such');
+		assertSame('Provisional Title', $aliases[1]['name'], 'the old name stayed behind as an alias');
+		assertSame(0, (int)$aliases[1]['is_actual'], 'no longer the actual one');
+
+		$html = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+		assertContains('Settled Title', $html, 'the card shows the new name');
+		assertContains('Provisional Title', $html, 'and lists the old one as a name it also goes by');
+
+		assertSame('ok', $ctx->post(ALBUM_EDIT_ENDPOINT, ['album_id' => $albumId, 'field' => 'name', 'value' => 'Provisional Title'])['json']['status'], 'renaming back status');
+		$back = $ctx->db()->query("SELECT name FROM album_alias WHERE album_id = {$albumId} AND is_actual = 1")->fetchAll();
+		assertSame(1, count($back), 'exactly one name is actual at a time');
+		assertSame('Provisional Title', $back[0]['name'], 'renaming back to an old name reuses that alias rather than duplicating it');
+
+		assertSame('error', $ctx->post(ALBUM_EDIT_ENDPOINT, ['album_id' => $albumId, 'field' => 'name', 'value' => '  '])['json']['status'], 'an empty name is refused');
+	},
+
+	'a track can be credited under one of its song\'s other names' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Credited Artist');
+		$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Credited Studio Title']]);
+		$songId = $ctx->songId('Credited Studio Title');
+
+		$aliased = $ctx->post('/music/ajax/song', [[
+			'artist_id' => $artistId,
+			'title' => 'Credited Sleeve Title',
+			'song_id' => $songId,
+			'also_alias_provided_name' => true,
+		]]);
+		$aliasId = (int)$aliased['json'][0]['song_alias_id'];
+
+		$albumId = makeAlbum($ctx, 'Credited Record', $artistId, [['song_id' => $songId, 'position' => 1]]);
+
+		$card = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json'];
+		assertContains('Credited Studio Title', $card['html'], 'the track starts out under the song\'s own name');
+		assertSame(2, count($card['trackAliases'][(string)$songId]), 'the card hands the editor every name that song goes by');
+
+		assertSame('ok', $ctx->post(ALBUM_TRACK_ENDPOINT, ['album_id' => $albumId, 'song_id' => $songId, 'action' => 'alias', 'song_alias_id' => $aliasId])['json']['status'], 'alias status');
+		assertContains('Credited Sleeve Title', $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'], 'the track is now credited under the chosen name');
+
+		assertSame('ok', $ctx->post(ALBUM_TRACK_ENDPOINT, ['album_id' => $albumId, 'song_id' => $songId, 'action' => 'alias', 'song_alias_id' => ''])['json']['status'], 'clearing status');
+		assertContains('Credited Studio Title', $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'], 'clearing it falls back to the song\'s own name');
+
+		$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Credited Stranger']]);
+		$stranger = $ctx->db()->query("SELECT id FROM song_alias WHERE name = 'Credited Stranger'")->fetch()['id'];
+		assertSame('error', $ctx->post(ALBUM_TRACK_ENDPOINT, ['album_id' => $albumId, 'song_id' => $songId, 'action' => 'alias', 'song_alias_id' => $stranger])['json']['status'], 'an alias belonging to another song is refused');
+
+		$added = $ctx->post(ALBUM_TRACK_ENDPOINT, ['album_id' => $albumId, 'song_id' => $ctx->songId('Credited Stranger'), 'action' => 'add', 'position' => '2'])['json'];
+		assertSame(1, count($added['aliases']), 'adding a song hands back its names, so its alias dropdown can be filled without another request');
+	},
+
+	'only an admin gets the album card edit button' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+		$artistId = $ctx->makeArtist('Editable Album Artist');
+		$albumId = makeAlbum($ctx, 'Editable Record', $artistId, []);
+
+		$admin = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json'];
+		assertContains('albumCardEditBtn', $admin['html'], 'an admin gets the edit button');
+		assertTrue(isset($admin['trackAliases']), 'and the alias lists for the songs on this album');
+
+		$ctx->ensureLoggedIn('album_card_rater', 'test password', false);
+		$rater = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json'];
+		assertTrue(strpos($rater['html'], 'albumCardEditBtn') === false, 'a rater does not');
+		assertTrue(!isset($rater['trackAliases']), 'and is handed none of the editing data either');
+	},
+
+	// The catalogue is the same for every album and most card opens never edit
+	// anything, so shipping it with the card meant re-sending every song in the
+	// library on each open - by far the most expensive thing the card did.
+	'the dropdown options are fetched on demand, not with every card' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+		$artistId = $ctx->makeArtist('Deferred Options Artist');
+		$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Deferred Options Song']]);
+		$albumId = makeAlbum($ctx, 'Deferred Options Record', $artistId, []);
+
+		$card = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json'];
+		assertTrue(!isset($card['songs']) && !isset($card['artists']), 'the card carries no catalogue at all');
+
+		$options = $ctx->post(ALBUM_OPTIONS_ENDPOINT, [])['json'];
+		assertSame('ok', $options['status'], 'the options endpoint answers');
+		assertTrue(!empty($options['artists']), 'with the artist options the dropdown needs');
+		assertTrue(!empty($options['songs']), 'and the song options the track dropdowns need');
+
+		$named = null;
+		foreach ($options['songs'] as $song) {
+			if ($song['name'] === 'Deferred Options Song') {
+				$named = $song;
+			}
+		}
+		assertTrue($named !== null, 'every song is offered, not just this album\'s');
+		assertSame('Deferred Options Artist', $named['artist'], 'each one labelled with its artist');
+	},
+
+	'the dropdown options are admin only' => function ($ctx) {
+		$ctx->newSession();
+		assertSame(401, $ctx->post(ALBUM_OPTIONS_ENDPOINT, [])['status'], 'signed out');
+
+		$ctx->ensureLoggedIn('album_options_rater', 'test password', false);
+		assertSame(403, $ctx->post(ALBUM_OPTIONS_ENDPOINT, [])['status'], 'not an admin');
+
+		$ctx->ensureLoggedIn();
+		assertSame(403, $ctx->postWithoutCsrf(ALBUM_OPTIONS_ENDPOINT, [])['status'], 'no csrf token');
+	},
+
+	'the album card can be given an artist and a year' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Retagged Album Artist');
+		$other = $ctx->makeArtist('Retagged Other Artist');
+		$albumId = makeAlbum($ctx, 'Retagged Record', $artistId, []);
+
+		assertSame('ok', $ctx->post(ALBUM_EDIT_ENDPOINT, ['album_id' => $albumId, 'field' => 'artist', 'value' => (string)$other])['json']['status'], 'artist status');
+		assertSame('ok', $ctx->post(ALBUM_EDIT_ENDPOINT, ['album_id' => $albumId, 'field' => 'year', 'value' => '1994'])['json']['status'], 'year status');
+
+		$row = $ctx->db()->query("SELECT artist_id, release_year FROM album WHERE id = {$albumId}")->fetch();
+		assertSame((int)$other, (int)$row['artist_id'], 'the artist moved');
+		assertSame(1994, (int)$row['release_year'], 'the year was stored');
+
+		$ctx->post(ALBUM_EDIT_ENDPOINT, ['album_id' => $albumId, 'field' => 'artist', 'value' => '']);
+		$ctx->post(ALBUM_EDIT_ENDPOINT, ['album_id' => $albumId, 'field' => 'year', 'value' => '']);
+
+		$cleared = $ctx->db()->query("SELECT artist_id, release_year FROM album WHERE id = {$albumId}")->fetch();
+		assertTrue($cleared['artist_id'] === null, 'an empty artist clears it');
+		assertTrue($cleared['release_year'] === null, 'an empty year clears it');
+	},
+
+	'the album card refuses nonsense edits' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Refusing Album Artist');
+		$albumId = makeAlbum($ctx, 'Refusing Record', $artistId, []);
+
+		assertSame('error', $ctx->post(ALBUM_EDIT_ENDPOINT, ['album_id' => $albumId, 'field' => 'year', 'value' => 'nineteen'])['json']['status'], 'a year that is not digits');
+		assertSame('error', $ctx->post(ALBUM_EDIT_ENDPOINT, ['album_id' => $albumId, 'field' => 'artist', 'value' => '999999'])['json']['status'], 'an artist that does not exist');
+		assertSame('error', $ctx->post(ALBUM_EDIT_ENDPOINT, ['album_id' => 999999, 'field' => 'year', 'value' => '1994'])['json']['status'], 'an album that does not exist');
+		assertSame(400, $ctx->post(ALBUM_EDIT_ENDPOINT, ['album_id' => $albumId, 'field' => 'colour', 'value' => 'blue'])['status'], 'a field that is not a field');
+
+		$row = $ctx->db()->query("SELECT artist_id, release_year FROM album WHERE id = {$albumId}")->fetch();
+		assertSame((int)$artistId, (int)$row['artist_id'], 'the artist was left alone');
+		assertTrue($row['release_year'] === null, 'and so was the year');
+	},
+
+	'tracks can be added to, renumbered on and taken off an album card' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Tracklist Artist');
+		foreach (['Tracklist Keeper', 'Tracklist Newcomer'] as $title) {
+			$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => $title]]);
+		}
+		$keeper = $ctx->songId('Tracklist Keeper');
+		$newcomer = $ctx->songId('Tracklist Newcomer');
+
+		$albumId = makeAlbum($ctx, 'Tracklist Record', $artistId, [['song_id' => $keeper, 'position' => 1]]);
+
+		assertSame('ok', $ctx->post(ALBUM_TRACK_ENDPOINT, ['album_id' => $albumId, 'song_id' => $newcomer, 'action' => 'add', 'position' => '2'])['json']['status'], 'add status');
+		assertSame('duplicate', $ctx->post(ALBUM_TRACK_ENDPOINT, ['album_id' => $albumId, 'song_id' => $newcomer, 'action' => 'add', 'position' => '2'])['json']['status'], 'adding it twice is a duplicate, not a second row');
+
+		assertSame('ok', $ctx->post(ALBUM_TRACK_ENDPOINT, ['album_id' => $albumId, 'song_id' => $keeper, 'action' => 'position', 'position' => '7'])['json']['status'], 'renumber status');
+		assertSame('error', $ctx->post(ALBUM_TRACK_ENDPOINT, ['album_id' => $albumId, 'song_id' => $keeper, 'action' => 'position', 'position' => 'first'])['json']['status'], 'a track number that is not digits');
+
+		$rows = $ctx->db()->query("SELECT song_id, position FROM album_track WHERE album_id = {$albumId} ORDER BY song_id")->fetchAll();
+		assertSame(2, count($rows), 'both songs are on the album once each');
+		$positions = [];
+		foreach ($rows as $row) {
+			$positions[(int)$row['song_id']] = (int)$row['position'];
+		}
+		assertSame(7, $positions[$keeper], 'the renumbered track kept its new number');
+		assertSame(2, $positions[$newcomer], 'and the added one kept the number it came in with');
+
+		assertSame('ok', $ctx->post(ALBUM_TRACK_ENDPOINT, ['album_id' => $albumId, 'song_id' => $keeper, 'action' => 'remove'])['json']['status'], 'remove status');
+
+		$left = $ctx->db()->query("SELECT song_id FROM album_track WHERE album_id = {$albumId}")->fetchAll();
+		assertSame(1, count($left), 'one track was taken off');
+		assertSame($newcomer, (int)$left[0]['song_id'], 'and it was the right one');
+
+		$stillThere = (int)$ctx->db()->query("SELECT COUNT(*) c FROM song WHERE id = {$keeper}")->fetch()['c'];
+		assertSame(1, $stillThere, 'taking a song off an album does not delete the song');
+	},
+
+	'the album editing endpoints are admin only' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+		$artistId = $ctx->makeArtist('Album Guard Artist');
+		$albumId = makeAlbum($ctx, 'Guarded Record', $artistId, []);
+
+		foreach ([ALBUM_EDIT_ENDPOINT, ALBUM_TRACK_ENDPOINT] as $endpoint) {
+			$ctx->newSession();
+			assertSame(401, $ctx->post($endpoint, ['album_id' => $albumId])['status'], "signed out: {$endpoint}");
+
+			$ctx->ensureLoggedIn('album_edit_rater', 'test password', false);
+			assertSame(403, $ctx->post($endpoint, ['album_id' => $albumId])['status'], "not an admin: {$endpoint}");
+
+			$ctx->ensureLoggedIn();
+			assertSame(403, $ctx->postWithoutCsrf($endpoint, ['album_id' => $albumId])['status'], "no csrf token: {$endpoint}");
+		}
+	},
+
+	'the album list name opens that album\'s card' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Clickable Album Artist');
+		$albumId = makeAlbum($ctx, 'Clickable Record', $artistId, []);
+
+		$body = $ctx->get('/music/albums')['body'];
+
+		assertContains('data-album-card-id="' . $albumId . '"', $body, 'the name opens the card');
+		assertContains('id="albumCardModal"', $body, 'and the page carries the modal it opens into');
+		assertContains('/music/songs?artist=' . $artistId . '&amp;album=' . $albumId, $body, 'while the name stays a real link to the filtered song list');
 	},
 
 	'the add songs page carries the album table and no php warnings' => function ($ctx) {

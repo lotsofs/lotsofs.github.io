@@ -13,6 +13,9 @@ return [
 	'nav.register' => 'Registrieren',
 	'nav.logout' => 'Abmelden',
 	'nav.language' => 'Sprache',
+	'nav.colour' => 'Farbe',
+	'colour.hue' => 'Seitenfarbe',
+	'colour.save' => 'Diese Farbe verwenden',
 
 	'language.en' => 'Englisch',
 	'language.de' => 'Deutsch',

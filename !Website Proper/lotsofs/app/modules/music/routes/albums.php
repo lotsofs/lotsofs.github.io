@@ -18,6 +18,8 @@ requireMusicAccount($db);
 
 $globalData['isAdmin'] = musicIsAdmin($db);
 
+require_once __MODULES__ . '/music/links.php';
+
 $globalData['albums'] = $db->query("
 	SELECT
 		al.id,

@@ -40,11 +40,12 @@ function songsRowFor($body, $songId) {
 	return null;
 }
 
-// works for a <td data-field="x">value</td> cell and for a note cell's
-// <td data-field="x" ...><span class="ratingNoteText">value</span></td> alike
+// works for a <td data-field="x">value</td> cell, for a note cell's
+// <td data-field="x" ...><span class="ratingNoteText">value</span></td> and for
+// the album cell, whose names are links to each album's card
 function songsCellValue($chunk, $field) {
-	$pattern = '/data-field="' . preg_quote($field, '/') . '"[^>]*>(?:<span class="[^"]*">)?([^<]*)/';
-	return preg_match($pattern, $chunk, $m) ? $m[1] : null;
+	$pattern = '/data-field="' . preg_quote($field, '/') . '"[^>]*>(.*?)<\/(?:td|dd)>/s';
+	return preg_match($pattern, $chunk, $m) ? strip_tags($m[1]) : null;
 }
 
 function songsValuesInOrder($body, $field) {
@@ -83,7 +84,7 @@ function songsAlbumCellFor($body, $songId) {
 // smoke-check helper for the separate #songCards tree: the table is the
 // primary thing tested throughout this file, cards are checked only lightly
 function songsCardFor($body, $songId) {
-	$chunks = explode('<dl class="songCard" data-song-id="', $body);
+	$chunks = preg_split('/<dl class="songCard[^"]*" data-song-id="/', $body);
 	array_shift($chunks);
 	foreach ($chunks as $chunk) {
 		if (strpos($chunk, (int)$songId . '"') === 0) {
@@ -91,6 +92,14 @@ function songsCardFor($body, $songId) {
 		}
 	}
 	return null;
+}
+
+// the poll hands back at most 50 audit rows per request, so a test that wants
+// to see its own write has to start from where the log stood before it, not
+// from 0 - otherwise it only passes while the whole suite has written fewer
+// than 50 ratings before this point
+function songsAuditCursor($ctx) {
+	return (int)$ctx->db()->query("SELECT COALESCE(MAX(id), 0) c FROM rating_audit")->fetch()['c'];
 }
 
 function songsVisibleTitles($body) {
@@ -1216,6 +1225,28 @@ return [
 		assertSame('', $ordinary['classes'], 'and is not marked as an alias');
 	},
 
+	'each album name in the song list opens that album\'s card' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Clickable Song Album Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Clickable From Two Records']]);
+		$songId = $ctx->songId('Clickable From Two Records');
+
+		$first = songsMakeAlbum($ctx, 'Aaa Clickable Record', $artistId, [['song_id' => $songId, 'position' => 1]]);
+		$second = songsMakeAlbum($ctx, 'Zzz Clickable Record', $artistId, [['song_id' => $songId, 'position' => 1]]);
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertContains('id="albumCardModal"', $body, 'the page carries the modal the card opens into');
+
+		foreach (['row' => songsRowFor($body, $songId), 'card' => songsCardFor($body, $songId)] as $where => $chunk) {
+			foreach ([$first, $second] as $albumId) {
+				assertContains('data-album-card-id="' . $albumId . '"', $chunk, "the {$where} links album {$albumId} to its own card");
+			}
+		}
+
+		assertSame('Aaa Clickable Record, Zzz Clickable Record', songsAlbumCellFor($body, $songId), 'and the cell still reads as a plain list of names');
+	},
+
 	'the album column lists album names only' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
@@ -1999,13 +2030,14 @@ return [
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Audit Poll Song']]);
 		$songId = $ctx->songId('Audit Poll Song');
 
+		$auditFrom = songsAuditCursor($ctx);
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '5']);
 
 		$eventsFor = function ($response) use ($songId) {
 			return array_values(array_filter($response['json']['events'], fn($event) => $event['songId'] === $songId));
 		};
 
-		$first = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => 0]);
+		$first = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => $auditFrom]);
 		assertSame(1, count($eventsFor($first)), 'the event arrives');
 
 		$second = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => $first['json']['auditCursor']]);
@@ -2019,10 +2051,11 @@ return [
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Audit Label Song']]);
 		$songId = $ctx->songId('Audit Label Song');
 
+		$auditFrom = songsAuditCursor($ctx);
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '8']);
 
 		$ctx->ensureLoggedIn('audit_watcher', 'test password', false);
-		$events = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => 0])['json']['events'];
+		$events = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => $auditFrom])['json']['events'];
 
 		$seen = null;
 		foreach ($events as $event) {
@@ -2045,10 +2078,11 @@ return [
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Audit Previous Song']]);
 		$songId = $ctx->songId('Audit Previous Song');
 
+		$auditFrom = songsAuditCursor($ctx);
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '2']);
 		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '6']);
 
-		$events = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => 0])['json']['events'];
+		$events = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => $auditFrom])['json']['events'];
 		$mine = array_values(array_filter($events, fn($event) => $event['songId'] === $songId));
 
 		assertSame(2, count($mine), 'both writes came back');

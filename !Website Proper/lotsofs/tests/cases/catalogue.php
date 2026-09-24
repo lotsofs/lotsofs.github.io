@@ -143,4 +143,33 @@ return [
 		assertContains('min-height', $css, 'with a height rather than the browser default');
 	},
 
+	'an album cell shows it can be clicked' => function ($ctx) {
+		$css = $ctx->get('/modules/music/css/styles.css')['body'];
+
+		assertContains('.songAlbumCell:has(.songAlbumLink)', $css, 'the whole cell, not just the name, carries the hand cursor');
+		assertContains('cursor: pointer', $css, 'and it is the hand');
+	},
+
+	// A // comment is valid in every other file in this repo and silently
+	// destructive here: css has no line comments, so the parser treats the
+	// slashes as a bad token and recovers by swallowing the rule that follows,
+	// leaving a correct-looking declaration block that never applies. This cost
+	// a debugging cycle over a card that would not paint its background.
+	'the stylesheets carry no line comments' => function ($ctx) {
+		$css = $ctx->get('/modules/music/css/styles.css')['body'];
+
+		foreach (explode("\n", $css) as $number => $line) {
+			$trimmed = ltrim($line);
+			if (strpos($trimmed, '//') !== 0) {
+				continue;
+			}
+
+			throw new Exception('styles.css line ' . ($number + 1) . ' starts a // comment, which css does not have: ' . trim($line));
+		}
+
+		foreach (['.card {', '.cardModalDialog {', '#albumCardModal {'] as $rule) {
+			assertContains($rule, $css, "{$rule} survived");
+		}
+	},
+
 ];

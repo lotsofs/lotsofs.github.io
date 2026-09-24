@@ -98,7 +98,7 @@ return [
 
 		$after = $ctx->get('/music/songs')['body'];
 		assertContains('Alle Songs', $after, 'the heading is german');
-		assertContains('<html lang="de">', $after, 'the html lang attribute follows');
+		assertContains('<html lang="de" ', $after, 'the html lang attribute follows');
 		assertSame(null, rawKeyLeaked($after), 'no raw catalogue keys are shown');
 	},
 
@@ -113,7 +113,7 @@ return [
 		$ctx->newSession();
 		$ctx->ensureLoggedIn('language_keeper');
 
-		assertContains('<html lang="de">', $ctx->get('/music/songs')['body'], 'a fresh session picks it back up from the account');
+		assertContains('<html lang="de" ', $ctx->get('/music/songs')['body'], 'a fresh session picks it back up from the account');
 	},
 
 	'switching back to english reverts everything' => function ($ctx) {
@@ -131,7 +131,7 @@ return [
 		$ctx->newSession();
 
 		$body = $ctx->get('/music/login', false, ['Accept-Language: de-DE,de;q=0.9,en;q=0.8'])['body'];
-		assertContains('<html lang="en">', $body, 'a german browser gets the site default, not german');
+		assertContains('<html lang="en" ', $body, 'a german browser gets the site default, not german');
 		assertContains('Log In', $body, 'and the default renders');
 	},
 
