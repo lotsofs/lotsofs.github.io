@@ -23,6 +23,13 @@ let albumCardTrackAliases = {};
 // now costs nothing, where before each open re-sent every song in the library.
 let albumCardOptions = null;
 
+// The graph order is a reading preference, not a property of the album, so it
+// survives closing one card and opening another. The server does the sorting -
+// re-rendering costs one small request and keeps the svg geometry in one place
+// rather than reimplementing the run-splitting in JS.
+let albumGraphSort = "";
+let albumGraphDir = "";
+
 function loadAlbumOptions() {
 	if (!albumCardOptions) {
 		albumCardOptions = postJson(ALBUM_OPTIONS_ENDPOINT, {})
@@ -50,13 +57,20 @@ function albumCardMessage(text) {
 	albumCardModalBody.appendChild(message);
 }
 
-function openAlbumCard(albumId) {
+/// keepPlace is for a re-render of the card already on screen - reordering the
+/// graph - where replacing the body would otherwise throw the reader back to
+/// the top of a card they had scrolled down through to reach the dropdown.
+function openAlbumCard(albumId, keepPlace) {
 	const request = ++albumCardRequest;
+	const dialog = albumCardModal.querySelector(".cardModalDialog");
+	const scrollTop = keepPlace && dialog ? dialog.scrollTop : 0;
 
-	albumCardMessage(t("album.card.loading"));
+	if (!keepPlace) {
+		albumCardMessage(t("album.card.loading"));
+	}
 	albumCardModal.hidden = false;
 
-	postJson(ALBUM_CARD_ENDPOINT, { album_id: Number(albumId) })
+	postJson(ALBUM_CARD_ENDPOINT, { album_id: Number(albumId), sort: albumGraphSort, dir: albumGraphDir })
 		.then(result => {
 			if (request !== albumCardRequest) {
 				return;
@@ -67,6 +81,10 @@ function openAlbumCard(albumId) {
 			}
 			albumCardTrackAliases = result.trackAliases || {};
 			albumCardModalBody.innerHTML = result.html;
+
+			if (dialog) {
+				dialog.scrollTop = scrollTop;
+			}
 		})
 		.catch(error => {
 			if (request !== albumCardRequest) {
@@ -453,6 +471,29 @@ function enterAlbumEditMode(card) {
 	albumYearEditor.enter(card);
 	albumTrackEditor.enter(card);
 }
+
+// Changing the key resets the direction to that order's natural one - high to
+// low for a score, first to last for a running order - which is almost always
+// what you meant, and the direction select is right there to flip it.
+albumCardModalBody.addEventListener("change", event => {
+	const key = event.target.closest(".albumGraphSortKey");
+	const dir = event.target.closest(".albumGraphSortDir");
+
+	if (!key && !dir) {
+		return;
+	}
+
+	const card = event.target.closest(".albumCard");
+	const keySelect = albumCardModalBody.querySelector(".albumGraphSortKey");
+	const dirSelect = albumCardModalBody.querySelector(".albumGraphSortDir");
+
+	albumGraphSort = keySelect ? keySelect.value : "";
+	albumGraphDir = key
+		? (keySelect.selectedOptions[0].dataset.defaultDir || "")
+		: (dirSelect ? dirSelect.value : "");
+
+	openAlbumCard(card.dataset.albumId, true);
+});
 
 albumCardModalBody.addEventListener("click", event => {
 	const button = event.target.closest(".albumCardEditBtn");

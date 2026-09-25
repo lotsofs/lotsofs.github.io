@@ -1335,6 +1335,29 @@ th, td {
 		margin-top: 0.2em;
 	}
 
+	.albumGraphSort {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.4em;
+		margin-bottom: 0.3em;
+
+		label {
+			min-width: 0;
+			font-size: 0.85em;
+			opacity: 0.65;
+		}
+
+		select {
+			font-size: 0.85em;
+			min-width: 0;
+		}
+
+		.albumGraphSortKey {
+			flex: 1 1 10em;
+		}
+	}
+
 	.albumGraph {
 		display: block;
 		width: 100%;

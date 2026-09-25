@@ -183,9 +183,104 @@
 			};
 
 			$graphLabelEvery = count($albumTracks) > 20 ? 2 : 1;
+
+			/* The orders the graph can be drawn in. Each carries the direction
+			   it naturally reads in - a record has a running order and a name
+			   has an alphabet, but a score is interesting from the top - and
+			   the direction control starts there and can be flipped. Only the
+			   graph reorders: the track table above stays in the album's
+			   running order, which is the one thing about a record that isn't
+			   a statistic. */
+			/// Written out rather than reusing the table's column headers: those
+			/// are abbreviated because a six-column table has no room, and a
+			/// dropdown has nothing but room. "Avg" is a fine heading and a
+			/// poor thing to pick from a list.
+			$graphOrders = [
+				'album' => ['label' => t('album.card.sortAlbum'), 'dir' => 'asc'],
+				'title' => ['label' => t('album.card.sortTitle'), 'dir' => 'asc'],
+				'average' => ['label' => t('album.card.sortAverage'), 'dir' => 'desc'],
+				'deviation' => ['label' => t('album.card.sortDeviation'), 'dir' => 'desc'],
+				'median' => ['label' => t('album.card.sortMedian'), 'dir' => 'desc'],
+				'mode' => ['label' => t('album.card.sortMode'), 'dir' => 'desc'],
+				'rated' => ['label' => t('album.card.sortRated'), 'dir' => 'desc'],
+				'duration' => ['label' => t('album.card.sortDuration'), 'dir' => 'desc'],
+			];
+
+			foreach ($albumGraphRaters as $graphRater) {
+				$graphOrders['rater_' . (int)$graphRater['id']] = [
+					'label' => t('album.card.sortRater', ['name' => $graphRater['account_name']]),
+					'dir' => 'desc',
+				];
+			}
+
+			/// A direction it doesn't recognise falls back to the order's own,
+			/// rather than being coerced to one of the two - coercing turns
+			/// "I don't understand this" into "reverse the album", which is a
+			/// visible change nobody asked for.
+			$graphSort = isset($graphOrders[$album['graphSort'] ?? '']) ? $album['graphSort'] : 'album';
+			$graphDir = in_array($album['graphDir'] ?? '', ['asc', 'desc'], true)
+				? $album['graphDir']
+				: $graphOrders[$graphSort]['dir'];
+
+			/// A track nobody scored sinks to the end whichever way round the
+			/// sort is pointing: an empty column is not a low score, and it
+			/// would otherwise lead every descending order that has no value
+			/// for it.
+			$graphValue = function ($track) use ($graphSort, $albumTrackScores) {
+				if (strpos($graphSort, 'rater_') === 0) {
+					return $albumTrackScores[(int)$track['song_id']][(int)substr($graphSort, 6)] ?? null;
+				}
+
+				switch ($graphSort) {
+					case 'title': return $track['title'] ?? '';
+					case 'average': return $track['average'];
+					case 'deviation': return $track['deviation'];
+					case 'median': return $track['median'];
+					case 'mode': return ($track['modes'] ?? []) ? max($track['modes']) : null;
+					case 'rated': return (int)($track['rated'] ?? 0);
+					case 'duration': return $track['duration'] === null ? null : (int)$track['duration'];
+				}
+
+				return $track['graphIndex'];
+			};
+
+			$albumGraphTracks = [];
+			foreach ($albumTracks as $graphIndex => $graphTrack) {
+				$graphTrack['graphIndex'] = $graphIndex;
+				$albumGraphTracks[] = $graphTrack;
+			}
+
+			usort($albumGraphTracks, function ($a, $b) use ($graphValue, $graphDir) {
+				$left = $graphValue($a);
+				$right = $graphValue($b);
+
+				if ($left === null || $right === null) {
+					return $left === $right ? $a['graphIndex'] <=> $b['graphIndex'] : ($left === null ? 1 : -1);
+				}
+
+				$order = is_string($left) ? strcasecmp($left, $right) : $left <=> $right;
+
+				/// Ties keep the running order, so flipping the direction never
+				/// shuffles tracks the sort has nothing to say about.
+				return $order === 0
+					? $a['graphIndex'] <=> $b['graphIndex']
+					: ($graphDir === 'desc' ? -$order : $order);
+			});
 		?>
 		<dt class="albumGraphHeading"><?= htmlspecialchars(t('album.card.graph')) ?></dt>
 		<dd class="albumGraphCell">
+			<div class="albumGraphSort">
+				<label for="albumGraphSortKey"><?= htmlspecialchars(t('album.card.sortBy')) ?></label>
+				<select id="albumGraphSortKey" class="albumGraphSortKey">
+					<?php foreach ($graphOrders as $graphKey => $graphOrder): ?>
+						<option value="<?= htmlspecialchars($graphKey) ?>" data-default-dir="<?= $graphOrder['dir'] ?>"<?= $graphKey === $graphSort ? ' selected' : '' ?>><?= htmlspecialchars($graphOrder['label']) ?></option>
+					<?php endforeach ?>
+				</select>
+				<select id="albumGraphSortDir" class="albumGraphSortDir">
+					<option value="desc"<?= $graphDir === 'desc' ? ' selected' : '' ?>><?= htmlspecialchars(t('album.card.sortDescending')) ?></option>
+					<option value="asc"<?= $graphDir === 'asc' ? ' selected' : '' ?>><?= htmlspecialchars(t('album.card.sortAscending')) ?></option>
+				</select>
+			</div>
 			<svg class="albumGraph" viewBox="0 0 <?= $graphWidth ?> <?= $graphHeight ?>" preserveAspectRatio="xMidYMid meet" role="img" aria-label="<?= htmlspecialchars(t('album.card.graphLabel')) ?>">
 				<?php for ($score = 0; $score <= 10; $score++): ?>
 					<?php if ($score % 2 === 0 || $score === 5): ?>
@@ -195,9 +290,9 @@
 						<text class="albumGraphAxis" x="<?= $graphPadLeft - 4 ?>" y="<?= $graphY($score) + 3 ?>" text-anchor="end"><?= $score ?></text>
 					<?php endif ?>
 				<?php endfor ?>
-				<?php foreach ($albumTracks as $index => $track): ?>
+				<?php foreach ($albumGraphTracks as $index => $track): ?>
 					<?php if ($index % $graphLabelEvery === 0): ?>
-						<text class="albumGraphAxis" x="<?= $graphX($index) ?>" y="<?= $graphHeight - 4 ?>" text-anchor="middle"><?= $track['position'] === null ? $index + 1 : (int)$track['position'] ?></text>
+						<text class="albumGraphAxis" x="<?= $graphX($index) ?>" y="<?= $graphHeight - 4 ?>" text-anchor="middle"><?= $track['position'] === null ? $track['graphIndex'] + 1 : (int)$track['position'] ?></text>
 					<?php endif ?>
 				<?php endforeach ?>
 				<?php foreach ($albumGraphRaters as $rater): ?>
@@ -206,7 +301,7 @@
 						$colour = $albumRaterColours[$raterId];
 						$runs = [];
 						$run = [];
-						foreach ($albumTracks as $index => $track) {
+						foreach ($albumGraphTracks as $index => $track) {
 							$score = $albumTrackScores[(int)$track['song_id']][$raterId] ?? null;
 							if ($score === null) {
 								if (count($run) > 1) {
@@ -224,13 +319,13 @@
 					<?php foreach ($runs as $points): ?>
 						<polyline class="albumGraphLine" points="<?= implode(' ', $points) ?>" stroke="<?= $colour ?>"></polyline>
 					<?php endforeach ?>
-					<?php foreach ($albumTracks as $index => $track): ?>
+					<?php foreach ($albumGraphTracks as $index => $track): ?>
 						<?php $score = $albumTrackScores[(int)$track['song_id']][$raterId] ?? null ?>
 						<?php if ($score !== null): ?>
 							<circle class="albumGraphDot" cx="<?= $graphX($index) ?>" cy="<?= $graphY($score) ?>" r="3" fill="<?= $colour ?>">
 								<title><?= htmlspecialchars(t('album.card.graphPoint', [
 									'name' => $rater['account_name'],
-									'track' => ($track['title'] ?? '') === '' ? ($track['position'] === null ? $index + 1 : (int)$track['position']) : $track['title'],
+									'track' => ($track['title'] ?? '') === '' ? ($track['position'] === null ? $track['graphIndex'] + 1 : (int)$track['position']) : $track['title'],
 									'score' => $albumScoreText($score),
 								])) ?></title>
 							</circle>

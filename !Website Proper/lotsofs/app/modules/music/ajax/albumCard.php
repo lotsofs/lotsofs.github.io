@@ -4,6 +4,20 @@ require_once __MODULES__ . '/music/ajaxGuard.php';
 
 $albumId = ajaxInt($data['album_id'] ?? null);
 
+/// Which order the graph draws its tracks in. Passed through as typed: the
+/// partial builds the list of orders it offers (it needs the rater names for
+/// the labels) and falls back to album order for anything it doesn't know, so
+/// there is one list rather than a whitelist here and another one there.
+$graphSort = ajaxTrimmed($data['sort'] ?? null);
+$graphDir = ajaxTrimmed($data['dir'] ?? null);
+
+/// Which order the graph draws its tracks in. Passed through as typed: the
+/// partial builds the list of orders it offers (it needs the rater names for
+/// the labels) and falls back to album order for anything it doesn't know, so
+/// there is one list rather than a whitelist here and another one there.
+$graphSort = ajaxTrimmed($data['sort'] ?? null);
+$graphDir = ajaxTrimmed($data['dir'] ?? null);
+
 $album = $db->query("
 	SELECT
 		al.id,
@@ -79,11 +93,15 @@ foreach ($db->query("
 /// not of four with two zeroes in it - which is why the count sits next to it,
 /// and the spread beside that, since an average of two is a different claim
 /// from an average of five whether or not they agreed.
+/// The track table shows three of these; the graph can be ordered by any of
+/// them, which is why the median and mode are kept rather than dropped.
 foreach ($album['tracks'] as $index => $track) {
 	$stats = musicScoreStats($album['trackScores'][(int)$track['song_id']] ?? []);
 
 	$album['tracks'][$index]['average'] = $stats['average'];
 	$album['tracks'][$index]['deviation'] = $stats['deviation'];
+	$album['tracks'][$index]['median'] = $stats['median'];
+	$album['tracks'][$index]['modes'] = $stats['modes'];
 	$album['tracks'][$index]['rated'] = $stats['rated'];
 }
 
@@ -104,6 +122,8 @@ foreach ($db->query("SELECT id, account_name, hue FROM account ORDER BY id = ? D
 	);
 }
 
+$album['graphSort'] = $graphSort;
+$album['graphDir'] = $graphDir;
 $album['trackCount'] = count($album['tracks']);
 $album['isAdmin'] = musicIsAdmin($db);
 

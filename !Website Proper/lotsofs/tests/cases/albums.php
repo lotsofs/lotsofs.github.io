@@ -810,6 +810,53 @@ return [
 		assertContains('<th class="albumTrackTitle">Title</th>', $html, 'alongside the other track columns');
 	},
 
+	'the graph can be reordered without disturbing the track list' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Reordered Artist');
+		$titles = ['Reordered Zulu', 'Reordered Alpha', 'Reordered Mike'];
+
+		$tracks = [];
+		foreach ($titles as $index => $title) {
+			$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => $title]]);
+			$tracks[] = ['song_id' => $ctx->songId($title), 'position' => $index + 1];
+		}
+		$albumId = makeAlbum($ctx, 'Reordered Record', $artistId, $tracks);
+
+		foreach (['Reordered Zulu' => '3', 'Reordered Alpha' => '9', 'Reordered Mike' => '6'] as $title => $score) {
+			$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId($title), 'field' => 'score', 'value' => $score]);
+		}
+
+		$graphOrder = function ($html) {
+			preg_match_all('/<title>[^—]*— ([^:]*):/', $html, $matches);
+			return $matches[1];
+		};
+
+		$trackTableOrder = function ($html) {
+			preg_match_all('/albumTrackTitle">([^<]*)</', $html, $matches);
+			return array_values(array_filter($matches[1], fn($name) => strpos($name, 'Reordered') === 0));
+		};
+
+		$byAlbum = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+		assertSame(['Reordered Zulu', 'Reordered Alpha', 'Reordered Mike'], $graphOrder($byAlbum), 'the graph starts in the running order');
+
+		$byScore = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'sort' => 'average', 'dir' => 'desc'])['json']['html'];
+		assertSame(['Reordered Alpha', 'Reordered Mike', 'Reordered Zulu'], $graphOrder($byScore), 'by average puts the best first');
+		assertSame(['Reordered Zulu', 'Reordered Alpha', 'Reordered Mike'], $trackTableOrder($byScore), 'while the track table keeps the running order');
+
+		$byScoreUp = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'sort' => 'average', 'dir' => 'asc'])['json']['html'];
+		assertSame(['Reordered Zulu', 'Reordered Mike', 'Reordered Alpha'], $graphOrder($byScoreUp), 'and the direction flips it');
+
+		$byTitle = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'sort' => 'title', 'dir' => 'asc'])['json']['html'];
+		assertSame(['Reordered Alpha', 'Reordered Mike', 'Reordered Zulu'], $graphOrder($byTitle), 'by title is alphabetical');
+
+		$nonsense = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'sort' => 'whatever', 'dir' => 'sideways'])['json']['html'];
+		assertSame(['Reordered Zulu', 'Reordered Alpha', 'Reordered Mike'], $graphOrder($nonsense), 'an order it does not offer falls back to the running order');
+
+		assertContains('data-default-dir="desc"', $byAlbum, 'each order carries the direction it reads in naturally');
+		assertContains('value="rater_', $byAlbum, 'and every rater can be sorted on individually');
+	},
+
 	'an album can be renamed from its card, keeping the old name as an alias' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
