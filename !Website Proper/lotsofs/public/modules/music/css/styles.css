@@ -1392,6 +1392,18 @@ th, td {
 		stroke-width: 0.5;
 	}
 
+	/* Invisible but not absent: fill="none" would let the pointer through, so
+	   it is a fill nobody can see. Lit faintly on hover, which is the only
+	   thing that says the whole column is a target. */
+	.albumGraphColumn {
+		fill: #ffffff;
+		fill-opacity: 0;
+
+		&:hover {
+			fill-opacity: 0.06;
+		}
+	}
+
 	td.albumStatsScoreCell {
 		text-align: right;
 		font-weight: bold;
@@ -1478,4 +1490,23 @@ th, td {
 	.albumEditTrackAdd {
 		align-self: flex-start;
 	}
+}
+
+/* The hover box, modelled on the ss2 module's. Sits above every layer the
+   music module stacks - the song modal at 20, the album modal at 25, the
+   toasts at 30 - because it is drawn over whichever of them the pointer is on.
+   pre-line so a tooltip can be a list: the graph's columns are a song title
+   followed by a line per rater. */
+#musicTooltip {
+	position: absolute;
+	display: none;
+	z-index: 40;
+	max-width: 22em;
+	background-color: #000000;
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 0.3em 0.5em;
+	font-size: 0.9em;
+	white-space: pre-line;
+	pointer-events: none;
 }

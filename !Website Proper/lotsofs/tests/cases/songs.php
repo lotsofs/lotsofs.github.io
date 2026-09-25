@@ -493,12 +493,37 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 
-		assertTrue(preg_match('/<table id="songListTable" class="hideResultColumn">/', $body) === 1, 'table starts with the column hidden');
+		assertClasses(['hideResultColumn'], $body, '/<table id="songListTable"[^>]*class="([^"]*)"/', 'table starts with the column hidden');
 		assertContains('songCardEditBtn', $body, 'an admin does get the edit button, so the non admin check has something to miss');
 		assertTrue(preg_match('/<th rowspan="2" class="songResultCell">/', $body) === 1, 'result header carries no sort attributes');
 		assertTrue(strpos($body, 'data-sort-key="result"') === false, 'the result header is not sortable');
 		assertContains('<td class="songResultCell" data-field="result"></td>', $body, 'rows carry a result cell');
 		assertTrue(strpos($body, 'sort=result') === false, 'nothing links to sorting by result');
+	},
+
+	// The clipped cells have carried their full value in a title attribute all
+	// along; opting the containers in is what turns those into the hover box
+	// without touching a cell. The attribute stays server-side, so the value is
+	// still reachable with no javascript at all.
+	'the clipped cells opt in to the hover box' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Hover Table Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Hover Table Song']]);
+		$songId = $ctx->songId('Hover Table Song');
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'a note far too long to fit inside the column it lives in']);
+
+		$body = $ctx->get('/music/songs')['body'];
+
+		foreach (['songListTable', 'songCards', 'songCardModal'] as $region) {
+			assertTrue(preg_match('/id="' . $region . '"[^>]*data-tooltip-titles/', $body) === 1, "{$region} opts its titles in");
+		}
+
+		$row = songsRowFor($body, $songId);
+		assertContains('title="Hover Table Artist"', $row, 'the artist cell still carries its full value');
+		assertContains('title="a note far too long to fit inside the column it lives in"', $row, 'and so does the note cell');
+
+		assertContains('id="musicTooltip"', $body, 'the page carries the box they open into');
 	},
 
 	'the songs page escapes stored markup' => function ($ctx) {

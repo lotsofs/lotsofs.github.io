@@ -317,7 +317,12 @@ function createIdListEditor(config) {
 			}
 
 			if (config.hasTooltip) {
-				cell.title = names.join(", ");
+				if ("tooltip" in cell.dataset) {
+					cell.dataset.tooltip = names.join(", ");
+				}
+				else {
+					cell.title = names.join(", ");
+				}
 			}
 		},
 	};
@@ -1088,8 +1093,17 @@ function setCellValue(cell, spec, value) {
 	valueElement(cell).textContent = value;
 	cell.classList.toggle("songCellEmpty", value === "");
 
+	// Whichever the cell is currently using: tooltip.js moves a title attribute
+	// into data-tooltip the first time the cell is hovered, so a note updated
+	// by the poll after that has to follow it across or the hover text goes
+	// stale while the cell itself is right.
 	if (spec.syncTitle) {
-		cell.title = value;
+		if ("tooltip" in cell.dataset) {
+			cell.dataset.tooltip = value;
+		}
+		else {
+			cell.title = value;
+		}
 	}
 
 	if (cell.classList.contains("songRatingScoreCell")) {

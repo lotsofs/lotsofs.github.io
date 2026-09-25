@@ -79,5 +79,6 @@ return [
 	'album.card.graph' => 'Wertungen pro Titel',
 	'album.card.graphLabel' => 'Die Wertung jedes Bewertenden für jeden Titel dieses Albums',
 	'album.card.graphPoint' => '{name} — {track}: {score}',
+	'album.card.tooltipScore' => '{name}: {score}',
 
 ];

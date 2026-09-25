@@ -79,5 +79,6 @@ return [
 	'album.card.graph' => 'Wurdearrings per nûmer',
 	'album.card.graphLabel' => 'De wurdearring fan elke beoardieler foar elk nûmer op dit album',
 	'album.card.graphPoint' => '{name} — {track}: {score}',
+	'album.card.tooltipScore' => '{name}: {score}',
 
 ];

@@ -857,6 +857,36 @@ return [
 		assertContains('value="rater_', $byAlbum, 'and every rater can be sorted on individually');
 	},
 
+	'every graph column carries the whole story of that track' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Hovered Artist');
+		foreach (['Hovered Scored', 'Hovered Skipped'] as $title) {
+			$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => $title]]);
+		}
+
+		$albumId = makeAlbum($ctx, 'Hovered Record', $artistId, [
+			['song_id' => $ctx->songId('Hovered Scored'), 'position' => 1],
+			['song_id' => $ctx->songId('Hovered Skipped'), 'position' => 2],
+		]);
+
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Hovered Scored'), 'field' => 'score', 'value' => '8']);
+
+		$html = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+
+		preg_match_all('/<rect class="albumGraphColumn"[^>]*data-tooltip="([^"]*)"/', $html, $matches);
+		assertSame(2, count($matches[1]), 'one hover target per track, not per dot');
+
+		$scored = html_entity_decode($matches[1][0], ENT_QUOTES);
+		assertContains('Hovered Scored', $scored, 'the column names its song');
+		assertContains('test_runner: 8', $scored, 'and what each rater gave it');
+
+		$skipped = html_entity_decode($matches[1][1], ENT_QUOTES);
+		assertContains('test_runner: —', $skipped, 'a rater who skipped the track is listed with a dash, not left out');
+
+		assertContains('<title>', $html, 'the same text is a plain svg title, so it still works with no javascript');
+	},
+
 	'an album can be renamed from its card, keeping the old name as an alias' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 

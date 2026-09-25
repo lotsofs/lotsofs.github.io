@@ -73,7 +73,7 @@
 				</select>
 			</div>
 			<div class="songListScroll">
-				<table id="songListTable" class="hideResultColumn">
+				<table id="songListTable" class="hideResultColumn" data-tooltip-titles>
 					<thead>
 						<tr>
 							<?php foreach ($globalData['columns'] as $column): ?>
@@ -141,12 +141,12 @@
 						<?php endforeach ?>
 					</tbody>
 				</table>
-				<div id="songCards" class="hideResultColumn">
+				<div id="songCards" class="hideResultColumn" data-tooltip-titles>
 					<?php foreach ($songRows as $song): ?>
 						<?php require(__MODULES__ . '/music/views/partials/songCard.php') ?>
 					<?php endforeach ?>
 				</div>
-				<div id="songCardModal" class="songCardModal cardModal hideResultColumn" hidden>
+				<div id="songCardModal" class="songCardModal cardModal hideResultColumn" data-tooltip-titles hidden>
 					<div class="songCardModalDialog cardModalDialog">
 						<div class="songCardModalActions cardModalActions">
 							<button type="button" id="songCardModalPrev" class="songCardModalNav cardModalBtn"><?= htmlspecialchars(t('song.list.cardModalPrev')) ?></button>

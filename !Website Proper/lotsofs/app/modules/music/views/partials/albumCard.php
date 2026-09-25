@@ -332,6 +332,34 @@
 						<?php endif ?>
 					<?php endforeach ?>
 				<?php endforeach ?>
+				<?php foreach ($albumGraphTracks as $index => $track): ?>
+					<?php
+						/* One invisible column per track, drawn last so it sits
+						   over the dots and catches the pointer anywhere down
+						   the track's line - aiming at a 3px dot to find out
+						   what it is defeats the point. It carries a <title>
+						   as well as the data-tooltip, so the same text is
+						   there with no javascript; tooltip.js removes the
+						   title when it takes over, or the browser's own
+						   tooltip turns up a second later underneath ours. */
+						$columnLines = [($track['title'] ?? '') === ''
+							? ($track['position'] === null ? $track['graphIndex'] + 1 : (int)$track['position'])
+							: $track['title']];
+
+						foreach ($albumGraphRaters as $columnRater) {
+							$columnScore = $albumTrackScores[(int)$track['song_id']][(int)$columnRater['id']] ?? null;
+							$columnLines[] = t('album.card.tooltipScore', [
+								'name' => $columnRater['account_name'],
+								'score' => $columnScore === null ? t('album.card.noAverage') : $albumScoreText($columnScore),
+							]);
+						}
+
+						$columnText = implode("\n", $columnLines);
+					?>
+					<rect class="albumGraphColumn" x="<?= round($graphPadLeft + $index * $graphSlot, 2) ?>" y="<?= $graphPadTop ?>" width="<?= $graphSlot ?>" height="<?= $graphPlotHeight ?>" data-tooltip="<?= htmlspecialchars($columnText) ?>">
+						<title><?= htmlspecialchars($columnText) ?></title>
+					</rect>
+				<?php endforeach ?>
 			</svg>
 		</dd>
 	<?php endif ?>
