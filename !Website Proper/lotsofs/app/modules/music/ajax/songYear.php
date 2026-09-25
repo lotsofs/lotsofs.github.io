@@ -4,7 +4,7 @@ require_once __MODULES__ . '/music/ajaxGuard.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 $songId = ajaxInt($data['song_id'] ?? null);
-$value = ajaxTrimmed($data['value'] ?? null);
+$value = ajaxNumericText($data['value'] ?? null);
 
 requireSongJson($db, $songId);
 

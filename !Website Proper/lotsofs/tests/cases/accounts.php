@@ -1,20 +1,13 @@
 <?php
 
-function registerAccount($ctx, $fields, $extraHeaders = []) {
-	$fields['csrf_token'] = $ctx->csrfTokenFrom('/music/register');
-	return $ctx->postForm('/music/register', $fields, false, $extraHeaders);
-}
-
-function logInAs($ctx, $name, $password) {
-	return $ctx->postForm('/music/login', [
-		'csrf_token' => $ctx->csrfTokenFrom('/music/login'),
-		'account_name' => $name,
-		'password' => $password,
-	]);
-}
-
 return [
 
+	// This holds for two reasons, both of them incidental: run.php copies the
+	// project without any .sqlite file, so the scratch database is built from
+	// migrations alone, and glob() hands out case files alphabetically, so
+	// nothing has logged in yet. A new case file sorting before this one and
+	// calling ensureLoggedIn() would break it - and the failure would point
+	// here rather than at the new file.
 	'the first account needs no invite' => function ($ctx) {
 		$ctx->newSession();
 

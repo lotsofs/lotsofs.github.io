@@ -136,6 +136,28 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       clutter in the "also known as" line. An artist card would be the same
       shape again (partial + one endpoint + the same `data-album-card-id`-style
       trigger `albumCard.js` delegates).
+- [x] ~~**A cleanup pass over the music module**~~ — done 2026-09-25, after an
+      audit. Fixed: the phone song card (its `min-width` override lost to an
+      id-scoped rule and had never once applied, on the one viewport where card
+      view is the default); the bulk importer blanking an existing album's
+      artist and year on re-import; renaming a song onto one of its own aliases
+      500ing with the raw SQL error; three numeric endpoints still on
+      `ajaxTrimmed` (and `ajaxNumericText` itself not handling floats, so
+      scores were still exposed); a stray "Links" heading left behind after any
+      Edit → Done; and `/music/language` persisting `'en'` when handed a locale
+      the module doesn't ship. Each is pinned by a new test except the two
+      front-end ones, which nothing here can execute. Also deduplicated:
+      `musicScoreStats()`, `musicDuration()`, `musicSongLabel()`, and the
+      Spotify/YouTube id patterns.
+- [ ] **Two decisions left from that audit.** (a) Song renames keep no history
+      — the fix above only promotes an alias the song already had; adopting
+      `albumEdit.php`'s shape everywhere would leave the old name behind on
+      *every* rename, which is consistent but permanent clutter while there is
+      no delete-alias UI. (b) The album header SELECT is byte-identical in
+      `routes/albums.php` and `ajax/albumCard.php`, likewise the audit row
+      SELECT in `routes/audit.php` and `ajax/songRatingPoll.php`; factoring
+      them means a shared SQL fragment, which contradicts this repo's "SQL
+      lives directly in route and ajax files". Left duplicated for now.
 - [ ] **Password reset.** There is none, and there is now a real account. Being
       locked out means editing a `0640` database file through the file manager.
 - [ ] Logout takes two redirects: `/music/logout` -> `/music/songs` ->

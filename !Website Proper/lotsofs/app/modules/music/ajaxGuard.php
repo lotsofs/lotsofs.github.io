@@ -49,9 +49,10 @@ function ajaxTrimmed($raw) {
 /// For the fields where empty means "clear this" and anything else is a
 /// number: a caller that sends 3 rather than "3" would otherwise fall through
 /// ajaxTrimmed as an empty string and quietly wipe the value instead of
-/// setting it.
+/// setting it. Floats count - a score of 7.5 sent as JSON is a float, not an
+/// int, and leaving it out was the same bug one type along.
 function ajaxNumericText($raw) {
-	return is_int($raw) ? (string)$raw : ajaxTrimmed($raw);
+	return is_int($raw) || is_float($raw) ? (string)$raw : ajaxTrimmed($raw);
 }
 
 function requireSongJson($db, $songId, $extra = []) {

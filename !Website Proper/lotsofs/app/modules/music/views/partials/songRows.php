@@ -1,6 +1,7 @@
 <?php
 
 require_once __MODULES__ . '/music/links.php';
+require_once __MODULES__ . '/music/format.php';
 
 $artistLabel = htmlspecialchars(t('song.column.artist'));
 $albumLabel = htmlspecialchars(t('song.column.album'));
@@ -82,26 +83,25 @@ foreach ($globalData['songs'] as $song) {
 
 	$duration = ($song['duration'] ?? null) !== null ? (int)$song['duration'] : null;
 	$song['durationAttr'] = htmlspecialchars($duration !== null ? (string)$duration : '');
-	$song['durationValue'] = $duration === null ? '' : sprintf('%d:%02d', intdiv($duration, 60), $duration % 60);
+	$song['durationValue'] = musicDuration($duration);
 
 	$songLinks = $songLinksBySong[$song['id']] ?? $emptyLinks;
 
+	/// A stored value is normally a bare id, but rows written before that
+	/// rule may still hold a whole URL - hence both branches. No id at all
+	/// means no player, just a link.
 	$song['spotifyTrackId'] = null;
 	if (!empty($songLinks['spotify_url'])) {
-		if (preg_match('#/track/([A-Za-z0-9]+)#', $songLinks['spotify_url'], $spotifyMatch)) {
-			$song['spotifyTrackId'] = $spotifyMatch[1];
-		}
-		elseif (preg_match('#^[A-Za-z0-9]+$#', trim($songLinks['spotify_url']))) {
+		$song['spotifyTrackId'] = spotifyTrackIdIn($songLinks['spotify_url']);
+		if ($song['spotifyTrackId'] === null && preg_match('#^[A-Za-z0-9]+$#', trim($songLinks['spotify_url']))) {
 			$song['spotifyTrackId'] = trim($songLinks['spotify_url']);
 		}
 	}
 
 	$song['youtubeTrackId'] = null;
 	if (!empty($songLinks['youtube_url'])) {
-		if (preg_match('#(?:youtube\.com/(?:watch\?v=|embed/)|youtu\.be/)([A-Za-z0-9_-]+)#', $songLinks['youtube_url'], $youtubeMatch)) {
-			$song['youtubeTrackId'] = $youtubeMatch[1];
-		}
-		elseif (preg_match('#^[A-Za-z0-9_-]+$#', trim($songLinks['youtube_url']))) {
+		$song['youtubeTrackId'] = youtubeVideoIdIn($songLinks['youtube_url']);
+		if ($song['youtubeTrackId'] === null && preg_match('#^[A-Za-z0-9_-]+$#', trim($songLinks['youtube_url']))) {
 			$song['youtubeTrackId'] = trim($songLinks['youtube_url']);
 		}
 	}

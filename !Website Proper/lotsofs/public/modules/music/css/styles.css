@@ -1100,8 +1100,17 @@ th, td {
 		flex-direction: column;
 	}
 
-	.songCard {
-		min-width: 280px;
+	/* Scoped to the same two containers as the 560px base rule, because that
+	   one is nested inside `#songCards, #songCardModal` and so resolves at id
+	   specificity - a bare `.songCard` here loses to it and the card stays
+	   560px wide on a phone, which is the one viewport where card view is the
+	   default. A media query adds no specificity of its own. Both selectors,
+	   not just #songCards, or the modal keeps the desktop width. */
+	#songCards,
+	#songCardModal {
+		.songCard {
+			min-width: 280px;
+		}
 	}
 
 	form label {

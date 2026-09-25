@@ -1,22 +1,19 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
+require_once __MODULES__ . '/music/links.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 $allowedFields = ['spotify_url', 'youtube_url', 'soundcloud_url', 'bandcamp_url', 'filepath', 'other_url'];
 
+/// A value with no id in it is kept as pasted - it may already be a bare
+/// id, which is what this endpoint stores.
 function spotifyIdOnly($value) {
-	if (preg_match('#/track/([A-Za-z0-9]+)#', $value, $match)) {
-		return $match[1];
-	}
-	return $value;
+	return spotifyTrackIdIn($value) ?? $value;
 }
 
 function youtubeIdOnly($value) {
-	if (preg_match('#(?:youtube\.com/(?:watch\?v=|embed/)|youtu\.be/)([A-Za-z0-9_-]+)#', $value, $match)) {
-		return $match[1];
-	}
-	return $value;
+	return youtubeVideoIdIn($value) ?? $value;
 }
 
 $songId = ajaxInt($data['song_id'] ?? null);

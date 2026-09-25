@@ -127,6 +127,21 @@ return [
 		assertSame('en', $ctx->db()->query("SELECT lang FROM account WHERE account_name = 'language_flipper'")->fetch()['lang'], 'and the account too');
 	},
 
+	// The colour route already ignores a hue it cannot parse; this used to fall
+	// back to 'en' and persist it, so one stale POST could permanently switch
+	// an account's language - to a locale that isn't even the module default.
+	'a locale the module does not ship leaves the choice alone' => function ($ctx) {
+		$ctx->ensureLoggedIn('language_keeper_two');
+
+		switchLanguage($ctx, 'de');
+		assertSame('de', $ctx->db()->query("SELECT lang FROM account WHERE account_name = 'language_keeper_two'")->fetch()['lang'], 'german took');
+
+		switchLanguage($ctx, 'xx');
+
+		assertSame('de', $ctx->db()->query("SELECT lang FROM account WHERE account_name = 'language_keeper_two'")->fetch()['lang'], 'an unknown code is not stored');
+		assertContains('<html lang="de" ', $ctx->get('/music/songs')['body'], 'and the page still renders in the language that was chosen');
+	},
+
 	'the browser Accept-Language header is ignored' => function ($ctx) {
 		$ctx->newSession();
 
@@ -160,13 +175,15 @@ return [
 
 		$body = $ctx->get('/music/songs')['body'];
 		assertContains('action="/music/language"', $body, 'the switcher form is present');
-		assertTrue(preg_match('/<button[^>]*value="en"[^>]*class="navLanguageOption navLanguageOptionActive"[^>]*>\s*English\s*<\/button>/', $body) === 1, 'english UI: english is "English", active');
-		assertTrue(preg_match('/<button[^>]*value="de"[^>]*class="navLanguageOption"[^>]*>\s*German\s*<\/button>/', $body) === 1, 'english UI: german is "German", not active');
+		assertClasses(['navLanguageOption', 'navLanguageOptionActive'], $body, '/<button[^>]*value="en"[^>]*class="([^"]*)"[^>]*>\s*English\s*<\/button>/', 'english UI: english is "English", active');
+		assertClasses(['navLanguageOption'], $body, '/<button[^>]*value="de"[^>]*class="([^"]*)"[^>]*>\s*German\s*<\/button>/', 'english UI: german is "German"');
+		assertTrue(preg_match('/<button[^>]*value="de"[^>]*class="[^"]*navLanguageOptionActive/', $body) === 0, 'english UI: german is not marked active');
 
 		switchLanguage($ctx, 'de');
 		$german = $ctx->get('/music/songs')['body'];
-		assertTrue(preg_match('/<button[^>]*value="de"[^>]*class="navLanguageOption navLanguageOptionActive"[^>]*>\s*Deutsch\s*<\/button>/', $german) === 1, 'german UI: german is "Deutsch", active');
-		assertTrue(preg_match('/<button[^>]*value="en"[^>]*class="navLanguageOption"[^>]*>\s*Englisch\s*<\/button>/', $german) === 1, 'german UI: english is "Englisch", not active');
+		assertClasses(['navLanguageOption', 'navLanguageOptionActive'], $german, '/<button[^>]*value="de"[^>]*class="([^"]*)"[^>]*>\s*Deutsch\s*<\/button>/', 'german UI: german is "Deutsch", active');
+		assertClasses(['navLanguageOption'], $german, '/<button[^>]*value="en"[^>]*class="([^"]*)"[^>]*>\s*Englisch\s*<\/button>/', 'german UI: english is "Englisch"');
+		assertTrue(preg_match('/<button[^>]*value="en"[^>]*class="[^"]*navLanguageOptionActive/', $german) === 0, 'german UI: english is not marked active');
 	},
 
 	'an ajax error message comes back in the chosen language, not the site default' => function ($ctx) {

@@ -1,6 +1,7 @@
 <?php
 	require_once __MODULES__ . '/music/links.php';
 	require_once __MODULES__ . '/music/hue.php';
+	require_once __MODULES__ . '/music/format.php';
 
 	$albumName = ($album['name'] ?? '') === '' ? t('album.list.noName') : $album['name'];
 	$albumArtistId = $album['artist_id'] === null ? null : (int)$album['artist_id'];
@@ -81,7 +82,7 @@
 				<tbody>
 					<?php foreach ($albumTracks as $track): ?>
 						<?php
-							$trackDuration = $track['duration'] === null ? '' : sprintf('%d:%02d', intdiv((int)$track['duration'], 60), (int)$track['duration'] % 60);
+							$trackDuration = musicDuration($track['duration']);
 						?>
 						<tr class="albumTrack" data-song-id="<?= (int)$track['song_id'] ?>" data-position="<?= $track['position'] === null ? '' : (int)$track['position'] ?>" data-song-alias-id="<?= ($track['song_alias_id'] ?? null) === null ? '' : (int)$track['song_alias_id'] ?>">
 							<td class="albumTrackPosition"><?= $track['position'] === null ? '' : (int)$track['position'] ?></td>

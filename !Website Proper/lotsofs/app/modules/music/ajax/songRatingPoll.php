@@ -1,6 +1,7 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
+require_once __MODULES__ . '/music/format.php';
 
 requireMusicAccountJson($db, t('ajax.notLoggedIn'));
 
@@ -54,15 +55,12 @@ $events = [];
 foreach ($auditRows as $row) {
 	$auditCursor = max($auditCursor, (int)$row['id']);
 
-	$title = $row['song_title'] ?? '';
-	$artists = $row['artists'] ?? '';
-
 	$events[] = [
 		'id' => (int)$row['id'],
 		'account' => (int)$row['account_id'],
 		'name' => $row['account_name'],
 		'songId' => (int)$row['song_id'],
-		'songLabel' => $artists === '' ? $title : $artists . ' — ' . $title,
+		'songLabel' => musicSongLabel($row['artists'], $row['song_title']),
 		'field' => $row['field'],
 		'value' => $row['value'],
 		'previousValue' => $row['previous_value'],

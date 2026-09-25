@@ -13,7 +13,7 @@ $fields = [
 
 $songId = ajaxInt($data['id'] ?? null);
 $field = ajaxText($data['field'] ?? null);
-$value = ajaxTrimmed($data['value'] ?? null);
+$value = ajaxNumericText($data['value'] ?? null);
 
 if (!isset($fields[$field])) {
 	http_response_code(400);

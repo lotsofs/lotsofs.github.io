@@ -574,10 +574,19 @@ const linkFieldEditor = {
 
 		cell.appendChild(list);
 	},
+	// A song with no links has to leave the cell genuinely empty, because the
+	// "Links" heading is hidden by .songCardLinksCol:has(> .songLinksArea:empty)
+	// - which the server-rendered card satisfies by gluing its branches
+	// together with no whitespace. Appending an empty wrapper here would leave
+	// the heading stranded until the next reload.
 	exit(card) {
 		const cell = fieldCell(card, "links");
 		cell.textContent = "";
-		cell.appendChild(renderLinkDisplay(currentLinks(card)));
+
+		const display = renderLinkDisplay(currentLinks(card));
+		if (display.children.length) {
+			cell.appendChild(display);
+		}
 	},
 };
 

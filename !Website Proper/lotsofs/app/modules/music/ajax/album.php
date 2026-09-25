@@ -36,8 +36,14 @@ try {
 			$id = (int)$db->pdo->lastInsertId();
 		}
 		else {
+			/// COALESCE, not a plain assignment: a paste with no Year column
+			/// sends nothing for it, and this branch runs whenever the wizard
+			/// matched an album that already exists. Overwriting would blank
+			/// the artist and year every time a few more tracks were imported
+			/// onto an album, and report 'ok' while doing it. Clearing either
+			/// field is the album card's job, which does it deliberately.
 			$id = (int)$rawId;
-			$db->query("UPDATE album SET artist_id = ?, release_year = ? WHERE id = ?", [$artistId, $releaseYear, $id]);
+			$db->query("UPDATE album SET artist_id = COALESCE(?, artist_id), release_year = COALESCE(?, release_year) WHERE id = ?", [$artistId, $releaseYear, $id]);
 		}
 
 		$existing = $db->query("SELECT id, is_actual FROM album_alias WHERE album_id = ? AND name = ?", [$id, $aliasName])->fetch();

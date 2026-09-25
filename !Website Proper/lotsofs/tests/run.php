@@ -54,6 +54,8 @@ $ctx->get('/music/login');
 $passed = 0;
 $failed = 0;
 
+require __DIR__ . '/helpers.php';
+
 foreach (glob(__DIR__ . '/cases/*.php') as $caseFile) {
 	echo "\n" . basename($caseFile, '.php') . "\n";
 

@@ -56,10 +56,11 @@ $album['tracks'] = $db->query("
 
 /// Every statistic is over the tracks that rater actually scored, not over the
 /// album - `rated` says how many that was, so an average over three of fifteen
-/// songs can't be read as an album score. Sorted here, which is what lets the
-/// median be read straight off the middle. SQLite has no stddev(), and median
-/// and mode are awkward in SQL anyway, so all four are worked out in PHP from
-/// one pass over the scores.
+/// songs can't be read as an album score. One query pivoted two ways: by
+/// account for the per-rater table, by song for the per-track columns and the
+/// graph. musicScoreStats() turns either into the same five numbers.
+require_once __MODULES__ . '/music/stats.php';
+
 $scoresByAccount = [];
 $album['trackScores'] = [];
 foreach ($db->query("
@@ -79,25 +80,11 @@ foreach ($db->query("
 /// and the spread beside that, since an average of two is a different claim
 /// from an average of five whether or not they agreed.
 foreach ($album['tracks'] as $index => $track) {
-	$scores = $album['trackScores'][(int)$track['song_id']] ?? [];
-	$rated = count($scores);
+	$stats = musicScoreStats($album['trackScores'][(int)$track['song_id']] ?? []);
 
-	$average = null;
-	$deviation = null;
-
-	if ($rated > 0) {
-		$average = array_sum($scores) / $rated;
-
-		$spread = 0.0;
-		foreach ($scores as $score) {
-			$spread += ($score - $average) ** 2;
-		}
-		$deviation = sqrt($spread / $rated);
-	}
-
-	$album['tracks'][$index]['average'] = $average;
-	$album['tracks'][$index]['deviation'] = $deviation;
-	$album['tracks'][$index]['rated'] = $rated;
+	$album['tracks'][$index]['average'] = $stats['average'];
+	$album['tracks'][$index]['deviation'] = $stats['deviation'];
+	$album['tracks'][$index]['rated'] = $stats['rated'];
 }
 
 /// One row per account, not per rater who has rated something here: an album
@@ -107,53 +94,14 @@ require_once __MODULES__ . '/music/hue.php';
 
 $album['averages'] = [];
 foreach ($db->query("SELECT id, account_name, hue FROM account ORDER BY id = ? DESC, id", [(int)currentAccountId()])->fetchAll() as $account) {
-	$scores = $scoresByAccount[(int)$account['id']] ?? [];
-	$rated = count($scores);
-
-	$average = null;
-	$median = null;
-	$deviation = null;
-	$modes = [];
-
-	if ($rated > 0) {
-		$average = array_sum($scores) / $rated;
-
-		$middle = intdiv($rated, 2);
-		$median = $rated % 2 === 1 ? $scores[$middle] : ($scores[$middle - 1] + $scores[$middle]) / 2;
-
-		$spread = 0.0;
-		foreach ($scores as $score) {
-			$spread += ($score - $average) ** 2;
-		}
-		$deviation = sqrt($spread / $rated);
-
-		$counts = [];
-		foreach ($scores as $score) {
-			$key = (string)$score;
-			$counts[$key] = ($counts[$key] ?? 0) + 1;
-		}
-
-		/// All-distinct scores make every one of them a mode, which says
-		/// nothing, so that case reports no mode at all rather than the lot.
-		if (max($counts) > 1) {
-			foreach ($counts as $value => $count) {
-				if ($count === max($counts)) {
-					$modes[] = (float)$value;
-				}
-			}
-		}
-	}
-
-	$album['averages'][] = [
-		'id' => (int)$account['id'],
-		'account_name' => $account['account_name'],
-		'hue' => musicHueOf($account['id'], $account['hue']),
-		'rated' => $rated,
-		'average' => $average,
-		'median' => $median,
-		'deviation' => $deviation,
-		'modes' => $modes,
-	];
+	$album['averages'][] = array_merge(
+		[
+			'id' => (int)$account['id'],
+			'account_name' => $account['account_name'],
+			'hue' => musicHueOf($account['id'], $account['hue']),
+		],
+		musicScoreStats($scoresByAccount[(int)$account['id']] ?? [])
+	);
 }
 
 $album['trackCount'] = count($album['tracks']);

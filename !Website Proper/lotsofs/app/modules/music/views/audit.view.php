@@ -1,3 +1,4 @@
+<?php require_once __MODULES__ . '/music/format.php' ?>
 <?php require(__MODULES__ . '/music/views/partials/head.php') ?>
 
 <?php require(__MODULES__ . '/music/views/partials/nav.php') ?>
@@ -23,11 +24,7 @@
 		</thead>
 		<tbody>
 			<?php foreach ($globalData['auditEntries'] as $entry): ?>
-				<?php
-					$title = $entry['song_title'] ?? '';
-					$artists = $entry['artists'] ?? '';
-					$song = $artists === '' ? $title : $artists . ' — ' . $title;
-				?>
+				<?php $song = musicSongLabel($entry['artists'], $entry['song_title']) ?>
 				<tr data-audit-id="<?= (int)$entry['id'] ?>">
 					<td class="auditWhenCell"><?= htmlspecialchars(date('Y-m-d H:i:s', (int)$entry['created_at'])) ?></td>
 					<td class="auditWhoCell"><?= htmlspecialchars($entry['account_name']) ?></td>

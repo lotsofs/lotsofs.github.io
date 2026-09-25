@@ -64,8 +64,11 @@ function songsTitleCellFor($body, $songId) {
 
 	$pattern = '/<td class="songTitleCell([^"]*)" data-field="title" data-canonical-title="([^"]*)"( title="([^"]*)")?><span class="songCellText">([^<]*)<\/span><\/td>/';
 
+	// Throwing rather than returning null: every caller reads a key straight
+	// off the result, so a null turns a markup change into "array offset on
+	// null" three lines later instead of saying which pattern stopped matching.
 	if (!preg_match($pattern, $chunk, $m)) {
-		return null;
+		throw new Exception("no title cell matched for song {$songId} in: " . substr($chunk, 0, 300));
 	}
 
 	return [
@@ -677,6 +680,58 @@ return [
 		assertSame('ok', $response['json']['status'], 'status');
 	},
 
+	// Songs accumulate alternate names from the importer and from the album
+	// card's "listed as" feature, so renaming onto one of them is an ordinary
+	// admin action. Renaming the actual row onto that name would collide with
+	// idx_song_alias_unique and come back as a 500 carrying the raw SQL.
+	'renaming a song to a name it already answers to promotes that name' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Promoted Alias Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Promoted Studio Title']]);
+		$songId = $ctx->songId('Promoted Studio Title');
+
+		$ctx->post(SONG_ENDPOINT, [[
+			'artist_id' => $artistId,
+			'title' => 'Promoted Sleeve Title',
+			'song_id' => $songId,
+			'also_alias_provided_name' => true,
+		]]);
+
+		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'title', 'value' => 'Promoted Sleeve Title']);
+		assertSame(200, $response['status'], 'the rename does not blow up on the unique index');
+		assertSame('ok', $response['json']['status'], 'status');
+
+		$aliases = $ctx->db()->query("SELECT name, is_actual FROM song_alias WHERE song_id = {$songId} ORDER BY is_actual DESC")->fetchAll();
+		assertSame(2, count($aliases), 'both names are still there');
+		assertSame('Promoted Sleeve Title', $aliases[0]['name'], 'the chosen name is now the actual one');
+		assertSame(1, (int)$aliases[0]['is_actual'], 'and is marked as such');
+		assertSame(0, (int)$aliases[1]['is_actual'], 'leaving exactly one actual name');
+		assertSame('Promoted Studio Title', $aliases[1]['name'], 'and the old title stayed behind as an alias');
+		assertSame('Promoted Sleeve Title', $ctx->songTitle($songId), 'the song now goes by the new title');
+	},
+
+	// The browser always sends strings, so these guard the endpoints against a
+	// caller that doesn't - where "set it to 1990" would otherwise arrive as
+	// "clear it" and be answered with status ok.
+	'a numeric field sent as a number is set, not cleared' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Typed Payload Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Typed Payload Song']]);
+		$songId = $ctx->songId('Typed Payload Song');
+
+		assertSame('ok', $ctx->post(SONG_YEAR_ENDPOINT, ['song_id' => $songId, 'value' => 1990])['json']['status'], 'year status');
+		assertSame(1990, (int)$ctx->db()->query("SELECT year FROM song WHERE id = {$songId}")->fetch()['year'], 'an integer year is stored, not wiped');
+
+		assertSame('ok', $ctx->post(SONG_DURATION_ENDPOINT, ['song_id' => $songId, 'value' => 215])['json']['status'], 'duration status');
+		assertSame(215, (int)$ctx->db()->query("SELECT duration FROM song WHERE id = {$songId}")->fetch()['duration'], 'an integer duration too');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => 7.5]);
+		$score = $ctx->db()->query("SELECT score FROM account_song WHERE song_id = {$songId}")->fetch()['score'];
+		assertSame(7.5, (float)$score, 'and a fractional score arrives as a float, which is the case the int-only check missed');
+	},
+
 	'renaming an unknown song is refused' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
@@ -983,11 +1038,21 @@ return [
 		assertSame(1, preg_match_all('/<th class="[^"]*songMyNoteCell"/', $body), 'exactly one note column is yours');
 		assertTrue(strpos($body, 'songMineCell') !== false, 'your columns are marked');
 
-		assertContains('<th colspan="2" class="songRaterGroup songMineCell songMineGroup">test_runner</th>', $body, 'your name spans both of your columns');
+		// Matched on the class list rather than the exact attribute string:
+		// CLAUDE.md's rule for this markup is "add to a class list, never
+		// replace one", so pinning the literal would fail on a legal change
+		// while still not catching a class that went missing.
+		assertClasses(
+			['songRaterGroup', 'songMineCell', 'songMineGroup'],
+			$body,
+			'/<th colspan="2" class="([^"]*)">test_runner<\/th>/',
+			'your name spans both of your columns'
+		);
 
 		$others = $ctx->db()->query("SELECT account_name FROM account WHERE account_name != 'test_runner'")->fetchAll(PDO::FETCH_COLUMN);
 		foreach ($others as $name) {
-			assertContains('<th colspan="2" class="songRaterGroup">' . $name . '</th>', $body, "{$name} is grouped too but not highlighted");
+			assertClasses(['songRaterGroup'], $body, '/<th colspan="2" class="([^"]*)">' . preg_quote($name, '/') . '<\/th>/', "{$name} is grouped too");
+			assertTrue(preg_match('/<th colspan="2" class="[^"]*songMineGroup[^"]*">' . preg_quote($name, '/') . '<\/th>/', $body) === 0, "{$name} is not highlighted as yours");
 		}
 	},
 

@@ -43,7 +43,27 @@ if ($clash) {
 	exit;
 }
 
-if ($song['title'] === null) {
+/// The clash check above deliberately ignores this song's own names, so a
+/// rename onto one of its existing aliases reaches here - and renaming the
+/// actual row onto that name would collide with idx_song_alias_unique and come
+/// back as a 500 carrying the raw SQL. Promote the alias it already has
+/// instead, the way albumEdit.php and artistAlias.php both do. Clearing has to
+/// land before setting: idx_song_alias_one_actual allows one per song.
+$existing = $db->query("SELECT id FROM song_alias WHERE song_id = ? AND name = ?", [$id, $value])->fetch();
+
+if ($existing) {
+	$db->pdo->beginTransaction();
+	try {
+		$db->query("UPDATE song_alias SET is_actual = 0 WHERE song_id = ?", [$id]);
+		$db->query("UPDATE song_alias SET is_actual = 1 WHERE id = ?", [$existing['id']]);
+		$db->pdo->commit();
+	}
+	catch (PDOException $e) {
+		$db->pdo->rollBack();
+		throw $e;
+	}
+}
+else if ($song['title'] === null) {
 	$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 1)", [$id, $value]);
 }
 else {

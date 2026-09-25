@@ -515,6 +515,44 @@ return [
 		assertSame(403, $ctx->postWithoutCsrf(ALBUM_ENDPOINT, [])['status'], 'no csrf token');
 	},
 
+	// A paste with no Year column sends nothing for it, and the wizard matches
+	// an existing album by name, so this is the ordinary path for "a few more
+	// tracks off the same record" - not an edge case.
+	'importing more tracks onto an album leaves its artist and year alone' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Reimported Artist');
+		$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Reimported First']]);
+		$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Reimported Second']]);
+
+		$albumId = (int)$ctx->post(ALBUM_ENDPOINT, [[
+			'provided_name' => 'Reimported Record',
+			'album_id' => 'new',
+			'og_name' => 'Reimported Record',
+			'is_actual' => true,
+			'artist_id' => $artistId,
+			'release_year' => '1972',
+			'tracks' => [['song_id' => $ctx->songId('Reimported First'), 'position' => 1]],
+		]])['json'][0]['album_id'];
+
+		$ctx->post(ALBUM_ENDPOINT, [[
+			'provided_name' => 'Reimported Record',
+			'album_id' => $albumId,
+			'og_name' => 'Reimported Record',
+			'is_actual' => true,
+			'artist_id' => '',
+			'release_year' => '',
+			'tracks' => [['song_id' => $ctx->songId('Reimported Second'), 'position' => 2]],
+		]]);
+
+		$row = $ctx->db()->query("SELECT artist_id, release_year FROM album WHERE id = {$albumId}")->fetch();
+		assertSame((int)$artistId, (int)$row['artist_id'], 'the artist survived a second import that named none');
+		assertSame(1972, (int)$row['release_year'], 'and so did the year');
+
+		$tracks = (int)$ctx->db()->query("SELECT COUNT(*) c FROM album_track WHERE album_id = {$albumId}")->fetch()['c'];
+		assertSame(2, $tracks, 'while the new track was still attached');
+	},
+
 	'the album card lists that album with its tracks in playing order' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
