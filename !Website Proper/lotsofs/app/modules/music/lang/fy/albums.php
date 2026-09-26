@@ -61,6 +61,7 @@ return [
 	'album.card.statMode' => 'Modus',
 	'album.card.statDeviation' => 'St. Dev',
 	'album.card.statRated' => 'Beoardiele',
+	'album.card.statEveryone' => 'Elkenien',
 	'album.card.trackNumber' => '#',
 
 	'album.card.sortBy' => 'Sortearje op',
@@ -69,6 +70,8 @@ return [
 	'album.card.sortAverage' => 'Gemiddelde wurdearring',
 	'album.card.sortDeviation' => 'Standertôfwiking',
 	'album.card.sortMedian' => 'Mediane wurdearring',
+	'album.card.sortHighest' => 'Heechste wurdearring',
+	'album.card.sortLowest' => 'Leechste wurdearring',
 	'album.card.sortMode' => 'Meast foarkommende wurdearring',
 	'album.card.sortRated' => 'Tal fan wurdearrings',
 	'album.card.sortDuration' => 'Nûmerlingte',

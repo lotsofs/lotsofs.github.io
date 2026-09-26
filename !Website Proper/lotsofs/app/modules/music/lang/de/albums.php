@@ -61,6 +61,7 @@ return [
 	'album.card.statMode' => 'Modus',
 	'album.card.statDeviation' => 'St.-Abw.',
 	'album.card.statRated' => 'Bewertet',
+	'album.card.statEveryone' => 'Alle',
 	'album.card.trackNumber' => '#',
 
 	'album.card.sortBy' => 'Sortieren nach',
@@ -69,6 +70,8 @@ return [
 	'album.card.sortAverage' => 'Durchschnittswertung',
 	'album.card.sortDeviation' => 'Standardabweichung',
 	'album.card.sortMedian' => 'Medianwertung',
+	'album.card.sortHighest' => 'Höchste Wertung',
+	'album.card.sortLowest' => 'Niedrigste Wertung',
 	'album.card.sortMode' => 'Häufigste Wertung',
 	'album.card.sortRated' => 'Anzahl der Wertungen',
 	'album.card.sortDuration' => 'Titellänge',

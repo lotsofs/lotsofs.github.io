@@ -18,7 +18,7 @@ function musicScoreStats($scores) {
 	$rated = count($sorted);
 
 	if ($rated === 0) {
-		return ['rated' => 0, 'average' => null, 'median' => null, 'deviation' => null, 'modes' => []];
+		return ['rated' => 0, 'average' => null, 'median' => null, 'deviation' => null, 'modes' => [], 'lowest' => null, 'highest' => null];
 	}
 
 	$average = array_sum($sorted) / $rated;
@@ -59,5 +59,8 @@ function musicScoreStats($scores) {
 		'median' => $median,
 		'deviation' => $deviation,
 		'modes' => $modes,
+		/// Free, since the list is already sorted.
+		'lowest' => $sorted[0],
+		'highest' => $sorted[$rated - 1],
 	];
 }

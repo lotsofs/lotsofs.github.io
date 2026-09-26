@@ -12,6 +12,7 @@
 	$albumTrackCount = $album['trackCount'] ?? count($albumTracks);
 	$albumIsAdmin = $album['isAdmin'] ?? false;
 	$albumTrackScores = $album['trackScores'] ?? [];
+	$albumTotals = $album['totals'] ?? null;
 
 	/* A rater's dots are drawn in the hue that rater sees the site in, so the
 	   colour reads the same to everybody looking at this card - it belongs to
@@ -122,39 +123,51 @@
 						<th class="albumStatsRatedCell"><?= htmlspecialchars(t('album.card.statRated')) ?></th>
 					</tr>
 				</thead>
+				<?php
+					/// The four statistic cells, shared by the rater rows and
+					/// the totals row below them so the two can't drift into
+					/// formatting or colouring a score differently.
+					$albumStatsCells = function ($row) use ($albumScoreText, $albumScoreColour) {
+						$noScore = ' class="albumStatsScoreCell albumStatsEmpty"';
+						$dash = htmlspecialchars(t('album.card.noAverage'));
+
+						if ((int)$row['rated'] === 0) {
+							return str_repeat('<td' . $noScore . '>' . $dash . '</td>', 4);
+						}
+
+						/// Coloured one value at a time: a tie between two
+						/// scores is two different colours, not an average of
+						/// them and not a plain grey list.
+						$modeHtml = '';
+						foreach ($row['modes'] ?? [] as $mode) {
+							$modeHtml .= ($modeHtml === '' ? '' : ', ')
+								. '<span' . $albumScoreColour($mode) . '>' . htmlspecialchars($albumScoreText($mode)) . '</span>';
+						}
+
+						return '<td class="albumStatsScoreCell"' . $albumScoreColour($row['average']) . '>' . htmlspecialchars($albumScoreText($row['average'])) . '</td>'
+							. '<td class="albumStatsScoreCell albumStatsDeviationCell">' . htmlspecialchars($albumScoreText($row['deviation'])) . '</td>'
+							. '<td class="albumStatsScoreCell"' . $albumScoreColour($row['median']) . '>' . htmlspecialchars($albumScoreText($row['median'])) . '</td>'
+							. '<td class="albumStatsScoreCell' . ($modeHtml === '' ? ' albumStatsEmpty' : '') . '">' . ($modeHtml === '' ? $dash : $modeHtml) . '</td>';
+					};
+				?>
 				<tbody>
 					<?php foreach ($albumAverages as $average): ?>
-						<?php
-							$rated = (int)$average['rated'];
-							$modes = $average['modes'] ?? [];
-							$noScore = ' class="albumStatsScoreCell albumStatsEmpty"';
-
-							/// Coloured one value at a time: a tie between two
-							/// scores is two different colours, not an average
-							/// of them and not a plain grey list.
-							$modeHtml = '';
-							foreach ($modes as $mode) {
-								$modeHtml .= ($modeHtml === '' ? '' : ', ')
-									. '<span' . $albumScoreColour($mode) . '>' . htmlspecialchars($albumScoreText($mode)) . '</span>';
-							}
-						?>
 						<tr class="albumStatsRow" data-account-id="<?= (int)$average['id'] ?>">
-							<td class="albumStatsNameCell"><?php if ($rated > 0): ?><span class="albumStatsSwatch" style="background-color: <?= $albumRaterColours[(int)$average['id']] ?>"></span><?php endif ?><?= htmlspecialchars($average['account_name']) ?></td>
-							<?php if ($rated === 0): ?>
-								<td<?= $noScore ?>><?= htmlspecialchars(t('album.card.noAverage')) ?></td>
-								<td<?= $noScore ?>><?= htmlspecialchars(t('album.card.noAverage')) ?></td>
-								<td<?= $noScore ?>><?= htmlspecialchars(t('album.card.noAverage')) ?></td>
-								<td<?= $noScore ?>><?= htmlspecialchars(t('album.card.noAverage')) ?></td>
-							<?php else: ?>
-								<td class="albumStatsScoreCell"<?= $albumScoreColour($average['average']) ?>><?= htmlspecialchars($albumScoreText($average['average'])) ?></td>
-								<td class="albumStatsScoreCell albumStatsDeviationCell"><?= htmlspecialchars($albumScoreText($average['deviation'])) ?></td>
-								<td class="albumStatsScoreCell"<?= $albumScoreColour($average['median']) ?>><?= htmlspecialchars($albumScoreText($average['median'])) ?></td>
-								<td class="albumStatsScoreCell<?= $modeHtml === '' ? ' albumStatsEmpty' : '' ?>"><?= $modeHtml === '' ? htmlspecialchars(t('album.card.noAverage')) : $modeHtml ?></td>
-							<?php endif ?>
-							<td class="albumStatsRatedCell"><?= htmlspecialchars(t('album.card.ratedOf', ['rated' => $rated, 'total' => $albumTrackCount])) ?></td>
+							<td class="albumStatsNameCell"><?php if ((int)$average['rated'] > 0): ?><span class="albumStatsSwatch" style="background-color: <?= $albumRaterColours[(int)$average['id']] ?>"></span><?php endif ?><?= htmlspecialchars($average['account_name']) ?></td>
+							<?= $albumStatsCells($average) ?>
+							<td class="albumStatsRatedCell"><?= htmlspecialchars(t('album.card.ratedOf', ['rated' => (int)$average['rated'], 'total' => $albumTrackCount])) ?></td>
 						</tr>
 					<?php endforeach ?>
 				</tbody>
+				<?php if ($albumTotals !== null): ?>
+					<tfoot>
+						<tr class="albumStatsRow albumStatsTotalRow">
+							<td class="albumStatsNameCell"><?= htmlspecialchars(t('album.card.statEveryone')) ?></td>
+							<?= $albumStatsCells($albumTotals) ?>
+							<td class="albumStatsRatedCell"><?= htmlspecialchars(t('album.card.ratedOf', ['rated' => (int)$albumTotals['rated'], 'total' => (int)$albumTotals['possible']])) ?></td>
+						</tr>
+					</tfoot>
+				<?php endif ?>
 			</table>
 		</dd>
 	<?php endif ?>
@@ -201,6 +214,13 @@
 				'average' => ['label' => t('album.card.sortAverage'), 'dir' => 'desc'],
 				'deviation' => ['label' => t('album.card.sortDeviation'), 'dir' => 'desc'],
 				'median' => ['label' => t('album.card.sortMedian'), 'dir' => 'desc'],
+				/// Both start high to low, like every other score order here:
+				/// the direction control says "High to low", and an order that
+				/// quietly started the other way would make it a lie. "Lowest
+				/// score" descending leads with the least-disliked track;
+				/// flipping it finds the ones somebody slated.
+				'highest' => ['label' => t('album.card.sortHighest'), 'dir' => 'desc'],
+				'lowest' => ['label' => t('album.card.sortLowest'), 'dir' => 'desc'],
 				'mode' => ['label' => t('album.card.sortMode'), 'dir' => 'desc'],
 				'rated' => ['label' => t('album.card.sortRated'), 'dir' => 'desc'],
 				'duration' => ['label' => t('album.card.sortDuration'), 'dir' => 'desc'],
@@ -236,6 +256,8 @@
 					case 'average': return $track['average'];
 					case 'deviation': return $track['deviation'];
 					case 'median': return $track['median'];
+					case 'highest': return $track['highest'];
+					case 'lowest': return $track['lowest'];
 					case 'mode': return ($track['modes'] ?? []) ? max($track['modes']) : null;
 					case 'rated': return (int)($track['rated'] ?? 0);
 					case 'duration': return $track['duration'] === null ? null : (int)$track['duration'];

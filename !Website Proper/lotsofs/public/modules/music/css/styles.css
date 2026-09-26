@@ -884,11 +884,15 @@ th, td {
 		overflow-wrap: anywhere;
 	}
 
+	/* pre-line, not normal: a note is typed into a textarea, so it can have
+	   line breaks in it, and `normal` collapses every one of them into a
+	   space. The three declarations before it undo the table's clipping - the
+	   card is where a note is read in full. */
 	.ratingNoteText {
 		display: block;
 		overflow: visible;
 		text-overflow: clip;
-		white-space: normal;
+		white-space: pre-line;
 	}
 
 	.songMyScoreCell,
@@ -1318,6 +1322,19 @@ th, td {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+
+	/* Everyone's scores pooled. Set apart from the rows above rather than
+	   styled like one of them, because it is not another rater. */
+	.albumStatsTotalRow {
+		td {
+			border-top-width: 2px;
+		}
+
+		.albumStatsNameCell {
+			font-weight: bold;
+			opacity: 0.75;
+		}
 	}
 
 	/* The swatch is what makes the stats table double as the graph's legend,

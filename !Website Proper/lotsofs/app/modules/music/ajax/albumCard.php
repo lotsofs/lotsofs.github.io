@@ -76,6 +76,7 @@ $album['tracks'] = $db->query("
 require_once __MODULES__ . '/music/stats.php';
 
 $scoresByAccount = [];
+$allScores = [];
 $album['trackScores'] = [];
 foreach ($db->query("
 	SELECT acs.account_id, acs.song_id, acs.score
@@ -86,6 +87,7 @@ foreach ($db->query("
 ", [$albumId])->fetchAll() as $row) {
 	$scoresByAccount[(int)$row['account_id']][] = (float)$row['score'];
 	$album['trackScores'][(int)$row['song_id']][(int)$row['account_id']] = (float)$row['score'];
+	$allScores[] = (float)$row['score'];
 }
 
 /// What the album thinks of each track: the mean of the scores it was actually
@@ -102,6 +104,8 @@ foreach ($album['tracks'] as $index => $track) {
 	$album['tracks'][$index]['deviation'] = $stats['deviation'];
 	$album['tracks'][$index]['median'] = $stats['median'];
 	$album['tracks'][$index]['modes'] = $stats['modes'];
+	$album['tracks'][$index]['lowest'] = $stats['lowest'];
+	$album['tracks'][$index]['highest'] = $stats['highest'];
 	$album['tracks'][$index]['rated'] = $stats['rated'];
 }
 
@@ -121,6 +125,14 @@ foreach ($db->query("SELECT id, account_name, hue FROM account ORDER BY id = ? D
 		musicScoreStats($scoresByAccount[(int)$account['id']] ?? [])
 	);
 }
+
+/// Every score on the album pooled, not the average of the per-rater averages:
+/// otherwise someone who rated one track would count as much as someone who
+/// rated all fifteen. `possible` is every rating that could exist - one per
+/// track per account - so the row's count reads as how much of the album has
+/// been listened to at all.
+$album['totals'] = musicScoreStats($allScores);
+$album['totals']['possible'] = count($album['tracks']) * count($album['averages']);
 
 $album['graphSort'] = $graphSort;
 $album['graphDir'] = $graphDir;

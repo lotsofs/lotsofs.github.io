@@ -61,6 +61,7 @@ return [
 	'album.card.statMode' => 'Mode',
 	'album.card.statDeviation' => 'St. Dev',
 	'album.card.statRated' => 'Rated',
+	'album.card.statEveryone' => 'Everyone',
 	'album.card.trackNumber' => '#',
 
 	'album.card.sortBy' => 'Order by',
@@ -69,6 +70,8 @@ return [
 	'album.card.sortAverage' => 'Average score',
 	'album.card.sortDeviation' => 'Standard deviation',
 	'album.card.sortMedian' => 'Median score',
+	'album.card.sortHighest' => 'Highest score',
+	'album.card.sortLowest' => 'Lowest score',
 	'album.card.sortMode' => 'Most common score',
 	'album.card.sortRated' => 'Number of ratings',
 	'album.card.sortDuration' => 'Track length',

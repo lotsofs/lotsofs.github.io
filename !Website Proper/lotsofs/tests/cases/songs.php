@@ -526,6 +526,28 @@ return [
 		assertContains('id="musicTooltip"', $body, 'the page carries the box they open into');
 	},
 
+	// A note is typed into a textarea, so it can have line breaks in it. The
+	// table clips notes to one line on purpose; the card is where one is read
+	// in full, and that is where the breaks have to survive.
+	'a note keeps its line breaks through to the card' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Multiline Note Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Multiline Note Song']]);
+		$songId = $ctx->songId('Multiline Note Song');
+
+		$note = "first thought\nsecond thought";
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => $note]);
+
+		assertSame($note, $ctx->db()->query("SELECT subjective_note FROM account_song WHERE song_id = {$songId}")->fetch()['subjective_note'], 'the break survives the round trip to the database');
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+		assertContains("first thought\nsecond thought", $card, 'and is still a real newline in the rendered card');
+
+		$css = $ctx->get('/modules/music/css/styles.css')['body'];
+		assertTrue(preg_match('/\.ratingNoteText \{[^}]*white-space: pre-line/s', $css) === 1, 'which the card renders with pre-line, or the browser would collapse it to a space');
+	},
+
 	'the songs page escapes stored markup' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
