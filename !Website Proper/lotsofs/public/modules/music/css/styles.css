@@ -1,10 +1,7 @@
 ﻿:root {
 	color-scheme: dark;
 
-	/* Every blue on these pages is this hue. partials/head.php writes the
-	   signed in account's choice onto <html>, which overrides this; keeping a
-	   value here is what makes the hsl() declarations below still resolve when
-	   nothing does, and 240 is the site blue they were all written in. */
+	/* Every blue on these pages is this hue; head.php overrides it per account. */
 	--hue: 240;
 
 	--border: #555555;
@@ -206,11 +203,7 @@ nav {
 		}
 	}
 
-	/* A swatch rather than a 🎨: the palette emoji has no text presentation, so
-	   it renders in its own colours and the button stops matching the ones
-	   either side of it. This is the same chrome as those, with the hue shown
-	   as content - and it follows the slider live, because the slider sets
-	   --hue on <html> and this reads it. */
+	/* A swatch, not a palette emoji, which renders in its own colours. Follows --hue live. */
 	.navColourSwatch {
 		display: inline-block;
 		width: 1em;
@@ -491,6 +484,11 @@ th, td {
 		box-shadow: inset -1px 0 0 var(--border), inset 0 1px 0 var(--border);
 	}
 
+	/* Left edge setting the statistics block apart; a header cell's edges are one shadow. */
+	thead .songStatAverageCell {
+		box-shadow: inset 1px 0 0 var(--border), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
+	}
+
 	thead .songMineGroup {
 		box-shadow: inset 1px 0 0 var(--mineAccent), inset -1px 0 0 var(--mineAccent), inset 0 1px 0 var(--mineAccent);
 	}
@@ -529,6 +527,29 @@ th, td {
 	.songRatingNoteCell {
 		width: 12em;
 		white-space: nowrap;
+	}
+
+	/* The statistics columns, past the last rater's. */
+	.songStatCell {
+		width: 2.6em;
+		white-space: nowrap;
+	}
+
+	td.songStatCell {
+		text-align: right;
+	}
+
+	td.songStatAverageCell {
+		box-shadow: inset 1px 0 0 var(--border);
+	}
+
+	td.songStatDeviationCell,
+	td.songStatRatedCell {
+		opacity: 0.65;
+	}
+
+	.songStatModeCell {
+		width: 3.4em;
 	}
 
 	.ratingNoteText {
@@ -1175,12 +1196,14 @@ th, td {
 }
 
 /* The hand covers the whole cell because the whole cell opens the card (see
-   albumCard.js), and only when there is an album in it to open. */
-.songAlbumCell:has(.songAlbumLink) {
+   albumCard.js), and only when there is something in it to open. */
+.songAlbumCell:has(.songAlbumLink),
+.songArtistCell:has(.songArtistLink) {
 	cursor: pointer;
 }
 
-.songAlbumLink {
+.songAlbumLink,
+.songArtistLink {
 	color: inherit;
 	text-decoration: none;
 	border-bottom: 1px dotted var(--border);
@@ -1202,7 +1225,9 @@ th, td {
 	opacity: 0.7;
 }
 
-.albumCard {
+/* Both cards, one block: every rule below resolves to BOTH .albumCard .x and .artistCard .x. */
+.albumCard,
+.artistCard {
 	.albumCardInfo {
 		display: grid;
 		grid-template-columns: auto 1fr;
@@ -1214,8 +1239,7 @@ th, td {
 		}
 	}
 
-	/* Same shape as the stats table below it, so the two read as one card
-	   rather than as a list and a table that happen to share a box. */
+	/* Same shape as the stats table below it. */
 	.albumTrackTable {
 		width: 100%;
 		margin-top: 0.2em;
@@ -1324,8 +1348,7 @@ th, td {
 		white-space: nowrap;
 	}
 
-	/* Everyone's scores pooled. Set apart from the rows above rather than
-	   styled like one of them, because it is not another rater. */
+	/* Everyone's scores pooled, set apart from the rater rows above. */
 	.albumStatsTotalRow {
 		td {
 			border-top-width: 2px;
@@ -1337,8 +1360,7 @@ th, td {
 		}
 	}
 
-	/* The swatch is what makes the stats table double as the graph's legend,
-	   so the graph needs no legend of its own. */
+	/* The swatch is the graph's legend, so the graph needs none. */
 	.albumStatsSwatch {
 		display: inline-block;
 		width: 0.6em;
@@ -1352,7 +1374,9 @@ th, td {
 		margin-top: 0.2em;
 	}
 
-	.albumGraphSort {
+	/* The graph's order control and the whose-scores control above the table. */
+	.albumGraphSort,
+	.cardStatsWhoRow {
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
@@ -1370,9 +1394,15 @@ th, td {
 			min-width: 0;
 		}
 
-		.albumGraphSortKey {
+		.albumGraphSortKey,
+		.cardStatsWho {
 			flex: 1 1 10em;
 		}
+	}
+
+	/* Sits over the table it changes, not under the heading. */
+	.cardStatsWhoRow {
+		margin-top: 0.3em;
 	}
 
 	.albumGraph {
@@ -1384,7 +1414,7 @@ th, td {
 
 	.albumGraphGrid {
 		stroke: var(--border);
-		stroke-width: 0.5;
+		stroke-width: 0.9;
 		opacity: 0.35;
 	}
 
@@ -1395,18 +1425,21 @@ th, td {
 	.albumGraphAxis {
 		fill: #ffffff;
 		opacity: 0.45;
-		font-size: 7px;
+		font-size: 12px;
 	}
 
+	/* The line does most of the reading on a dense graph, where the dots are
+	   down to a pixel or so - so it is drawn a little stronger than a purely
+	   decorative join would be. */
 	.albumGraphLine {
 		fill: none;
-		stroke-width: 1.2;
-		opacity: 0.45;
+		stroke-width: 2;
+		opacity: 0.55;
 	}
 
 	.albumGraphDot {
 		stroke: #000000;
-		stroke-width: 0.5;
+		stroke-width: 0.8;
 	}
 
 	/* Invisible but not absent: fill="none" would let the pointer through, so
@@ -1526,4 +1559,14 @@ th, td {
 	font-size: 0.9em;
 	white-space: pre-line;
 	pointer-events: none;
+}
+
+/* An artist card reuses the album card's block; only what is its own is named here. */
+.artistCard {
+	/* The discography reuses the stats table's shape; only the year column is new. */
+	td.artistAlbumYearCell {
+		text-align: right;
+		white-space: nowrap;
+		opacity: 0.6;
+	}
 }

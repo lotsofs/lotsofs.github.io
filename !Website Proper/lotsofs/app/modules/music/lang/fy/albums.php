@@ -62,10 +62,12 @@ return [
 	'album.card.statDeviation' => 'St. Dev',
 	'album.card.statRated' => 'Beoardiele',
 	'album.card.statEveryone' => 'Elkenien',
+	'album.card.statsWho' => 'Statistyk foar',
 	'album.card.trackNumber' => '#',
 
 	'album.card.sortBy' => 'Sortearje op',
 	'album.card.sortAlbum' => 'Albumfolchoarder',
+	'album.card.sortYear' => 'Jier fan útjefte',
 	'album.card.sortTitle' => 'Nûmertitel',
 	'album.card.sortAverage' => 'Gemiddelde wurdearring',
 	'album.card.sortDeviation' => 'Standertôfwiking',

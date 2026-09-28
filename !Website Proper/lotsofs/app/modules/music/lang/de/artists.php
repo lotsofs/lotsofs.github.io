@@ -39,4 +39,11 @@ return [
 	'artist.list.empty' => 'Noch keine Interpreten.',
 	'artist.list.noName' => '(kein Name)',
 
+	'artist.card.notFound' => '❌ Diesen Interpreten gibt es nicht',
+	'artist.card.edit' => 'Bearbeiten',
+	'artist.card.songCount' => 'Lieder',
+	'artist.card.albums' => 'Alben',
+	'artist.card.showSongs' => 'Diese Lieder anzeigen',
+	'artist.result.nameRequired' => '❌ Ein Interpretenname ist erforderlich',
+
 ];

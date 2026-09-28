@@ -160,6 +160,9 @@ return [
 		assertSame(200, $ctx->get('/js/util.js')['status'], 'shared util.js');
 		assertSame(200, $ctx->get('/modules/music/css/styles.css')['status'], 'music styles');
 		assertSame(200, $ctx->get('/modules/music/js/addSongs.js')['status'], 'music script');
+
+		/// Two other scripts call into this one, so a missing copy breaks every card.
+		assertSame(200, $ctx->get('/modules/music/js/cardLink.js')['status'], 'the card linking script');
 	},
 
 	'assets are referenced with a cache busting stamp that still serves' => function ($ctx) {
@@ -177,6 +180,47 @@ return [
 			assertTrue(preg_match($pattern, $body, $match) === 1, "{$what} carries a version stamp");
 			assertSame(200, $ctx->get($match[1])['status'], "{$what} still serves at its stamped url");
 		}
+	},
+
+	/* The opening itself is javascript; what this proves is that the script ships and loads first. */
+	'every page with a card ships the card linking script, before its callers' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		foreach (['/music/songs', '/music/albums', '/music/artists'] as $path) {
+			$body = $ctx->get($path)['body'];
+
+			$link = strpos($body, '/modules/music/js/cardLink.js');
+			$album = strpos($body, '/modules/music/js/albumCard.js');
+
+			assertTrue($link !== false, "{$path} loads cardLink.js");
+			assertTrue($album !== false && $link < $album, "{$path} loads it before albumCard.js, which calls into it");
+
+			$songs = strpos($body, '/modules/music/js/songs.js');
+			if ($songs !== false) {
+				assertTrue($link < $songs, "{$path} loads it before songs.js too");
+			}
+		}
+	},
+
+	'a link to a card leaves the page underneath it alone' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		/// The card parameters are deliberately not the `artist` and `album` filters.
+		$plain = $ctx->get('/music/songs?sort=year&dir=desc')['body'];
+		$linked = $ctx->get('/music/songs?sort=year&dir=desc&songCard=1&albumCard=2&artistCard=3')['body'];
+
+		assertSame(
+			songsValuesInOrder($plain, 'title'),
+			songsValuesInOrder($linked, 'title'),
+			'the rows come back in the same order, so the card parameters disturb nothing'
+		);
+
+		foreach (['songCard=1', 'albumCard=2', 'artistCard=3'] as $param) {
+			assertTrue(strpos($linked, $param) === false, "{$param} is never echoed into the page, only read from the address by script");
+		}
+
+		assertSame(200, $ctx->get('/music/albums?albumCard=2')['status'], 'and the album list takes one too');
+		assertSame(200, $ctx->get('/music/artists?artistCard=3')['status'], 'as does the artist list');
 	},
 
 	'the html is never cached, so a new asset stamp is always seen' => function ($ctx) {

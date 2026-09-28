@@ -2,6 +2,7 @@
 
 require_once __MODULES__ . '/music/links.php';
 require_once __MODULES__ . '/music/format.php';
+require_once __MODULES__ . '/music/stats.php';
 
 $artistLabel = htmlspecialchars(t('song.column.artist'));
 $albumLabel = htmlspecialchars(t('song.column.album'));
@@ -16,6 +17,7 @@ $songLinkFields = $globalData['linkFields'] ?? songLinkFields();
 $songLinksBySong = $globalData['songLinksBySong'] ?? [];
 $listedAsBySong = $globalData['listedAsBySong'] ?? [];
 $albumsBySong = $globalData['albumsBySong'] ?? [];
+$artistsBySong = $globalData['artistsBySong'] ?? [];
 $filterArtist = $globalData['filterArtist'] ?? null;
 $filterAlbum = $globalData['filterAlbum'] ?? null;
 
@@ -31,8 +33,7 @@ foreach ($songRaters as $rater) {
 
 $emptyLinks = array_fill_keys(array_column($songLinkFields, 'key'), null);
 
-// One pass to derive every value/class/attribute either tree needs, so the
-// table and card templates just read $song['x'] rather than recomputing it.
+// One pass deriving every value, class and attribute the table and cards need.
 $songRows = [];
 $visibleCount = 0;
 foreach ($globalData['songs'] as $song) {
@@ -64,6 +65,18 @@ foreach ($globalData['songs'] as $song) {
 	$song['albumsValue'] = htmlspecialchars($song['albums'] ?? '');
 	$song['artistIdsAttr'] = htmlspecialchars($song['artist_ids'] ?? '');
 
+	$song['artistHtml'] = $song['artistValue'];
+	if (isset($artistsBySong[(int)$song['id']])) {
+		$artistLinks = [];
+		foreach ($artistsBySong[(int)$song['id']] as $artistLink) {
+			$artistLinks[] = '<a class="songArtistLink" href="' . htmlspecialchars('/music/songs?artist=' . (int)$artistLink['id'])
+				. '" data-artist-card-id="' . (int)$artistLink['id'] . '">'
+				. htmlspecialchars(($artistLink['name'] ?? '') === '' ? t('artist.list.noName') : $artistLink['name'])
+				. '</a>';
+		}
+		$song['artistHtml'] = implode(', ', $artistLinks);
+	}
+
 	$song['albumsHtml'] = $song['albumsValue'];
 	if (isset($albumsBySong[(int)$song['id']])) {
 		$albumLinks = [];
@@ -87,9 +100,7 @@ foreach ($globalData['songs'] as $song) {
 
 	$songLinks = $songLinksBySong[$song['id']] ?? $emptyLinks;
 
-	/// A stored value is normally a bare id, but rows written before that
-	/// rule may still hold a whole URL - hence both branches. No id at all
-	/// means no player, just a link.
+	/// A stored value is normally a bare id, but older rows may hold a whole URL.
 	$song['spotifyTrackId'] = null;
 	if (!empty($songLinks['spotify_url'])) {
 		$song['spotifyTrackId'] = spotifyTrackIdIn($songLinks['spotify_url']);
@@ -151,11 +162,16 @@ foreach ($globalData['songs'] as $song) {
 	}
 
 	$song['ratings'] = [];
+	$songScores = [];
 	foreach ($songRaters as $rater) {
 		$raterId = (int)$rater['id'];
 
 		$score = $song['score_' . $raterId] ?? null;
 		$score = $score === null ? '' : (string)(float)$score;
+
+		if ($score !== '') {
+			$songScores[] = (float)$score;
+		}
 
 		$note = $song['note_' . $raterId] ?? '';
 
@@ -166,6 +182,9 @@ foreach ($globalData['songs'] as $song) {
 			'noteEmptyClass' => $note === '' ? ' songCellEmpty' : '',
 		];
 	}
+
+	/// The song's statistics, from the scores just read off the row.
+	$song['stats'] = musicSongStatFields($songScores);
 
 	$songRows[] = $song;
 }

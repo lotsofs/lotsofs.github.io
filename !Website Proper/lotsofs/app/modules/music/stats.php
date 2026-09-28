@@ -1,16 +1,8 @@
 <?php
 
-/// The four numbers the album card reports, for one set of scores - whether
-/// that set is "what one rater gave this album" or "what everyone gave this
-/// track". Both were written out longhand and side by side before, which meant
-/// the per-rater and per-track columns on the same card could end up computed
-/// differently: someone "fixing" one of them to sample deviation would leave
-/// the other on population deviation, with nothing on screen to say so.
-///
-/// Sorts its own copy rather than trusting the caller to have done it, so the
-/// median cannot silently come from an unsorted list. SQLite has no stddev()
-/// and median and mode are awkward in SQL, which is why none of this is a
-/// query.
+require_once __MODULES__ . '/music/format.php';
+
+/// Count, mean, median, population deviation and modes for one set of scores.
 function musicScoreStats($scores) {
 	$sorted = array_values($scores);
 	sort($sorted);
@@ -31,9 +23,7 @@ function musicScoreStats($scores) {
 		$spread += ($score - $average) ** 2;
 	}
 
-	/// Population, not sample: these are all the scores that were given, not a
-	/// sample of some larger set, and n = 1 has a spread of nothing rather
-	/// than being undefined.
+	/// Population deviation, not sample.
 	$deviation = sqrt($spread / $rated);
 
 	$counts = [];
@@ -42,8 +32,7 @@ function musicScoreStats($scores) {
 		$counts[$key] = ($counts[$key] ?? 0) + 1;
 	}
 
-	/// All-distinct scores make every one of them a mode, which says nothing,
-	/// so that case reports no mode at all rather than the lot.
+	/// All-distinct scores report no mode at all.
 	$modes = [];
 	if (max($counts) > 1) {
 		foreach ($counts as $value => $count) {
@@ -63,4 +52,36 @@ function musicScoreStats($scores) {
 		'lowest' => $sorted[0],
 		'highest' => $sorted[$rated - 1],
 	];
+}
+
+/* One song's statistics as the strings its cells show, for the song list, the
+   rating poll and a rating write. `modeSort` is the value an ordering uses. */
+function musicSongStatFields($scores) {
+	$stats = musicScoreStats($scores);
+
+	$text = function ($value) {
+		return $value === null ? '' : scoreText($value);
+	};
+
+	return [
+		'average' => $text($stats['average']),
+		'deviation' => $text($stats['deviation']),
+		'median' => $text($stats['median']),
+		'mode' => implode(', ', array_map('scoreText', $stats['modes'])),
+		'modeSort' => $stats['modes'] ? scoreText(max($stats['modes'])) : '',
+		'highest' => $text($stats['highest']),
+		'lowest' => $text($stats['lowest']),
+		'rated' => (string)$stats['rated'],
+	];
+}
+
+/// Whose scores a card is read as: an account id, or null for everyone pooled.
+function musicStatsWho($requested, $rows) {
+	foreach ($rows as $row) {
+		if ((int)$row['id'] === (int)$requested && (int)$row['rated'] > 0) {
+			return (int)$row['id'];
+		}
+	}
+
+	return null;
 }

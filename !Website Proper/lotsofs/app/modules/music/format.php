@@ -1,12 +1,13 @@
 <?php
 
-/// How the module writes the two values that appear in more than one place.
-/// Neither is complicated; both were written out longhand at each site, which
-/// is how you end up with one page saying 3:07 and another 3:7, or the audit
-/// page and the live rating popups disagreeing about what a song is called.
+/// How the module writes the values that appear in more than one place.
 
-/// Seconds as M:SS. Null stays empty rather than becoming 0:00, because "no
-/// duration recorded" and "zero seconds long" are different things.
+/// A score with trailing zeroes trimmed.
+function scoreText($value) {
+	return rtrim(rtrim(number_format((float)$value, 2, '.', ''), '0'), '.');
+}
+
+/// Seconds as M:SS; null stays empty rather than becoming 0:00.
 function musicDuration($seconds) {
 	if ($seconds === null || $seconds === '') {
 		return '';
@@ -17,10 +18,7 @@ function musicDuration($seconds) {
 	return sprintf('%d:%02d', intdiv($seconds, 60), $seconds % 60);
 }
 
-/// How a song is named to a person outside the song list, where the artist
-/// isn't already a column: "Artist — Title", or just the title when nothing
-/// knows the artist. Used by the audit page and by the rating popups, which
-/// have to agree.
+/// "Artist — Title", or just the title where no artist is known.
 function musicSongLabel($artists, $title) {
 	$artists = $artists ?? '';
 	$title = $title ?? '';

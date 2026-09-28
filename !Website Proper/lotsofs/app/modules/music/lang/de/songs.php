@@ -6,6 +6,8 @@ return [
 	'song.column.title' => 'Titel',
 	'song.column.album' => 'Album',
 	'song.column.year' => 'Jahr',
+	'song.column.statHighest' => 'Max',
+	'song.column.statLowest' => 'Min',
 	'song.column.duration' => 'Dauer',
 	'song.column.song' => 'Song',
 	'song.column.links' => 'Links',

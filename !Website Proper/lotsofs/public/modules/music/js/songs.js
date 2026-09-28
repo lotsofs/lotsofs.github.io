@@ -92,9 +92,13 @@ function syncResult(songId, message) {
 // wherever it currently lives; closeCardModal puts it back where it came from.
 let modalCardReturnAnchor = null;
 
+const SONG_CARD_LINK_PARAMS = ["songCard"];
+
 function openCardModal(songId) {
 	const pair = rowsBySongId.get(String(songId));
-	if (!pair) {
+
+	/// A hidden card would move into the modal and stay hidden, leaving an empty box.
+	if (!pair || pair.card.hidden) {
 		return;
 	}
 
@@ -104,6 +108,7 @@ function openCardModal(songId) {
 	songCardModalBody.appendChild(pair.card);
 	songCardModal.hidden = false;
 	refreshCardModalNav();
+	writeCardLink(SONG_CARD_LINK_PARAMS, "songCard", Number(songId));
 }
 
 function closeCardModal() {
@@ -114,6 +119,7 @@ function closeCardModal() {
 	}
 	modalCardReturnAnchor = null;
 	songCardModal.hidden = true;
+	writeCardLink(SONG_CARD_LINK_PARAMS, null);
 }
 
 // While the modal is open its card is out of the list, so modalCardReturnAnchor
@@ -328,6 +334,18 @@ function createIdListEditor(config) {
 	};
 }
 
+// Same reason as the album names below: leaving edit mode rebuilds these as
+// links so the artist card keeps opening from a card whose artists were just
+// changed.
+function artistNameLink(artistId, label) {
+	const link = document.createElement("a");
+	link.className = "songArtistLink";
+	link.href = "/music/songs?artist=" + Number(artistId);
+	link.dataset.artistCardId = String(artistId);
+	link.textContent = label;
+	return link;
+}
+
 const artistFieldEditor = createIdListEditor({
 	field: "artist",
 	attr: "artistIds",
@@ -335,6 +353,7 @@ const artistFieldEditor = createIdListEditor({
 	idKey: "artist_id",
 	options: songArtistData,
 	hasTooltip: false,
+	renderItem: (option, label) => artistNameLink(option.id, label),
 });
 
 function albumSongsHref(albumId, artistId) {
@@ -447,9 +466,7 @@ function currentLinks(card) {
 	return JSON.parse(card.dataset.links || "{}");
 }
 
-/// Mirrors songLinkHref() in routes/songs.php, reading the same urlPrefix out
-/// of songLinkFieldData. Spotify and YouTube store a bare id, which without a
-/// prefix would resolve against /music/ instead of leaving the site.
+/// Mirrors songLinkHref() in links.php, off the same urlPrefix.
 function linkHref(value, prefix) {
 	if (/^https?:\/\//i.test(value)) {
 		return value;
@@ -579,11 +596,7 @@ const linkFieldEditor = {
 
 		cell.appendChild(list);
 	},
-	// A song with no links has to leave the cell genuinely empty, because the
-	// "Links" heading is hidden by .songCardLinksCol:has(> .songLinksArea:empty)
-	// - which the server-rendered card satisfies by gluing its branches
-	// together with no whitespace. Appending an empty wrapper here would leave
-	// the heading stranded until the next reload.
+	// Appended only when it has something in it, or :empty stops matching and the heading is stranded.
 	exit(card) {
 		const cell = fieldCell(card, "links");
 		cell.textContent = "";
@@ -810,9 +823,7 @@ songCardViewToggle.addEventListener("click", () => {
 
 const songNav = document.querySelector("nav");
 
-// Measured rather than hardcoded because the nav wraps: getBoundingClientRect,
-// not offsetHeight, which rounds to whole pixels and left a seam the table rows
-// showed through.
+// Measured rather than hardcoded, since the nav wraps. Not offsetHeight, which rounds.
 const songStickyOffsets = new ResizeObserver(() => {
 	document.documentElement.style.setProperty("--songNavHeight", songNav.getBoundingClientRect().height + "px");
 });
@@ -829,6 +840,15 @@ function songQuery(sort, dir) {
 	if (songAlbumSelect.value) {
 		params.set("album", songAlbumSelect.value);
 	}
+
+	// Keeps whatever card is open, since this rebuilds the address from scratch.
+	CARD_LINK_PARAMS.forEach(name => {
+		const open = cardLinkValue(name);
+		if (open !== null) {
+			params.set(name, open);
+		}
+	});
+
 	return "?" + params.toString();
 }
 
@@ -950,10 +970,8 @@ function durationSeconds(text) {
 	return Number(minutes) * 60 + Number(seconds);
 }
 
+// Only ever asked about two cells that both have something in them.
 function compareCells(a, b, type) {
-	if (a === "" || b === "") {
-		return a === b ? 0 : (a === "" ? -1 : 1);
-	}
 	if (type === "number") {
 		return Number(a) - Number(b);
 	}
@@ -965,9 +983,13 @@ function compareCells(a, b, type) {
 	return x < y ? -1 : x > y ? 1 : 0;
 }
 
+// A cell whose text is not what it sorts by says so in data-sort-value.
 function fieldValue(container, field) {
 	const cell = fieldCell(container, field);
-	return cell ? cellText(cell).trim() : "";
+	if (!cell) {
+		return "";
+	}
+	return "sortValue" in cell.dataset ? cell.dataset.sortValue : cellText(cell).trim();
 }
 
 function sortRows(key, type) {
@@ -982,6 +1004,14 @@ function sortRows(key, type) {
 	}));
 
 	decorated.sort((a, b) => {
+		// Blank cells sink to the bottom, settled before the direction is applied.
+		if (a.value === "" || b.value === "") {
+			if (a.value === b.value) {
+				return a.songId - b.songId;
+			}
+			return a.value === "" ? 1 : -1;
+		}
+
 		const result = compareCells(a.value, b.value, type) * flip;
 		return result !== 0 ? result : a.songId - b.songId;
 	});
@@ -1066,10 +1096,7 @@ const EDITABLE_CELLS = {
 	songMyNoteCell: { ...NOTE_SPEC, field: "note", endpoint: RATING_ENDPOINT, required: false },
 };
 
-// Not in EDITABLE_CELLS on purpose: title editing is only ever started
-// explicitly via the modal's Edit button, never by clicking/double-clicking
-// a title directly (that opens the modal instead - see the title-click
-// handler below).
+// Not in EDITABLE_CELLS: a title is only edited via the modal's Edit button.
 const TITLE_SPEC = { field: "title", endpoint: SONG_EDIT_ENDPOINT, required: true };
 
 function scoreColour(score) {
@@ -1093,10 +1120,7 @@ function setCellValue(cell, spec, value) {
 	valueElement(cell).textContent = value;
 	cell.classList.toggle("songCellEmpty", value === "");
 
-	// Whichever the cell is currently using: tooltip.js moves a title attribute
-	// into data-tooltip the first time the cell is hovered, so a note updated
-	// by the poll after that has to follow it across or the hover text goes
-	// stale while the cell itself is right.
+	// Whichever the cell currently uses, since tooltip.js moves title into data-tooltip.
 	if (spec.syncTitle) {
 		if ("tooltip" in cell.dataset) {
 			cell.dataset.tooltip = value;
@@ -1106,12 +1130,13 @@ function setCellValue(cell, spec, value) {
 		}
 	}
 
-	if (cell.classList.contains("songRatingScoreCell")) {
+	if (cell.classList.contains("songScoreColoured")) {
 		colorScoreCell(cell);
 	}
 }
 
-Array.from(document.querySelectorAll(".songRatingScoreCell")).forEach(colorScoreCell);
+// Every cell holding one score on the 0-10 ramp, rater and statistic alike.
+Array.from(document.querySelectorAll(".songScoreColoured")).forEach(colorScoreCell);
 
 function beginCellEdit(cell, spec) {
 	const songId = cell.closest("[data-song-id]").dataset.songId;
@@ -1179,6 +1204,10 @@ function saveCell(songId, domField, cell, spec, original, value) {
 	.then(result => {
 		delete cell.dataset.pending;
 		syncField(songId, domField, target => setCellValue(target, spec, String(result.value)));
+		// Straight away rather than on the next poll tick.
+		if (result.stats) {
+			applySongStats(result.stats);
+		}
 		syncResult(songId, result.status === "ok" ? "" : result.message);
 	})
 	.catch(error => {
@@ -1210,10 +1239,7 @@ function handleEdit(event) {
 	beginCellEdit(cell, spec);
 }
 
-/// Opens a song's card and flashes whichever part of it $findTarget picks out,
-/// so a value clipped in the table reads in full without a panel taking up
-/// room above the list. Any flash still running is cleared before the move,
-/// because opening the modal relocates the card and restarts its animations.
+/// Opens a song's card and flashes the part $findTarget picks out.
 function openCardAndFlash(songId, findTarget) {
 	const pair = rowsBySongId.get(String(songId));
 
@@ -1260,8 +1286,7 @@ songListBody.addEventListener("click", event => {
 	handleListClick(event);
 });
 
-// The modal body hosts the real card element while it's popped up (not a
-// copy), so editing needs to keep working on it there too.
+// The modal body hosts the real card element, not a copy.
 [songCardList, songCardModalBody].forEach(root => root.addEventListener("click", handleListClick));
 
 const RATING_POLL_ENDPOINT = "/music/ajax/song-rating-poll";
@@ -1400,9 +1425,7 @@ function showRatingEvent(event) {
 	showToast(container => fillFromTemplate(container, template, parts), event.songId);
 }
 
-/// Clears the class once the animation finishes. Leaving it on would re-fire
-/// the flash every time the element is moved in the DOM - opening the modal
-/// moves a whole card, and sorting re-appends every row.
+/// Clears the class on finish, or moving the element re-fires the flash.
 function flashCell(cell) {
 	cell.classList.remove("songRatingFlash");
 	void cell.offsetWidth;
@@ -1422,6 +1445,32 @@ function applyRatingHalf(pair, field, spec, value) {
 
 		setCellValue(cell, spec, value);
 		flashCell(cell);
+	});
+}
+
+// The statistics columns after a score moved. The server sends finished strings.
+const SONG_STAT_FIELDS = ["average", "deviation", "median", "mode", "highest", "lowest", "rated"];
+
+function applySongStats(stats) {
+	const pair = rowsBySongId.get(String(stats.song));
+	if (!pair) {
+		return;
+	}
+
+	SONG_STAT_FIELDS.forEach(field => {
+		const cell = fieldCell(pair.tr, field);
+		if (!cell) {
+			return;
+		}
+
+		if (field === "mode") {
+			cell.dataset.sortValue = stats.modeSort;
+		}
+		if (cellText(cell) === stats[field]) {
+			return;
+		}
+
+		setCellValue(cell, {}, stats[field]);
 	});
 }
 
@@ -1463,6 +1512,7 @@ function pollRatings() {
 	postJson(RATING_POLL_ENDPOINT, { since: ratingCursor, sinceAudit: ratingAuditCursor }, { signal: controller.signal })
 	.then(result => {
 		result.changes.forEach(applyRatingChange);
+		(result.stats || []).forEach(applySongStats);
 		result.events.slice(-TOAST_LIMIT).forEach(showRatingEvent);
 		ratingCursor = result.cursor;
 		ratingAuditCursor = result.auditCursor;
@@ -1488,4 +1538,15 @@ document.addEventListener("visibilitychange", () => {
 
 if (document.visibilityState === "visible") {
 	scheduleRatingPoll(RATING_POLL_INTERVAL);
+}
+
+// A link straight to a song's card, last so the rows are paired and filtered.
+const linkedSongCard = cardLinkValue("songCard");
+if (linkedSongCard !== null) {
+	openCardModal(linkedSongCard);
+
+	/// Nothing opened, so drop the parameter rather than let it claim a card.
+	if (songCardModal.hidden) {
+		writeCardLink(SONG_CARD_LINK_PARAMS, null);
+	}
 }

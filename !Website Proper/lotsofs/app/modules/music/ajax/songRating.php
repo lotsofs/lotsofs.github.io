@@ -1,8 +1,19 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
+require_once __MODULES__ . '/music/stats.php';
 
 requireMusicAccountJson($db, t('ajax.notLoggedIn'));
+
+/// The song list's statistics columns as they stand after a write.
+function songRatingStats($db, $songId) {
+	$scores = [];
+	foreach ($db->query("SELECT score FROM account_song WHERE song_id = ? AND score IS NOT NULL", [$songId])->fetchAll() as $row) {
+		$scores[] = (float)$row['score'];
+	}
+
+	return array_merge(['song' => (int)$songId], musicSongStatFields($scores));
+}
 
 $accountId = (int)currentAccountId();
 
@@ -78,4 +89,5 @@ echo json_encode([
 	'status' => 'ok',
 	'value' => $stored === null ? '' : $stored,
 	'message' => '',
+	'stats' => songRatingStats($db, $songId),
 ]);

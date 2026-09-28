@@ -39,4 +39,11 @@ return [
 	'artist.list.empty' => 'No artists yet.',
 	'artist.list.noName' => '(no name)',
 
+	'artist.card.notFound' => '❌ That artist does not exist',
+	'artist.card.edit' => 'Edit',
+	'artist.card.songCount' => 'Songs',
+	'artist.card.albums' => 'Albums',
+	'artist.card.showSongs' => 'Show these songs',
+	'artist.result.nameRequired' => '❌ An artist name is required',
+
 ];

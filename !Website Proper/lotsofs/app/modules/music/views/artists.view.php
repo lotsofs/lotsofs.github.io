@@ -21,12 +21,13 @@
 			<?php foreach ($globalData['artists'] as $artist): ?>
 				<tr>
 					<td class="listIdCell"><?= htmlspecialchars($artist['id']) ?></td>
-					<td class="listNameCell"><a href="/music/songs?artist=<?= (int)$artist['id'] ?>"><?= $artist['name'] === null ? t('artist.list.noName') : htmlspecialchars($artist['name']) ?></a></td>
+					<td class="listNameCell"><a href="/music/songs?artist=<?= (int)$artist['id'] ?>" data-artist-card-id="<?= (int)$artist['id'] ?>"><?= $artist['name'] === null ? t('artist.list.noName') : htmlspecialchars($artist['name']) ?></a></td>
 					<td class="listAliasCell"><?= htmlspecialchars($artist['aliases'] ?? '') ?></td>
 				</tr>
 			<?php endforeach ?>
 		</tbody>
 	</table>
+	<?php require(__MODULES__ . '/music/views/partials/albumCardModal.php') ?>
 <?php endif ?>
 
 <?php require(__MODULES__ . '/music/views/partials/foot.php') ?>

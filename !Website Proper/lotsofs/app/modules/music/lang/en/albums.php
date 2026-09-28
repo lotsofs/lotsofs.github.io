@@ -62,10 +62,12 @@ return [
 	'album.card.statDeviation' => 'St. Dev',
 	'album.card.statRated' => 'Rated',
 	'album.card.statEveryone' => 'Everyone',
+	'album.card.statsWho' => 'Statistics for',
 	'album.card.trackNumber' => '#',
 
 	'album.card.sortBy' => 'Order by',
 	'album.card.sortAlbum' => 'Album order',
+	'album.card.sortYear' => 'Release year',
 	'album.card.sortTitle' => 'Song title',
 	'album.card.sortAverage' => 'Average score',
 	'album.card.sortDeviation' => 'Standard deviation',

@@ -262,7 +262,7 @@ return [
 
 		$body = $ctx->get('/music/artists')['body'];
 
-		assertContains('<a href="/music/songs?artist=' . $artistId . '">Unmarked Band</a>', $body, 'the name cell falls back to the only spelling there is');
+		assertTrue(preg_match('#<a href="/music/songs\?artist=' . $artistId . '"[^>]*>Unmarked Band</a>#', $body) === 1, 'the name cell falls back to the only spelling there is');
 		assertSame(1, substr_count($body, 'Unmarked Band'), 'the fallback name is not also repeated in its own alias column');
 	},
 

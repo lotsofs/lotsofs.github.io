@@ -515,9 +515,7 @@ return [
 		assertSame(403, $ctx->postWithoutCsrf(ALBUM_ENDPOINT, [])['status'], 'no csrf token');
 	},
 
-	// A paste with no Year column sends nothing for it, and the wizard matches
-	// an existing album by name, so this is the ordinary path for "a few more
-	// tracks off the same record" - not an edge case.
+	// The ordinary path for "a few more tracks off the same record".
 	'importing more tracks onto an album leaves its artist and year alone' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
@@ -691,8 +689,7 @@ return [
 			];
 		}
 
-		// 8, 5, 8 and 2 out of five tracks: mean 5.75, middle pair 5 and 8,
-		// 8 twice, and a population sigma of sqrt(24.75 / 4)
+		// 8, 5, 8 and 2 of five tracks: mean 5.75, median 6.5, mode 8, sigma 2.49.
 		assertSame('5.75', $rows['test_runner']['average'], 'the average is over the tracks that rater scored, not over every track');
 		assertSame('6.5', $rows['test_runner']['median'], 'the median is the middle pair averaged');
 		assertSame('8', $rows['test_runner']['mode'], 'the mode is the score given more than once');
@@ -714,6 +711,58 @@ return [
 		assertTrue($never !== null, 'an account that rated nothing on this album still gets a row');
 		assertSame('—', $never['average'], 'and shows a dash rather than a zero');
 		assertTrue(strpos($never['html'], 'hsl(') === false, 'with nothing coloured in');
+	},
+
+	'the album track table can be read as one person instead of as everyone' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Whose Artist');
+		$titles = ['Whose One', 'Whose Two', 'Whose Three'];
+
+		$tracks = [];
+		foreach ($titles as $index => $title) {
+			$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => $title]]);
+			$tracks[] = ['song_id' => $ctx->songId($title), 'position' => $index + 1];
+		}
+		$albumId = makeAlbum($ctx, 'Whose Record', $artistId, $tracks);
+
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Whose One'), 'field' => 'score', 'value' => '2']);
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Whose Two'), 'field' => 'score', 'value' => '8']);
+
+		$ctx->ensureLoggedIn('whose_other_rater', 'test password', false);
+		$otherId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'whose_other_rater'")->fetch()['id'];
+		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Whose One'), 'field' => 'score', 'value' => '6']);
+
+		$ctx->ensureLoggedIn();
+		$trackCells = function ($html) {
+			preg_match_all('/<tr class="albumTrack"[^>]*>(.*?)<\/tr>/s', $html, $rows, PREG_SET_ORDER);
+			$out = [];
+			foreach ($rows as $row) {
+				preg_match_all('/<td[^>]*>(.*?)<\/td>/s', $row[1], $cells, PREG_SET_ORDER);
+				$out[] = array_map('strip_tags', array_column($cells, 1));
+			}
+			return $out;
+		};
+
+		$everyone = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+		assertTrue((bool)preg_match('/<select id="cardStatsWho"[^>]*\bclass="[^"]*\bcardStatsWho\b/', $everyone), 'the tracks section carries the control');
+		assertTrue((bool)preg_match('/<select id="cardStatsWho"[^>]*\bclass="[^"]*\bcardWheelSelect\b/', $everyone), 'and it answers the wheel, like the order controls below it');
+		assertContains('<option value="' . $otherId . '"', $everyone, 'listing the other rater');
+		assertSame(['1', 'Whose One', '4', '2', '2 / ' . substr_count($everyone, '<tr class="albumStatsRow"'), ''], $trackCells($everyone)[0], 'pooled, the first track averages the 2 and the 6 and counts both');
+
+		$mine = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'who' => $otherId])['json']['html'];
+
+		/// One person gives a track one score, so the columns collapse to it.
+		assertContains('<th class="albumTrackScore">whose_other_rater</th>', $mine, 'the column is headed with whose scores these are');
+		assertSame(['1', 'Whose One', '6', ''], $trackCells($mine)[0], 'and reads their score, not the average');
+		assertSame(['2', 'Whose Two', '—', ''], $trackCells($mine)[1], 'a track they never rated is a dash, even though somebody else rated it');
+
+		/// The graph stays every rater; it has a per-rater order of its own.
+		assertSame(substr_count($everyone, '<circle class="albumGraphDot"'), substr_count($mine, '<circle class="albumGraphDot"'), 'the graph still plots everyone');
+
+		/// A rater who is not here falls back to everyone.
+		$stale = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'who' => 999999])['json']['html'];
+		assertSame($trackCells($everyone), $trackCells($stale), 'an unknown rater reads as everyone');
 	},
 
 	'the album card graphs every score that was given, and nothing else' => function ($ctx) {
@@ -750,6 +799,35 @@ return [
 		preg_match('/albumStatsSwatch" style="background-color: (hsl\([^)]+\))"/', $row[1], $swatch);
 		assertTrue(!empty($swatch), 'the rater carries a colour swatch in the stats table, which is what makes it the graph legend');
 		assertContains('fill="' . $swatch[1] . '"', $joined, 'and the dots are drawn in that same colour');
+
+		/// The x axis is the track numbers, which an artist card has none of.
+		assertSame(3, preg_match_all('/text-anchor="middle"/', $joined), 'every track is numbered under the graph');
+	},
+
+	// Past about eighteen, the numbers would run into each other.
+	'a long record numbers every other track instead of colliding' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Prolix Artist');
+		$tracks = [];
+		for ($i = 1; $i <= 24; $i++) {
+			$title = "Prolix Track {$i}";
+			$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => $title]]);
+			$tracks[] = ['song_id' => $ctx->songId($title), 'position' => $i];
+		}
+
+		$albumId = makeAlbum($ctx, 'Prolix Record', $artistId, $tracks);
+		$ctx->post('/music/ajax/song-rating', ['id' => $tracks[0]['song_id'], 'field' => 'score', 'value' => '7']);
+
+		$html = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId])['json']['html'];
+		$numbers = [];
+		preg_match_all('/<text class="albumGraphAxis"[^>]*text-anchor="middle"[^>]*>(\d+)</', $html, $matches);
+		foreach ($matches[1] as $number) {
+			$numbers[] = (int)$number;
+		}
+
+		assertSame(12, count($numbers), 'twenty-four tracks are numbered every other one');
+		assertSame([1, 3, 5], array_slice($numbers, 0, 3), 'and the number under a column is that track\'s, not its place in the row');
 	},
 
 	'each track carries what the raters averaged it at' => function ($ctx) {
@@ -827,10 +905,7 @@ return [
 			$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId($title), 'field' => 'score', 'value' => $score]);
 		}
 
-		// Read off the column rects, one per track, rather than the dots -
-		// there is a dot per rater per track, so with more than one rater the
-		// dot order repeats each title and is not the column order at all.
-		// Each column's tooltip opens with the track title on its own line.
+		// Read off the column rects, one per track, since a dot repeats per rater.
 		$graphOrder = function ($html) {
 			preg_match_all('/<rect class="albumGraphColumn"[^>]*data-tooltip="([^"\n]*)/', $html, $matches);
 			return $matches[1];
@@ -854,9 +929,7 @@ return [
 		$byTitle = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'sort' => 'title', 'dir' => 'asc'])['json']['html'];
 		assertSame(['Reordered Alpha', 'Reordered Mike', 'Reordered Zulu'], $graphOrder($byTitle), 'by title is alphabetical');
 
-		// A second rater disagrees sharply about Zulu: it now holds both the
-		// lowest score on the record and, jointly, the highest - which is what
-		// separates "highest" and "lowest" from sorting on the average.
+		// Zulu now holds both the lowest score and, jointly, the highest.
 		$ctx->ensureLoggedIn('reordered_other', 'test password', false);
 		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Reordered Zulu'), 'field' => 'score', 'value' => '9']);
 		$ctx->ensureLoggedIn();
@@ -864,8 +937,7 @@ return [
 		$byHighest = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'sort' => 'highest', 'dir' => 'desc'])['json']['html'];
 		assertSame('Reordered Zulu', $graphOrder($byHighest)[0], 'by highest leads with the track somebody rated 9, even though its average is the worst');
 
-		// Both score extremes start high to low, like every other score order,
-		// so the direction control's own label stays true whichever is picked.
+		// Both extremes start high to low, like every other score order.
 		$byLowest = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'sort' => 'lowest'])['json']['html'];
 		assertSame(['Reordered Alpha', 'Reordered Mike', 'Reordered Zulu'], $graphOrder($byLowest), 'by lowest starts high to low, leading with the least-disliked track');
 		assertTrue(preg_match('/<option value="lowest" data-default-dir="desc"/', $byLowest) === 1, 'and the option says so, which is what the direction select resets to');
@@ -972,8 +1044,7 @@ return [
 		assertSame(1, count($added['aliases']), 'adding a song hands back its names, so its alias dropdown can be filled without another request');
 	},
 
-	// Pooled, not the mean of the per-rater means: otherwise a rater who scored
-	// one track would weigh as much as one who scored every track.
+	// Pooled, not the mean of the per-rater means.
 	'the ratings table totals everyone together' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
@@ -987,8 +1058,7 @@ return [
 			['song_id' => $ctx->songId('Totalled Two'), 'position' => 2],
 		]);
 
-		// one rater scores both tracks, the other only one: a mean of means
-		// would say 6, pooling says 5
+		// a mean of means would say 6, pooling says 5
 		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Totalled One'), 'field' => 'score', 'value' => '2']);
 		$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId('Totalled Two'), 'field' => 'score', 'value' => '4']);
 
@@ -1006,9 +1076,7 @@ return [
 		assertSame('Everyone', $values[0], 'the row says who it is for');
 		assertSame('5', $values[1], 'every score pooled, not the average of the averages');
 		assertSame('4', $values[3], 'and the median of all three scores, 2 4 and 9');
-		// The suite shares one database, so how many accounts exist by now is
-		// not knowable here - but the denominator is exactly the column total
-		// of the rows above, which is the property worth pinning.
+		// The denominator is the column total of the rows above.
 		$raterRows = preg_match_all('/<tr class="albumStatsRow" data-account-id=/', $html);
 		assertSame('3 / ' . ($raterRows * 2), $values[5], 'counted against every rating that could exist, one per track per account');
 
@@ -1030,9 +1098,7 @@ return [
 		assertTrue(!isset($rater['trackAliases']), 'and is handed none of the editing data either');
 	},
 
-	// The catalogue is the same for every album and most card opens never edit
-	// anything, so shipping it with the card meant re-sending every song in the
-	// library on each open - by far the most expensive thing the card did.
+	// The catalogue is the same for every album and most opens never edit.
 	'the dropdown options are fetched on demand, not with every card' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 		$artistId = $ctx->makeArtist('Deferred Options Artist');

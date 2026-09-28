@@ -3,9 +3,7 @@
 require_once __MODULES__ . '/music/ajaxGuard.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
-/// Everything the album card's edit dropdowns need to offer, which is the whole
-/// catalogue and nothing to do with any one album. Fetched once, on the first
-/// Edit click of a page session, rather than riding along with every card.
+/// The whole catalogue the album card's edit dropdowns need, fetched on the first Edit click.
 echo json_encode([
 	'status' => 'ok',
 	'artists' => $db->query("

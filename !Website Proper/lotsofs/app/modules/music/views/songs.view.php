@@ -77,7 +77,7 @@
 					<thead>
 						<tr>
 							<?php foreach ($globalData['columns'] as $column): ?>
-								<?php if (!isset($column['group'])): ?>
+								<?php if (!isset($column['group']) && ($column['section'] ?? '') !== 'stats'): ?>
 									<th rowspan="2" class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>">
 										<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
 									</th>
@@ -87,6 +87,13 @@
 							<?php foreach ($globalData['columns'] as $column): ?>
 								<?php if (isset($column['group']) && ($column['groupStart'] ?? false)): ?>
 									<th colspan="2" class="<?= $column['groupClass'] ?>"><?= htmlspecialchars($column['groupLabel']) ?></th>
+								<?php endif ?>
+							<?php endforeach ?>
+							<?php foreach ($globalData['columns'] as $column): ?>
+								<?php if (($column['section'] ?? '') === 'stats'): ?>
+									<th rowspan="2" class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>">
+										<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
+									</th>
 								<?php endif ?>
 							<?php endforeach ?>
 							<th rowspan="2" class="songResultCell"><?= $resultLabel ?></th>
@@ -105,7 +112,7 @@
 						<?php foreach ($songRows as $song): ?>
 							<tr data-song-id="<?= (int)$song['id'] ?>" data-artist-id="<?= (int)$song['artist_id'] ?>" data-artist-ids="<?= $song['artistIdsAttr'] ?>" data-album-ids="<?= $song['albumIdsAttr'] ?>"<?= $song['hiddenAttr'] ?>>
 								<td class="songIdCell" data-field="id"><?= htmlspecialchars($song['id']) ?></td>
-								<td class="songArtistCell" data-field="artist" title="<?= $song['artistValue'] ?>"><span class="songCellText"><?= $song['artistValue'] ?></span></td>
+								<td class="songArtistCell" data-field="artist" title="<?= $song['artistValue'] ?>"><span class="songCellText"><?= $song['artistHtml'] ?></span></td>
 								<td class="songTitleCell<?= $song['titleAliasedClass'] ?>" data-field="title" data-canonical-title="<?= $song['canonicalTitleAttr'] ?>"<?= $song['titleTooltipAttr'] ?>><span class="songCellText"><?= $song['titleValue'] ?></span></td>
 								<td class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><span class="songCellText"><?= $song['albumsHtml'] ?></span></td>
 								<td class="songYearCell" data-field="year"><?= $song['displayYearValue'] ?></td>
@@ -135,6 +142,10 @@
 									?>
 									<td class="<?= $rater['scoreClass'] ?><?= $rating['scoreEmptyClass'] ?>" data-field="score_<?= $raterId ?>" data-account-id="<?= $raterId ?>"<?= $labels['placeholder'] ?>><?= $rating['scoreValue'] ?></td>
 									<td class="<?= $rater['noteClass'] ?><?= $rating['noteEmptyClass'] ?>" data-field="note_<?= $raterId ?>" data-account-id="<?= $raterId ?>" data-rater-name="<?= $labels['name'] ?>"<?= $labels['placeholder'] ?> title="<?= $rating['noteValue'] ?>"><span class="ratingNoteText"><?= $rating['noteValue'] ?></span></td>
+								<?php endforeach ?>
+								<?php foreach ($globalData['statColumns'] as $stat): ?>
+									<?php $statValue = $song['stats'][$stat['key']] ?>
+									<td class="songStatCell songStat<?= ucfirst($stat['key']) ?>Cell<?= ($stat['score'] ?? false) ? ' songScoreColoured' : '' ?><?= $statValue === '' ? ' songCellEmpty' : '' ?>" data-field="<?= $stat['key'] ?>"<?= $stat['key'] === 'mode' ? ' data-sort-value="' . htmlspecialchars($song['stats']['modeSort']) . '"' : '' ?>><?= htmlspecialchars($statValue) ?></td>
 								<?php endforeach ?>
 								<td class="songResultCell" data-field="result"></td>
 							</tr>

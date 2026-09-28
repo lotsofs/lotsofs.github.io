@@ -150,11 +150,7 @@ return [
 		assertContains('cursor: pointer', $css, 'and it is the hand');
 	},
 
-	// A // comment is valid in every other file in this repo and silently
-	// destructive here: css has no line comments, so the parser treats the
-	// slashes as a bad token and recovers by swallowing the rule that follows,
-	// leaving a correct-looking declaration block that never applies. This cost
-	// a debugging cycle over a card that would not paint its background.
+	// CSS has no line comments: the parser swallows the rule after one, silently.
 	'the stylesheets carry no line comments' => function ($ctx) {
 		$css = $ctx->get('/modules/music/css/styles.css')['body'];
 

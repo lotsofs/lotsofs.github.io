@@ -1,9 +1,6 @@
 <?php
 
-/// Spotify and YouTube are stored as a bare track/video id, which is not a
-/// usable href on its own - a relative one resolves against /music/. urlPrefix
-/// rebuilds the outward link; a value that already carries a scheme is used
-/// untouched. songs.js reads the same prefixes out of songLinkFieldData.
+/// Per platform: the column, its labels, and the prefix that rebuilds an outward link.
 function songLinkHref($value, $prefix) {
 	if ($value === null || $value === '') {
 		return null;
@@ -27,20 +24,12 @@ function songLinkFields() {
 	];
 }
 
-/// The song list only offers an album in its filter when that album's artist
-/// matches the artist filter, so a link to one album's songs has to carry the
-/// artist too or the album half is dropped as out of scope.
+/// A link to one album's songs, carrying the artist the filter needs.
 function albumSongsHref($albumId, $artistId) {
 	return '/music/songs?' . ($artistId === null ? '' : 'artist=' . (int)$artistId . '&') . 'album=' . (int)$albumId;
 }
 
-/// The id inside a pasted Spotify or YouTube URL, or null when there isn't
-/// one. Two callers with deliberately different fallbacks use these: songLink
-/// keeps whatever was pasted when no id is found (it may already be a bare
-/// id), while the song list treats "no id" as "don't embed this". Only the
-/// patterns are shared - supporting a new URL shape then reaches both, which
-/// is the failure the separate copies invited: an id that stored correctly but
-/// never rendered as a player.
+/// The id inside a pasted Spotify or YouTube URL, or null when there isn't one.
 function spotifyTrackIdIn($value) {
 	return preg_match('#/track/([A-Za-z0-9]+)#', $value, $match) ? $match[1] : null;
 }

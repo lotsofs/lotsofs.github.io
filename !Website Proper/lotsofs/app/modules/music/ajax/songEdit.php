@@ -43,12 +43,7 @@ if ($clash) {
 	exit;
 }
 
-/// The clash check above deliberately ignores this song's own names, so a
-/// rename onto one of its existing aliases reaches here - and renaming the
-/// actual row onto that name would collide with idx_song_alias_unique and come
-/// back as a 500 carrying the raw SQL. Promote the alias it already has
-/// instead, the way albumEdit.php and artistAlias.php both do. Clearing has to
-/// land before setting: idx_song_alias_one_actual allows one per song.
+/// Promote the alias the song already has, or the rename collides with idx_song_alias_unique.
 $existing = $db->query("SELECT id FROM song_alias WHERE song_id = ? AND name = ?", [$id, $value])->fetch();
 
 if ($existing) {

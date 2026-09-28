@@ -24,13 +24,14 @@ $raters = $db->query("
 	ORDER BY a.id = ? DESC, a.id
 ", [$accountId])->fetchAll();
 
+/// Per column: `value` is tested for emptiness, `order` is what rows sort by.
 $sortable = [
-	'id' => 's.id',
-	'artist' => 'artist COLLATE NOCASE',
-	'title' => 'title COLLATE NOCASE',
-	'album' => 'albums COLLATE NOCASE',
-	'year' => 'COALESCE(song_year, fallback_year)',
-	'duration' => 's.duration',
+	'id' => ['value' => 's.id', 'order' => 's.id'],
+	'artist' => ['value' => 'artist', 'order' => 'artist COLLATE NOCASE'],
+	'title' => ['value' => 'title', 'order' => 'title COLLATE NOCASE'],
+	'album' => ['value' => 'albums', 'order' => 'albums COLLATE NOCASE'],
+	'year' => ['value' => 'COALESCE(song_year, fallback_year)', 'order' => 'COALESCE(song_year, fallback_year)'],
+	'duration' => ['value' => 's.duration', 'order' => 's.duration'],
 ];
 
 
@@ -43,14 +44,26 @@ foreach ($raters as $rater) {
 	$aggregates .= ", MAX(CASE WHEN account_id = {$id} THEN score END) AS score_{$id}, MAX(CASE WHEN account_id = {$id} THEN subjective_note END) AS note_{$id}";
 	$selects .= ", r.score_{$id} AS score_{$id}, r.note_{$id} AS note_{$id}";
 
-	$sortable["score_{$id}"] = "score_{$id}";
-	$sortable["note_{$id}"] = "note_{$id} COLLATE NOCASE";
+	$sortable["score_{$id}"] = ['value' => "score_{$id}", 'order' => "score_{$id}"];
+	$sortable["note_{$id}"] = ['value' => "note_{$id}", 'order' => "note_{$id} COLLATE NOCASE"];
 }
 
 $joins = " LEFT JOIN (SELECT song_id{$aggregates} FROM account_song GROUP BY song_id) r ON r.song_id = s.id";
 
+/// The orders SQLite cannot express; these rows are sorted in PHP below.
+$statOrders = ['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'rated'];
+
+/// ORDER BY that keeps blank cells last in both directions.
+function songsOrderBy($column, $dir) {
+	if ($column === null) {
+		return "s.id {$dir}, s.id";
+	}
+
+	return "({$column['value']} IS NULL OR {$column['value']} = ''), {$column['order']} {$dir}, s.id";
+}
+
 $requested = is_string($_GET['sort'] ?? null) ? $_GET['sort'] : '';
-$sort = isset($sortable[$requested]) ? $requested : 'id';
+$sort = isset($sortable[$requested]) || in_array($requested, $statOrders, true) ? $requested : 'id';
 $dir = ($_GET['dir'] ?? '') === 'desc' ? 'DESC' : 'ASC';
 
 $globalData['sort'] = $sort;
@@ -169,8 +182,52 @@ $globalData['songs'] = $db->query("
 	FROM song s
 	LEFT JOIN song_alias st ON st.song_id = s.id AND st.is_actual = 1
 	{$joins}
-	ORDER BY {$sortable[$sort]} {$dir}, s.id
+	ORDER BY " . songsOrderBy($sortable[$sort] ?? null, $dir) . "
 ")->fetchAll();
+
+if (in_array($sort, $statOrders, true)) {
+	require_once __MODULES__ . '/music/stats.php';
+
+	/// The statistic one song sorts on, off the scores already pivoted into its row.
+	$statValue = function ($song) use ($raters, $sort) {
+		$scores = [];
+		foreach ($raters as $rater) {
+			$score = $song['score_' . (int)$rater['id']] ?? null;
+			if ($score !== null) {
+				$scores[] = (float)$score;
+			}
+		}
+
+		$stats = musicScoreStats($scores);
+
+		return $sort === 'mode'
+			? ($stats['modes'] ? max($stats['modes']) : null)
+			: $stats[$sort];
+	};
+
+	$decorated = [];
+	foreach ($globalData['songs'] as $song) {
+		$decorated[] = ['value' => $statValue($song), 'id' => (int)$song['id'], 'song' => $song];
+	}
+
+	$flip = $dir === 'DESC' ? -1 : 1;
+
+	/// Blanks last in both directions, ties on id, matching songsOrderBy().
+	usort($decorated, function ($a, $b) use ($flip) {
+		if ($a['value'] === null || $b['value'] === null) {
+			if ($a['value'] === $b['value']) {
+				return $a['id'] <=> $b['id'];
+			}
+			return $a['value'] === null ? 1 : -1;
+		}
+
+		$order = $a['value'] <=> $b['value'];
+
+		return $order === 0 ? $a['id'] <=> $b['id'] : $order * $flip;
+	});
+
+	$globalData['songs'] = array_column($decorated, 'song');
+}
 
 require_once __MODULES__ . '/music/links.php';
 
@@ -190,9 +247,7 @@ foreach ($db->query("SELECT song_id, spotify_url, youtube_url, soundcloud_url, b
 
 $globalData['songLinksBySong'] = $songLinksBySong;
 
-/// The song row's albums column is one group_concat of names and its album_ids
-/// another of ids, in unrelated orders, so neither can tell which name belongs
-/// to which album. This pairs them up so each name can be its own link.
+/// Album ids paired with their names, so each name can be its own link.
 $albumsBySong = [];
 foreach ($db->query("
 	SELECT at.song_id, at.album_id, al.artist_id,
@@ -209,6 +264,22 @@ foreach ($db->query("
 }
 
 $globalData['albumsBySong'] = $albumsBySong;
+
+/// Artist ids paired with their names, the same as the albums above.
+$artistsBySong = [];
+foreach ($db->query("
+	SELECT sa.song_id, sa.artist_id,
+		(SELECT name FROM artist_alias WHERE artist_id = sa.artist_id ORDER BY is_actual DESC, id LIMIT 1) AS name
+	FROM song_artist sa
+	ORDER BY sa.id
+")->fetchAll() as $row) {
+	$artistsBySong[(int)$row['song_id']][] = [
+		'id' => (int)$row['artist_id'],
+		'name' => $row['name'],
+	];
+}
+
+$globalData['artistsBySong'] = $artistsBySong;
 
 $trackAliases = [];
 foreach ($db->query("
@@ -247,7 +318,7 @@ foreach ($raters as $index => $rater) {
 	$isMine = $id === $accountId;
 
 	$raters[$index]['isMine'] = $isMine;
-	$raters[$index]['scoreClass'] = 'songRatingCell songRatingScoreCell' . ($isMine ? ' songMineCell songMyScoreCell' : '');
+	$raters[$index]['scoreClass'] = 'songRatingCell songRatingScoreCell songScoreColoured' . ($isMine ? ' songMineCell songMyScoreCell' : '');
 	$raters[$index]['noteClass'] = 'songRatingCell songRatingNoteCell' . ($isMine ? ' songMineCell songMyNoteCell' : '');
 
 	$columns[] = [
@@ -271,6 +342,28 @@ foreach ($raters as $index => $rater) {
 	];
 }
 
+/// The statistics columns, to the right of the rater columns.
+$statColumns = [
+	['key' => 'average', 'label' => t('album.card.statAverage'), 'name' => t('album.card.sortAverage'), 'score' => true],
+	['key' => 'deviation', 'label' => t('album.card.statDeviation'), 'name' => t('album.card.sortDeviation')],
+	['key' => 'median', 'label' => t('album.card.statMedian'), 'name' => t('album.card.sortMedian'), 'score' => true],
+	['key' => 'mode', 'label' => t('album.card.statMode'), 'name' => t('album.card.sortMode')],
+	['key' => 'highest', 'label' => t('song.column.statHighest'), 'name' => t('album.card.sortHighest'), 'score' => true],
+	['key' => 'lowest', 'label' => t('song.column.statLowest'), 'name' => t('album.card.sortLowest'), 'score' => true],
+	['key' => 'rated', 'label' => t('album.card.statRated'), 'name' => t('album.card.sortRated')],
+];
+
+foreach ($statColumns as $stat) {
+	$columns[] = array_merge($stat, [
+		'type' => 'number',
+		'section' => 'stats',
+		/// songScoreColoured marks the cells the score ramp paints.
+		'class' => 'songStatCell songStat' . ucfirst($stat['key']) . 'Cell'
+			. (($stat['score'] ?? false) ? ' songScoreColoured' : ''),
+	]);
+}
+
+$globalData['statColumns'] = $statColumns;
 $globalData['raters'] = $raters;
 $globalData['accountId'] = $accountId;
 

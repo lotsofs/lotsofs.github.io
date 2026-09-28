@@ -62,10 +62,12 @@ return [
 	'album.card.statDeviation' => 'St.-Abw.',
 	'album.card.statRated' => 'Bewertet',
 	'album.card.statEveryone' => 'Alle',
+	'album.card.statsWho' => 'Statistik für',
 	'album.card.trackNumber' => '#',
 
 	'album.card.sortBy' => 'Sortieren nach',
 	'album.card.sortAlbum' => 'Albumreihenfolge',
+	'album.card.sortYear' => 'Erscheinungsjahr',
 	'album.card.sortTitle' => 'Songtitel',
 	'album.card.sortAverage' => 'Durchschnittswertung',
 	'album.card.sortDeviation' => 'Standardabweichung',

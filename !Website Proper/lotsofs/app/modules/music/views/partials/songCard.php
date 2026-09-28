@@ -9,7 +9,7 @@
 	<div class="songCardMeta">
 		<div class="songCardInfo">
 			<dt><?= $artistLabel ?></dt>
-			<dd class="songArtistCell" data-field="artist"><?= $song['artistValue'] ?></dd>
+			<dd class="songArtistCell" data-field="artist"><?= $song['artistHtml'] ?></dd>
 			<dt><?= $albumLabel ?></dt>
 			<dd class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><?= $song['albumsHtml'] ?></dd>
 			<dt><?= $yearLabel ?></dt>

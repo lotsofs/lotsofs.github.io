@@ -127,9 +127,7 @@ return [
 		assertSame('en', $ctx->db()->query("SELECT lang FROM account WHERE account_name = 'language_flipper'")->fetch()['lang'], 'and the account too');
 	},
 
-	// The colour route already ignores a hue it cannot parse; this used to fall
-	// back to 'en' and persist it, so one stale POST could permanently switch
-	// an account's language - to a locale that isn't even the module default.
+	// This used to fall back to 'en' and persist it.
 	'a locale the module does not ship leaves the choice alone' => function ($ctx) {
 		$ctx->ensureLoggedIn('language_keeper_two');
 

@@ -23,39 +23,6 @@ function songsMakeAlbum($ctx, $name, $artistId, $tracks) {
 	return (int)$response['json'][0]['album_id'];
 }
 
-// each chunk starts right after the row's data-song-id value, so the song id
-// is the leading digits and the rest runs up to the next row
-function songsRowChunks($body) {
-	$chunks = explode('<tr data-song-id="', $body);
-	array_shift($chunks);
-	return $chunks;
-}
-
-function songsRowFor($body, $songId) {
-	foreach (songsRowChunks($body) as $chunk) {
-		if (strpos($chunk, (int)$songId . '"') === 0) {
-			return $chunk;
-		}
-	}
-	return null;
-}
-
-// works for a <td data-field="x">value</td> cell, for a note cell's
-// <td data-field="x" ...><span class="ratingNoteText">value</span></td> and for
-// the album cell, whose names are links to each album's card
-function songsCellValue($chunk, $field) {
-	$pattern = '/data-field="' . preg_quote($field, '/') . '"[^>]*>(.*?)<\/(?:td|dd)>/s';
-	return preg_match($pattern, $chunk, $m) ? strip_tags($m[1]) : null;
-}
-
-function songsValuesInOrder($body, $field) {
-	$values = [];
-	foreach (songsRowChunks($body) as $chunk) {
-		$values[] = songsCellValue($chunk, $field);
-	}
-	return $values;
-}
-
 function songsTitleCellFor($body, $songId) {
 	$chunk = songsRowFor($body, $songId);
 	if ($chunk === null) {
@@ -64,9 +31,7 @@ function songsTitleCellFor($body, $songId) {
 
 	$pattern = '/<td class="songTitleCell([^"]*)" data-field="title" data-canonical-title="([^"]*)"( title="([^"]*)")?><span class="songCellText">([^<]*)<\/span><\/td>/';
 
-	// Throwing rather than returning null: every caller reads a key straight
-	// off the result, so a null turns a markup change into "array offset on
-	// null" three lines later instead of saying which pattern stopped matching.
+	// Throws rather than returning null, so a markup change says which pattern broke.
 	if (!preg_match($pattern, $chunk, $m)) {
 		throw new Exception("no title cell matched for song {$songId} in: " . substr($chunk, 0, 300));
 	}
@@ -84,23 +49,7 @@ function songsAlbumCellFor($body, $songId) {
 	return $chunk === null ? null : songsCellValue($chunk, 'album');
 }
 
-// smoke-check helper for the separate #songCards tree: the table is the
-// primary thing tested throughout this file, cards are checked only lightly
-function songsCardFor($body, $songId) {
-	$chunks = preg_split('/<dl class="songCard[^"]*" data-song-id="/', $body);
-	array_shift($chunks);
-	foreach ($chunks as $chunk) {
-		if (strpos($chunk, (int)$songId . '"') === 0) {
-			return $chunk;
-		}
-	}
-	return null;
-}
-
-// the poll hands back at most 50 audit rows per request, so a test that wants
-// to see its own write has to start from where the log stood before it, not
-// from 0 - otherwise it only passes while the whole suite has written fewer
-// than 50 ratings before this point
+// the poll caps audit rows at 50, so a test must start from the current cursor
 function songsAuditCursor($ctx) {
 	return (int)$ctx->db()->query("SELECT COALESCE(MAX(id), 0) c FROM rating_audit")->fetch()['c'];
 }
@@ -501,10 +450,7 @@ return [
 		assertTrue(strpos($body, 'sort=result') === false, 'nothing links to sorting by result');
 	},
 
-	// The clipped cells have carried their full value in a title attribute all
-	// along; opting the containers in is what turns those into the hover box
-	// without touching a cell. The attribute stays server-side, so the value is
-	// still reachable with no javascript at all.
+	// Opting the container in turns the existing title attributes into hover boxes.
 	'the clipped cells opt in to the hover box' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
@@ -526,9 +472,7 @@ return [
 		assertContains('id="musicTooltip"', $body, 'the page carries the box they open into');
 	},
 
-	// A note is typed into a textarea, so it can have line breaks in it. The
-	// table clips notes to one line on purpose; the card is where one is read
-	// in full, and that is where the breaks have to survive.
+	// The card is where a note is read in full, so its line breaks have to survive.
 	'a note keeps its line breaks through to the card' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
@@ -727,10 +671,7 @@ return [
 		assertSame('ok', $response['json']['status'], 'status');
 	},
 
-	// Songs accumulate alternate names from the importer and from the album
-	// card's "listed as" feature, so renaming onto one of them is an ordinary
-	// admin action. Renaming the actual row onto that name would collide with
-	// idx_song_alias_unique and come back as a 500 carrying the raw SQL.
+	// Renaming onto one of a song's own aliases used to collide and 500.
 	'renaming a song to a name it already answers to promotes that name' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
@@ -758,9 +699,7 @@ return [
 		assertSame('Promoted Sleeve Title', $ctx->songTitle($songId), 'the song now goes by the new title');
 	},
 
-	// The browser always sends strings, so these guard the endpoints against a
-	// caller that doesn't - where "set it to 1990" would otherwise arrive as
-	// "clear it" and be answered with status ok.
+	// Guards the endpoints against a caller that sends numbers, not strings.
 	'a numeric field sent as a number is set, not cleared' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
@@ -1085,10 +1024,7 @@ return [
 		assertSame(1, preg_match_all('/<th class="[^"]*songMyNoteCell"/', $body), 'exactly one note column is yours');
 		assertTrue(strpos($body, 'songMineCell') !== false, 'your columns are marked');
 
-		// Matched on the class list rather than the exact attribute string:
-		// CLAUDE.md's rule for this markup is "add to a class list, never
-		// replace one", so pinning the literal would fail on a legal change
-		// while still not catching a class that went missing.
+		// Matched on the class list, since the rule here is "add, never replace".
 		assertClasses(
 			['songRaterGroup', 'songMineCell', 'songMineGroup'],
 			$body,
@@ -1424,7 +1360,7 @@ return [
 		$artistId = $ctx->makeArtist('Linked From Artists Page');
 
 		$body = $ctx->get('/music/artists')['body'];
-		assertContains("<a href=\"/music/songs?artist={$artistId}\">Linked From Artists Page</a>", $body, 'the name links to the artist filter');
+		assertTrue(preg_match("#<a href=\"/music/songs\?artist={$artistId}\"[^>]*>Linked From Artists Page</a>#", $body) === 1, 'the name links to the artist filter');
 	},
 
 	'the albums page links an album to its filtered songs' => function ($ctx) {
@@ -2311,7 +2247,7 @@ return [
 		assertTrue($prev < $next && $next < $close, 'they read previous, next, close');
 	},
 
-	'sorting by a rater score puts unrated and cleared songs first ascending and last descending' => function ($ctx) {
+	'sorting by a rater score puts unrated and cleared songs last in both directions' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
 		$artistId = $ctx->makeArtist('Score Sort Owner');
@@ -2340,20 +2276,21 @@ return [
 			return array_values(array_filter($titles, fn($t) => in_array($t, $mine, true)));
 		};
 
+		/// No row at all and a cleared score are one empty block, kept in id order.
 		assertSame(
-			['Score Sort Never', 'Score Sort Cleared', 'Score Sort Low', 'Score Sort High'],
+			['Score Sort Low', 'Score Sort High', 'Score Sort Never', 'Score Sort Cleared'],
 			$ordered('asc'),
-			'ascending puts both kinds of empty first, in id order, then the scores'
+			'ascending puts the scores first and both kinds of empty after them'
 		);
 
 		assertSame(
 			['Score Sort High', 'Score Sort Low', 'Score Sort Never', 'Score Sort Cleared'],
 			$ordered('desc'),
-			'descending reverses the scores but the empty block stays in ascending id order'
+			'descending reverses the scores and leaves the empty block exactly where it was'
 		);
 	},
 
-	'sorting by a rater note ignores case and puts songs without a note first' => function ($ctx) {
+	'sorting by a rater note ignores case and puts songs without a note last' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
 		$artistId = $ctx->makeArtist('Note Sort Owner');
@@ -2373,7 +2310,7 @@ return [
 		};
 
 		assertSame(
-			['Note Sort None', 'Note Sort Apple', 'Note Sort Banana'],
+			['Note Sort Apple', 'Note Sort Banana', 'Note Sort None'],
 			$ordered('asc'),
 			'lowercase apple sorts before uppercase Banana, so the sort is case insensitive'
 		);
@@ -2381,7 +2318,7 @@ return [
 		assertSame(
 			['Note Sort Banana', 'Note Sort Apple', 'Note Sort None'],
 			$ordered('desc'),
-			'descending reverses it and leaves the unnoted song last'
+			'and the unnoted song stays last when the notes reverse'
 		);
 	},
 
@@ -2489,22 +2426,196 @@ return [
 			return array_values(array_filter($titles, fn($t) => in_array($t, $mine, true)));
 		};
 
+		/// Blank cells sit at the bottom whichever way the column points.
 		assertSame(
-			['Year Sort None', 'Year Sort Early', 'Year Sort Late'],
+			['Year Sort Early', 'Year Sort Late', 'Year Sort None'],
 			$ordered('/music/songs?sort=year&dir=asc'),
-			'ascending by year puts the song with no year first'
+			'ascending by year puts the song with no year last'
 		);
 
 		assertSame(
 			['Year Sort Late', 'Year Sort Early', 'Year Sort None'],
 			$ordered('/music/songs?sort=year&dir=desc'),
-			'descending by year reverses it'
+			'descending reverses the dated songs and leaves it there'
 		);
 
 		assertSame(
-			['Year Sort None', 'Year Sort Early', 'Year Sort Late'],
+			['Year Sort Early', 'Year Sort Late', 'Year Sort None'],
 			$ordered('/music/songs?sort=duration&dir=asc'),
-			'ascending by duration puts the song with no duration first'
+			'and the same for a song with no duration'
+		);
+
+		assertSame(
+			['Year Sort Late', 'Year Sort Early', 'Year Sort None'],
+			$ordered('/music/songs?sort=duration&dir=desc'),
+			'from either end'
+		);
+	},
+
+	'the song list reports what everyone together made of each song' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Statted Artist');
+		foreach (['Statted Agreed', 'Statted Split', 'Statted Unheard'] as $title) {
+			$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => $title]]);
+		}
+
+		$agreed = $ctx->songId('Statted Agreed');
+		$split = $ctx->songId('Statted Split');
+		$unheard = $ctx->songId('Statted Unheard');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $agreed, 'field' => 'score', 'value' => '7']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $split, 'field' => 'score', 'value' => '2']);
+
+		$ctx->ensureLoggedIn('stat_second_rater', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $agreed, 'field' => 'score', 'value' => '7']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $split, 'field' => 'score', 'value' => '9']);
+
+		$ctx->ensureLoggedIn();
+		$body = $ctx->get('/music/songs')['body'];
+
+		$statsOf = function ($songId) use ($body) {
+			$chunk = songsRowFor($body, $songId);
+			$stats = [];
+			foreach (['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'rated'] as $field) {
+				$stats[$field] = songsCellValue($chunk, $field);
+			}
+			return $stats;
+		};
+
+		assertSame(
+			['average' => '7', 'deviation' => '0', 'median' => '7', 'mode' => '7', 'highest' => '7', 'lowest' => '7', 'rated' => '2'],
+			$statsOf($agreed),
+			'two people who agree have no spread, and their score is every statistic'
+		);
+
+		assertSame(
+			['average' => '5.5', 'deviation' => '3.5', 'median' => '5.5', 'mode' => '', 'highest' => '9', 'lowest' => '2', 'rated' => '2'],
+			$statsOf($split),
+			'two who disagree have a spread, and two different scores are no mode at all'
+		);
+
+		assertSame(
+			['average' => '', 'deviation' => '', 'median' => '', 'mode' => '', 'highest' => '', 'lowest' => '', 'rated' => '0'],
+			$statsOf($unheard),
+			'a song nobody scored is blank throughout, but its count is a real zero'
+		);
+
+		/// The columns sit past the last rater's, which the horizontal scroll is for.
+		$row = songsRowFor($body, $agreed);
+		assertTrue(strpos($row, 'data-field="score_') < strpos($row, 'data-field="average"'), 'the statistics follow the rater columns');
+
+		/// Two more raters, so the song has two scores given twice and no single mode.
+		$ctx->ensureLoggedIn('stat_third_rater', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $split, 'field' => 'score', 'value' => '2']);
+		$ctx->ensureLoggedIn('stat_fourth_rater', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $split, 'field' => 'score', 'value' => '9']);
+
+		$ctx->ensureLoggedIn();
+		$tied = songsRowFor($ctx->get('/music/songs')['body'], $split);
+		assertSame('2, 9', songsCellValue($tied, 'mode'), 'a tie prints every score that tied');
+		assertContains('data-sort-value="9"', $tied, 'and sorts by the highest of them');
+	},
+
+	'a rating write hands back the statistics for the row it changed' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Restatted Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Restatted Song']]);
+		$songId = $ctx->songId('Restatted Song');
+
+		/// Returned with the write rather than waiting for the next poll tick.
+		$written = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '4'])['json'];
+		assertSame($songId, $written['stats']['song'], 'the write says which row it is for');
+		assertSame('4', $written['stats']['average'], 'and what that row now reads');
+		assertSame('1', $written['stats']['rated'], 'counting the one score there is');
+
+		$cursor = songsAuditCursor($ctx);
+		$ctx->ensureLoggedIn('restat_second_rater', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '8']);
+
+		/// And the poll carries them for anything that moved while the page was open.
+		$ctx->ensureLoggedIn();
+		$poll = $ctx->post('/music/ajax/song-rating-poll', ['since' => 0, 'sinceAudit' => $cursor])['json'];
+
+		$stats = null;
+		foreach ($poll['stats'] as $row) {
+			if ((int)$row['song'] === $songId) {
+				$stats = $row;
+			}
+		}
+
+		assertTrue($stats !== null, 'the poll carries statistics for the song that changed');
+		assertSame('6', $stats['average'], 'averaging both scores');
+		assertSame('2', $stats['deviation'], 'with the spread between them');
+		assertSame('2', $stats['rated'], 'over two ratings');
+	},
+
+	'every column keeps its blank rows at the bottom from either end' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Blank Block Artist');
+		$mine = ['Blank Block Alpha', 'Blank Block Omega', 'Blank Block Nothing'];
+		foreach ($mine as $title) {
+			$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => $title]]);
+		}
+
+		makeAlbum($ctx, 'Blank Block Alpha Record', $artistId, [['song_id' => $ctx->songId('Blank Block Alpha'), 'position' => 1]]);
+		makeAlbum($ctx, 'Blank Block Omega Record', $artistId, [['song_id' => $ctx->songId('Blank Block Omega'), 'position' => 1]]);
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Blank Block Alpha'), 'field' => 'score', 'value' => '3']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Blank Block Omega'), 'field' => 'score', 'value' => '8']);
+
+		$ordered = function ($column, $dir) use ($ctx, $mine) {
+			$titles = songsValuesInOrder($ctx->get("/music/songs?sort={$column}&dir={$dir}")['body'], 'title');
+			return array_values(array_filter($titles, fn($t) => in_array($t, $mine, true)));
+		};
+
+		/// One rule for a text column and for a computed one.
+		foreach (['album', 'average'] as $column) {
+			$ascending = $ordered($column, 'asc');
+			$descending = $ordered($column, 'desc');
+
+			assertSame('Blank Block Nothing', end($ascending), "ascending by {$column} leaves the blank row last");
+			assertSame('Blank Block Nothing', end($descending), "and so does descending by {$column}");
+			assertSame(array_slice($ascending, 0, 2), array_reverse(array_slice($descending, 0, 2)), "flipping {$column} reverses only the rows that have a value");
+		}
+	},
+
+	'the statistics columns order the list even though sqlite cannot' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Ordered Stats Artist');
+		$mine = ['Ordered Stats High', 'Ordered Stats Low', 'Ordered Stats None'];
+		foreach ($mine as $title) {
+			$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => $title]]);
+		}
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Ordered Stats High'), 'field' => 'score', 'value' => '9']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Ordered Stats Low'), 'field' => 'score', 'value' => '3']);
+
+		$ordered = function ($path) use ($ctx, $mine) {
+			$titles = songsValuesInOrder($ctx->get($path)['body'], 'title');
+			return array_values(array_filter($titles, fn($t) => in_array($t, $mine, true)));
+		};
+
+		/// SQLite cannot order by these, so the rows are sorted after the fetch.
+		assertSame(
+			['Ordered Stats Low', 'Ordered Stats High', 'Ordered Stats None'],
+			$ordered('/music/songs?sort=average&dir=asc'),
+			'ascending by average puts the unrated song last'
+		);
+
+		assertSame(
+			['Ordered Stats High', 'Ordered Stats Low', 'Ordered Stats None'],
+			$ordered('/music/songs?sort=average&dir=desc'),
+			'and descending leaves it there rather than lifting it to the top'
+		);
+
+		assertSame(
+			['Ordered Stats High', 'Ordered Stats Low', 'Ordered Stats None'],
+			$ordered('/music/songs?sort=median&dir=desc'),
+			'and every statistic is orderable, not only the average'
 		);
 	},
 

@@ -2,33 +2,32 @@ const albumCardModal = document.getElementById("albumCardModal");
 const albumCardModalBody = document.getElementById("albumCardModalBody");
 const albumCardModalClose = document.getElementById("albumCardModalClose");
 
-const ALBUM_CARD_ENDPOINT = "/music/ajax/album-card";
 const ALBUM_OPTIONS_ENDPOINT = "/music/ajax/album-options";
 const ALBUM_EDIT_ENDPOINT = "/music/ajax/album-edit";
 const ALBUM_TRACK_ENDPOINT = "/music/ajax/album-track";
+const ARTIST_EDIT_ENDPOINT = "/music/ajax/artist-edit";
 
-// Cards are always fetched fresh rather than cached: the song list can move a
-// song on or off an album while the page is open, which would leave a cached
-// track list quietly wrong. Leaving edit mode re-fetches for the same reason -
-// it is how the track titles, the artist name and the averages catch up with
-// whatever was just changed, instead of every editor having to patch them.
+// One modal, two kinds of card: the endpoint, trigger and parameter names of each.
+const CARD_KINDS = {
+	album: { endpoint: "/music/ajax/album-card", trigger: "[data-album-card-id]", dataset: "albumCardId", param: "album_id", link: "albumCard" },
+	artist: { endpoint: "/music/ajax/artist-card", trigger: "[data-artist-card-id]", dataset: "artistCardId", param: "artist_id", link: "artistCard" },
+};
+
+// Cards are always fetched fresh rather than cached, edit mode included.
 let albumCardRequest = 0;
 let albumCardArtists = [];
 let albumCardSongs = [];
 let albumCardTrackAliases = {};
 
-// The dropdown option lists are the whole catalogue and have nothing to do with
-// any one album, so they are fetched on the first Edit click and kept for the
-// rest of the page - not sent with every card. Opening ten cards to read them
-// now costs nothing, where before each open re-sent every song in the library.
+// The edit dropdowns' catalogue, fetched on the first Edit click and kept.
 let albumCardOptions = null;
 
-// The graph order is a reading preference, not a property of the album, so it
-// survives closing one card and opening another. The server does the sorting -
-// re-rendering costs one small request and keeps the svg geometry in one place
-// rather than reimplementing the run-splitting in JS.
+// The graph order, held for the page session and sent with every card request.
 let albumGraphSort = "";
 let albumGraphDir = "";
+
+// Whose scores the statistics are read as, held the same way. "" is everyone.
+let albumStatsWho = "";
 
 function loadAlbumOptions() {
 	if (!albumCardOptions) {
@@ -38,8 +37,7 @@ function loadAlbumOptions() {
 				albumCardSongs = result.songs || [];
 			})
 			.catch(error => {
-				// Left unset so the next Edit click tries again rather than
-				// opening an editor with empty dropdowns.
+				// Left unset so the next Edit click tries again.
 				albumCardOptions = null;
 				throw error;
 			});
@@ -57,26 +55,29 @@ function albumCardMessage(text) {
 	albumCardModalBody.appendChild(message);
 }
 
-/// keepPlace is for a re-render of the card already on screen - reordering the
-/// graph - where replacing the body would otherwise throw the reader back to
-/// the top of a card they had scrolled down through to reach the dropdown.
-function openAlbumCard(albumId, keepPlace) {
+/// keepPlace re-renders the card on screen, holding the dialog's scroll position.
+function openAlbumCard(kind, cardId, keepPlace) {
 	const request = ++albumCardRequest;
 	const dialog = albumCardModal.querySelector(".cardModalDialog");
 	const scrollTop = keepPlace && dialog ? dialog.scrollTop : 0;
+	const spec = CARD_KINDS[kind];
 
 	if (!keepPlace) {
 		albumCardMessage(t("album.card.loading"));
 	}
 	albumCardModal.hidden = false;
 
-	postJson(ALBUM_CARD_ENDPOINT, { album_id: Number(albumId), sort: albumGraphSort, dir: albumGraphDir })
+	/// Written before the fetch; a card that does not exist clears it again below.
+	writeCardLink(CARD_LINK_MODAL_PARAMS, spec.link, Number(cardId));
+
+	postJson(spec.endpoint, { [spec.param]: Number(cardId), sort: albumGraphSort, dir: albumGraphDir, who: albumStatsWho })
 		.then(result => {
 			if (request !== albumCardRequest) {
 				return;
 			}
 			if (result.status !== "ok") {
 				albumCardMessage(result.message);
+				writeCardLink(CARD_LINK_MODAL_PARAMS, null);
 				return;
 			}
 			albumCardTrackAliases = result.trackAliases || {};
@@ -98,6 +99,7 @@ function closeAlbumCard() {
 	albumCardRequest++;
 	albumCardModal.hidden = true;
 	albumCardModalBody.textContent = "";
+	writeCardLink(CARD_LINK_MODAL_PARAMS, null);
 }
 
 function albumCardField(card, field) {
@@ -234,9 +236,7 @@ const albumYearEditor = {
 	},
 };
 
-// A track is identified by its song: album_track holds at most one row per
-// (album, song), so changing a row's dropdown is a remove of the old song
-// followed by an add of the new one at the same position.
+// A track is identified by its song, so changing one is a remove then an add.
 const albumTrackEditor = {
 	enter(card) {
 		const cell = albumCardField(card, "tracks");
@@ -264,10 +264,7 @@ const albumTrackEditor = {
 		cell.appendChild(list);
 	},
 
-	// Track numbers are what the list is ordered by, so a renumbered row moves
-	// to where its new number puts it rather than staying where it was typed.
-	// Rows with no number at all sink to the bottom, the same place the server
-	// renders them.
+	// Reorders the rows by track number, unnumbered ones last.
 	sort(row) {
 		const list = row.closest(".albumEditTrackList");
 		if (!list) {
@@ -458,6 +455,58 @@ const albumTrackEditor = {
 	},
 };
 
+// An artist's whole edit mode: the title turned into a text box.
+const artistNameEditor = {
+	enter(card) {
+		const cell = albumCardField(card, "name");
+		cell.textContent = "";
+
+		const input = document.createElement("input");
+		input.type = "text";
+		input.className = "albumEditName";
+		input.value = card.dataset.artistName || "";
+
+		input.addEventListener("blur", () => {
+			const value = input.value.trim();
+			if (value === (card.dataset.artistName || "")) {
+				return;
+			}
+
+			input.disabled = true;
+			postJson(ARTIST_EDIT_ENDPOINT, { artist_id: card.dataset.cardId, field: "name", value })
+				.then(result => {
+					input.disabled = false;
+					if (result.status === "ok") {
+						card.dataset.artistName = result.value;
+						albumCardStatus(card, "");
+					}
+					else {
+						albumCardStatus(card, result.message);
+					}
+					input.value = card.dataset.artistName || "";
+				})
+				.catch(error => {
+					input.disabled = false;
+					input.value = card.dataset.artistName || "";
+					albumCardStatus(card, t("status.submitFailed", { error: error.message }));
+				});
+		});
+
+		cell.appendChild(input);
+	},
+};
+
+function enterArtistEditMode(card) {
+	card.dataset.editing = "1";
+
+	const button = card.querySelector(".cardEditBtn");
+	if (button) {
+		button.textContent = t("album.card.done");
+	}
+
+	artistNameEditor.enter(card);
+}
+
 function enterAlbumEditMode(card) {
 	card.dataset.editing = "1";
 
@@ -472,38 +521,93 @@ function enterAlbumEditMode(card) {
 	albumTrackEditor.enter(card);
 }
 
-// Changing the key resets the direction to that order's natural one - high to
-// low for a score, first to last for a running order - which is almost always
-// what you meant, and the direction select is right there to flip it.
+// The three reading controls; a new order key resets the direction to its default.
 albumCardModalBody.addEventListener("change", event => {
 	const key = event.target.closest(".albumGraphSortKey");
 	const dir = event.target.closest(".albumGraphSortDir");
+	const who = event.target.closest(".cardStatsWho");
 
-	if (!key && !dir) {
+	if (!key && !dir && !who) {
 		return;
 	}
 
-	const card = event.target.closest(".albumCard");
-	const keySelect = albumCardModalBody.querySelector(".albumGraphSortKey");
-	const dirSelect = albumCardModalBody.querySelector(".albumGraphSortDir");
+	const card = event.target.closest("[data-card-kind]");
 
-	albumGraphSort = keySelect ? keySelect.value : "";
-	albumGraphDir = key
-		? (keySelect.selectedOptions[0].dataset.defaultDir || "")
-		: (dirSelect ? dirSelect.value : "");
+	if (who) {
+		albumStatsWho = who.value;
+	}
+	else {
+		const keySelect = albumCardModalBody.querySelector(".albumGraphSortKey");
+		const dirSelect = albumCardModalBody.querySelector(".albumGraphSortDir");
 
-	openAlbumCard(card.dataset.albumId, true);
+		albumGraphSort = keySelect ? keySelect.value : "";
+		albumGraphDir = key
+			? (keySelect.selectedOptions[0].dataset.defaultDir || "")
+			: (dirSelect ? dirSelect.value : "");
+	}
+
+	openAlbumCard(card.dataset.cardKind, card.dataset.cardId, true);
 });
 
+// The wheel steps the selects marked cardWheelSelect, never the editor's.
+const CARD_WHEEL_GAP = 60;
+const CARD_WHEEL_SETTLE = 250;
+
+let cardWheelAt = 0;
+let cardWheelTimer = null;
+
+albumCardModalBody.addEventListener("wheel", event => {
+	const select = event.target.closest("select.cardWheelSelect");
+	if (!select || event.deltaY === 0) {
+		return;
+	}
+
+	const next = select.selectedIndex + (event.deltaY > 0 ? 1 : -1);
+
+	/// Past either end the card scrolls instead.
+	if (next < 0 || next >= select.options.length) {
+		return;
+	}
+
+	event.preventDefault();
+
+	const now = Date.now();
+	if (now - cardWheelAt < CARD_WHEEL_GAP) {
+		return;
+	}
+	cardWheelAt = now;
+
+	select.selectedIndex = next;
+	const chosen = select.value;
+
+	clearTimeout(cardWheelTimer);
+	cardWheelTimer = setTimeout(() => {
+		/// The card may have re-rendered; its replacement has the same id.
+		const live = select.isConnected ? select : albumCardModalBody.querySelector("#" + select.id);
+		if (!live) {
+			return;
+		}
+
+		live.value = chosen;
+		live.dispatchEvent(new Event("change", { bubbles: true }));
+	}, CARD_WHEEL_SETTLE);
+}, { passive: false });
+
 albumCardModalBody.addEventListener("click", event => {
-	const button = event.target.closest(".albumCardEditBtn");
+	const button = event.target.closest(".cardEditBtn");
 	if (!button) {
 		return;
 	}
 
-	const card = button.closest(".albumCard");
+	const card = button.closest("[data-card-kind]");
 	if (card.dataset.editing === "1") {
-		openAlbumCard(card.dataset.albumId);
+		openAlbumCard(card.dataset.cardKind, card.dataset.cardId);
+		return;
+	}
+
+	// An artist needs no catalogue to edit, so it skips the fetch.
+	if (card.dataset.cardKind === "artist") {
+		enterArtistEditMode(card);
 		return;
 	}
 
@@ -511,8 +615,7 @@ albumCardModalBody.addEventListener("click", event => {
 	loadAlbumOptions()
 		.then(() => {
 			button.disabled = false;
-			// The card can have been closed, or replaced by another album's,
-			// while the catalogue was on its way.
+			// The card may have been closed while the catalogue was on its way.
 			if (card.isConnected) {
 				enterAlbumEditMode(card);
 			}
@@ -523,11 +626,9 @@ albumCardModalBody.addEventListener("click", event => {
 		});
 });
 
-// One delegated listener covers every album name on the page - the song table,
-// the song cards (including the one the song modal has moved into itself) and
-// the album list - because they all carry data-album-card-id. The href stays a
-// real link to that album's songs, so modified clicks and middle clicks still
-// navigate the way they did before.
+// One delegated listener for every album and artist name on the page.
+const CARD_CELLS = { ".songAlbumCell": "album", ".songArtistCell": "artist" };
+
 document.addEventListener("click", event => {
 	if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
 		return;
@@ -537,24 +638,24 @@ document.addEventListener("click", event => {
 		return;
 	}
 
-	// The whole album cell opens the card, not only the name inside it: the
-	// column is narrow enough that the name is usually ellipsed, which leaves
-	// a very small thing to hit. A click on a name still opens that name - the
-	// cell only answers for clicks that miss, and then it opens the first
-	// album, which for all but a handful of songs is the only one.
-	let trigger = event.target.closest("[data-album-card-id]");
-
-	if (!trigger) {
-		const cell = event.target.closest(".songAlbumCell");
-		trigger = cell ? cell.querySelector("[data-album-card-id]") : null;
+	for (const [kind, spec] of Object.entries(CARD_KINDS)) {
+		const named = event.target.closest(spec.trigger);
+		if (named) {
+			event.preventDefault();
+			openAlbumCard(kind, named.dataset[spec.dataset]);
+			return;
+		}
 	}
 
-	if (!trigger) {
-		return;
+	for (const [selector, kind] of Object.entries(CARD_CELLS)) {
+		const cell = event.target.closest(selector);
+		const first = cell ? cell.querySelector(CARD_KINDS[kind].trigger) : null;
+		if (first) {
+			event.preventDefault();
+			openAlbumCard(kind, first.dataset[CARD_KINDS[kind].dataset]);
+			return;
+		}
 	}
-
-	event.preventDefault();
-	openAlbumCard(trigger.dataset.albumCardId);
 });
 
 albumCardModalClose.addEventListener("click", closeAlbumCard);
@@ -565,9 +666,7 @@ albumCardModal.addEventListener("click", event => {
 	}
 });
 
-/// Capture phase, and the event stops here: on the song list this modal opens
-/// on top of the song card modal, whose own Escape handler would otherwise
-/// close that one too and leave the album card floating over a closed list.
+/// Capture phase and stopped here, or the song modal's Escape closes that too.
 document.addEventListener("keydown", event => {
 	if (albumCardModal.hidden || event.key !== "Escape") {
 		return;
@@ -576,3 +675,12 @@ document.addEventListener("keydown", event => {
 	event.stopPropagation();
 	closeAlbumCard();
 }, true);
+
+// A link straight to a card.
+for (const [kind, spec] of Object.entries(CARD_KINDS)) {
+	const linked = cardLinkValue(spec.link);
+	if (linked !== null) {
+		openAlbumCard(kind, linked);
+		break;
+	}
+}

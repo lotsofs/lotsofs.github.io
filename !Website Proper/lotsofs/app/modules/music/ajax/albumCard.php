@@ -4,19 +4,12 @@ require_once __MODULES__ . '/music/ajaxGuard.php';
 
 $albumId = ajaxInt($data['album_id'] ?? null);
 
-/// Which order the graph draws its tracks in. Passed through as typed: the
-/// partial builds the list of orders it offers (it needs the rater names for
-/// the labels) and falls back to album order for anything it doesn't know, so
-/// there is one list rather than a whitelist here and another one there.
+/// Passed through as typed; the graph partial owns the list of orders.
 $graphSort = ajaxTrimmed($data['sort'] ?? null);
 $graphDir = ajaxTrimmed($data['dir'] ?? null);
 
-/// Which order the graph draws its tracks in. Passed through as typed: the
-/// partial builds the list of orders it offers (it needs the rater names for
-/// the labels) and falls back to album order for anything it doesn't know, so
-/// there is one list rather than a whitelist here and another one there.
-$graphSort = ajaxTrimmed($data['sort'] ?? null);
-$graphDir = ajaxTrimmed($data['dir'] ?? null);
+/// Whose scores the track table reports; 0 means everyone.
+$statsWho = ajaxInt($data['who'] ?? null);
 
 $album = $db->query("
 	SELECT
@@ -42,8 +35,7 @@ if (!$album) {
 	exit;
 }
 
-/// A track is listed under the alias the album credits it as when there is one,
-/// which is the same rule the song list uses for its "listed as" titles.
+/// A track is listed under the alias this release credits it as, where there is one.
 $album['tracks'] = $db->query("
 	SELECT
 		at.song_id,
@@ -68,11 +60,7 @@ $album['tracks'] = $db->query("
 	ORDER BY at.position IS NULL, at.position, title COLLATE NOCASE
 ", [$albumId])->fetchAll();
 
-/// Every statistic is over the tracks that rater actually scored, not over the
-/// album - `rated` says how many that was, so an average over three of fifteen
-/// songs can't be read as an album score. One query pivoted two ways: by
-/// account for the per-rater table, by song for the per-track columns and the
-/// graph. musicScoreStats() turns either into the same five numbers.
+/// One score query, pivoted by account for the rater table and by song for the tracks.
 require_once __MODULES__ . '/music/stats.php';
 
 $scoresByAccount = [];
@@ -90,28 +78,7 @@ foreach ($db->query("
 	$allScores[] = (float)$row['score'];
 }
 
-/// What the album thinks of each track: the mean of the scores it was actually
-/// given, so a track two of four raters scored is the average of those two and
-/// not of four with two zeroes in it - which is why the count sits next to it,
-/// and the spread beside that, since an average of two is a different claim
-/// from an average of five whether or not they agreed.
-/// The track table shows three of these; the graph can be ordered by any of
-/// them, which is why the median and mode are kept rather than dropped.
-foreach ($album['tracks'] as $index => $track) {
-	$stats = musicScoreStats($album['trackScores'][(int)$track['song_id']] ?? []);
-
-	$album['tracks'][$index]['average'] = $stats['average'];
-	$album['tracks'][$index]['deviation'] = $stats['deviation'];
-	$album['tracks'][$index]['median'] = $stats['median'];
-	$album['tracks'][$index]['modes'] = $stats['modes'];
-	$album['tracks'][$index]['lowest'] = $stats['lowest'];
-	$album['tracks'][$index]['highest'] = $stats['highest'];
-	$album['tracks'][$index]['rated'] = $stats['rated'];
-}
-
-/// One row per account, not per rater who has rated something here: an album
-/// nobody has scored still lists everyone, so the card reads the same whichever
-/// album it is showing.
+/// One row per account, whether or not they have scored anything here.
 require_once __MODULES__ . '/music/hue.php';
 
 $album['averages'] = [];
@@ -126,11 +93,27 @@ foreach ($db->query("SELECT id, account_name, hue FROM account ORDER BY id = ? D
 	);
 }
 
-/// Every score on the album pooled, not the average of the per-rater averages:
-/// otherwise someone who rated one track would count as much as someone who
-/// rated all fifteen. `possible` is every rating that could exist - one per
-/// track per account - so the row's count reads as how much of the album has
-/// been listened to at all.
+$album['statsWho'] = musicStatsWho($statsWho, $album['averages']);
+
+/// Per-track statistics over the scores each track was actually given.
+foreach ($album['tracks'] as $index => $track) {
+	$stats = musicScoreStats($album['trackScores'][(int)$track['song_id']] ?? []);
+
+	$album['tracks'][$index]['average'] = $stats['average'];
+	$album['tracks'][$index]['deviation'] = $stats['deviation'];
+	$album['tracks'][$index]['median'] = $stats['median'];
+	$album['tracks'][$index]['modes'] = $stats['modes'];
+	$album['tracks'][$index]['lowest'] = $stats['lowest'];
+	$album['tracks'][$index]['highest'] = $stats['highest'];
+	$album['tracks'][$index]['rated'] = $stats['rated'];
+
+	/// One rater's score for this track, where the card is read as one person.
+	$album['tracks'][$index]['whoScore'] = $album['statsWho'] === null
+		? null
+		: ($album['trackScores'][(int)$track['song_id']][$album['statsWho']] ?? null);
+}
+
+/// Every score on the album pooled; `possible` is tracks times accounts.
 $album['totals'] = musicScoreStats($allScores);
 $album['totals']['possible'] = count($album['tracks']) * count($album['averages']);
 
@@ -145,16 +128,7 @@ $html = ob_get_clean();
 
 $response = ['status' => 'ok', 'html' => $html];
 
-/// The artist and song lists the edit dropdowns need are NOT here: they are
-/// the whole catalogue, they do not change with the album, and a card is opened
-/// to read far more often than to edit. /music/ajax/album-options fetches them
-/// on the first Edit click instead. At ten thousand songs that is the
-/// difference between a third of a millisecond and twenty-five, and between
-/// nothing and 636KB, on every single card open.
-///
-/// These aliases do stay: they are only the names of the songs already on this
-/// album, a few rows, and the alias list for a song added mid-edit comes back
-/// with that add's own response.
+/// Only the aliases of songs already on this album. The edit dropdowns' catalogue comes from /music/ajax/album-options.
 if ($album['isAdmin']) {
 	$response['trackAliases'] = [];
 	foreach ($db->query("

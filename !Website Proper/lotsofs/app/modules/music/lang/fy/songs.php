@@ -6,6 +6,8 @@ return [
 	'song.column.title' => 'Titel',
 	'song.column.album' => 'Album',
 	'song.column.year' => 'Jier',
+	'song.column.statHighest' => 'Heechst',
+	'song.column.statLowest' => 'Leechst',
 	'song.column.duration' => 'Doer',
 	'song.column.song' => 'Liet',
 	'song.column.links' => 'Keppelings',

@@ -39,4 +39,11 @@ return [
 	'artist.list.empty' => 'Noch gjin artysten.',
 	'artist.list.noName' => '(gjin namme)',
 
+	'artist.card.notFound' => '❌ Dy artyst bestiet net',
+	'artist.card.edit' => 'Bewurkje',
+	'artist.card.songCount' => 'Nûmers',
+	'artist.card.albums' => 'Albums',
+	'artist.card.showSongs' => 'Dizze nûmers sjen litte',
+	'artist.result.nameRequired' => '❌ In artystnamme is fereaske',
+
 ];

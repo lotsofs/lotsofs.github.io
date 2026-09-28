@@ -9,11 +9,7 @@ $value = $field === 'name' ? ajaxTrimmed($data['value'] ?? null) : ajaxNumericTe
 
 requireAlbumJson($db, $albumId);
 
-/// Renaming keeps history: the name it had stays behind as a plain alias and
-/// the new one becomes the actual name, which is the same thing the importer
-/// does and what makes a known misspelling still resolve to this album. The
-/// partial unique index allows one is_actual row per album, so the clear has
-/// to land before the set.
+/// Renaming promotes an alias, keeping the old name. Clear before set: one is_actual row per album.
 if ($field === 'name') {
 	if ($value === '') {
 		echo json_encode(['status' => 'error', 'message' => t('album.result.nameRequired')]);

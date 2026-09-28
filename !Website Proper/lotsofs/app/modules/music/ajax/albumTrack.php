@@ -45,9 +45,7 @@ function albumTrackAliases($db, $songId) {
 	return $aliases;
 }
 
-/// Which of the song's names this release credits it under. Empty means the
-/// song's own actual name, which is what a track with no alias of its own
-/// already falls back to everywhere it is shown.
+/// Which of the song's names this release credits it under; empty is its own.
 if ($action === 'alias') {
 	if (!$existing) {
 		echo json_encode(['status' => 'error', 'message' => t('album.result.trackNotFound')]);
@@ -95,9 +93,7 @@ if ($existing) {
 	exit;
 }
 
-/// song_alias_id stays null: the "listed as" title a release credits a song
-/// under is set by the bulk importer, and picking a song out of a dropdown
-/// here says nothing about which of its names this album uses.
+/// song_alias_id stays null: picking a song here says nothing about which name.
 $db->query("INSERT INTO album_track (album_id, song_id, song_alias_id, position) VALUES (?, ?, NULL, ?)", [$albumId, $songId, $position]);
 
 echo json_encode(['status' => 'ok', 'value' => $position, 'message' => '', 'aliases' => albumTrackAliases($db, $songId)]);

@@ -1,10 +1,6 @@
 <?php
 
-/// Helpers shared by more than one case file. They live here rather than in
-/// whichever case file happened to need them first: run.php loads the cases
-/// with a plain require in glob() order, so a helper defined in one case file
-/// and called from another works only while the defining file sorts earlier,
-/// and turns into a fatal the moment either is renamed.
+/// Helpers shared by more than one case file; a case file defining one breaks on a rename.
 
 function registerAccount($ctx, $fields, $extraHeaders = []) {
 	$fields['csrf_token'] = $ctx->csrfTokenFrom('/music/register');
@@ -19,10 +15,7 @@ function logInAs($ctx, $name, $password) {
 	]);
 }
 
-/// Asserts the element's class list contains every name given, without caring
-/// what order they are written in or what else is alongside them. CLAUDE.md's
-/// rule for the card markup is "add to a class list, never replace one", so an
-/// assertion that pins the exact attribute string fails on a legal change.
+/// Asserts a class list contains every name given, whatever the order or the rest.
 function assertClasses($needles, $body, $pattern, $what) {
 	if (!preg_match($pattern, $body, $match)) {
 		throw new Exception("{$what}: nothing matched " . $pattern);
@@ -35,4 +28,46 @@ function assertClasses($needles, $body, $pattern, $what) {
 			throw new Exception("{$what}: no '{$needle}' in class=\"" . $match[1] . '"');
 		}
 	}
+}
+
+// One chunk per song row; the id is the leading digits.
+function songsRowChunks($body) {
+	$chunks = explode('<tr data-song-id="', $body);
+	array_shift($chunks);
+	return $chunks;
+}
+
+// Reads a data-field cell, whether it holds text, a span or links.
+function songsCellValue($chunk, $field) {
+	$pattern = '/data-field="' . preg_quote($field, '/') . '"[^>]*>(.*?)<\/(?:td|dd)>/s';
+	return preg_match($pattern, $chunk, $m) ? strip_tags($m[1]) : null;
+}
+
+function songsValuesInOrder($body, $field) {
+	$values = [];
+	foreach (songsRowChunks($body) as $chunk) {
+		$values[] = songsCellValue($chunk, $field);
+	}
+	return $values;
+}
+
+function songsRowFor($body, $songId) {
+	foreach (songsRowChunks($body) as $chunk) {
+		if (strpos($chunk, (int)$songId . '"') === 0) {
+			return $chunk;
+		}
+	}
+	return null;
+}
+
+// Smoke-check helper for the separate #songCards tree.
+function songsCardFor($body, $songId) {
+	$chunks = preg_split('/<dl class="songCard[^"]*" data-song-id="/', $body);
+	array_shift($chunks);
+	foreach ($chunks as $chunk) {
+		if (strpos($chunk, (int)$songId . '"') === 0) {
+			return $chunk;
+		}
+	}
+	return null;
 }

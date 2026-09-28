@@ -135,7 +135,29 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       without typing it out again, and a typo'd rename is therefore permanent
       clutter in the "also known as" line. An artist card would be the same
       shape again (partial + one endpoint + the same `data-album-card-id`-style
-      trigger `albumCard.js` delegates).
+      trigger `albumCard.js` delegates). **The artist card was built on
+      2026-09-27** and is exactly that shape; the alias gap above still stands
+      for both, and now for artists too.
+- [ ] **Neither card's "Statistics for" control reaches the song card or the
+      graph.** Added 2026-09-27: a dropdown over the album card's track table
+      and the artist card's album table re-reads those statistics as one person
+      instead of as everyone pooled (`musicStatsWho()` validates the choice
+      against the raters *that* card can offer, so a stale pick falls back to
+      everyone; `albumCard.js` holds it for the page session alongside the graph
+      order). Two things it deliberately does not touch: the graph, which has a
+      per-rater order of its own and would be one dot per song, and the per-rater
+      stats table, which *is* the breakdown. The song card has no statistics
+      table to apply it to. Note the two tables answer differently on purpose —
+      a track gets one score from one person, so the album card's three columns
+      collapse to that person's score under their own name, while an album is
+      several songs to one person and keeps all five.
+- [ ] **`#albumCardModal` and `albumCard.js` host artist cards as well.** Both
+      names predate the artist card and now undersell what they do: one modal,
+      one script, `CARD_KINDS` deciding which endpoint renders into it. The
+      rename (`#cardModal`, `cardModal.js`) is mechanical — the partial, the
+      CSS, half a dozen test assertions and two CLAUDE.md lines — and was left
+      out of the artist-card change deliberately, to keep that change
+      reviewable. Do it on its own, with the suite as the check.
 - [x] ~~**A cleanup pass over the music module**~~ — done 2026-09-25, after an
       audit. Fixed: the phone song card (its `min-width` override lost to an
       id-scoped rule and had never once applied, on the one viewport where card

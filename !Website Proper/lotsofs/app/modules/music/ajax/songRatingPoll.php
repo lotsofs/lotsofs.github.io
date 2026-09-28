@@ -2,6 +2,7 @@
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
 require_once __MODULES__ . '/music/format.php';
+require_once __MODULES__ . '/music/stats.php';
 
 requireMusicAccountJson($db, t('ajax.notLoggedIn'));
 
@@ -30,6 +31,27 @@ foreach ($rows as $row) {
 		'score' => $row['score'] === null ? '' : (string)(float)$row['score'],
 		'note' => $row['subjective_note'] ?? '',
 	];
+}
+
+/// The song list's statistics columns for the songs in this tick's changes.
+$stats = [];
+$changedSongs = array_values(array_unique(array_column($changes, 'song')));
+
+if ($changedSongs) {
+	$placeholders = implode(',', array_fill(0, count($changedSongs), '?'));
+
+	$scoresBySong = [];
+	foreach ($db->query("
+		SELECT song_id, score
+		FROM account_song
+		WHERE score IS NOT NULL AND song_id IN ({$placeholders})
+	", $changedSongs)->fetchAll() as $row) {
+		$scoresBySong[(int)$row['song_id']][] = (float)$row['score'];
+	}
+
+	foreach ($changedSongs as $songId) {
+		$stats[] = array_merge(['song' => $songId], musicSongStatFields($scoresBySong[$songId] ?? []));
+	}
 }
 
 $auditRows = $db->query("
@@ -71,6 +93,7 @@ foreach ($auditRows as $row) {
 echo json_encode([
 	'cursor' => $cursor,
 	'changes' => $changes,
+	'stats' => $stats,
 	'auditCursor' => $auditCursor,
 	'events' => $events,
 ]);
