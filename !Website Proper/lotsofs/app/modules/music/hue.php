@@ -11,8 +11,10 @@ function musicHueFor($accountId) {
 
 /// The hue the page renders in, read from the session.
 function musicActiveHue() {
-	if (isset($_SESSION['hue'])) {
-		return (int)$_SESSION['hue'];
+	$stored = modulePreference('hue', 'music');
+
+	if ($stored !== null) {
+		return (int)$stored;
 	}
 
 	$accountId = currentAccountId();

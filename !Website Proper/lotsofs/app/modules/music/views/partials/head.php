@@ -6,6 +6,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="csrfToken" content="<?= htmlspecialchars(csrfToken()) ?>">
 	<title><?= $pageTitle ?> - Music - LotsOfS</title>
+	<?php /* Declared, or the browser asks for /favicon.ico and gets the site one. */ ?>
+	<link rel="icon" href="<?= asset('/modules/music/favicon.ico') ?>">
 	<link rel="stylesheet" href="<?= asset('/modules/music/css/styles.css') ?>">
 	<script id="langStrings" type="application/json"><?= json_encode(stringCatalogue()) ?></script>
 	<script src="<?= asset('/js/util.js') ?>"></script>

@@ -821,15 +821,6 @@ songCardViewToggle.addEventListener("click", () => {
 	setCardView(!document.documentElement.classList.contains("songCardView"));
 });
 
-const songNav = document.querySelector("nav");
-
-// Measured rather than hardcoded, since the nav wraps. Not offsetHeight, which rounds.
-const songStickyOffsets = new ResizeObserver(() => {
-	document.documentElement.style.setProperty("--songNavHeight", songNav.getBoundingClientRect().height + "px");
-});
-
-songStickyOffsets.observe(songNav);
-
 function songQuery(sort, dir) {
 	const params = new URLSearchParams();
 	params.set("sort", sort);

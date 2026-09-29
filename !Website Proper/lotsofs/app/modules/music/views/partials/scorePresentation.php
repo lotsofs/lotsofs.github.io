@@ -21,25 +21,40 @@ function scoreRaterColours($rows) {
 	return $colours;
 }
 
-/// The four statistic cells of any row carrying a musicScoreStats() result.
-function scoreStatCells($row) {
+/// The named statistic cells of any row carrying a musicScoreStats() result.
+function scoreStatCells($row, $keys = ['average', 'deviation', 'median', 'mode']) {
 	$dash = htmlspecialchars(t('album.card.noAverage'));
+	$unrated = (int)($row['rated'] ?? 0) === 0;
 
-	if ((int)($row['rated'] ?? 0) === 0) {
-		return str_repeat('<td class="albumStatsScoreCell albumStatsEmpty">' . $dash . '</td>', 4);
+	$cells = '';
+
+	foreach ($keys as $key) {
+		if ($unrated) {
+			$cells .= '<td class="albumStatsScoreCell albumStatsEmpty">' . $dash . '</td>';
+			continue;
+		}
+
+		if ($key === 'deviation') {
+			$cells .= '<td class="albumStatsScoreCell albumStatsDeviationCell">' . htmlspecialchars(scoreText($row['deviation'])) . '</td>';
+			continue;
+		}
+
+		if ($key === 'mode') {
+			/// Each tied mode is coloured on its own.
+			$modeHtml = '';
+			foreach ($row['modes'] ?? [] as $mode) {
+				$modeHtml .= ($modeHtml === '' ? '' : ', ')
+					. '<span' . scoreColourAttr($mode) . '>' . htmlspecialchars(scoreText($mode)) . '</span>';
+			}
+
+			$cells .= '<td class="albumStatsScoreCell' . ($modeHtml === '' ? ' albumStatsEmpty' : '') . '">' . ($modeHtml === '' ? $dash : $modeHtml) . '</td>';
+			continue;
+		}
+
+		$cells .= '<td class="albumStatsScoreCell"' . scoreColourAttr($row[$key]) . '>' . htmlspecialchars(scoreText($row[$key])) . '</td>';
 	}
 
-	/// Each tied mode is coloured on its own.
-	$modeHtml = '';
-	foreach ($row['modes'] ?? [] as $mode) {
-		$modeHtml .= ($modeHtml === '' ? '' : ', ')
-			. '<span' . scoreColourAttr($mode) . '>' . htmlspecialchars(scoreText($mode)) . '</span>';
-	}
-
-	return '<td class="albumStatsScoreCell"' . scoreColourAttr($row['average']) . '>' . htmlspecialchars(scoreText($row['average'])) . '</td>'
-		. '<td class="albumStatsScoreCell albumStatsDeviationCell">' . htmlspecialchars(scoreText($row['deviation'])) . '</td>'
-		. '<td class="albumStatsScoreCell"' . scoreColourAttr($row['median']) . '>' . htmlspecialchars(scoreText($row['median'])) . '</td>'
-		. '<td class="albumStatsScoreCell' . ($modeHtml === '' ? ' albumStatsEmpty' : '') . '">' . ($modeHtml === '' ? $dash : $modeHtml) . '</td>';
+	return $cells;
 }
 
 /// The whose-scores control: everyone pooled, or one rater with something here.

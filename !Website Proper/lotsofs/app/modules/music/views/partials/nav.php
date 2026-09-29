@@ -56,4 +56,5 @@
 		<?php endif ?>
 	</div>
 </nav>
+<script src="<?= asset('/modules/music/js/nav.js') ?>"></script>
 <script src="<?= asset('/modules/music/js/colour.js') ?>"></script>

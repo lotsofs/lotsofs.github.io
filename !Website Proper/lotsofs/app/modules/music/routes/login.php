@@ -43,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			clearLoginFailures($db, $ip);
 			logIn($account['id'], $account['account_name']);
 			if (in_array($account['lang'], moduleLocales('music'), true)) {
-				$_SESSION['lang'] = $account['lang'];
+				rememberLocale('music', $account['lang']);
 			}
 			require_once __MODULES__ . '/music/hue.php';
-			$_SESSION['hue'] = musicHueOf($account['id'], $account['hue']);
+			rememberModulePreference('hue', 'music', musicHueOf($account['id'], $account['hue']));
 			header('Location: /music/songs', true, 302);
 			exit;
 		}

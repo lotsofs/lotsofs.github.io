@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && checkCsrf($_POST['csrf_token'] ?? n
 	$picked = in_array($_POST['lang'] ?? '', moduleLocales('music'), true) ? $_POST['lang'] : null;
 
 	if ($picked !== null) {
-		$_SESSION['lang'] = $picked;
+		rememberLocale('music', $picked);
 
 		$accountId = currentAccountId();
 		if ($accountId) {

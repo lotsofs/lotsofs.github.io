@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && checkCsrf($_POST['csrf_token'] ?? n
 	$picked = musicReadHue($_POST['hue'] ?? null);
 
 	if ($picked !== null) {
-		$_SESSION['hue'] = $picked;
+		rememberModulePreference('hue', 'music', $picked);
 
 		$accountId = currentAccountId();
 		if ($accountId) {

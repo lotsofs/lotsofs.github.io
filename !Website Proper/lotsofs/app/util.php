@@ -34,9 +34,10 @@ function moduleLocales($module) {
 /// else the module's own defaultLocale.
 function resolveLocale($module) {
 	$locales = moduleLocales($module);
+	$picked = storedLocale($module);
 
-	if (isset($_SESSION['lang']) && in_array($_SESSION['lang'], $locales, true)) {
-		return $_SESSION['lang'];
+	if ($picked !== null && in_array($picked, $locales, true)) {
+		return $picked;
 	}
 
 	$override = getenv('LOTSOFS_LOCALE');
@@ -45,6 +46,44 @@ function resolveLocale($module) {
 	}
 
 	return moduleConfig($module)['defaultLocale'] ?? 'en';
+}
+
+/* What this browser chose for one module - its language, its colour. One
+   session key per kind, one entry per module inside it: modules keep separate
+   accounts, so they keep separate preferences, and a choice made in one is not
+   a choice made in the other.
+
+   Lives here rather than in session.php because util.php is loaded first and
+   unconditionally, so nothing has to care what order these two were required
+   in. */
+function modulePreference($kind, $module) {
+	$stored = $_SESSION[$kind] ?? null;
+
+	/// Sessions written before these were per module hold a bare value here,
+	/// which is not an offset this can read. They fall through to the default.
+	return is_array($stored) && isset($stored[$module]) ? $stored[$module] : null;
+}
+
+function rememberModulePreference($kind, $module, $value) {
+	if (!isset($_SESSION[$kind]) || !is_array($_SESSION[$kind])) {
+		$_SESSION[$kind] = [];
+	}
+
+	$_SESSION[$kind][$module] = $value;
+}
+
+function forgetModulePreference($kind, $module) {
+	if (isset($_SESSION[$kind]) && is_array($_SESSION[$kind])) {
+		unset($_SESSION[$kind][$module]);
+	}
+}
+
+function storedLocale($module) {
+	return modulePreference('lang', $module);
+}
+
+function rememberLocale($module, $locale) {
+	rememberModulePreference('lang', $module, $locale);
 }
 
 /// Loads a module's strings and makes them the ones stringCatalogue(), t() and

@@ -2,6 +2,8 @@
 
 <?php require(__MODULES__ . '/music/views/partials/nav.php') ?>
 
+<?php require_once __MODULES__ . '/music/views/partials/scorePresentation.php' ?>
+
 <h1>
 	<?= t('album.list.heading') ?>
 </h1>
@@ -12,11 +14,11 @@
 	<table id="albumListTable">
 		<thead>
 			<tr>
-				<th class="listIdCell"><?= t('album.column.id') ?></th>
-				<th class="listNameCell"><?= t('album.column.name') ?></th>
-				<th class="listAliasCell"><?= t('album.column.aliases') ?></th>
-				<th class="listArtistCell"><?= t('album.column.artist') ?></th>
-				<th class="listYearCell"><?= t('album.column.year') ?></th>
+				<?php foreach ($globalData['columns'] as $column): ?>
+					<th class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>">
+						<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
+					</th>
+				<?php endforeach ?>
 			</tr>
 		</thead>
 		<tbody>
@@ -27,6 +29,10 @@
 					<td class="listAliasCell"><?= htmlspecialchars($album['aliases'] ?? '') ?></td>
 					<td class="listArtistCell"><?= $album['artist'] === null ? t('album.list.noArtist') : htmlspecialchars($album['artist']) ?></td>
 					<td class="listYearCell"><?= htmlspecialchars($album['release_year'] ?? '') ?></td>
+					<td class="listCountCell"><?= (int)$album['tracks'] ?></td>
+					<td class="listDurationCell"><?= htmlspecialchars(musicDuration($album['duration'])) ?></td>
+					<?= scoreStatCells($album, ['average', 'deviation', 'median', 'mode', 'highest', 'lowest']) ?>
+					<td class="albumStatsRatedCell"><?= htmlspecialchars(t('album.card.ratedOf', ['rated' => (int)$album['rated'], 'total' => (int)$album['possible']])) ?></td>
 				</tr>
 			<?php endforeach ?>
 		</tbody>
