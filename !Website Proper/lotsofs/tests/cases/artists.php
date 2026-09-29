@@ -316,4 +316,88 @@ return [
 		}
 	},
 
+	'the artist list counts a catalogue and reports its statistics' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Catalogued Band');
+
+		$tracks = [];
+		foreach (['Catalogued One', 'Catalogued Two', 'Catalogued Three'] as $index => $title) {
+			$tracks[] = ['song_id' => makeSong($ctx, $artistId, $title), 'position' => $index + 1];
+		}
+		makeAlbum($ctx, 'Catalogued Record', $artistId, $tracks);
+
+		foreach (['Catalogued One' => '8', 'Catalogued Two' => '4', 'Catalogued Three' => '8'] as $title => $score) {
+			$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId($title), 'field' => 'score', 'value' => $score]);
+		}
+
+		$row = listRowFor($ctx->get('/music/artists')['body'], 'data-artist-card-id', $artistId);
+		assertTrue($row !== null, 'the artist has a row');
+
+		assertSame(['3', '1'], listCells($row, 'listCountCell'), 'three songs across one album');
+
+		// 8, 4 and 8: mean 6.67, sigma 1.89, median 8, mode 8.
+		assertSame(
+			['6.67', '1.89', '8', '8', '8', '4'],
+			listCells($row, 'albumStatsScoreCell'),
+			'average, deviation, median, mode, highest and lowest over every score on the artist'
+		);
+
+		$accounts = (int)$ctx->db()->query("SELECT COUNT(*) AS n FROM account")->fetch()['n'];
+		assertSame('3 / ' . (3 * $accounts), listCells($row, 'albumStatsRatedCell')[0], 'out of every song for every account');
+
+		assertContains('style="color: hsl(', $row, 'and the scores are coloured on the ramp the cards use');
+	},
+
+	'an artist nobody has rated still gets every column' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Unlistened Band');
+
+		$row = listRowFor($ctx->get('/music/artists')['body'], 'data-artist-card-id', $artistId);
+
+		assertSame(['0', '0'], listCells($row, 'listCountCell'), 'no songs and no albums');
+		assertSame(6, count(listCells($row, 'albumStatsScoreCell')), 'the statistics columns are still there');
+		assertClasses(['albumStatsEmpty'], $row, '/<td class="([^"]*albumStatsEmpty[^"]*)"/', 'reading as empty rather than as zero');
+		assertSame('0 / 0', listCells($row, 'albumStatsRatedCell')[0], 'with nothing rated out of nothing');
+	},
+
+	'the artist list sorts by a statistic, with unrated artists last either way' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$loud = $ctx->makeArtist('Sorted Loud Band');
+		$quiet = $ctx->makeArtist('Sorted Quiet Band');
+		$silent = $ctx->makeArtist('Sorted Silent Band');
+
+		foreach ([[$loud, 'Sorted Loud Song', '9'], [$quiet, 'Sorted Quiet Song', '3']] as [$artistId, $title, $score]) {
+			$songId = makeSong($ctx, $artistId, $title);
+			$ctx->post('/music/ajax/song-rating', ['id' => $songId, 'field' => 'score', 'value' => $score]);
+		}
+		makeSong($ctx, $silent, 'Sorted Silent Song');
+
+		$mine = [$loud, $quiet, $silent];
+
+		assertSame(
+			[$loud, $quiet, $silent],
+			listOrderOf($ctx->get('/music/artists?sort=average&dir=desc')['body'], 'data-artist-card-id', $mine),
+			'the highest average first'
+		);
+
+		assertSame(
+			[$quiet, $loud, $silent],
+			listOrderOf($ctx->get('/music/artists?sort=average&dir=asc')['body'], 'data-artist-card-id', $mine),
+			'and the lowest first, with the unrated artist still last rather than leading'
+		);
+	},
+
+	'a sorted column heads the list with the way to reverse it' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$body = preg_replace('/\s+</', '<', $ctx->get('/music/artists?sort=songs&dir=desc')['body']);
+
+		assertContains('<th class="listCountCell" data-sort-key="songs"><a href="?sort=songs&amp;dir=asc"', $body, 'the column in use links back the other way');
+		assertContains('▼', $body, 'and carries the direction it is in');
+		assertContains('<a href="?sort=name&amp;dir=asc"', $body, 'while a column not in use starts ascending');
+	},
+
 ];

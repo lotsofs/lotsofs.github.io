@@ -165,6 +165,28 @@ return [
 		assertSame(200, $ctx->get('/modules/music/js/cardLink.js')['status'], 'the card linking script');
 	},
 
+	/* Without a declared icon the browser just asks for /favicon.ico and every
+	   module wears the site's. Each of these two now names its own. */
+	'the music and hideandseek modules serve their own favicon' => function ($ctx) {
+		$ctx->newSession();
+
+		foreach (['/music' => 'music', '/hideandseek' => 'hideandseek'] as $path => $module) {
+			$icon = "/modules/{$module}/favicon.ico";
+			$body = $ctx->get($path)['body'];
+
+			assertTrue(
+				(bool)preg_match('#<link rel="icon" href="' . preg_quote($icon, '#') . '\?v=\d+"#', $body),
+				"{$path} declares its own icon with a cache stamp"
+			);
+			assertSame(200, $ctx->get($icon)['status'], "{$icon} serves");
+		}
+
+		/// The modules without one of their own keep falling through to the
+		/// site icon, which is what the browser asks for unprompted.
+		assertTrue(strpos($ctx->get('/')['body'], 'rel="icon"') === false, 'the main page declares none');
+		assertSame(200, $ctx->get('/favicon.ico')['status'], 'and the site icon is still there for it');
+	},
+
 	'assets are referenced with a cache busting stamp that still serves' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 

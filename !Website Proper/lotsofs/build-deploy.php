@@ -120,6 +120,16 @@ $mustExist = [
 	'app/modules/music/database/migrations/001_create.sql',
 	'app/modules/music/ajaxGuard.php',
 	'app/modules/music/ajax/songRatingPoll.php',
+	'lotsofs.com/modules/hideandseek/css/styles.css',
+	'lotsofs.com/modules/music/favicon.ico',
+	'lotsofs.com/modules/hideandseek/favicon.ico',
+	'lotsofs.com/modules/hideandseek/js/tooltip.js',
+	'lotsofs.com/modules/hideandseek/js/map.js',
+	'lotsofs.com/modules/hideandseek/vendor/leaflet/leaflet.js',
+	'lotsofs.com/modules/hideandseek/vendor/leaflet/leaflet.css',
+	'lotsofs.com/modules/hideandseek/vendor/leaflet/images/marker-icon.png',
+	'app/modules/hideandseek/ajaxGuard.php',
+	'app/modules/hideandseek/database/migrations/001_create.sql',
 ];
 // app/secure/cacert.pem is gitignored (large CA bundle, referenced only by
 // currently-disabled code); copied if present, not required.

@@ -1,0 +1,391 @@
+/* One fixed theme. These are the whole palette: no per-account hue here, unlike
+   music, so a colour belongs to the site rather than to whoever is looking. */
+:root {
+	color-scheme: dark;
+
+	--ink: #e8ece9;
+	--inkDim: #9aa5a0;
+	--ground: #0a0f0d;
+	--panel: #121917;
+	--panelRaised: #1a2320;
+	--border: #2c3a35;
+	--accent: #35d29a;
+	--accentDim: #1d6d54;
+	--danger: #e4685c;
+
+	--navWidth: 12em;
+	--navBarHeight: 3.5em;
+}
+
+body {
+	margin: 0;
+	background-color: var(--ground);
+	color: var(--ink);
+	font-family: 'Noto Sans', system-ui, sans-serif;
+}
+
+/* Sidebar beside the page on a desktop, bar under it on a phone. One flex
+   container either way: the direction flips and the nav is taken out of flow. */
+.hnsLayout {
+	display: flex;
+	align-items: stretch;
+	min-height: 100vh;
+}
+
+.hnsMain {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 1.5em 2em;
+}
+
+.hnsNav {
+	flex: 0 0 var(--navWidth);
+	width: var(--navWidth);
+	position: sticky;
+	top: 0;
+	align-self: flex-start;
+	height: 100vh;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: 0.3em;
+	padding: 1em 0.6em;
+	background-color: var(--panel);
+	border-right: solid 1px var(--border);
+}
+
+.hnsNavBrand {
+	padding: 0 0.6em 0.8em;
+	color: var(--accent);
+	font-weight: bold;
+	text-decoration: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.hnsNavAccount {
+	position: relative;
+	min-width: 0;
+}
+
+.hnsNavLink {
+	display: block;
+	box-sizing: border-box;
+	padding: 0.5em 0.8em;
+	border: solid 1px transparent;
+	border-radius: 10px;
+	background-color: transparent;
+	color: var(--ink);
+	font: inherit;
+	text-align: left;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.hnsNavLink:hover {
+	background-color: var(--panelRaised);
+}
+
+.hnsNavCurrent {
+	background-color: var(--panelRaised);
+	border-color: var(--accentDim);
+	color: var(--accent);
+}
+
+.hnsNavMenuButton {
+	list-style: none;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.hnsNavMenuButton::-webkit-details-marker,
+.hnsNavMenuButton::marker {
+	display: none;
+}
+
+/* Opens downward in the sidebar, where the button sits in the flow with the
+   rest and may be the topmost thing on the bar. The bottom bar flips it. */
+.hnsNavMenu {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: 20;
+	margin-top: 0.3em;
+	display: flex;
+	flex-direction: column;
+	gap: 0.2em;
+	padding: 0.3em;
+	background-color: var(--panelRaised);
+	border: solid 1px var(--border);
+	border-radius: 10px;
+}
+
+.hnsNavLanguage {
+	display: contents;
+}
+
+.hnsNavMenuItem {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.45em 0.7em;
+	border: solid 1px transparent;
+	border-radius: 8px;
+	background-color: transparent;
+	color: var(--ink);
+	font: inherit;
+	text-align: left;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.hnsNavMenuItem:hover {
+	background-color: var(--panel);
+}
+
+h1 {
+	margin: 0 0 0.6em;
+	font-size: 1.6em;
+}
+
+h2 {
+	margin-bottom: 0;
+}
+
+/* No `a:visited` rule. It would carry a pseudo-class (0,1,1) and so outrank the
+   plain class on `.hnsNavLink` and `.hnsNavMenuItem` (0,1,0), turning every nav
+   button green the moment its page had been opened once - which reads as "you
+   are here" on all of them at once. Author styles beat the browser's own
+   `a:visited` whatever the specificity, so one `a` rule covers both states. */
+a {
+	color: var(--accent);
+}
+
+form label {
+	display: inline-block;
+	min-width: 12em;
+}
+
+input[type="text"],
+input[type="password"] {
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	background-color: var(--panel);
+	color: var(--ink);
+	font: inherit;
+	padding: .45em .7em;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+	outline: solid 2px var(--accentDim);
+	outline-offset: 1px;
+}
+
+button[type="submit"] {
+	padding: .45em .9em;
+	border: solid 1px var(--border);
+	border-radius: 10px;
+	background-color: var(--panelRaised);
+	color: var(--ink);
+	font: inherit;
+	cursor: pointer;
+}
+
+button[type="submit"]:hover {
+	border-color: var(--accentDim);
+	color: var(--accent);
+}
+
+.formError {
+	color: var(--danger);
+}
+
+table {
+	border-collapse: collapse;
+}
+
+th, td {
+	border: solid 1px var(--border);
+	padding: 0.3em 0.5em;
+	text-align: left;
+}
+
+thead th {
+	font-size: 0.85em;
+	color: var(--inkDim);
+}
+
+/* An explicit height either way: Leaflet measures its container and renders
+   nothing at all in a box that sizes itself from its content. */
+.hnsMap {
+	height: 60vh;
+	min-height: 20em;
+	box-sizing: border-box;
+	border: solid 1px var(--border);
+	border-radius: 10px;
+	background-color: var(--panel);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.8em;
+	padding: 1.5em;
+	text-align: center;
+}
+
+/* Leaflet lays the container out itself once it owns it. */
+.hnsMap.hnsMapLoaded {
+	display: block;
+	padding: 0;
+	overflow: hidden;
+}
+
+.hnsMapNote {
+	margin: 0;
+	max-width: 32em;
+	color: var(--inkDim);
+	font-size: 0.9em;
+}
+
+.hnsMapLoad {
+	padding: .5em 1.1em;
+	border: solid 1px var(--accentDim);
+	border-radius: 10px;
+	background-color: var(--panelRaised);
+	color: var(--accent);
+	font: inherit;
+	cursor: pointer;
+}
+
+.hnsMapLoad:hover {
+	background-color: var(--panel);
+}
+
+.hnsMapHint {
+	margin-top: 0.6em;
+	color: var(--inkDim);
+	font-size: 0.9em;
+}
+
+/* Leaflet ships a light theme. These pull its chrome onto the site's palette -
+   everything except the attribution text, which stays legible because it is a
+   licence term rather than decoration. */
+.leaflet-container {
+	background-color: var(--panel);
+	font: inherit;
+}
+
+.leaflet-bar,
+.leaflet-bar a {
+	border-color: var(--border);
+	background-color: var(--panelRaised);
+	color: var(--ink);
+}
+
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: var(--panel);
+	color: var(--accent);
+}
+
+.leaflet-control-attribution {
+	background-color: var(--panelRaised);
+	color: var(--ink);
+}
+
+.leaflet-control-attribution a {
+	color: var(--accent);
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background-color: var(--panelRaised);
+	color: var(--ink);
+}
+
+/* Positioned by tooltip.js in page coordinates, so it sits outside any layout. */
+#hnsTooltip {
+	display: none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 40;
+	max-width: 24em;
+	padding: 0.4em 0.6em;
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	background-color: var(--panelRaised);
+	color: var(--ink);
+	font-size: 0.85em;
+	white-space: pre-line;
+	pointer-events: none;
+}
+
+@media (max-width: 700px) {
+	.hnsLayout {
+		flex-direction: column;
+	}
+
+	/* Out of flow entirely, so it cannot be scrolled off the bottom. The main
+	   column pads itself by the bar's height instead, or the last row of a page
+	   sits underneath it. */
+	.hnsNav {
+		position: fixed;
+		top: auto;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		width: auto;
+		height: auto;
+		flex: 0 0 auto;
+		flex-direction: row;
+		align-items: center;
+		align-self: auto;
+		gap: 0.2em;
+		padding: 0.4em 0.6em;
+		border-right: none;
+		border-top: solid 1px var(--border);
+	}
+
+	.hnsMain {
+		padding: 1em 1em calc(var(--navBarHeight) + 1em);
+	}
+
+	/* The name is the page heading's job on a phone; the bar is for getting
+	   somewhere, and every character of it is width the buttons want. */
+	.hnsNavBrand {
+		display: none;
+	}
+
+	.hnsNav > * {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	.hnsNavLink {
+		text-align: center;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	/* Upward here: there is nothing below a bar stuck to the bottom. */
+	.hnsNavMenu {
+		top: auto;
+		bottom: 100%;
+		left: auto;
+		right: 0;
+		margin-top: 0;
+		margin-bottom: 0.3em;
+		min-width: 10em;
+	}
+
+	form label {
+		display: block;
+		min-width: 0;
+	}
+}

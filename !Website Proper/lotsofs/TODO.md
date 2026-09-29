@@ -219,6 +219,47 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       write per rating change. `006` shipped on 2026-09-25 and is frozen with
       the rest; `007` is the next free number.
 
+## Hide and seek module
+
+- [ ] **It is boilerplate and nothing else.** Added 2026-09-28: accounts,
+      invites, login rate limiting, admin gating, the nav/head/foot chrome, the
+      hover tooltip, the per-account hue, a stylesheet and one example ajax
+      endpoint (`ajax/whoami.php`, meant to be copied and then deleted). No game
+      in it. Everything is `hns`-prefixed and it keeps its own database, session
+      scope, catalogue and migrations, so nothing it grows can reach the music
+      module.
+- [ ] **The map places markers but saves nothing.** Added 2026-09-29: Leaflet
+      1.9.4 is vendored at `public/modules/hideandseek/vendor/leaflet/`, and
+      `/hideandseek` renders a click-to-load map you can click to drop markers
+      on. They live in `hnsMarkers` in `js/map.js` as `{lat, lng, marker}` and
+      vanish on reload. Persisting them is a `marker` table folded into `001`
+      (see the plan) plus one `/hideandseek/ajax/marker` endpoint dispatching on
+      an action, the same shape as `routes/accounts.php`. Two things to settle
+      first: whether markers are shared between accounts or private, and how
+      long they live — a marker meaning "where a person is hiding" is location
+      data about an identified user, which carries retention and deletion
+      expectations that a song rating does not.
+- [ ] **No privacy page yet, and the module now talks to a third party.** The
+      map defers every tile request until the visitor presses a button, so
+      nothing reaches the OpenStreetMap Foundation unasked, and the button says
+      so. That is the mitigation, not a substitute for a privacy note covering
+      the accounts, the session cookie and the tile requests.
+- [ ] **`001_create.sql` has not shipped, so it is still editable.** It holds
+      only `account`, `invite` and `login_attempt`. Fold the first round of game
+      tables straight into it rather than adding `002` — but only until it
+      deploys, after which the same freeze rule as music applies.
+- [ ] **One locale (`en`).** The language route and menu are wired but the menu
+      only renders once there is more than one locale to pick from, so adding
+      `nl`/`fy` is a line in `config.php` plus a `lang/<code>.php`.
+- [ ] **Decide whether the two modules should share code.** Right now
+      `rateLimit.php`, `inviteCode.php`, `hue.php`, `auth.php`, `ajaxGuard.php`
+      and `tooltip.js` are near-identical copies of music's. That is deliberate
+      for now — this codebase has no service layer, and factoring a framework
+      out of two modules before the second one has any features would be
+      guessing at what they actually share. Worth revisiting once hide and seek
+      has real pages: the invite code and rate limiter are the two most obvious
+      candidates, since neither has anything to do with either subject.
+
 ## Site wide
 
 - [ ] **`migrate.php` as a real command.** Migrations only run implicitly, as

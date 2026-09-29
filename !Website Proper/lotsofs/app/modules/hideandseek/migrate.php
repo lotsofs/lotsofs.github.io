@@ -1,0 +1,31 @@
+<?php
+
+/// Applies every unapplied migration, tracked by filename. Called at the top of
+/// every route and ajax file, so a schema change lands on the next request.
+function runHideAndSeekMigrations($db) {
+	$db->execSQL('PRAGMA foreign_keys = ON');
+	$db->execSQL('CREATE TABLE IF NOT EXISTS schema_migrations (filename TEXT PRIMARY KEY, applied_at TEXT NOT NULL)');
+
+	$appliedMigrations = array_column($db->selectAllFromTable("schema_migrations"), 'filename');
+
+	$sqlFiles = glob(__MODULES__ . '/hideandseek/database/migrations/*.sql');
+	sort($sqlFiles);
+
+	foreach ($sqlFiles as $file) {
+		$migrationName = basename($file);
+		if (in_array($migrationName, $appliedMigrations)) {
+			continue;
+		}
+
+		$db->pdo->beginTransaction();
+		try {
+			$db->execSQL(file_get_contents($file));
+			$db->query("INSERT INTO schema_migrations (filename, applied_at) VALUES (?, ?)", [$migrationName, date('c')]);
+			$db->pdo->commit();
+		}
+		catch (PDOException $e) {
+			$db->pdo->rollBack();
+			throw $e;
+		}
+	}
+}

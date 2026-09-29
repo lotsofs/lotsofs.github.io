@@ -171,7 +171,13 @@ class TestContext {
 	}
 
 	public function db() {
-		$pdo = new PDO('sqlite:' . $this->tempRoot . '/data/music_test.sqlite');
+		return $this->dbFor('music_test.sqlite');
+	}
+
+	/// One module, one database. db() is music's because that is what nearly
+	/// every case file wants; another module names its own file.
+	public function dbFor($file) {
+		$pdo = new PDO('sqlite:' . $this->tempRoot . '/data/' . $file);
 		$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 		$pdo->exec('PRAGMA busy_timeout = 5000');
 		return $pdo;

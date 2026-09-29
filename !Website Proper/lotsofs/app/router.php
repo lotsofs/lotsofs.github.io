@@ -7,6 +7,7 @@ include __MODULES__ . '/main/routes.php';
 include __MODULES__ . '/swat4/routes.php';
 include __MODULES__ . '/ss2/routes.php';
 include __MODULES__ . '/music/routes.php';
+include __MODULES__ . '/hideandseek/routes.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 

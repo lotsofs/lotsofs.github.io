@@ -168,4 +168,21 @@ return [
 		}
 	},
 
+	'every column of both lists has a header and a cell' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		foreach (['/music/artists' => 'data-artist-card-id', '/music/albums' => 'data-album-card-id'] as $path => $attribute) {
+			$body = $ctx->get($path)['body'];
+
+			preg_match('/<thead>(.*?)<\/thead>/s', $body, $head);
+			$row = listRowFor($body, $attribute, listOrder($body, $attribute)[0]);
+
+			assertSame(
+				preg_match_all('/<th\b/', $head[1]),
+				preg_match_all('/<td\b/', $row),
+				"{$path}: the header row is built from the column list and the body row by hand, so they have to be counted against each other"
+			);
+		}
+	},
+
 ];

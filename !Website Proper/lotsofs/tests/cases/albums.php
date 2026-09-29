@@ -32,24 +32,6 @@ function withPositions($tracks) {
 	return $out;
 }
 
-function makeAlbum($ctx, $name, $artistId, $tracks) {
-	$response = $ctx->post(ALBUM_ENDPOINT, [[
-		'provided_name' => $name,
-		'album_id' => 'new',
-		'og_name' => $name,
-		'is_actual' => true,
-		'artist_id' => $artistId,
-		'release_year' => '',
-		'tracks' => $tracks,
-	]]);
-	return (int)$response['json'][0]['album_id'];
-}
-
-function makeSong($ctx, $artistId, $title) {
-	$response = $ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => $title]]);
-	return (int)$response['json'][0]['song_id'];
-}
-
 return [
 
 	'the song endpoint hands back an id for new and duplicate songs' => function ($ctx) {
@@ -1252,6 +1234,94 @@ return [
 		foreach (['Warning:', 'Notice:', 'Fatal error', 'Undefined variable', 'Undefined index'] as $sign) {
 			assertTrue(strpos($body, $sign) === false, "page contains '{$sign}'");
 		}
+	},
+
+	'the album list counts tracks, adds up their runtime and reports statistics' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Tabulated Artist');
+
+		$tracks = [];
+		foreach (['Tabulated One', 'Tabulated Two', 'Tabulated Three'] as $index => $title) {
+			$tracks[] = ['song_id' => makeSong($ctx, $artistId, $title), 'position' => $index + 1];
+		}
+		$albumId = makeAlbum($ctx, 'Tabulated Record', $artistId, $tracks);
+
+		foreach (['Tabulated One' => '3:20', 'Tabulated Two' => '4:10'] as $title => $duration) {
+			$ctx->post('/music/ajax/song-duration', ['song_id' => $ctx->songId($title), 'value' => $duration]);
+		}
+
+		foreach (['Tabulated One' => '9', 'Tabulated Two' => '5', 'Tabulated Three' => '9'] as $title => $score) {
+			$ctx->post('/music/ajax/song-rating', ['id' => $ctx->songId($title), 'field' => 'score', 'value' => $score]);
+		}
+
+		$row = listRowFor($ctx->get('/music/albums')['body'], 'data-album-card-id', $albumId);
+		assertTrue($row !== null, 'the album has a row');
+
+		assertSame(['3'], listCells($row, 'listCountCell'), 'three tracks');
+		assertSame('7:30', listCells($row, 'listDurationCell')[0], 'the runtime adds up the tracks that carry one');
+
+		// 9, 5 and 9: mean 7.67, sigma 1.89, median 9, mode 9.
+		assertSame(
+			['7.67', '1.89', '9', '9', '9', '5'],
+			listCells($row, 'albumStatsScoreCell'),
+			'average, deviation, median, mode, highest and lowest over every score on the record'
+		);
+
+		$accounts = (int)$ctx->db()->query("SELECT COUNT(*) AS n FROM account")->fetch()['n'];
+		assertSame('3 / ' . (3 * $accounts), listCells($row, 'albumStatsRatedCell')[0], 'out of every track for every account');
+	},
+
+	'an album with no tracks reports nothing rather than zero' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$albumId = makeAlbum($ctx, 'Empty Sleeve', $ctx->makeArtist('Empty Sleeve Artist'), []);
+
+		$row = listRowFor($ctx->get('/music/albums')['body'], 'data-album-card-id', $albumId);
+
+		assertSame(['0'], listCells($row, 'listCountCell'), 'no tracks');
+		assertSame('', listCells($row, 'listDurationCell')[0], 'and no runtime, rather than 0:00');
+		assertSame('0 / 0', listCells($row, 'albumStatsRatedCell')[0], 'with nothing rated out of nothing');
+	},
+
+	'the album list sorts by runtime, with records that have none last either way' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Runtime Artist');
+
+		$long = makeSong($ctx, $artistId, 'Runtime Long Track');
+		$short = makeSong($ctx, $artistId, 'Runtime Short Track');
+		$untimed = makeSong($ctx, $artistId, 'Runtime Untimed Track');
+
+		$ctx->post('/music/ajax/song-duration', ['song_id' => $long, 'value' => '6:00']);
+		$ctx->post('/music/ajax/song-duration', ['song_id' => $short, 'value' => '2:00']);
+
+		$longest = makeAlbum($ctx, 'Runtime Long Record', $artistId, [['song_id' => $long, 'position' => 1]]);
+		$shortest = makeAlbum($ctx, 'Runtime Short Record', $artistId, [['song_id' => $short, 'position' => 1]]);
+		$unknown = makeAlbum($ctx, 'Runtime Untimed Record', $artistId, [['song_id' => $untimed, 'position' => 1]]);
+
+		$mine = [$longest, $shortest, $unknown];
+
+		assertSame(
+			[$longest, $shortest, $unknown],
+			listOrderOf($ctx->get('/music/albums?sort=duration&dir=desc')['body'], 'data-album-card-id', $mine),
+			'the longest record first'
+		);
+
+		assertSame(
+			[$shortest, $longest, $unknown],
+			listOrderOf($ctx->get('/music/albums?sort=duration&dir=asc')['body'], 'data-album-card-id', $mine),
+			'and the shortest first, with the record nobody timed still last'
+		);
+	},
+
+	'a sort the list has no column for leaves the name order alone' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$byName = listOrder($ctx->get('/music/albums')['body'], 'data-album-card-id');
+
+		assertSame($byName, listOrder($ctx->get('/music/albums?sort=nonsense&dir=sideways')['body'], 'data-album-card-id'), 'neither half of the request is taken on trust');
+		assertSame($byName, listOrder($ctx->get('/music/albums?sort=name&dir=asc')['body'], 'data-album-card-id'), 'and the default is the name, ascending');
 	},
 
 ];

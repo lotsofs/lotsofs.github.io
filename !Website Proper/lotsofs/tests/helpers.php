@@ -15,6 +15,69 @@ function logInAs($ctx, $name, $password) {
 	]);
 }
 
+function makeAlbum($ctx, $name, $artistId, $tracks) {
+	$response = $ctx->post('/music/ajax/album', [[
+		'provided_name' => $name,
+		'album_id' => 'new',
+		'og_name' => $name,
+		'is_actual' => true,
+		'artist_id' => $artistId,
+		'release_year' => '',
+		'tracks' => $tracks,
+	]]);
+	return (int)$response['json'][0]['album_id'];
+}
+
+function makeSong($ctx, $artistId, $title) {
+	$response = $ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => $title]]);
+	return (int)$response['json'][0]['song_id'];
+}
+
+/// One row of the artist or album list, found by the card id its name cell carries.
+function listRowFor($body, $attribute, $id) {
+	foreach (explode('<tr>', $body) as $row) {
+		if (strpos($row, $attribute . '="' . (int)$id . '"') !== false) {
+			return $row;
+		}
+	}
+
+	return null;
+}
+
+/// The text of every cell in one list row carrying a class, in column order.
+function listCells($row, $class) {
+	preg_match_all('/<td class="([^"]*)"[^>]*>(.*?)<\/td>/s', (string)$row, $matches, PREG_SET_ORDER);
+
+	$cells = [];
+	foreach ($matches as $match) {
+		if (in_array($class, preg_split('/\s+/', trim($match[1])), true)) {
+			$cells[] = trim(strip_tags($match[2]));
+		}
+	}
+
+	return $cells;
+}
+
+/// The card ids of an artist or album list, in the order the page put them in.
+function listOrder($body, $attribute) {
+	preg_match_all('/' . preg_quote($attribute, '/') . '="(\d+)"/', $body, $matches);
+
+	return array_map('intval', $matches[1]);
+}
+
+/// Only the ids given, in the order the page put them, so a shared database's other rows do not matter.
+function listOrderOf($body, $attribute, $ids) {
+	$order = [];
+
+	foreach (listOrder($body, $attribute) as $id) {
+		if (in_array($id, $ids, true)) {
+			$order[] = $id;
+		}
+	}
+
+	return $order;
+}
+
 /// Asserts a class list contains every name given, whatever the order or the rest.
 function assertClasses($needles, $body, $pattern, $what) {
 	if (!preg_match($pattern, $body, $match)) {
