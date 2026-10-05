@@ -144,7 +144,7 @@ $mustNotExist = [
 	'app/modules/music/notes.txt',
 	'data',
 	'tests',
-	'TODO.md',
+	'docs',
 	'.gitignore',
 	'build-deploy.php',
 ];

@@ -37,6 +37,8 @@ Each module with anything non-obvious in it has its own file, imported here:
 `main`, `swat4` and `ss2` have none — they are plain routes and views with no
 traps worth writing down.
 
+Further reference lives in `docs/` and is **not** imported (read on demand): start from `docs/README.md` — architecture, conventions, testing, music/hideandseek lookup tables, music front end, and `main`/`swat4`/`ss2`.
+
 ## Environment gotchas
 
 - **CSS has no line comments, and a `//` silently eats the next rule.** The parser treats the slashes as a bad token and recovers by swallowing the declaration block that follows, leaving something that reads perfectly and never applies — it cost a debugging cycle presenting as "the card modal is transparent". Two tests forbid it (`tests/cases/catalogue.php` for music's stylesheet, `tests/cases/hideandseek.php` for its own). Use `/* */`, including for one-liners.
@@ -45,4 +47,4 @@ traps worth writing down.
 
 ## Other notes
 
-`TODO.md` at the repo root tracks open tasks and unresolved design decisions (e.g. how song versions/covers are modelled) — check it for context before assuming a rough edge is unintentional. It can lag behind the schema/code after a session like this one's migration work, so verify against current code rather than trusting it blindly.
+`docs/TODO.md` tracks open tasks and unresolved design decisions (e.g. how song versions/covers are modelled) — check it for context before assuming a rough edge is unintentional. It can lag behind the schema/code after a session like this one's migration work, so verify against current code rather than trusting it blindly.
