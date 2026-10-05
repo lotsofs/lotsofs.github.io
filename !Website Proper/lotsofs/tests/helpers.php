@@ -114,6 +114,16 @@ function songsValuesInOrder($body, $field) {
 	return $values;
 }
 
+// One cell out of a row or a card, opening tag included, whatever its field.
+function songsFieldCell($chunk, $field) {
+	return preg_match('/<(?:td|dd)\b[^>]*data-field="' . preg_quote($field, '/') . '"[^>]*>.*?<\/(?:td|dd)>/s', (string)$chunk, $m) ? $m[0] : '';
+}
+
+// One rater's note cell out of a card, opening tag included.
+function songsCardNoteCell($card, $accountId) {
+	return preg_match('/<dd\b[^>]*data-field="note_' . (int)$accountId . '"[^>]*>.*?<\/dd>/s', (string)$card, $m) ? $m[0] : '';
+}
+
 function songsRowFor($body, $songId) {
 	foreach (songsRowChunks($body) as $chunk) {
 		if (strpos($chunk, (int)$songId . '"') === 0) {

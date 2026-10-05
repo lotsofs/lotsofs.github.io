@@ -8,10 +8,6 @@
 	<?php /* Declared, or the browser asks for /favicon.ico and gets the site one. */ ?>
 	<link rel="icon" href="<?= asset('/modules/hideandseek/favicon.ico') ?>">
 	<link rel="stylesheet" href="<?= asset('/modules/hideandseek/css/styles.css') ?>">
-	<?php /* Only where there is a map: it is 15KB nothing else on the site uses. */ ?>
-	<?php if ($globalData['mapPage'] ?? false): ?>
-		<link rel="stylesheet" href="<?= asset('/modules/hideandseek/vendor/leaflet/leaflet.css') ?>">
-	<?php endif ?>
 	<script id="langStrings" type="application/json"><?= json_encode(stringCatalogue()) ?></script>
 	<script src="<?= asset('/js/util.js') ?>"></script>
 </head>

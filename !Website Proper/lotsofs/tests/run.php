@@ -193,7 +193,7 @@ class TestContext {
 
 		if (!$stmt->fetch()) {
 			$insert = $db->prepare("INSERT INTO account (account_name, password_hash, is_admin, lang) VALUES (?, ?, ?, 'en')");
-			$insert->execute([$name, password_hash($password, PASSWORD_DEFAULT), $isAdmin ? 1 : 0]);
+			$insert->execute([$name, password_hash($password, PASSWORD_BCRYPT, ['cost' => 5]), $isAdmin ? 1 : 0]);
 		}
 
 		return $this->postForm('/music/login', [

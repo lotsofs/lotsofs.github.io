@@ -125,9 +125,10 @@ $mustExist = [
 	'lotsofs.com/modules/hideandseek/favicon.ico',
 	'lotsofs.com/modules/hideandseek/js/tooltip.js',
 	'lotsofs.com/modules/hideandseek/js/map.js',
-	'lotsofs.com/modules/hideandseek/vendor/leaflet/leaflet.js',
-	'lotsofs.com/modules/hideandseek/vendor/leaflet/leaflet.css',
-	'lotsofs.com/modules/hideandseek/vendor/leaflet/images/marker-icon.png',
+	'lotsofs.com/modules/hideandseek/vendor/maplibre/maplibre-gl.js',
+	'lotsofs.com/modules/hideandseek/vendor/maplibre/maplibre-gl.css',
+	'lotsofs.com/modules/hideandseek/vendor/d3-delaunay/d3-delaunay.min.js',
+	'lotsofs.com/modules/hideandseek/json/mapStyle.json',
 	'app/modules/hideandseek/ajaxGuard.php',
 	'app/modules/hideandseek/database/migrations/001_create.sql',
 ];

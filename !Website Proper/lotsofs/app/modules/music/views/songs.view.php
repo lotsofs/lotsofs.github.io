@@ -140,12 +140,12 @@
 										$labels = $raterLabels[$raterId];
 										$rating = $song['ratings'][$raterId];
 									?>
-									<td class="<?= $rater['scoreClass'] ?><?= $rating['scoreEmptyClass'] ?>" data-field="score_<?= $raterId ?>" data-account-id="<?= $raterId ?>"<?= $labels['placeholder'] ?>><?= $rating['scoreValue'] ?></td>
-									<td class="<?= $rater['noteClass'] ?><?= $rating['noteEmptyClass'] ?>" data-field="note_<?= $raterId ?>" data-account-id="<?= $raterId ?>" data-rater-name="<?= $labels['name'] ?>"<?= $labels['placeholder'] ?> title="<?= $rating['noteValue'] ?>"><span class="ratingNoteText"><?= $rating['noteValue'] ?></span></td>
+									<td class="<?= $rating['scoreCellClass'] ?><?= $rating['scoreEmptyClass'] ?><?= $rating['scoreGatedClass'] ?>" data-field="score_<?= $raterId ?>" data-account-id="<?= $raterId ?>"<?= $labels['placeholder'] ?>><?= $rating['scoreGateHtml'] ?><span class="songGateValue"><?= $rating['scoreValue'] ?></span></td>
+									<td class="<?= $rater['noteClass'] ?><?= $rating['noteEmptyClass'] ?><?= $rating['noteGatedClass'] ?>" data-field="note_<?= $raterId ?>" data-account-id="<?= $raterId ?>" data-rater-name="<?= $labels['name'] ?>"<?= $labels['placeholder'] ?><?= $rating['noteTitleAttr'] ?>><?= $rating['noteGateHtml'] ?><span class="ratingNoteText songGateValue"><?= $rating['noteValue'] ?></span></td>
 								<?php endforeach ?>
 								<?php foreach ($globalData['statColumns'] as $stat): ?>
-									<?php $statValue = $song['stats'][$stat['key']] ?>
-									<td class="songStatCell songStat<?= ucfirst($stat['key']) ?>Cell<?= ($stat['score'] ?? false) ? ' songScoreColoured' : '' ?><?= $statValue === '' ? ' songCellEmpty' : '' ?>" data-field="<?= $stat['key'] ?>"<?= $stat['key'] === 'mode' ? ' data-sort-value="' . htmlspecialchars($song['stats']['modeSort']) . '"' : '' ?>><?= htmlspecialchars($statValue) ?></td>
+									<?php $statCell = $song['statCells'][$stat['key']] ?>
+									<td class="<?= $statCell['class'] ?>" data-field="<?= $stat['key'] ?>"<?= $statCell['sortAttr'] ?>><?= $statCell['gateHtml'] ?><span class="songGateValue"><?= $statCell['value'] ?></span></td>
 								<?php endforeach ?>
 								<td class="songResultCell" data-field="result"></td>
 							</tr>
@@ -177,6 +177,7 @@
 	<script id="songAlbumData" type="application/json"><?= json_encode($globalData['albumOptions'], JSON_HEX_TAG) ?></script>
 	<script id="songLinkFieldData" type="application/json"><?= json_encode($globalData['linkFields'], JSON_HEX_TAG) ?></script>
 	<script id="songTrackAliases" type="application/json"><?= json_encode($globalData['trackAliases'], JSON_HEX_TAG) ?></script>
+	<script id="songGateSetting" type="application/json"><?= json_encode($globalData['blindRating']) ?></script>
 	<script id="songRatingCursor" type="application/json"><?= (int)$globalData['ratingCursor'] ?></script>
 	<script id="songAuditCursor" type="application/json"><?= (int)$globalData['auditCursor'] ?></script>
 	<script src="<?= asset('/modules/music/js/songs.js') ?>"></script>

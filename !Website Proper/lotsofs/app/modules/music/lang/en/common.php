@@ -14,6 +14,9 @@ return [
 	'nav.logout' => 'Log Out',
 	'nav.language' => 'Language',
 	'nav.colour' => 'Colour',
+	'nav.settings' => 'Settings',
+	'settings.blindRating' => 'Hide other people\'s scores and notes on a song until I have rated it myself',
+	'settings.save' => 'Save',
 	'colour.hue' => 'Site colour',
 	'colour.save' => 'Use this colour',
 

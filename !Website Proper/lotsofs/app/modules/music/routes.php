@@ -12,6 +12,7 @@ $routes += [
 	"/music/logout" => __MODULES__ . "/music/routes/logout.php",
 	"/music/language" => __MODULES__ . "/music/routes/language.php",
 	"/music/colour" => __MODULES__ . "/music/routes/colour.php",
+	"/music/settings" => __MODULES__ . "/music/routes/settings.php",
 	"/music/invites" => __MODULES__ . "/music/routes/invites.php",
 	"/music/accounts" => __MODULES__ . "/music/routes/accounts.php",
 	"/music/ajax/artist-alias" => __MODULES__ . "/music/ajax/artistAlias.php",

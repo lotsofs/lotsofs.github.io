@@ -14,6 +14,9 @@ return [
 	'nav.logout' => 'Abmelden',
 	'nav.language' => 'Sprache',
 	'nav.colour' => 'Farbe',
+	'nav.settings' => 'Einstellungen',
+	'settings.blindRating' => 'Wertungen und Notizen anderer bei einem Lied verbergen, bis ich es selbst bewertet habe',
+	'settings.save' => 'Speichern',
 	'colour.hue' => 'Seitenfarbe',
 	'colour.save' => 'Diese Farbe verwenden',
 

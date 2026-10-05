@@ -51,9 +51,9 @@
 			$rating = $song['ratings'][$raterId];
 		?>
 		<dt><?= $labels['score'] ?></dt>
-		<dd class="<?= $rater['scoreClass'] ?><?= $rating['scoreEmptyClass'] ?>" data-field="score_<?= $raterId ?>" data-account-id="<?= $raterId ?>"<?= $labels['placeholder'] ?>><?= $rating['scoreValue'] ?></dd>
+		<dd class="<?= $rating['scoreCellClass'] ?><?= $rating['scoreEmptyClass'] ?><?= $rating['scoreGatedClass'] ?>" data-field="score_<?= $raterId ?>" data-account-id="<?= $raterId ?>"<?= $labels['placeholder'] ?>><?= $rating['scoreCardGateHtml'] ?><span class="songGateValue"><?= $rating['scoreValue'] ?></span></dd>
 		<dt><?= $labels['note'] ?></dt>
-		<dd class="<?= $rater['noteClass'] ?><?= $rating['noteEmptyClass'] ?>" data-field="note_<?= $raterId ?>" data-account-id="<?= $raterId ?>" data-rater-name="<?= $labels['name'] ?>"<?= $labels['placeholder'] ?> title="<?= $rating['noteValue'] ?>"><span class="ratingNoteText"><?= $rating['noteValue'] ?></span></dd>
+		<dd class="<?= $rater['noteClass'] ?><?= $rating['noteEmptyClass'] ?><?= $rating['noteGatedClass'] ?>" data-field="note_<?= $raterId ?>" data-account-id="<?= $raterId ?>" data-rater-name="<?= $labels['name'] ?>"<?= $labels['placeholder'] ?><?= $rating['noteTitleAttr'] ?>><?= $rating['noteGateHtml'] ?><span class="ratingNoteText songGateValue"><?= $rating['noteValue'] ?></span></dd>
 	<?php endforeach ?>
 	<dt class="songResultCell"><?= $resultLabel ?></dt>
 	<dd class="songResultCell" data-field="result"></dd>

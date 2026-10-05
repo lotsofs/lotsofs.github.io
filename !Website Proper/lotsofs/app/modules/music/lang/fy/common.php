@@ -14,6 +14,9 @@ return [
 	'nav.logout' => 'Ôfmelde',
 	'nav.language' => 'Taal',
 	'nav.colour' => 'Kleur',
+	'nav.settings' => 'Ynstellings',
+	'settings.blindRating' => 'Ferbergje skoares en notysjes fan oaren by in nûmer oant ik it sels beoardiele haw',
+	'settings.save' => 'Bewarje',
 	'colour.hue' => 'Sidekleur',
 	'colour.save' => 'Dizze kleur brûke',
 

@@ -793,7 +793,7 @@ return [
 		$body = $ctx->get('/music/songs')['body'];
 
 		assertContains('title="' . $long . '"', $body, 'the whole note is available on hover');
-		assertContains('<span class="ratingNoteText">' . $long . '</span>', $body, 'the text sits in the clipping block');
+		assertClasses(['ratingNoteText'], $body, '/<span class="([^"]*)">' . preg_quote($long, '/') . '/', 'the text sits in the clipping block');
 	},
 
 	'editing one half of a rating leaves the other alone' => function ($ctx) {
@@ -2617,6 +2617,254 @@ return [
 			$ordered('/music/songs?sort=median&dir=desc'),
 			'and every statistic is orderable, not only the average'
 		);
+	},
+
+	'a card hides another rater\'s note until this reader has written one' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$songId = makeSong($ctx, $ctx->makeArtist('Note Gate Artist'), 'Note Gate Song');
+
+		$ctx->ensureLoggedIn('note_gate_other', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'Reminds me of the first record']);
+
+		$ctx->ensureLoggedIn();
+		$otherId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'note_gate_other'")->fetch()['id'];
+
+		$body = $ctx->get('/music/songs')['body'];
+		$cell = songsCardNoteCell(songsCardFor($body, $songId), $otherId);
+
+		assertClasses(['songGated'], $cell, '/<dd class="([^"]*)"/', 'the cell is gated');
+		assertContains('songGateReveal', $cell, 'and carries the pill that uncovers it');
+		assertContains('Reminds me of the first record', $cell, 'the note is still in the cell, for the button to uncover');
+		assertTrue(strpos($cell, 'title="Reminds me of the first record"') === false, 'but not as a tooltip, which would hand it back on hover');
+
+		$row = songsRowFor($body, $songId);
+		assertContains('songGated', $row, 'and the table row is covered the same way');
+		assertContains('Reminds me of the first record', $row, 'with the note still in it, for the pill to uncover');
+		assertTrue(strpos($row, 'title="Reminds me of the first record"') === false, 'and no tooltip there either');
+	},
+
+	'a note of your own opens the rest of that card' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$songId = makeSong($ctx, $ctx->makeArtist('Note Ungate Artist'), 'Note Ungate Song');
+
+		$ctx->ensureLoggedIn('note_ungate_other', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'Second half drags']);
+
+		$ctx->ensureLoggedIn();
+		$otherId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'note_ungate_other'")->fetch()['id'];
+
+		$gated = songsCardNoteCell(songsCardFor($ctx->get('/music/songs')['body'], $songId), $otherId);
+		assertContains('songGated', $gated, 'gated while this reader has nothing of their own');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'Mine, written first']);
+
+		$open = songsCardNoteCell(songsCardFor($ctx->get('/music/songs')['body'], $songId), $otherId);
+		assertTrue(strpos($open, 'songGated') === false, 'and open once there is');
+		assertContains('title="Second half drags"', $open, 'with the tooltip back');
+	},
+
+	'the gate skips an empty note and never covers your own' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$songId = makeSong($ctx, $ctx->makeArtist('Note Gate Mixed Artist'), 'Note Gate Mixed Song');
+
+		$ctx->ensureLoggedIn('note_gate_scorer', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '7']);
+
+		$ctx->ensureLoggedIn('note_gate_noter', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'Worth the wait']);
+
+		$ctx->ensureLoggedIn();
+		$ids = [];
+		foreach (['note_gate_scorer', 'note_gate_noter', 'test_runner'] as $name) {
+			$ids[$name] = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = '{$name}'")->fetch()['id'];
+		}
+
+		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
+
+		assertContains('songGated', songsCardNoteCell($card, $ids['note_gate_noter']), 'the gate is down on this song');
+		assertTrue(strpos(songsCardNoteCell($card, $ids['note_gate_scorer']), 'songGated') === false, 'but a rater who wrote no note has nothing to hide');
+		assertTrue(strpos(songsCardNoteCell($card, $ids['test_runner']), 'songGated') === false, 'and your own cell is never covered');
+	},
+
+	'the covered value is hidden by a rule no id block outranks' => function ($ctx) {
+		$css = $ctx->get('/modules/music/css/styles.css')['body'];
+
+		/* The rules this has to beat sit inside the #songListTable and the
+		   #songCards, #songCardModal blocks, so a bare class selector loses to
+		   them and leaves the value on screen behind the pill. */
+		foreach (['#songListTable', '#songCards', '#songCardModal'] as $container) {
+			assertContains($container . ' .songGated .songGateValue', $css, "{$container} carries the id the hiding rule needs");
+		}
+
+		assertTrue(preg_match('/\.songGated \.songGateValue[^{]*\{[^}]*display: none/s', $css) === 1, 'a covered value is hidden');
+		assertTrue(preg_match('/\.songGated \.songGateReveal[^{]*\{[^}]*display: inline-block/s', $css) === 1, 'and the pill is shown only then');
+	},
+
+	'a score of your own is what uncovers other scores' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$songId = makeSong($ctx, $ctx->makeArtist('Score Gate Artist'), 'Score Gate Song');
+
+		$ctx->ensureLoggedIn('score_gate_other', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '7']);
+
+		$ctx->ensureLoggedIn();
+		$otherId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'score_gate_other'")->fetch()['id'];
+
+		$body = $ctx->get('/music/songs')['body'];
+		$cell = songsFieldCell(songsRowFor($body, $songId), "score_{$otherId}");
+
+		assertContains('songGated', $cell, 'their score is covered while this reader has none');
+		assertContains('songGateReveal', $cell, 'behind a pill');
+		assertContains('>7<', $cell, 'with the score still in it, for the pill to uncover');
+		assertTrue(strpos($cell, 'songScoreColoured') === false, 'and the ramp class off it, or hsl(score * 12) hands the number back');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '4']);
+
+		$open = songsFieldCell(songsRowFor($ctx->get('/music/songs')['body'], $songId), "score_{$otherId}");
+		assertTrue(strpos($open, 'songGated') === false, 'a score of your own uncovers theirs');
+		assertContains('songScoreColoured', $open, 'and puts the ramp back');
+	},
+
+	'the two gates are independent of each other' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Gate Split Artist');
+		$noted = makeSong($ctx, $artistId, 'Gate Split Noted');
+		$scored = makeSong($ctx, $artistId, 'Gate Split Scored');
+
+		$ctx->ensureLoggedIn('gate_split_other', 'test password', false);
+		foreach ([$noted, $scored] as $songId) {
+			$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '8']);
+			$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'theirs']);
+		}
+
+		$ctx->ensureLoggedIn();
+		$otherId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'gate_split_other'")->fetch()['id'];
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $noted, 'field' => 'note', 'value' => 'mine']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $scored, 'field' => 'score', 'value' => '5']);
+
+		$body = $ctx->get('/music/songs')['body'];
+
+		$notedRow = songsRowFor($body, $noted);
+		assertTrue(strpos(songsFieldCell($notedRow, "note_{$otherId}"), 'songGated') === false, 'a note of your own uncovers their note');
+		assertContains('songGated', songsFieldCell($notedRow, "score_{$otherId}"), 'and leaves their score covered');
+
+		$scoredRow = songsRowFor($body, $scored);
+		assertTrue(strpos(songsFieldCell($scoredRow, "score_{$otherId}"), 'songGated') === false, 'a score of your own uncovers their score');
+		assertContains('songGated', songsFieldCell($scoredRow, "note_{$otherId}"), 'and leaves their note covered');
+	},
+
+	'a score of zero is a score' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$songId = makeSong($ctx, $ctx->makeArtist('Gate Zero Artist'), 'Gate Zero Song');
+
+		$ctx->ensureLoggedIn('gate_zero_other', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '6']);
+
+		$ctx->ensureLoggedIn();
+		$otherId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'gate_zero_other'")->fetch()['id'];
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '0']);
+
+		$cell = songsFieldCell(songsRowFor($ctx->get('/music/songs')['body'], $songId), "score_{$otherId}");
+		assertTrue(strpos($cell, 'songGated') === false, 'nought is a rating, not the absence of one');
+	},
+
+	'the statistics are covered for a song you have not scored' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$songId = makeSong($ctx, $ctx->makeArtist('Gate Stats Artist'), 'Gate Stats Song');
+
+		/// Three raters with a tie, or there is no mode and nothing to cover there.
+		foreach (['gate_stats_one' => '9', 'gate_stats_two' => '5', 'gate_stats_three' => '9'] as $name => $score) {
+			$ctx->ensureLoggedIn($name, 'test password', false);
+			$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => $score]);
+		}
+
+		$ctx->ensureLoggedIn();
+		$row = songsRowFor($ctx->get('/music/songs')['body'], $songId);
+
+		foreach (['average', 'deviation', 'median', 'mode', 'highest', 'lowest'] as $field) {
+			assertContains('songGated', songsFieldCell($row, $field), "the {$field} column is covered");
+		}
+
+		$rated = songsFieldCell($row, 'rated');
+		assertTrue(strpos($rated, 'songGated') === false, 'the rated count is not: how many have an opinion says nothing about what it is');
+		assertContains('>3<', $rated, 'and it still prints');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '7']);
+
+		$open = songsRowFor($ctx->get('/music/songs')['body'], $songId);
+		assertTrue(strpos(songsFieldCell($open, 'average'), 'songGated') === false, 'and a score of your own uncovers them');
+	},
+
+	'a blank statistic is nothing to cover' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$songId = makeSong($ctx, $ctx->makeArtist('Gate Blank Artist'), 'Gate Blank Song');
+
+		$row = songsRowFor($ctx->get('/music/songs')['body'], $songId);
+
+		/* Per cell rather than over the chunk: songsRowFor hands back everything
+		   after the row it finds, and the newest song is the last one. */
+		foreach (['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'rated'] as $field) {
+			assertTrue(strpos(songsFieldCell($row, $field), 'songGated') === false, "nobody has rated it, so {$field} has nothing to cover");
+		}
+
+		assertContains('>0<', songsFieldCell($row, 'rated'), 'and the count reads nought');
+	},
+
+	'the narrow columns carry the short label' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$songId = makeSong($ctx, $ctx->makeArtist('Gate Label Artist'), 'Gate Label Song');
+
+		$ctx->ensureLoggedIn('gate_label_other', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '8']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'note', 'value' => 'a note of theirs']);
+
+		$ctx->ensureLoggedIn();
+		$otherId = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'gate_label_other'")->fetch()['id'];
+
+		$body = $ctx->get('/music/songs')['body'];
+		$row = songsRowFor($body, $songId);
+		$card = songsCardFor($body, $songId);
+
+		assertContains('>click<', songsFieldCell($row, "score_{$otherId}"), 'a 2em score column gets the short label');
+		assertContains('>click<', songsFieldCell($row, 'average'), 'and so do the 2.6em statistics columns');
+		assertContains('>Click to view<', songsFieldCell($row, "note_{$otherId}"), 'the 12em note column has room for the long one');
+		assertContains('>Click to view<', songsFieldCell($card, "score_{$otherId}"), 'and so does the card');
+
+		assertContains('Hidden until this song has a score of your own', songsFieldCell($row, "score_{$otherId}"), 'the hint names the half that is missing');
+		assertContains('Hidden until this song has a note of your own', songsFieldCell($row, "note_{$otherId}"), 'for each half');
+	},
+
+	'the poll still carries values this reader cannot see' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$songId = makeSong($ctx, $ctx->makeArtist('Gate Wire Artist'), 'Gate Wire Song');
+
+		$ctx->ensureLoggedIn('gate_wire_other', 'test password', false);
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '3']);
+
+		$ctx->ensureLoggedIn();
+		$poll = $ctx->post(RATING_POLL_ENDPOINT, ['since' => 0, 'sinceAudit' => 0]);
+
+		$seen = null;
+		foreach ($poll['json']['changes'] as $change) {
+			if ((int)$change['song'] === $songId) {
+				$seen = $change;
+			}
+		}
+
+		assertTrue($seen !== null, 'the change reaches the poll');
+		assertSame('3', $seen['score'], 'carrying the score this reader has covered on screen: a spoiler guard, not access control');
 	},
 
 ];

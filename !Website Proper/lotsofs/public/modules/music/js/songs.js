@@ -38,7 +38,7 @@ function rowPairs() {
 /// on a table cell does nothing under table-layout: auto. Reads and writes go
 /// through that inner element where it exists.
 function valueElement(cell) {
-	return cell.querySelector(".ratingNoteText, .songCellText") || cell;
+	return cell.querySelector(".ratingNoteText, .songCellText, .songGateValue") || cell;
 }
 
 function isBeingEdited(cell) {
@@ -1107,6 +1107,150 @@ function colorScoreCell(cell) {
 	cell.style.color = scoreColour(score);
 }
 
+/* Nobody else's score or note is readable until this reader has one of their own
+   for that song. Two independent conditions, one per half, plus the statistics,
+   which are over everybody's scores and so follow the score one. The server
+   renders the first state; this keeps it right as ratings are written, as the
+   poll brings other people's in, and as the statistics are rewritten under them.
+
+   A cell opened by hand stays open for the page session, keyed by song and
+   data-field rather than by element: the field is what makes one rater's score
+   and note two separate keys, and what makes the row and the card agree while
+   the modal moves cards about. */
+const songGateOn = JSON.parse(document.getElementById("songGateSetting").textContent) === true;
+const songRevealed = new Set();
+
+const SONG_GATE_CELLS = ".songRatingScoreCell:not(.songMyScoreCell),"
+	+ " .songRatingNoteCell:not(.songMyNoteCell),"
+	+ " .songStatCell:not(.songStatRatedCell)";
+
+/* Which fields sit on the 0-10 ramp, read off the header row - which is never
+   covered and whose data-sort-key is the cell's data-field - rather than from a
+   second list of statistic names that could drift from routes/songs.php. A
+   covered cell has songScoreColoured stripped, and this is what puts it back. */
+const SONG_RAMP_FIELDS = new Set(
+	Array.from(songListTable.querySelectorAll("thead th.songScoreColoured[data-sort-key]"), th => th.dataset.sortKey)
+);
+
+/// The row or the card a cell belongs to; a card is a <dl>, so one of the two matches.
+function gateContainer(cell) {
+	return cell.closest(".songCard, tr");
+}
+
+function gateKey(container, cell) {
+	return container.dataset.songId + ":" + cell.dataset.field;
+}
+
+/* What this reader's own cell holds, including what they are part way through
+   typing: beginCellEdit empties the value element, so reading the text mid-edit
+   reads as "nothing written" and drops the gate over the rest of the row while
+   they are looking at it. */
+function ownValue(cell) {
+	const input = cell.querySelector("input, textarea");
+
+	return (input ? input.value : cellText(cell)).trim();
+}
+
+function gateRevealButton(cell) {
+	let button = cell.querySelector(".songGateReveal");
+
+	if (!button) {
+		const isNote = cell.classList.contains("songRatingNoteCell");
+
+		button = document.createElement("button");
+		button.type = "button";
+		button.className = "songGateReveal";
+		/// The long label only where the column has room for it.
+		button.textContent = cell.matches("td.songRatingScoreCell, td.songStatCell")
+			? t("song.list.gateRevealShort")
+			: t("song.list.gateReveal");
+		button.title = isNote ? t("song.list.gateNoteHint") : t("song.list.gateScoreHint");
+		cell.insertBefore(button, cell.firstChild);
+	}
+
+	return button;
+}
+
+function setCellGate(cell, gated) {
+	cell.classList.toggle("songGated", gated);
+
+	if (gated) {
+		gateRevealButton(cell);
+		/// Withheld with the value: the tooltip would hand it straight back.
+		delete cell.dataset.tooltip;
+		cell.removeAttribute("title");
+		cell.classList.remove("songScoreColoured");
+		cell.style.removeProperty("color");
+		return;
+	}
+
+	if (SONG_RAMP_FIELDS.has(cell.dataset.field)) {
+		cell.classList.add("songScoreColoured");
+		colorScoreCell(cell);
+	}
+
+	if (cell.classList.contains("songRatingNoteCell")) {
+		const note = cellText(cell);
+
+		// Whichever the cell currently uses, since tooltip.js moves title into data-tooltip.
+		if ("tooltip" in cell.dataset) {
+			cell.dataset.tooltip = note;
+		}
+		else {
+			cell.title = note;
+		}
+	}
+}
+
+function applySpoilerGate(container) {
+	if (!songGateOn || !container) {
+		return;
+	}
+
+	const mineScore = container.querySelector(".songMyScoreCell");
+	const mineNote = container.querySelector(".songMyNoteCell");
+
+	/// No rater is "mine" on a page with no viewer, which covers nothing.
+	const scoresGated = mineScore !== null && ownValue(mineScore) === "";
+	const notesGated = mineNote !== null && ownValue(mineNote) === "";
+
+	container.querySelectorAll(SONG_GATE_CELLS).forEach(cell => {
+		const isNote = cell.classList.contains("songRatingNoteCell");
+		const gated = (isNote ? notesGated : scoresGated)
+			&& cellText(cell).trim() !== ""
+			&& !songRevealed.has(gateKey(container, cell));
+
+		setCellGate(cell, gated);
+	});
+}
+
+/// Both trees, since the revealed set is keyed by song and field, not by element.
+function regateSong(songId) {
+	const pair = rowsBySongId.get(String(songId));
+	if (!pair) {
+		return;
+	}
+
+	applySpoilerGate(pair.tr);
+	applySpoilerGate(pair.card);
+}
+
+document.addEventListener("click", event => {
+	const button = event.target.closest(".songGateReveal");
+	if (!button) {
+		return;
+	}
+
+	const cell = button.closest("[data-field]");
+	const container = cell && gateContainer(cell);
+	if (!container) {
+		return;
+	}
+
+	songRevealed.add(gateKey(container, cell));
+	regateSong(container.dataset.songId);
+});
+
 function setCellValue(cell, spec, value) {
 	valueElement(cell).textContent = value;
 	cell.classList.toggle("songCellEmpty", value === "");
@@ -1124,6 +1268,9 @@ function setCellValue(cell, spec, value) {
 	if (cell.classList.contains("songScoreColoured")) {
 		colorScoreCell(cell);
 	}
+
+	/// A rating landing anywhere on a song can open or close the gate on the rest.
+	applySpoilerGate(gateContainer(cell));
 }
 
 // Every cell holding one score on the 0-10 ramp, rater and statistic alike.
@@ -1262,6 +1409,13 @@ songListBody.addEventListener("click", event => {
 		return;
 	}
 
+	/// The pill has its own handler, and uncovering a value is not a request
+	/// for the card. tbody is a nearer ancestor than document, so without this
+	/// a click on a pill in a note cell would pop the modal as well.
+	if (event.target.closest(".songGateReveal")) {
+		return;
+	}
+
 	const noteCell = event.target.closest("td.songRatingNoteCell");
 	if (noteCell && !editableCell(noteCell) && !isBeingEdited(noteCell)) {
 		openCardAndFlash(noteCell.closest("[data-song-id]").dataset.songId, card => fieldCell(card, noteCell.dataset.field));
@@ -1379,6 +1533,29 @@ function showToast(fill, songId) {
 	toastTimers.set(toast, setTimeout(() => dismissToast(toast), TOAST_DURATION));
 }
 
+/* Each half of a toast follows its own gate, read off this reader's own cell
+   for that song in the table row - never the card, which the modal moves out
+   of the list.
+
+   A song this page never rendered, one somebody added since it loaded, has no
+   cell to read. That withholds the value: there is no reading of "unknown"
+   under which showing it is right, and a brand new song is the one case where
+   this reader certainly has nothing of their own on it. */
+function toastValueCovered(event) {
+	if (!songGateOn || event.mine) {
+		return false;
+	}
+
+	const pair = rowsBySongId.get(String(event.songId));
+	if (!pair) {
+		return true;
+	}
+
+	const mine = pair.tr.querySelector(event.field === "score" ? ".songMyScoreCell" : ".songMyNoteCell");
+
+	return mine !== null && ownValue(mine) === "";
+}
+
 function showRatingEvent(event) {
 	if (!TOAST_SHOW_OWN_EVENTS && event.mine) {
 		return;
@@ -1396,6 +1573,14 @@ function showRatingEvent(event) {
 
 	if (event.value === null) {
 		template = isScore ? t("song.list.toastScoreCleared") : t("song.list.toastNoteCleared");
+	}
+	else if (toastValueCovered(event)) {
+		/* Still names the person and the song; only the value is withheld, so
+		   these templates carry neither {value} nor {previous} - an unmatched
+		   placeholder is emitted literally by fillFromTemplate. */
+		template = event.previousValue === null
+			? (isScore ? t("song.list.toastScoreHidden") : t("song.list.toastNoteHidden"))
+			: (isScore ? t("song.list.toastScoreUpdatedHidden") : t("song.list.toastNoteUpdatedHidden"));
 	}
 	else {
 		const shown = event.value.length > TOAST_VALUE_MAX

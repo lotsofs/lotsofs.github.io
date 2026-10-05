@@ -367,6 +367,9 @@ $globalData['statColumns'] = $statColumns;
 $globalData['raters'] = $raters;
 $globalData['accountId'] = $accountId;
 
+require_once __MODULES__ . '/music/blindRating.php';
+$globalData['blindRating'] = musicBlindRating();
+
 $filterQuery = ($filterArtist !== null ? '&artist=' . $filterArtist : '')
 	. ($filterAlbum !== null ? '&album=' . $filterAlbum : '');
 

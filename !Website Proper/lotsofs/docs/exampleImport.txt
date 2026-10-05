@@ -1,0 +1,887 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-10-04T17:48:47Z",
+    "timestamp_areas_base": "2026-10-04T05:50:36Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 671690479,
+  "lat": 52.0453777,
+  "lon": 4.2095193,
+  "tags": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Parnassia psycho-medisch centrum"
+  }
+},
+{
+  "type": "node",
+  "id": 1599898060,
+  "lat": 51.9120141,
+  "lon": 4.4699946,
+  "tags": {
+    "amenity": "hospital",
+    "designation": "kinderziekenhuis",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "Erasmus MC - Sophia",
+    "wheelchair": "yes",
+    "wikidata": "Q2593465",
+    "wikimedia_commons": "Category:Sophia Kinderziekenhuis",
+    "wikipedia": "nl:Sophia Kinderziekenhuis"
+  }
+},
+{
+  "type": "node",
+  "id": 2610213651,
+  "lat": 51.9157861,
+  "lon": 4.4801515,
+  "tags": {
+    "addr:city": "Rotterdam",
+    "addr:housenumber": "160",
+    "addr:postcode": "3011BH",
+    "addr:street": "Schiedamse Vest",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Het Ooghuis",
+    "source": "BAG",
+    "source:date": "2013-11-26"
+  }
+},
+{
+  "type": "node",
+  "id": 2610218009,
+  "lat": 51.9150315,
+  "lon": 4.4800328,
+  "tags": {
+    "addr:city": "Rotterdam",
+    "addr:housenumber": "180",
+    "addr:postcode": "3011BH",
+    "addr:street": "Schiedamse Vest",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Het Oogziekenhuis",
+    "name:en": "The Rotterdam Eye Hospital",
+    "name:nl": "Het Oogziekenhuis",
+    "source": "BAG",
+    "source:date": "2013-11-26",
+    "website": "https://www.oogziekenhuis.nl/",
+    "wheelchair": "yes",
+    "wikidata": "Q2595158",
+    "wikimedia_commons": "Category:Oogziekenhuis (Rotterdam)",
+    "wikipedia": "nl:Het Oogziekenhuis Rotterdam"
+  }
+},
+{
+  "type": "node",
+  "id": 2610255765,
+  "lat": 51.9109324,
+  "lon": 4.4680514,
+  "tags": {
+    "addr:city": "Rotterdam",
+    "addr:housenumber": "40",
+    "addr:postcode": "3015GD",
+    "addr:street": "Dokter Molewaterplein",
+    "check_date": "2024-03-11",
+    "healthcare": "hospital",
+    "name": "Erasmus MC",
+    "source": "BAG",
+    "source:date": "2021-11-03"
+  }
+},
+{
+  "type": "node",
+  "id": 2610265873,
+  "lat": 51.9132038,
+  "lon": 4.4850171,
+  "tags": {
+    "addr:city": "Rotterdam",
+    "addr:housenumber": "543",
+    "addr:postcode": "3011XZ",
+    "addr:street": "Boompjes",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "De Gezichtskliniek",
+    "source": "BAG",
+    "source:date": "2013-11-26",
+    "website": "https://www.degezichtskliniek.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2724262973,
+  "lat": 52.0740015,
+  "lon": 4.2997871,
+  "tags": {
+    "addr:city": "'s-Gravenhage",
+    "addr:housenumber": "32",
+    "addr:postcode": "2512VA",
+    "addr:street": "Lijnbaan",
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "HMC Westeinde",
+    "operator": "Haaglanden Medisch Centrum",
+    "operator:website": "https://www.haaglandenmc.nl/",
+    "operator:wikidata": "Q2619956",
+    "phone": "+31 88 979 79 00",
+    "source": "BAG",
+    "source:date": "2014-02-11",
+    "website": "https://www.haaglandenmc.nl/westeinde/",
+    "wikidata": "Q13797957",
+    "wikipedia": "nl:HMC Westeinde"
+  }
+},
+{
+  "type": "node",
+  "id": 2756476089,
+  "lat": 51.7501404,
+  "lon": 4.1020443,
+  "tags": {
+    "addr:city": "Dirksland",
+    "addr:housenumber": "22",
+    "addr:postcode": "3247BW",
+    "addr:street": "Stationsweg",
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "Van Weel-Bethesda Ziekenhuis",
+    "source": "BAG",
+    "source:date": "2014-03-24",
+    "website": "https://www.vanweelbethesda.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2787590369,
+  "lat": 51.9339483,
+  "lon": 4.5714827,
+  "tags": {
+    "addr:city": "Capelle aan den IJssel",
+    "addr:housenumber": "1",
+    "addr:postcode": "2906CV",
+    "addr:street": "Lupinestraat",
+    "amenity": "hospital",
+    "email": "lupine@youz.nl",
+    "healthcare": "hospital",
+    "healthcare:speciality": "child_psychiatry",
+    "name": "De Lupine",
+    "opening_hours": "24/7",
+    "operator": "Youz",
+    "operator:website": "https://youz.nl/",
+    "operator:wikidata": "Q139165320",
+    "phone": "+31 88 358 87 77",
+    "source": "BAG",
+    "source:date": "2014-03-24",
+    "website": "https://youz.nl/w/capelle-aan-den-ijssel-lupinestraat"
+  }
+},
+{
+  "type": "node",
+  "id": 2804749340,
+  "lat": 51.9247844,
+  "lon": 4.5156421,
+  "tags": {
+    "addr:city": "Rotterdam",
+    "addr:housenumber": "15",
+    "addr:postcode": "3062AB",
+    "addr:street": "Oudedijk",
+    "amenity": "hospital",
+    "check_date": "2025-12-01",
+    "name": "Polikliniek Kralingen",
+    "operator": "IJsselland Ziekenhuis",
+    "source": "BAG",
+    "source:date": "2014-03-24",
+    "website": "https://www.ysl.nl/kralingen"
+  }
+},
+{
+  "type": "node",
+  "id": 3439388393,
+  "lat": 52.0688894,
+  "lon": 4.4995963,
+  "tags": {
+    "addr:city": "Zoetermeer",
+    "addr:housenumber": "1",
+    "addr:postcode": "2725NA",
+    "addr:street": "Toneellaan",
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "HagaZiekenhuis Zoetermeer",
+    "website": "https://www.hagaziekenhuis.nl/locaties/zoetermeer/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4383774829,
+  "lat": 51.9386642,
+  "lon": 4.5626815,
+  "tags": {
+    "addr:city": "Capelle aan den IJssel",
+    "addr:housenumber": "2",
+    "addr:postcode": "2906ZC",
+    "addr:street": "Prins Constantijnweg",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "IJsselland Ziekenhuis",
+    "website": "https://www.ysl.nl/",
+    "wheelchair": "yes",
+    "wikidata": "Q3126348"
+  }
+},
+{
+  "type": "node",
+  "id": 5155337374,
+  "lat": 52.0880478,
+  "lon": 4.7487232,
+  "tags": {
+    "addr:city": "Bodegraven",
+    "addr:housenumber": "9c",
+    "addr:postcode": "2411VT",
+    "addr:street": "Willem de Zwijgerstraat",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Groene Hart Ziekenhuis",
+    "source": "BAG",
+    "source:date": "2017-10-08",
+    "website": "https://www.ghz.nl/bodegraven"
+  }
+},
+{
+  "type": "node",
+  "id": 5224121189,
+  "lat": 52.2004232,
+  "lon": 4.7534296,
+  "tags": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Polikliniek"
+  }
+},
+{
+  "type": "node",
+  "id": 7197108613,
+  "lat": 52.0551394,
+  "lon": 4.2640317,
+  "tags": {
+    "addr:city": "'s-Gravenhage",
+    "addr:housenumber": "275",
+    "addr:postcode": "2545AA",
+    "addr:street": "Els Borst-Eilersplein",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "internet_access": "wlan",
+    "name": "HagaZiekenhuis Juliana Kinderziekenhuis",
+    "opening_hours": "24/7",
+    "phone": "+31 70 2100000",
+    "website": "https://www.julianakinderziekenhuis.nl/home/"
+  }
+},
+{
+  "type": "node",
+  "id": 12136143674,
+  "lat": 51.9304045,
+  "lon": 4.2425499,
+  "tags": {
+    "amenity": "hospital",
+    "name": "Franciscus Maassluis",
+    "operator": "Franciscus",
+    "website": "https://www.franciscus.nl/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12254048395,
+  "lat": 52.1015891,
+  "lon": 4.3180829,
+  "tags": {
+    "addr:city": "'s-Gravenhage",
+    "addr:country": "NL",
+    "addr:housenumber": "5",
+    "addr:postcode": "2597AX",
+    "addr:street": "Bronovolaan",
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "HMC Bronovo",
+    "operator": "Haaglanden Medisch Centrum",
+    "operator:website": "https://www.haaglandenmc.nl/",
+    "operator:wikidata": "Q2619956",
+    "phone": "+31 88 979 79 00",
+    "website": "https://www.haaglandenmc.nl/bronovo/",
+    "wikidata": "Q2688157",
+    "wikipedia": "nl:HMC Bronovo"
+  }
+},
+{
+  "type": "way",
+  "id": 32545413,
+  "center": {
+    "lat": 52.0230078,
+    "lon": 4.3614136
+  },
+  "tags": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "GGZ Delfland"
+  }
+},
+{
+  "type": "way",
+  "id": 37388187,
+  "center": {
+    "lat": 52.1726652,
+    "lon": 4.4568082
+  },
+  "tags": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "LUMC Curium",
+    "url": "https://www.curium-lumc.nl/"
+  }
+},
+{
+  "type": "way",
+  "id": 39440761,
+  "center": {
+    "lat": 52.0433996,
+    "lon": 4.2096475
+  },
+  "tags": {
+    "alt_name": "Parnassia lokatie Monsterseweg",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "healthcare:speciality": "psychiatry",
+    "name": "Parnassia"
+  }
+},
+{
+  "type": "way",
+  "id": 95690334,
+  "center": {
+    "lat": 52.0741924,
+    "lon": 4.2987107
+  },
+  "tags": {
+    "amenity": "hospital",
+    "building": "yes",
+    "check_date": "2026-05-19",
+    "emergency": "no",
+    "healthcare": "hospital",
+    "healthcare:speciality": "psychiatry",
+    "layer": "1",
+    "name": "PsyQ",
+    "ref:bag": "0518100000335217",
+    "source": "BAG",
+    "source:date": "2021-10-08",
+    "start_date": "2004",
+    "website": "https://www.psyq.nl/"
+  }
+},
+{
+  "type": "way",
+  "id": 132258761,
+  "center": {
+    "lat": 51.8393157,
+    "lon": 4.9572145
+  },
+  "tags": {
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "Beatrixziekenhuis",
+    "operator": "Rivas Zorggroep",
+    "operator:wikidata": "Q97383459",
+    "website": "https://www.rivas.nl/beatrixziekenhuis/",
+    "wheelchair": "yes",
+    "wikidata": "Q96581721"
+  }
+},
+{
+  "type": "way",
+  "id": 138423359,
+  "center": {
+    "lat": 52.0752940,
+    "lon": 4.3015067
+  },
+  "tags": {
+    "addr:city": "'s-Gravenhage",
+    "addr:country": "NL",
+    "addr:housenumber": "128",
+    "addr:postcode": "2512HE",
+    "addr:street": "Westeinde",
+    "amenity": "hospital",
+    "building:levels": "4",
+    "healthcare": "hospital",
+    "name": "GGD Haaglanden",
+    "phone:NL": "14 070",
+    "website": "https://www.denhaag.nl/ggd/"
+  }
+},
+{
+  "type": "way",
+  "id": 151233702,
+  "center": {
+    "lat": 52.1662122,
+    "lon": 4.4772586
+  },
+  "tags": {
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "Leids Universitair Medisch Centrum",
+    "old_name": "Academisch Ziekenhuis Leiden",
+    "operator": "Universiteit Leiden",
+    "operator:type": "university",
+    "operator:website": "https://www.universiteitleiden.nl",
+    "operator:wikidata": "Q156598",
+    "phone": "+31 71 526 9111",
+    "short_name": "LUMC",
+    "website": "https://www.lumc.nl",
+    "wheelchair": "yes",
+    "wikidata": "Q2406409",
+    "wikimedia_commons": "Category:Leiden University Medical Center",
+    "wikipedia": "nl:Leids Universitair Medisch Centrum"
+  }
+},
+{
+  "type": "way",
+  "id": 242350734,
+  "center": {
+    "lat": 52.1566631,
+    "lon": 4.5408900
+  },
+  "tags": {
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "Alrijne Ziekenhuis Leiderdorp",
+    "note": "Er zijn meerdere Alrijne ziekenhuizen, dit ziekenhuis staat lokaal en op hun website bekend als \"Alrijne Ziekenhuis Leiderdorp\"",
+    "survey:date": "2021-08-26",
+    "toilets:wheelchair": "yes",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "way",
+  "id": 242482909,
+  "center": {
+    "lat": 52.0606965,
+    "lon": 4.2506414
+  },
+  "tags": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Parnassia psycho-medisch centrum"
+  }
+},
+{
+  "type": "way",
+  "id": 374346013,
+  "center": {
+    "lat": 52.1737437,
+    "lon": 4.4829986
+  },
+  "tags": {
+    "alt_name": "Diakonessenhuis",
+    "amenity": "hospital",
+    "emergency": "no",
+    "healthcare": "hospital",
+    "name": "Alrijne Ziekenhuis Leiden",
+    "website": "https://www.alrijne.nl/leiden/",
+    "wikidata": "Q2754101",
+    "wikimedia_commons": "Category:Diaconessenhuis Leiden",
+    "wikipedia": "nl:Alrijne Ziekenhuis Leiden"
+  }
+},
+{
+  "type": "way",
+  "id": 403286686,
+  "center": {
+    "lat": 52.0412191,
+    "lon": 4.2676011
+  },
+  "tags": {
+    "amenity": "hospital",
+    "healthcare": "rehabilitation",
+    "healthcare:speciality": "physiatry",
+    "name": "Basalt revalidatie Den Haag",
+    "name:en": "Basalt rehabilitation Den Haag",
+    "toilets:wheelchair": "yes",
+    "website": "https://www.basaltrevalidatie.nl/locaties/den-haag-vrederustlaan/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 404022973,
+  "center": {
+    "lat": 51.7920898,
+    "lon": 4.6822431
+  },
+  "tags": {
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "Albert Schweitzer Ziekenhuis, loc. Dordwijk",
+    "operator": "Albert Schweitzer Ziekenhuis",
+    "phone": "+31 78 654 1111",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 404317973,
+  "center": {
+    "lat": 51.9112870,
+    "lon": 4.4681099
+  },
+  "tags": {
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "Erasmus Medisch Centrum",
+    "phone": "+31 10 704 0704",
+    "website": "https://www.erasmusmc.nl/",
+    "wikidata": "Q3126873",
+    "wikimedia_commons": "Category:Erasmus MC",
+    "wikipedia": "nl:Erasmus MC"
+  }
+},
+{
+  "type": "way",
+  "id": 548981716,
+  "center": {
+    "lat": 51.8860021,
+    "lon": 4.4935804
+  },
+  "tags": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Ikazia Ziekenhuis",
+    "website": "https://www.ikazia.nl/",
+    "wikidata": "Q2088232",
+    "wikipedia": "nl:Ikazia Ziekenhuis"
+  }
+},
+{
+  "type": "way",
+  "id": 626477503,
+  "center": {
+    "lat": 51.8466889,
+    "lon": 4.3955516
+  },
+  "tags": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Antes klinieken Poortugaal",
+    "old_name": "Delta Psychiatrisch Centrum",
+    "wikidata": "Q13571803",
+    "wikipedia": "nl:Delta Psychiatrisch Centrum"
+  }
+},
+{
+  "type": "way",
+  "id": 660950332,
+  "center": {
+    "lat": 51.9387246,
+    "lon": 4.5627986
+  },
+  "tags": {
+    "healthcare": "hospital",
+    "landuse": "healthcare",
+    "name": "IJsselland Ziekenhuis",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 666953046,
+  "center": {
+    "lat": 51.8794823,
+    "lon": 4.5354446
+  },
+  "tags": {
+    "addr:city": "Rotterdam",
+    "addr:country": "NL",
+    "addr:housenumber": "21",
+    "addr:postcode": "3079DZ",
+    "addr:street": "Maasstadweg",
+    "amenity": "hospital",
+    "email": "info@maasstadziekenhuis.nl",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "internet_access": "wlan",
+    "name": "Maasstad Ziekenhuis",
+    "phone": "+31 10 2911911",
+    "website": "https://www.maasstadziekenhuis.nl",
+    "wheelchair": "yes",
+    "wikidata": "Q2106000",
+    "wikipedia": "nl:Maasstad Ziekenhuis"
+  }
+},
+{
+  "type": "way",
+  "id": 694035557,
+  "center": {
+    "lat": 52.1719770,
+    "lon": 4.4597155
+  },
+  "tags": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "GGZ Rivierduinen"
+  }
+},
+{
+  "type": "way",
+  "id": 694035558,
+  "center": {
+    "lat": 52.1750763,
+    "lon": 4.4673076
+  },
+  "tags": {
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "GGZ Rivierduinen"
+  }
+},
+{
+  "type": "way",
+  "id": 694035579,
+  "center": {
+    "lat": 52.1705710,
+    "lon": 4.4690334
+  },
+  "tags": {
+    "amenity": "hospital",
+    "check_date": "2024-11-13",
+    "healthcare": "hospital",
+    "name": "Basalt Revalidatiecentrum"
+  }
+},
+{
+  "type": "way",
+  "id": 750694495,
+  "center": {
+    "lat": 51.9418705,
+    "lon": 4.4636766
+  },
+  "tags": {
+    "amenity": "hospital",
+    "check_date": "2026-08-05",
+    "healthcare": "hospital",
+    "name": "Franciscus Gasthuis",
+    "website": "https://www.franciscus.nl/",
+    "wikidata": "Q2632418",
+    "wikipedia": "nl:Franciscus Gasthuis"
+  }
+},
+{
+  "type": "way",
+  "id": 750704582,
+  "center": {
+    "lat": 52.0555250,
+    "lon": 4.2633686
+  },
+  "tags": {
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "HagaZiekenhuis locatie Leyweg",
+    "phone": "+31 70 210 0000",
+    "website": "https://www.hagaziekenhuis.nl/locaties/Leyweg/",
+    "wikidata": "Q1867417",
+    "wikipedia": "nl:HagaZiekenhuis, locatie Leyweg"
+  }
+},
+{
+  "type": "way",
+  "id": 750873352,
+  "center": {
+    "lat": 51.9972565,
+    "lon": 4.3371639
+  },
+  "tags": {
+    "addr:city": "Delft",
+    "addr:housenumber": "5",
+    "addr:postcode": "2625AD",
+    "addr:street": "Reinier de Graafweg",
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "Reinier de Graaf Gasthuis",
+    "name:etymology:wikidata": "Q266995",
+    "phone": "+31 15 260 3060",
+    "source": "local_knowledge",
+    "website": "https://reinierdegraaf.nl",
+    "wikidata": "Q14255098",
+    "wikipedia": "nl:Reinier de Graaf Gasthuis"
+  }
+},
+{
+  "type": "way",
+  "id": 903949261,
+  "center": {
+    "lat": 52.1427949,
+    "lon": 4.6611025
+  },
+  "tags": {
+    "addr:city": "Alphen aan den Rijn",
+    "addr:housenumber": "4",
+    "addr:postcode": "2402WC",
+    "addr:street": "Meteoorlaan",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "name": "Alrijne Alphen aan den Rijn",
+    "short_name": "Alrijne",
+    "smoking": "no",
+    "website": "https://www.alrijne.nl/locaties/alphen/"
+  }
+},
+{
+  "type": "way",
+  "id": 1064956642,
+  "center": {
+    "lat": 51.9223074,
+    "lon": 4.3802914
+  },
+  "tags": {
+    "addr:city": "Schiedam",
+    "addr:country": "NL",
+    "addr:housenumber": "2",
+    "addr:postcode": "3118JH",
+    "addr:street": "Vlietlandplein",
+    "alt_name": "Vlietland Ziekenhuis",
+    "amenity": "hospital",
+    "healthcare": "hospital",
+    "internet_access": "wlan",
+    "name": "Franciscus Vlietland",
+    "website": "https://www.franciscus.nl/",
+    "wikidata": "Q2321223",
+    "wikipedia": "nl:Franciscus Vlietland"
+  }
+},
+{
+  "type": "way",
+  "id": 1065947131,
+  "center": {
+    "lat": 51.8464685,
+    "lon": 4.3379614
+  },
+  "tags": {
+    "addr:city": "Spijkenisse",
+    "addr:housenumber": "500",
+    "addr:postcode": "3201GZ",
+    "addr:street": "Ruwaard van Puttenweg",
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "Spijkenisse Medisch Centrum",
+    "phone": "+31 181 658 888",
+    "start_date": "1990",
+    "website": "https://www.spijkenissemc.nl/",
+    "wheelchair": "yes",
+    "wikidata": "Q14715492"
+  }
+},
+{
+  "type": "way",
+  "id": 1066808911,
+  "center": {
+    "lat": 52.0218405,
+    "lon": 4.7059108
+  },
+  "tags": {
+    "addr:city": "Gouda",
+    "addr:housenumber": "10",
+    "addr:postcode": "2803HH",
+    "addr:street": "Bleulandweg",
+    "amenity": "hospital",
+    "check_date": "2026-02-10",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "healthcare:speciality": "general",
+    "name": "Groene Hart Ziekenhuis",
+    "operator:type": "public",
+    "source": "BAG",
+    "source:date": "2014-02-11",
+    "website": "https://www.ghz.nl/",
+    "wikidata": "Q1838756"
+  }
+},
+{
+  "type": "way",
+  "id": 1218862507,
+  "center": {
+    "lat": 51.8467456,
+    "lon": 4.3868006
+  },
+  "tags": {
+    "addr:city": "Poortugaal",
+    "addr:housenumber": "1",
+    "addr:postcode": "3172AB",
+    "addr:street": "Kijvelandsekade",
+    "amenity": "hospital",
+    "name": "Ipse de Bruggen - SGLVG+",
+    "website": "https://www.ipsedebruggen.nl/middenweg-sglvg"
+  }
+},
+{
+  "type": "way",
+  "id": 1299806696,
+  "center": {
+    "lat": 52.0930710,
+    "lon": 4.3836918
+  },
+  "tags": {
+    "addr:city": "Leidschendam",
+    "addr:housenumber": "1",
+    "addr:postcode": "2262BA",
+    "addr:street": "Burgemeester Banninglaan",
+    "amenity": "hospital",
+    "emergency": "no",
+    "healthcare": "hospital",
+    "name": "HMC Antoniushove",
+    "operator": "Haaglanden Medisch Centrum",
+    "operator:website": "https://www.haaglandenmc.nl/",
+    "operator:wikidata": "Q2619956",
+    "phone": "+31 88 979 79 00",
+    "source": "BAG",
+    "source:date": "2014-02-11",
+    "toilets:wheelchair": "yes",
+    "website": "https://www.haaglandenmc.nl/antoniushove/",
+    "wheelchair": "yes",
+    "wikidata": "Q1903638",
+    "wikipedia": "nl:HMC Antoniushove"
+  }
+},
+{
+  "type": "relation",
+  "id": 3603304,
+  "center": {
+    "lat": 51.8264992,
+    "lon": 4.6293176
+  },
+  "tags": {
+    "amenity": "hospital",
+    "building": "yes",
+    "name": "Albert Schweitzer Ziekenhuis, loc. Zwijndrecht",
+    "ref:bag": "0642100000024035",
+    "source": "BAG",
+    "source:date": "2014-03-24",
+    "start_date": "1988",
+    "type": "multipolygon"
+  }
+}
+
+  ]
+}

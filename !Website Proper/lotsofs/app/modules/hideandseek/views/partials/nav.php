@@ -6,6 +6,8 @@
 
 	<?php if (currentAccountId()): ?>
 		<a href="/hideandseek" class="hnsNavLink<?= urlIs("/hideandseek") ? " hnsNavCurrent" : "" ?>"><?= t('nav.home') ?></a>
+		<a href="/hideandseek/game-maps" class="hnsNavLink<?= urlIs("/hideandseek/game-maps") ? " hnsNavCurrent" : "" ?>"><?= t('nav.gameMaps') ?></a>
+		<a href="/hideandseek/import-pois" class="hnsNavLink<?= urlIs("/hideandseek/import-pois") ? " hnsNavCurrent" : "" ?>"><?= t('nav.importPois') ?></a>
 		<?php if ($globalData['isAdmin'] ?? false): ?>
 			<a href="/hideandseek/accounts" class="hnsNavLink<?= urlIs("/hideandseek/accounts") ? " hnsNavCurrent" : "" ?>"><?= t('nav.accounts') ?></a>
 		<?php endif ?>

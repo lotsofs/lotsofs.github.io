@@ -47,6 +47,16 @@ function currentAccountName() {
 	return $scope === null ? null : ($_SESSION[$scope]['account_name'] ?? null);
 }
 
+/// A password hash. The cost drops under PHP's built-in server: the only
+/// accounts reachable there are a module's _test database's.
+function hashPassword($password) {
+	if (php_sapi_name() === 'cli-server') {
+		return password_hash($password, PASSWORD_BCRYPT, ['cost' => 5]);
+	}
+
+	return password_hash($password, PASSWORD_DEFAULT);
+}
+
 function logIn($accountId, $accountName) {
 	session_regenerate_id(true);
 

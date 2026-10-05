@@ -28,10 +28,40 @@ foreach ($songRaters as $rater) {
 		'note' => htmlspecialchars(t('song.list.raterNoteLabel', ['name' => $rater['account_name']])),
 		'name' => htmlspecialchars($rater['account_name']),
 		'placeholder' => ($rater['isMine'] ?? false) ? $tapToEnterAttr : '',
+		/* The rater's class list with the colour ramp taken out, derived rather
+		   than written out a second time: a covered score must not be painted,
+		   since hsl(score * 12) is the number back again. Taken out rather than
+		   added to, because routes/songs.php hands the same string to the
+		   header cell and a test pins what ends that attribute. */
+		'scoreGatedClass' => implode(' ', array_diff(preg_split('/\s+/', $rater['scoreClass'] ?? ''), ['songScoreColoured'])),
 	];
 }
 
 $emptyLinks = array_fill_keys(array_column($songLinkFields, 'key'), null);
+
+$myRaterId = null;
+foreach ($songRaters as $rater) {
+	if ($rater['isMine'] ?? false) {
+		$myRaterId = (int)$rater['id'];
+		break;
+	}
+}
+
+$blindRating = $globalData['blindRating'] ?? false;
+$songStatColumns = $globalData['statColumns'] ?? [];
+
+/* Three pills, built once rather than per cell. The long label where there is
+   room - the card, and the table's 12em note columns - and the short one in the
+   table's 2em score and 2.6em statistics columns, which take the width of
+   whatever is in them. The hint names the half that is missing. */
+$gatePill = function ($label, $hint) {
+	return '<button type="button" class="songGateReveal" title="' . htmlspecialchars($hint) . '">'
+		. htmlspecialchars($label) . '</button>';
+};
+
+$notePill = $gatePill(t('song.list.gateReveal'), t('song.list.gateNoteHint'));
+$scorePillWide = $gatePill(t('song.list.gateReveal'), t('song.list.gateScoreHint'));
+$scorePillNarrow = $gatePill(t('song.list.gateRevealShort'), t('song.list.gateScoreHint'));
 
 // One pass deriving every value, class and attribute the table and cards need.
 $songRows = [];
@@ -161,6 +191,15 @@ foreach ($globalData['songs'] as $song) {
 		];
 	}
 
+	/* Nobody else's note is shown until this reader has written one of their own
+	   for the song, and nobody else's score until they have scored it. The two
+	   are independent: a score does not uncover notes, nor a note scores. No
+	   rater is "mine" on a page with no viewer, which covers nothing. */
+	$notesGated = $blindRating && $myRaterId !== null && ($song['note_' . $myRaterId] ?? '') === '';
+	$scoresGated = $blindRating && $myRaterId !== null && ($song['score_' . $myRaterId] ?? null) === null;
+
+	$song['statsGated'] = $scoresGated;
+
 	$song['ratings'] = [];
 	$songScores = [];
 	foreach ($songRaters as $rater) {
@@ -173,18 +212,50 @@ foreach ($globalData['songs'] as $song) {
 			$songScores[] = (float)$score;
 		}
 
+		$labels = $raterLabels[$raterId];
 		$note = $song['note_' . $raterId] ?? '';
+		$noteGated = $notesGated && $raterId !== $myRaterId && $note !== '';
+		$scoreGated = $scoresGated && $raterId !== $myRaterId && $score !== '';
 
 		$song['ratings'][$raterId] = [
 			'scoreValue' => htmlspecialchars($score),
 			'scoreEmptyClass' => $score === '' ? ' songCellEmpty' : '',
+			'scoreCellClass' => $scoreGated ? $labels['scoreGatedClass'] : ($rater['scoreClass'] ?? ''),
+			'scoreGatedClass' => $scoreGated ? ' songGated' : '',
+			'scoreGateHtml' => $scoreGated ? $scorePillNarrow : '',
+			'scoreCardGateHtml' => $scoreGated ? $scorePillWide : '',
 			'noteValue' => htmlspecialchars($note),
 			'noteEmptyClass' => $note === '' ? ' songCellEmpty' : '',
+			'noteGatedClass' => $noteGated ? ' songGated' : '',
+			'noteGateHtml' => $noteGated ? $notePill : '',
+			/// Withheld with the text: the tooltip would hand it straight back.
+			'noteTitleAttr' => $noteGated ? '' : ' title="' . htmlspecialchars($note) . '"',
 		];
 	}
 
 	/// The song's statistics, from the scores just read off the row.
 	$song['stats'] = musicSongStatFields($songScores);
+
+	/* The statistics are over everybody's scores, so a score covers them. The
+	   rated count is not covered: how many people have an opinion gives away
+	   nothing about what it is, and it reads '0' rather than blank, so the
+	   emptiness test alone would not have spared it. */
+	$song['statCells'] = [];
+	foreach ($songStatColumns as $stat) {
+		$key = $stat['key'];
+		$statValue = $song['stats'][$key];
+		$statGated = $scoresGated && $key !== 'rated' && $statValue !== '';
+
+		$song['statCells'][$key] = [
+			'class' => 'songStatCell songStat' . ucfirst($key) . 'Cell'
+				. (($stat['score'] ?? false) && !$statGated ? ' songScoreColoured' : '')
+				. ($statValue === '' ? ' songCellEmpty' : '')
+				. ($statGated ? ' songGated' : ''),
+			'sortAttr' => $key === 'mode' ? ' data-sort-value="' . htmlspecialchars($song['stats']['modeSort']) . '"' : '',
+			'gateHtml' => $statGated ? $scorePillNarrow : '',
+			'value' => htmlspecialchars($statValue),
+		];
+	}
 
 	$songRows[] = $song;
 }

@@ -1,4 +1,5 @@
 <?php require_once __ROOT__ . '/session.php' ?>
+<?php require_once __MODULES__ . '/music/blindRating.php' ?>
 <?php sessionScope('music') ?>
 
 <nav>
@@ -29,6 +30,19 @@
 					<output id="navColourValue" for="navColourInput"><?= musicActiveHue() ?></output>
 				</div>
 				<button type="submit"><?= t('colour.save') ?></button>
+			</form>
+		</details>
+
+		<details class="navSettings">
+			<summary class="navMenuButton" aria-label="<?= t('nav.settings') ?>">⚙&#xFE0E;</summary>
+			<form method="post" action="/music/settings" class="navSettingsMenu">
+				<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken()) ?>">
+				<input type="hidden" name="return" value="<?= htmlspecialchars(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) ?>">
+				<label class="navSettingsRow">
+					<input type="checkbox" name="blind_rating" value="1"<?= musicBlindRating() ? ' checked' : '' ?>>
+					<span><?= t('settings.blindRating') ?></span>
+				</label>
+				<button type="submit"><?= t('settings.save') ?></button>
 			</form>
 		</details>
 

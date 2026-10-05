@@ -42,7 +42,8 @@ nav .navLogout button,
 .songEditRowRemove,
 .songEditRowAdd,
 .albumEditTrackAdd,
-.albumEditTrackRemove {
+.albumEditTrackRemove,
+.songGateReveal {
 	border: solid 1px #000000;
 	border-radius: 16px;
 	background-color: var(--buttonFill);
@@ -119,13 +120,15 @@ nav {
 
 	.navAccountMenu,
 	.navLanguage,
-	.navColour {
+	.navColour,
+	.navSettings {
 		position: relative;
 	}
 
 	.navLogout,
 	.navLanguage form,
-	.navColour form {
+	.navColour form,
+	.navSettings form {
 		position: absolute;
 		top: 100%;
 		right: 0;
@@ -163,6 +166,40 @@ nav {
 	.navLanguageOption.navLanguageOptionActive {
 		color: hsl(var(--hue), 100%, 80%);
 		border-color: #000000;
+	}
+
+	.navSettingsMenu {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6em;
+		background-color: var(--buttonFill);
+		border: solid 1px #000000;
+		border-radius: 12px;
+		padding: 0.6em;
+		width: 18em;
+
+		button[type="submit"] {
+			padding: .4em .8em;
+
+			&:hover {
+				background-color: var(--buttonFillHover);
+			}
+		}
+	}
+
+	.navSettingsRow {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5em;
+		min-width: 0;
+		font-size: 0.9em;
+		cursor: pointer;
+
+		input[type="checkbox"] {
+			flex: 0 0 auto;
+			margin: 0.15em 0 0;
+			accent-color: hsl(var(--hue), 100%, 60%);
+		}
 	}
 
 	.navColourMenu {
@@ -481,6 +518,46 @@ td.albumStatsRatedCell {
 	to {
 		background-color: transparent;
 	}
+}
+
+/* A covered value and the pill that uncovers it. Hidden by default, so a pill
+   left behind by a cell that has since been uncovered stays out of the way. */
+.songGateReveal {
+	display: none;
+	padding: .15em .6em;
+	font-size: 0.85em;
+	line-height: 1.2;
+}
+
+.songGateReveal:hover {
+	background-color: var(--buttonFillHover);
+}
+
+/* Both halves of the swap carry an id, because the rules they have to beat -
+   `.ratingNoteText` and `.songCellText` - sit inside the `#songListTable` and
+   `#songCards, #songCardModal` blocks and so resolve at id specificity. A bare
+   `.songGated .songGateValue` loses to them and leaves the value on screen
+   behind the pill. Three containers, not two: the table's cells are not in the
+   card block, and a card moved into the modal is no longer inside #songCards. */
+#songListTable .songGated .songGateValue,
+#songCards .songGated .songGateValue,
+#songCardModal .songGated .songGateValue {
+	display: none;
+}
+
+#songListTable .songGated .songGateReveal,
+#songCards .songGated .songGateReveal,
+#songCardModal .songGated .songGateReveal {
+	display: inline-block;
+}
+
+/* The table's score and statistics columns are 2em and 2.6em, so the pill there
+   is the short label at a smaller size. Those widths are hints under
+   table-layout: auto, so an oversized pill simply widens the column. */
+#songListTable td.songRatingScoreCell .songGateReveal,
+#songListTable td.songStatCell .songGateReveal {
+	padding: .1em .3em;
+	font-size: 0.7em;
 }
 
 .songRatingNoteCell {
@@ -1142,7 +1219,8 @@ td.albumStatsRatedCell {
 	}
 
 	nav .navLogout,
-	nav .navLanguage form {
+	nav .navLanguage form,
+	nav .navSettings form {
 		left: 0;
 		right: auto;
 	}

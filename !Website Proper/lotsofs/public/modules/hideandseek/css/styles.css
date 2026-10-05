@@ -1,20 +1,27 @@
 /* One fixed theme. These are the whole palette: no per-account hue here, unlike
    music, so a colour belongs to the site rather than to whoever is looking. */
 :root {
-	color-scheme: dark;
+	color-scheme: light;
 
-	--ink: #e8ece9;
-	--inkDim: #9aa5a0;
-	--ground: #0a0f0d;
-	--panel: #121917;
-	--panelRaised: #1a2320;
-	--border: #2c3a35;
-	--accent: #35d29a;
-	--accentDim: #1d6d54;
-	--danger: #e4685c;
+	--ink: #14201c;
+	--inkDim: #5b6a65;
+	--ground: #eef2f0;
+	--panel: #ffffff;
+	--panelRaised: #e2eae7;
+	--border: #c3d1cc;
+	--accent: #0a7a57;
+	--accentDim: #3aa583;
+	--danger: #b32a1e;
+	--imported: #7b3fc4;
 
 	--navWidth: 12em;
 	--navBarHeight: 3.5em;
+
+	/* The map's longest side. Capped as a *width* because the map is square from
+	   its width: cap the height instead and it stops being square. 80vh rather
+	   than 100 leaves room for the page heading, the signed-in line, the map's
+	   own heading and the hint under it. */
+	--mapMaxSide: 80vh;
 }
 
 body {
@@ -180,13 +187,115 @@ input[type="password"] {
 	padding: .45em .7em;
 }
 
+textarea {
+	box-sizing: border-box;
+	width: 100%;
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	background-color: var(--panel);
+	color: var(--ink);
+	font-family: ui-monospace, Consolas, monospace;
+	font-size: 0.85em;
+	padding: .45em .7em;
+	resize: vertical;
+}
+
+.hnsImportForm {
+	display: flex;
+	flex-direction: column;
+	gap: 0.8em;
+	max-width: 60em;
+}
+
+.hnsImportForm label {
+	display: block;
+	margin-bottom: 0.3em;
+}
+
+.hnsImportForm button[type="submit"] {
+	align-self: flex-start;
+}
+
+.hnsImportStyle {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 0.8em 1.5em;
+}
+
+.hnsImportStyle .hnsImportHint {
+	margin: 0;
+	flex: 1 1 16em;
+}
+
+.hnsImportForm .hnsImportStyle label {
+	min-width: 0;
+}
+
+input[type="color"] {
+	box-sizing: border-box;
+	width: 3rem;
+	height: 2.5rem;
+	padding: 0.2rem;
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	background-color: var(--panel);
+	cursor: pointer;
+}
+
+input.hnsIconInput {
+	font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "Noto Sans Symbols", "Apple Symbols", sans-serif;
+	font-variant-emoji: text;
+	box-sizing: border-box;
+	width: 3.5rem;
+	height: 2.5rem;
+	text-align: center;
+	font-size: 1.1em;
+}
+
+.hnsExport {
+	display: flex;
+	align-items: center;
+	gap: 1em;
+	margin: 0.8em 0;
+}
+
+#poiExportText {
+	max-width: 60em;
+	margin-bottom: 0.8em;
+}
+
+.hnsSaveAll {
+	margin: 0 0 0.8em;
+}
+
+input.hnsCategoryNameInput {
+	width: 14em;
+}
+
+.hnsCategoryActions form {
+	display: inline-block;
+}
+
+.hnsImportHint {
+	max-width: 60em;
+	color: var(--inkDim);
+}
+
+.hnsImportResult {
+	color: var(--accent);
+}
+
 input[type="text"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+textarea:focus {
 	outline: solid 2px var(--accentDim);
 	outline-offset: 1px;
 }
 
-button[type="submit"] {
+button[type="submit"],
+.hnsExport button,
+.hnsPoiFilters button {
 	padding: .45em .9em;
 	border: solid 1px var(--border);
 	border-radius: 10px;
@@ -196,7 +305,9 @@ button[type="submit"] {
 	cursor: pointer;
 }
 
-button[type="submit"]:hover {
+button[type="submit"]:hover,
+.hnsExport button:hover,
+.hnsPoiFilters button:hover {
 	border-color: var(--accentDim);
 	color: var(--accent);
 }
@@ -220,11 +331,13 @@ thead th {
 	color: var(--inkDim);
 }
 
-/* An explicit height either way: Leaflet measures its container and renders
+/* Square, and the height comes from the width rather than the viewport - a map
+   is a window on the ground, and a letterboxed one wastes the zoom it has. Still
+   a definite height, which MapLibre needs: it measures its container and renders
    nothing at all in a box that sizes itself from its content. */
 .hnsMap {
-	height: 60vh;
-	min-height: 20em;
+	aspect-ratio: 1 / 1;
+	max-width: var(--mapMaxSide);
 	box-sizing: border-box;
 	border: solid 1px var(--border);
 	border-radius: 10px;
@@ -238,7 +351,7 @@ thead th {
 	text-align: center;
 }
 
-/* Leaflet lays the container out itself once it owns it. */
+/* MapLibre lays the container out itself once it owns it. */
 .hnsMap.hnsMapLoaded {
 	display: block;
 	padding: 0;
@@ -250,6 +363,13 @@ thead th {
 	max-width: 32em;
 	color: var(--inkDim);
 	font-size: 0.9em;
+}
+
+.hnsMapButtons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.6em;
+	justify-content: center;
 }
 
 .hnsMapLoad {
@@ -272,40 +392,263 @@ thead th {
 	font-size: 0.9em;
 }
 
-/* Leaflet ships a light theme. These pull its chrome onto the site's palette -
-   everything except the attribution text, which stays legible because it is a
-   licence term rather than decoration. */
-.leaflet-container {
+/* MapLibre's own chrome is left alone. It is built for a light basemap and
+   OSM Bright is one; the dark overrides that used to be here were for the blank
+   black map and made the controls unreadable over this. Only the container is
+   themed, so the map reads as part of the page without fighting the cartography
+   inside it. */
+
+/* Map and list stacked, until there is room to put them beside each other. The
+   list is then capped at the map column's height and scrolls inside it, or a few
+   hundred drawn places would leave the map alone at the top of a long page. */
+.hnsMapLayout {
+	display: flex;
+	flex-direction: column;
+	gap: 1.4em;
+}
+
+.hnsMapColumn,
+.hnsPoiColumn {
+	min-width: 0;
+}
+
+.hnsMapColumn > h2:first-child,
+.hnsPoiColumn > h2:first-child {
+	margin-top: 0;
+}
+
+@media (min-width: 1200px) {
+	/* stretch, not flex-start: the row's height is whatever the map column needs,
+	   and the list column is then told to match it exactly. */
+	.hnsMapLayout {
+		flex-direction: row;
+		align-items: stretch;
+	}
+
+	/* Capped to the same side as the map, so that when the cap bites the column
+	   shrinks with it and flexbox hands the freed width to the list - rather than
+	   the column keeping its 3/5 and holding a dead gap beside a smaller map. */
+	.hnsMapColumn {
+		flex: 3 1 0;
+		max-width: var(--mapMaxSide);
+	}
+
+	.hnsPoiColumn {
+		flex: 2 1 0;
+		display: flex;
+		flex-direction: column;
+	}
+
+	/* min-height: 0 is what keeps this from setting the row's height instead of
+	   taking it - without it the list's own content wins and the map column is
+	   stretched to match a few hundred rows. */
+	.hnsPoiColumn .hnsPoiArea {
+		flex: 1 1 0;
+		min-height: 0;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding-right: 0.4em;
+	}
+}
+
+.hnsPoiArea {
+	margin-top: 0.4em;
+}
+
+.hnsPoiCount,
+.hnsPoiEmpty {
+	margin: 0 0 0.6em;
+	color: var(--inkDim);
+	font-size: 0.9em;
+}
+
+.hnsPoiTable {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+/* One <details> per category, shut until folded open. Native rather than a
+   JS toggle, so it keyboard-works and survives having no script at all - the
+   same reason the account menu in the nav is a <details>. */
+.hnsPoiGroup {
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	margin-bottom: 0.3em;
 	background-color: var(--panel);
+	overflow: hidden;
+}
+
+.hnsPoiGroupName {
+	padding: 0.5em 0.8em;
+	background-color: var(--panelRaised);
+	font-size: 0.85em;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--inkDim);
+	cursor: pointer;
+	user-select: none;
+}
+
+.hnsPoiGroupImported .hnsPoiGroupName {
+	position: relative;
+	padding-right: 6.4em;
+	color: var(--ink);
+	box-shadow: inset 4px 0 0 var(--groupColour, var(--imported));
+}
+
+.hnsPoiGroupIcon {
+	vertical-align: middle;
+	margin: 0 0.4em 0 0.1em;
+}
+
+.hnsPoiGroupToggle {
+	width: 2.2rem;
+	height: 2.2rem;
+	margin: -0.16rem 0.4em -0.16rem 0.1em;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.hnsPoiGroupLabel {
+	vertical-align: middle;
+}
+
+.hnsPoiGroupImported .hnsPoiGroupName:has(.hnsPoiGroupDistance:not(:empty)) {
+	padding-right: 11em;
+}
+
+.hnsPoiGroupActions {
+	position: absolute;
+	top: 0.3em;
+	bottom: 0.3em;
+	right: 0.5em;
+	display: flex;
+	align-items: stretch;
+	gap: 0.35em;
+}
+
+.hnsPoiGroupOverlay {
+	aspect-ratio: 1 / 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	border: solid 1px var(--border);
+	border-radius: 6px;
+	background-color: var(--panel);
+	color: var(--inkDim);
 	font: inherit;
+	font-size: 1.5em;
+	line-height: 1;
+	cursor: pointer;
 }
 
-.leaflet-bar,
-.leaflet-bar a {
-	border-color: var(--border);
-	background-color: var(--panelRaised);
+.hnsPoiGroupOverlay:hover {
+	border-color: var(--accentDim);
 	color: var(--ink);
 }
 
-.leaflet-bar a:hover,
-.leaflet-bar a:focus {
-	background-color: var(--panel);
-	color: var(--accent);
+.hnsPoiGroupOverlay[aria-pressed="true"] {
+	border-color: var(--groupColour, var(--accent));
+	background-color: var(--groupColour, var(--accent));
+	color: var(--groupInk, var(--panel));
 }
 
-.leaflet-control-attribution {
-	background-color: var(--panelRaised);
+.hnsPoiGroupDistance {
+	align-self: center;
+	margin-right: 0.2em;
+	color: var(--inkDim);
+	font-size: 0.9em;
+	text-transform: none;
+	letter-spacing: 0;
+}
+
+.hnsPoiGroupDistance:empty {
+	display: none;
+}
+
+.hnsPoiGroupHidden .hnsPoiGroupIcon,
+.hnsPoiGroupHidden .hnsPoiGroupLabel,
+.hnsPoiGroupHidden .hnsPoiTable {
+	opacity: 0.45;
+}
+
+.hnsPoiFilters {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1em;
+	margin: 0 0 0.6em;
+}
+
+.hnsPoiFilter {
+	font-size: 0.9em;
+	cursor: pointer;
+}
+
+.hnsPoiFilter input {
+	vertical-align: middle;
+	margin: 0 0.3em 0 0;
+}
+
+.hnsPoiGroupName:hover {
 	color: var(--ink);
 }
 
-.leaflet-control-attribution a {
-	color: var(--accent);
+/* The table is only in the document flow once its category is open, so the
+   cells need no borders of their own to sit under the summary. */
+.hnsPoiGroup td {
+	border: none;
+	border-top: solid 1px var(--border);
 }
 
-.leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
+.hnsPoiRow {
+	cursor: pointer;
+}
+
+.hnsPoiRow:hover,
+.hnsPoiRow:focus-visible {
 	background-color: var(--panelRaised);
-	color: var(--ink);
+	outline: none;
+}
+
+.hnsPoiUnnamed {
+	color: var(--inkDim);
+	font-style: italic;
+}
+
+/* The ring drawn around a clicked place. Inert to the pointer, so clicking
+   inside it still reaches the map and drops a marker like anywhere else. The
+   white halo is what keeps it readable over a red bus line or a dark label. */
+.hnsPoiRing {
+	box-sizing: border-box;
+	width: 2.6rem;
+	height: 2.6rem;
+	border: solid 3px #d81e2c;
+	border-radius: 50%;
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.75), inset 0 0 0 2px rgba(255, 255, 255, 0.75);
+	pointer-events: none;
+}
+
+/* Which game map is open, beside the button that closes it. */
+.hnsLoadedMap {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.6em;
+	margin: 0 0 1.2em;
+}
+
+/* A form is a block, so the buttons sharing a cell would stack into a column. */
+#gameMapTable form {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4em;
+	margin: 0;
+}
+
+.hnsGameMapCurrent td {
+	background-color: var(--panelRaised);
 }
 
 /* Positioned by tooltip.js in page coordinates, so it sits outside any layout. */

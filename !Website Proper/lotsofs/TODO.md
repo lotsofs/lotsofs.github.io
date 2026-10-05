@@ -228,10 +228,12 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       in it. Everything is `hns`-prefixed and it keeps its own database, session
       scope, catalogue and migrations, so nothing it grows can reach the music
       module.
-- [ ] **The map places markers but saves nothing.** Added 2026-09-29: Leaflet
-      1.9.4 is vendored at `public/modules/hideandseek/vendor/leaflet/`, and
-      `/hideandseek` renders a click-to-load map you can click to drop markers
-      on. They live in `hnsMarkers` in `js/map.js` as `{lat, lng, marker}` and
+- [ ] **The map places markers but saves nothing.** Added 2026-09-29, moved to
+      vector tiles on 2026-09-30: MapLibre GL JS 4.7.1 is vendored at
+      `public/modules/hideandseek/vendor/maplibre/`, the basemap is painted by
+      `json/mapStyle.json` (edit it in Maputnik), and `/hideandseek` renders a
+      click-to-load map you can click to drop markers on. The Leaflet/raster
+      alternative was built alongside it and deleted once this one won. They live in `hnsMarkers` in `js/map.js` as `{lat, lng, marker}` and
       vanish on reload. Persisting them is a `marker` table folded into `001`
       (see the plan) plus one `/hideandseek/ajax/marker` endpoint dispatching on
       an action, the same shape as `routes/accounts.php`. Two things to settle
@@ -239,15 +241,82 @@ differently: tasks get closed, decisions get answered and then stop recurring.
       long they live — a marker meaning "where a person is hiding" is location
       data about an identified user, which carries retention and deletion
       expectations that a song rating does not.
+- [ ] **The base map shows neither bus stops nor bus routes.** Since
+      2026-10-04 every base-map label is hidden, stops included, so anything
+      transit-shaped on the map has to come in as imported POIs. Bus *lines*
+      cannot come from these tiles: a bus route is a `type=route` relation in OSM
+      and nothing in the tileset carries one — only physical bus-only roads
+      (`busway`, `bus_guideway`). Route relations as such *do* reach the tiles,
+      contrary to what these notes said until 2026-10-01:
+      `transportation_name` has `route_1_*` … `route_21_*` fields, and the z14
+      tile over Groningen fills them with `rwn`/`nwn` walking networks. Just not
+      bus ones, so a road a bus runs along looks like any other road.
+      Overpass can supply route geometry and did
+      once, but both mirrors time out often enough that a rendering feature must
+      not depend on it. If routes are wanted, bake them from a Geofabrik
+      regional extract or a GTFS feed, as a deliberate piece of work.
+- [x] ~~**Places drawn on the map are listed under it, shops excluded.**~~
+      Retired 2026-10-04 along with the label allowlist it read
+      (`HNS_KEPT_CLASSES` for bus/railway/ferry, airports via
+      `HNS_KEPT_SOURCE_LAYERS`): the base map now writes no text at all, so
+      there was nothing left for a list of drawn places to list. The one rule
+      that survived is `hnsHideLabels()` hiding every `type: symbol` layer with
+      a `text-field` — which keeps the canals, the roads and the one-way arrows,
+      and still must not be "simplified" to hiding by source layer. The side
+      column now lists only imported POIs.
 - [ ] **No privacy page yet, and the module now talks to a third party.** The
       map defers every tile request until the visitor presses a button, so
-      nothing reaches the OpenStreetMap Foundation unasked, and the button says
-      so. That is the mitigation, not a substitute for a privacy note covering
+      nothing reaches OpenFreeMap unasked, and the button says so. To drop
+      the third party altogether, serve a `.pmtiles` extract from this site
+      and change `sources.openmaptiles.url` in the style — no layer changes. That is the mitigation, not a substitute for a privacy note covering
       the accounts, the session cookie and the tile requests.
 - [ ] **`001_create.sql` has not shipped, so it is still editable.** It holds
-      only `account`, `invite` and `login_attempt`. Fold the first round of game
-      tables straight into it rather than adding `002` — but only until it
-      deploys, after which the same freeze rule as music applies.
+      `account`, `invite`, `login_attempt`, `game_map` (2026-10-01), and
+      `poi_category`/`poi` (2026-10-04).
+      Keep folding game tables into it rather than adding `002`, but only until
+      it deploys, after which the same freeze rule as music applies.
+      **Editing it means resetting every database that already recorded it**:
+      migrations are filename-tracked with no content hash, so the change
+      silently never lands and the suite cannot see it (tests start from a fresh
+      database every run). `DELETE FROM schema_migrations WHERE filename =
+      '001_create.sql'` re-runs it and keeps the accounts, since every statement
+      in it is `CREATE … IF NOT EXISTS`.
+- [ ] **The game map creator exists; only imported POIs attach to a game map.**
+      `/hideandseek/game-maps` creates, loads, renames and deletes them, and
+      `hnsLoadedGameMap()` in `gameMap.php` answers "which one is open" under one
+      rule (`?map=` wins, else the session). That is the hook everything else was
+      waiting for: markers, bounds, a starting point, a POI set. The first of
+      those to be built should take a `game_map_id` and nothing should be global
+      any more — `routes/index.php` still hardcodes one map centre.
+- [x] ~~**Imported POIs are saved but not shown on the map.**~~ Added 2026-10-04:
+      `/hideandseek/import-pois` takes a category name and pasted Overpass Turbo
+      raw data (JSON or XML), parses it in the browser (`js/poiImport.js`) and
+      posts the finished POIs to `/hideandseek/ajax/import-pois`, which
+      validates each one and writes them onto the loaded game map — ways and
+      relations by their `center`, or the middle of their `bounds` with
+      `out geom`. The parser has no automated test: the suite drives PHP over
+      HTTP and runs no JS, so only the endpoint's validation is pinned. Re-importing into a category with the same
+      name (any casing) merges by OSM type and id rather than duplicating. The
+      page lists categories with counts, renames and restyles them one row or
+      all rows at a time, deletes them, and an Export
+      button gives the whole map back as text the same box imports — categories,
+      colours and icons included — so a POI set can be copied between maps.
+      Since 2026-10-04 they are drawn on `/hideandseek` (names from z13) and
+      listed beside the map, all of them whether in frame or not; clicking one
+      out of frame pans to it. Categories can be switched off one by one,
+      places without a name are hidden unless asked for, and one category at a
+      time can draw its Voronoi borders (the area nearest to each of its
+      places) by great-circle distance — triangulated with a vendored
+      d3-delaunay on a stereographic projection, corners at the spherical
+      circumcentres, with no border between two places of the same name — or, instead (one overlay at a time), circles around
+      every POI of a category at the distance from the latest pin to the
+      nearest one, merged into a single outline. Pins are still not saved. Each category has its own
+      colour and optional one-character icon (emoji), set on import and editable
+      on the import page; the marker is the icon drawn as text (one-colour,
+      bold, outlined in the category colour, filled black, or white when
+      the colour is dark) on a canvas, since MapLibre's glyph fonts carry
+      no emoji. The map still opens on the hardcoded
+      Groningen centre rather than on the loaded game map's POIs.
 - [ ] **One locale (`en`).** The language route and menu are wired but the menu
       only renders once there is more than one locale to pick from, so adding
       `nl`/`fy` is a line in `config.php` plus a `lang/<code>.php`.
