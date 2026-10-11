@@ -60,6 +60,7 @@
 		'highest' => ['label' => t('album.card.sortHighest'), 'dir' => 'desc'],
 		'lowest' => ['label' => t('album.card.sortLowest'), 'dir' => 'desc'],
 		'mode' => ['label' => t('album.card.sortMode'), 'dir' => 'desc'],
+		'sum' => ['label' => t('album.card.sortSum'), 'dir' => 'desc'],
 		'rated' => ['label' => t('album.card.sortRated'), 'dir' => 'desc'],
 		'duration' => ['label' => t('album.card.sortDuration'), 'dir' => 'desc'],
 	];
@@ -92,6 +93,7 @@
 			case 'highest': return $song['highest'];
 			case 'lowest': return $song['lowest'];
 			case 'mode': return ($song['modes'] ?? []) ? max($song['modes']) : null;
+			case 'sum': return $song['sum'];
 			case 'rated': return (int)($song['rated'] ?? 0);
 			case 'duration': return ($song['duration'] ?? null) === null ? null : (int)$song['duration'];
 		}

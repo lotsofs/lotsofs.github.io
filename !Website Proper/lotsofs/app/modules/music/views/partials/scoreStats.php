@@ -13,6 +13,7 @@
 				<th class="albumStatsScoreCell"><?= htmlspecialchars(t('album.card.statDeviation')) ?></th>
 				<th class="albumStatsScoreCell"><?= htmlspecialchars(t('album.card.statMedian')) ?></th>
 				<th class="albumStatsScoreCell"><?= htmlspecialchars(t('album.card.statMode')) ?></th>
+				<th class="albumStatsScoreCell"><?= htmlspecialchars(t('album.card.statSum')) ?></th>
 				<th class="albumStatsRatedCell"><?= htmlspecialchars(t('album.card.statRated')) ?></th>
 			</tr>
 		</thead>

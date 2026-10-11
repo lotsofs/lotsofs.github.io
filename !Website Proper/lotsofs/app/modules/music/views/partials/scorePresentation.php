@@ -22,7 +22,7 @@ function scoreRaterColours($rows) {
 }
 
 /// The named statistic cells of any row carrying a musicScoreStats() result.
-function scoreStatCells($row, $keys = ['average', 'deviation', 'median', 'mode']) {
+function scoreStatCells($row, $keys = ['average', 'deviation', 'median', 'mode', 'sum']) {
 	$dash = htmlspecialchars(t('album.card.noAverage'));
 	$unrated = (int)($row['rated'] ?? 0) === 0;
 
@@ -34,8 +34,9 @@ function scoreStatCells($row, $keys = ['average', 'deviation', 'median', 'mode']
 			continue;
 		}
 
-		if ($key === 'deviation') {
-			$cells .= '<td class="albumStatsScoreCell albumStatsDeviationCell">' . htmlspecialchars(scoreText($row['deviation'])) . '</td>';
+		/// Off the 0-10 ramp, so never coloured on it.
+		if ($key === 'deviation' || $key === 'sum') {
+			$cells .= '<td class="albumStatsScoreCell albumStats' . ucfirst($key) . 'Cell">' . htmlspecialchars(scoreText($row[$key])) . '</td>';
 			continue;
 		}
 

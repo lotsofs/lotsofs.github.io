@@ -2,7 +2,7 @@
 
 require_once __MODULES__ . '/music/format.php';
 
-/// Count, mean, median, population deviation and modes for one set of scores.
+/// Count, sum, mean, median, population deviation and modes for one set of scores.
 function musicScoreStats($scores) {
 	$sorted = array_values($scores);
 	sort($sorted);
@@ -10,10 +10,12 @@ function musicScoreStats($scores) {
 	$rated = count($sorted);
 
 	if ($rated === 0) {
-		return ['rated' => 0, 'average' => null, 'median' => null, 'deviation' => null, 'modes' => [], 'lowest' => null, 'highest' => null];
+		/// The sum too is null rather than 0: one score of 0 sums to 0, and must not read as none.
+		return ['rated' => 0, 'sum' => null, 'average' => null, 'median' => null, 'deviation' => null, 'modes' => [], 'lowest' => null, 'highest' => null];
 	}
 
-	$average = array_sum($sorted) / $rated;
+	$sum = array_sum($sorted);
+	$average = $sum / $rated;
 
 	$middle = intdiv($rated, 2);
 	$median = $rated % 2 === 1 ? $sorted[$middle] : ($sorted[$middle - 1] + $sorted[$middle]) / 2;
@@ -44,6 +46,7 @@ function musicScoreStats($scores) {
 
 	return [
 		'rated' => $rated,
+		'sum' => $sum,
 		'average' => $average,
 		'median' => $median,
 		'deviation' => $deviation,
@@ -71,6 +74,7 @@ function musicSongStatFields($scores) {
 		'modeSort' => $stats['modes'] ? scoreText(max($stats['modes'])) : '',
 		'highest' => $text($stats['highest']),
 		'lowest' => $text($stats['lowest']),
+		'sum' => $text($stats['sum']),
 		'rated' => (string)$stats['rated'],
 	];
 }

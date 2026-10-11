@@ -13,7 +13,7 @@ function musicListDir($requested) {
 	return $requested === 'desc' ? 'desc' : 'asc';
 }
 
-/// The seven statistics columns both lists carry, in the order they are rendered.
+/// The eight statistics columns both lists carry, in the order they are rendered.
 function musicListStatColumns() {
 	return [
 		'average' => [
@@ -46,6 +46,11 @@ function musicListStatColumns() {
 			'label' => t('song.column.statLowest'),
 			'class' => 'albumStatsScoreCell',
 			'value' => fn($row) => $row['lowest'],
+		],
+		'sum' => [
+			'label' => t('album.card.statSum'),
+			'class' => 'albumStatsScoreCell',
+			'value' => fn($row) => $row['sum'],
 		],
 		'rated' => [
 			'label' => t('album.card.statRated'),

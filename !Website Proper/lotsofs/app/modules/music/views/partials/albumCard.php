@@ -56,6 +56,7 @@
 						<?php elseif ($albumGraphRaters): ?>
 							<th class="albumTrackScore"><?= htmlspecialchars(t('album.card.statAverage')) ?></th>
 							<th class="albumTrackDeviation"><?= htmlspecialchars(t('album.card.statDeviation')) ?></th>
+							<th class="albumTrackSum"><?= htmlspecialchars(t('album.card.statSum')) ?></th>
 							<th class="albumTrackRated"><?= htmlspecialchars(t('album.card.statRated')) ?></th>
 						<?php endif ?>
 						<th class="albumTrackDuration"><?= htmlspecialchars(t('song.column.duration')) ?></th>
@@ -84,9 +85,11 @@
 								<?php if ($trackAverage === null): ?>
 									<td class="albumTrackScore albumTrackScoreEmpty"><?= htmlspecialchars(t('album.card.noAverage')) ?></td>
 									<td class="albumTrackDeviation albumTrackScoreEmpty"><?= htmlspecialchars(t('album.card.noAverage')) ?></td>
+									<td class="albumTrackSum albumTrackScoreEmpty"><?= htmlspecialchars(t('album.card.noAverage')) ?></td>
 								<?php else: ?>
 									<td class="albumTrackScore"<?= scoreColourAttr($trackAverage) ?>><?= htmlspecialchars(scoreText($trackAverage)) ?></td>
 									<td class="albumTrackDeviation"><?= htmlspecialchars(scoreText($track['deviation'])) ?></td>
+									<td class="albumTrackSum"><?= htmlspecialchars(scoreText($track['sum'])) ?></td>
 								<?php endif ?>
 								<td class="albumTrackRated"><?= htmlspecialchars(t('album.card.ratedOf', ['rated' => (int)($track['rated'] ?? 0), 'total' => count($albumAverages)])) ?></td>
 							<?php endif ?>

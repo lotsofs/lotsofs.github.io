@@ -31,7 +31,7 @@
 					<td class="listYearCell"><?= htmlspecialchars($album['release_year'] ?? '') ?></td>
 					<td class="listCountCell"><?= (int)$album['tracks'] ?></td>
 					<td class="listDurationCell"><?= htmlspecialchars(musicDuration($album['duration'])) ?></td>
-					<?= scoreStatCells($album, ['average', 'deviation', 'median', 'mode', 'highest', 'lowest']) ?>
+					<?= scoreStatCells($album, ['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum']) ?>
 					<td class="albumStatsRatedCell"><?= htmlspecialchars(t('album.card.ratedOf', ['rated' => (int)$album['rated'], 'total' => (int)$album['possible']])) ?></td>
 				</tr>
 			<?php endforeach ?>

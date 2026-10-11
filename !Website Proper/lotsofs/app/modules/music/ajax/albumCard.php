@@ -106,6 +106,7 @@ foreach ($album['tracks'] as $index => $track) {
 	$album['tracks'][$index]['lowest'] = $stats['lowest'];
 	$album['tracks'][$index]['highest'] = $stats['highest'];
 	$album['tracks'][$index]['rated'] = $stats['rated'];
+	$album['tracks'][$index]['sum'] = $stats['sum'];
 
 	/// One rater's score for this track, where the card is read as one person.
 	$album['tracks'][$index]['whoScore'] = $album['statsWho'] === null

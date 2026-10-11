@@ -29,7 +29,7 @@
 					<td class="listAliasCell"><?= htmlspecialchars($artist['aliases'] ?? '') ?></td>
 					<td class="listCountCell"><?= (int)$artist['songs'] ?></td>
 					<td class="listCountCell"><?= (int)$artist['albums'] ?></td>
-					<?= scoreStatCells($artist, ['average', 'deviation', 'median', 'mode', 'highest', 'lowest']) ?>
+					<?= scoreStatCells($artist, ['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum']) ?>
 					<td class="albumStatsRatedCell"><?= htmlspecialchars(t('album.card.ratedOf', ['rated' => (int)$artist['rated'], 'total' => (int)$artist['possible']])) ?></td>
 				</tr>
 			<?php endforeach ?>

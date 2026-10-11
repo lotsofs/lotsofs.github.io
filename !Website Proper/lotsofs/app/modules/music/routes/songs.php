@@ -51,7 +51,7 @@ foreach ($raters as $rater) {
 $joins = " LEFT JOIN (SELECT song_id{$aggregates} FROM account_song GROUP BY song_id) r ON r.song_id = s.id";
 
 /// The orders SQLite cannot express; these rows are sorted in PHP below.
-$statOrders = ['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'rated'];
+$statOrders = ['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated'];
 
 /// ORDER BY that keeps blank cells last in both directions.
 function songsOrderBy($column, $dir) {
@@ -350,6 +350,7 @@ $statColumns = [
 	['key' => 'mode', 'label' => t('album.card.statMode'), 'name' => t('album.card.sortMode')],
 	['key' => 'highest', 'label' => t('song.column.statHighest'), 'name' => t('album.card.sortHighest'), 'score' => true],
 	['key' => 'lowest', 'label' => t('song.column.statLowest'), 'name' => t('album.card.sortLowest'), 'score' => true],
+	['key' => 'sum', 'label' => t('album.card.statSum'), 'name' => t('album.card.sortSum')],
 	['key' => 'rated', 'label' => t('album.card.statRated'), 'name' => t('album.card.sortRated')],
 ];
 
