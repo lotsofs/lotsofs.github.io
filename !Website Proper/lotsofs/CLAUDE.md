@@ -48,3 +48,5 @@ Further reference lives in `docs/` and is **not** imported (read on demand): sta
 ## Other notes
 
 `docs/TODO.md` tracks open tasks and unresolved design decisions (e.g. how song versions/covers are modelled) — check it for context before assuming a rough edge is unintentional. It can lag behind the schema/code after a session like this one's migration work, so verify against current code rather than trusting it blindly.
+
+**`CHANGELOG.md`** is what changed for the site's users, kept under `## Unreleased` in the same change as the work. A release is a deploy: when the owner says they pushed to prod, Unreleased becomes a section headed with that date and an empty Unreleased goes on top. `_deploy/` is normally the last build that shipped (check its file dates against the last deploy), so `diff -rq _deploy/app app` and `diff -rq _deploy/lotsofs.com public` show what Unreleased has to cover.

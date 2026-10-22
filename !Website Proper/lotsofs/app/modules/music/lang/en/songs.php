@@ -30,7 +30,7 @@ return [
 	'song.result.aliasDuplicate' => '✅ Already an alias of "{title}"',
 	'song.result.matchedOnly' => '✅ Matched "{title}", spelling not stored',
 	'song.result.alsoAliased' => ' (also aliased as "{name}")',
-	'song.result.badScore' => 'A score has to be a number',
+	'song.result.badScore' => 'A score has to be a number from 0 to 10',
 	'song.result.badYear' => 'A year has to be a number',
 	'song.result.badDuration' => 'A duration has to be mm:ss or a number of seconds',
 	'song.result.artistNotFound' => '❌ That artist does not exist',

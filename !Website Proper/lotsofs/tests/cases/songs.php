@@ -924,6 +924,34 @@ return [
 		assertSame(6.0, (float)$row['score'], 'stored score is untouched');
 	},
 
+	'a score outside 0 to 10 is refused' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$songId = makeSong($ctx, $ctx->makeArtist('Range Score Owner'), 'Scored In Range');
+
+		$ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => '6']);
+		$audited = fn() => (int)$ctx->db()->query("SELECT COUNT(*) c FROM rating_audit WHERE song_id = {$songId}")->fetch()['c'];
+		$auditRows = $audited();
+
+		foreach (['11', '-1', '10.5', '10,01'] as $value) {
+			$response = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => $value]);
+			assertSame('error', $response['json']['status'], "{$value} is refused");
+			assertSame(6.0, (float)$response['json']['value'], "{$value} hands back the stored score");
+		}
+
+		$row = $ctx->db()->query("SELECT score FROM account_song WHERE song_id = {$songId}")->fetch();
+		assertSame(6.0, (float)$row['score'], 'the stored score is untouched');
+		assertSame($auditRows, $audited(), 'and nothing refused is audited');
+
+		foreach (['0', '10'] as $value) {
+			$response = $ctx->post(RATING_ENDPOINT, ['id' => $songId, 'field' => 'score', 'value' => $value]);
+			assertSame('ok', $response['json']['status'], "{$value} is accepted");
+
+			$row = $ctx->db()->query("SELECT score FROM account_song WHERE song_id = {$songId}")->fetch();
+			assertSame((float)$value, (float)$row['score'], "{$value} is stored");
+		}
+	},
+
 	'an unknown rating field is refused' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 

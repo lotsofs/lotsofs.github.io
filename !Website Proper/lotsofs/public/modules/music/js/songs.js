@@ -1079,7 +1079,14 @@ songMobileSortDir.addEventListener("change", applyMobileSort);
 const RATING_ENDPOINT = "/music/ajax/song-rating";
 const SONG_EDIT_ENDPOINT = "/music/ajax/song-edit";
 
-const SCORE_SPEC = { selectOnFocus: true };
+/// Anything on the way to a score from 0 to 10, which songRating.php enforces too.
+function scoreFits(text) {
+	const match = /^(\d*)([.,]\d*)?$/.exec(text);
+
+	return match !== null && Number((match[1] || "0") + (match[2] || "").replace(",", ".")) <= 10;
+}
+
+const SCORE_SPEC = { selectOnFocus: true, fits: scoreFits };
 const NOTE_SPEC = { syncTitle: true, multiline: true };
 
 const EDITABLE_CELLS = {
@@ -1276,6 +1283,24 @@ function setCellValue(cell, spec, value) {
 // Every cell holding one score on the 0-10 ramp, rater and statistic alike.
 Array.from(document.querySelectorAll(".songScoreColoured")).forEach(colorScoreCell);
 
+/* Undoes any edit, typed, pasted or deleted, that leaves something fits() rejects.
+   Put back, never stripped: the score opens selected, so a stripped letter would
+   leave it empty and the blur would save that as clearing the score. */
+function refuseUnfitInput(input, fits) {
+	let before = { value: input.value, start: 0, end: input.value.length };
+
+	input.addEventListener("beforeinput", () => {
+		before = { value: input.value, start: input.selectionStart, end: input.selectionEnd };
+	});
+
+	input.addEventListener("input", () => {
+		if (!fits(input.value)) {
+			input.value = before.value;
+			input.setSelectionRange(before.start, before.end);
+		}
+	});
+}
+
 function beginCellEdit(cell, spec) {
 	const songId = cell.closest("[data-song-id]").dataset.songId;
 	const domField = cell.dataset.field;
@@ -1290,6 +1315,10 @@ function beginCellEdit(cell, spec) {
 		input.type = "text";
 	}
 	input.value = original;
+	if (spec.fits) {
+		input.inputMode = "decimal";
+		refuseUnfitInput(input, spec.fits);
+	}
 
 	syncResult(songId, "");
 	value.textContent = "";

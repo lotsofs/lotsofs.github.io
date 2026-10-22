@@ -30,7 +30,7 @@ return [
 	'song.result.aliasDuplicate' => '✅ Bereits ein Alias von "{title}"',
 	'song.result.matchedOnly' => '✅ "{title}" zugeordnet, Schreibweise nicht gespeichert',
 	'song.result.alsoAliased' => ' (auch als Alias "{name}")',
-	'song.result.badScore' => 'Eine Wertung muss eine Zahl sein',
+	'song.result.badScore' => 'Eine Wertung muss eine Zahl von 0 bis 10 sein',
 	'song.result.badYear' => 'Ein Jahr muss eine Zahl sein',
 	'song.result.badDuration' => 'Eine Dauer muss mm:ss oder eine Anzahl Sekunden sein',
 	'song.result.artistNotFound' => '❌ Diesen Interpret gibt es nicht',

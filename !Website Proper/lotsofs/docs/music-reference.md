@@ -19,7 +19,7 @@ All ids are `INTEGER PRIMARY KEY`. Foreign keys are enforced.
 | `album_alias` | `album_id`, `name`, `is_actual` | same rules |
 | `album_track` | `album_id`, `song_id`, `song_alias_id` (nullable), `position` (nullable) | unique `(album_id, song_id)`; `song_alias_id` = which of the song's names this release credits; NULL = its actual name |
 | `account` | `account_name` (unique), `password_hash`, `is_admin`, `lang` (default `'fy'`), `hue` (006, nullable), `blind_rating` (007, default 1) | |
-| `account_song` | `account_id`, `song_id`, `score` REAL, `subjective_note`, `updated_at` (unix seconds) | unique pair; current state only |
+| `account_song` | `account_id`, `song_id`, `score` REAL, `subjective_note`, `updated_at` (unix seconds) | unique pair; current state only; `score` is 0–10, enforced by `songRating.php` and the score box, not by a CHECK |
 | `rating_audit` | `account_id`, `song_id`, `field` (`score`\|`note`), `value`, `previous_value` (TEXT), `created_at` | append-only; polled by `id` |
 | `invite` | `code` (unique), `created_at`, `created_by_account_id`, `used_at`, `used_by_account_id`, `revoked_at` | usable = both `used_at` and `revoked_at` NULL |
 | `login_attempt` | `ip`, `attempted_at` | rate limiter |
@@ -69,7 +69,7 @@ All POST + JSON + CSRF header. "Admin" = `requireMusicAdminJson`. Business resul
 | `song-artist`, `song-album` | `songArtist.php`, `songAlbum.php` (share `songJoin.php`, which is **not a route**) | admin | `{song_id, artist_id\|album_id, action: add\|remove}` → `ok`/`duplicate`/`error` |
 | `song-link` | `songLink.php` | admin | `{song_id, field ∈ six columns, value}`; Spotify/YouTube URLs are reduced to the bare id, empty clears |
 | `song-year`, `song-duration` | `songYear.php`, `songDuration.php` | admin | `{song_id, value}`; year digits only; duration `M:SS` (seconds 00–59) or whole seconds; empty clears |
-| `song-rating` | `songRating.php` | any account | `{id, field: score\|note, value}` → `{status, value, message, stats}`; writes only the caller's own `account_song` row (upsert) plus a `rating_audit` row **when the value changed**, in one transaction. Score accepts `,` decimals; non-numeric → status error |
+| `song-rating` | `songRating.php` | any account | `{id, field: score\|note, value}` → `{status, value, message, stats}`; writes only the caller's own `account_song` row (upsert) plus a `rating_audit` row **when the value changed**, in one transaction. Score accepts `,` decimals; non-numeric or outside 0–10 → status error |
 | `song-rating-poll` | `songRatingPoll.php` | any account | `{since, sinceAudit}` → `{cursor, changes[], stats[], auditCursor, events[]}`; see cursor rules in `music.md`. `events` ≤ 50 per tick, each `{id, account, name, songId, songLabel, field, value, previousValue, mine}` |
 | `album` | `album.php` | admin | Array of `{provided_name, album_id: 'new'\|id, og_name?, is_actual, artist_id?, release_year?, also_alias_provided_name?, tracks[{song_id, position, song_alias_id}]}`; existing albums keep artist/year when the import omits them (COALESCE); existing tracks are updated, not duplicated |
 | `album-card` | `albumCard.php` | any account | `{album_id, sort?, dir?, who?}` → `{status, html}` (+ `trackAliases` for admins). Renders `partials/albumCard.php` server-side |

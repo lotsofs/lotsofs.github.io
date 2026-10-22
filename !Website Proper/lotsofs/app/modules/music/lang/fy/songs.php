@@ -30,7 +30,7 @@ return [
 	'song.result.aliasDuplicate' => '✅ Al in alias fan "{title}"',
 	'song.result.matchedOnly' => '✅ Oerienkomst fûn foar "{title}", stavering net opslein',
 	'song.result.alsoAliased' => '(ek aliasearre as "{name}")',
-	'song.result.badScore' => 'In wurdearring moat in getal wêze',
+	'song.result.badScore' => 'In wurdearring moat in getal fan 0 oant 10 wêze',
 	'song.result.badYear' => 'In jier moat in getal wêze',
 	'song.result.badDuration' => 'In doer moat mm:ss wêze of in oantal sekonden',
 	'song.result.artistNotFound' => '❌ Dizze artyst bestiet net',

@@ -39,7 +39,7 @@ $existing = $db->query("SELECT score, subjective_note FROM account_song WHERE ac
 if ($field === 'score' && $value !== '') {
 	$value = str_replace(',', '.', $value);
 
-	if (!is_numeric($value)) {
+	if (!is_numeric($value) || (float)$value < 0 || (float)$value > 10) {
 		echo json_encode([
 			'status' => 'error',
 			'value' => $existing && $existing['score'] !== null ? (float)$existing['score'] : '',
