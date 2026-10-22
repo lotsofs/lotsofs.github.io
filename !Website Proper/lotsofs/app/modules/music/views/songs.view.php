@@ -178,6 +178,7 @@
 	<script id="songLinkFieldData" type="application/json"><?= json_encode($globalData['linkFields'], JSON_HEX_TAG) ?></script>
 	<script id="songTrackAliases" type="application/json"><?= json_encode($globalData['trackAliases'], JSON_HEX_TAG) ?></script>
 	<script id="songGateSetting" type="application/json"><?= json_encode($globalData['blindRating']) ?></script>
+	<script id="songToastSeconds" type="application/json"><?= (int)$globalData['toastSeconds'] ?></script>
 	<script id="songRatingCursor" type="application/json"><?= (int)$globalData['ratingCursor'] ?></script>
 	<script id="songAuditCursor" type="application/json"><?= (int)$globalData['auditCursor'] ?></script>
 	<script src="<?= asset('/modules/music/js/songs.js') ?>"></script>

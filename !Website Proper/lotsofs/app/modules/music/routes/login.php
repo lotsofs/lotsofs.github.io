@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$globalData['formError'] = t('login.error.tooMany');
 	}
 	else {
-		$account = $db->query("SELECT id, account_name, password_hash, lang, hue, blind_rating FROM account WHERE account_name = ?", [$accountName])->fetch();
+		$account = $db->query("SELECT id, account_name, password_hash, lang, hue, blind_rating, toast_seconds FROM account WHERE account_name = ?", [$accountName])->fetch();
 
 		if ($account && password_verify($password, $account['password_hash'])) {
 			clearLoginFailures($db, $ip);
@@ -50,6 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 			require_once __MODULES__ . '/music/blindRating.php';
 			rememberModulePreference('blind', 'music', musicBlindRatingOf($account['blind_rating']) ? '1' : '0');
+
+			require_once __MODULES__ . '/music/toastDuration.php';
+			rememberModulePreference('toast', 'music', musicToastSecondsOf($account['toast_seconds']));
 			header('Location: /music/songs', true, 302);
 			exit;
 		}

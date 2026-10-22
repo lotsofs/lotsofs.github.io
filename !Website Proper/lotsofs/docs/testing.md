@@ -55,7 +55,7 @@ Global asserts: `assertSame($expected, $actual, $what)`, `assertTrue($cond, $wha
 | `hideandseek.php` | the whole hideandseek module: accounts, game maps, import/export, categories, shell, map script/style invariants, label hiding, Voronoi/circle overlays (structure only) |
 | `locale.php` | locale files complete and mergeable, language switching, per-account language |
 | `pages.php` | every route serves, auth redirects, 404/301 behaviour, CSRF on endpoints, asset stamps, no PHP warnings, card-link script order |
-| `settings.php` | blind-rating switch: default, toggle, persistence across login, forged post |
+| `settings.php` | the cog menu: blind-rating switch and toast duration, each with default, saving, persistence across login, logout, forged post; the duration also refuses values the menu does not offer |
 | `songs.php` | the biggest: song import, rename, ratings, sorting (incl. injection attempts), filters, rater columns, stats columns, gate markup, poll cursors, toasts markup, card markup |
 | `strings.php` | every `t('literal.key')` exists, none built by concatenation, no orphan keys, no duplicate keys, no raw key rendered |
 

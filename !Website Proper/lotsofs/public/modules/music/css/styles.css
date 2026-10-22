@@ -202,6 +202,23 @@ nav {
 		}
 	}
 
+	.navSettingsField {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3em;
+		font-size: 0.9em;
+
+		select {
+			width: 100%;
+			font: inherit;
+			border: solid 1px #000000;
+			border-radius: 8px;
+			background-color: var(--buttonFill);
+			color: #ffffff;
+			padding: .3em .5em;
+		}
+	}
+
 	.navColourMenu {
 		display: flex;
 		flex-direction: column;

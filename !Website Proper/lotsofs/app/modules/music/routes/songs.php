@@ -371,6 +371,9 @@ $globalData['accountId'] = $accountId;
 require_once __MODULES__ . '/music/blindRating.php';
 $globalData['blindRating'] = musicBlindRating();
 
+require_once __MODULES__ . '/music/toastDuration.php';
+$globalData['toastSeconds'] = musicToastSeconds();
+
 $filterQuery = ($filterArtist !== null ? '&artist=' . $filterArtist : '')
 	. ($filterAlbum !== null ? '&album=' . $filterAlbum : '');
 

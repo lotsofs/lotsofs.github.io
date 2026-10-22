@@ -6,6 +6,7 @@ sessionScope('music');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && checkCsrf($_POST['csrf_token'] ?? null)) {
 	forgetModulePreference('hue', 'music');
 	forgetModulePreference('blind', 'music');
+	forgetModulePreference('toast', 'music');
 	logOut();
 }
 

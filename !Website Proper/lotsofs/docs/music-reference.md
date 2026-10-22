@@ -2,7 +2,7 @@
 
 Lookup companion to `music.md` (which explains *why*). Everything here is under `app/modules/music/` unless it starts with `public/`.
 
-## Schema (after migrations 001–007)
+## Schema (after migrations 001–008)
 
 All ids are `INTEGER PRIMARY KEY`. Foreign keys are enforced.
 
@@ -18,7 +18,7 @@ All ids are `INTEGER PRIMARY KEY`. Foreign keys are enforced.
 | `album` | `artist_id` (nullable = various artists), `release_year` | |
 | `album_alias` | `album_id`, `name`, `is_actual` | same rules |
 | `album_track` | `album_id`, `song_id`, `song_alias_id` (nullable), `position` (nullable) | unique `(album_id, song_id)`; `song_alias_id` = which of the song's names this release credits; NULL = its actual name |
-| `account` | `account_name` (unique), `password_hash`, `is_admin`, `lang` (default `'fy'`), `hue` (006, nullable), `blind_rating` (007, default 1) | |
+| `account` | `account_name` (unique), `password_hash`, `is_admin`, `lang` (default `'fy'`), `hue` (006, nullable), `blind_rating` (007, default 1), `toast_seconds` (008, default 180; 0 off, -1 until closed) | |
 | `account_song` | `account_id`, `song_id`, `score` REAL, `subjective_note`, `updated_at` (unix seconds) | unique pair; current state only; `score` is 0–10, enforced by `songRating.php` and the score box, not by a CHECK |
 | `rating_audit` | `account_id`, `song_id`, `field` (`score`\|`note`), `value`, `previous_value` (TEXT), `created_at` | append-only; polled by `id` |
 | `invite` | `code` (unique), `created_at`, `created_by_account_id`, `used_at`, `used_by_account_id`, `revoked_at` | usable = both `used_at` and `revoked_at` NULL |
@@ -36,7 +36,7 @@ All ids are `INTEGER PRIMARY KEY`. Foreign keys are enforced.
 | `/music` | `index.php` | public | landing, links to login |
 | `/music/register` | `register.php` | public (signed-in → `/music/songs`) | form POST; invite needed once any account exists; the first account becomes admin; stores `activeLocale()` as the account's `lang` |
 | `/music/login`, `/music/logout` (POST) | `login.php`, `logout.php` | public | login primes session: locale (if shipped), hue (`musicHueOf`), blind flag. Logout forgets hue and blind, then `logOut()`; redirects to `/music/songs` which bounces to login (TODO) |
-| `/music/language`, `/music/colour`, `/music/settings` (POST) | same names | public (account written only if signed in) | nav menus. Redirect 303 to `return` if it matches `#^/music(/[a-z-]+)?$#`, else `/music`. `settings` treats an absent checkbox as off |
+| `/music/language`, `/music/colour`, `/music/settings` (POST) | same names | public (account written only if signed in) | nav menus. Redirect 303 to `return` if it matches `#^/music(/[a-z-]+)?$#`, else `/music`. `settings` treats an absent checkbox as off, and an absent or unknown `toast_seconds` as unchanged |
 | `/music/songs` | `songs.php` | login | the main page; see below |
 | `/music/artists`, `/music/albums` | `artists.php`, `albums.php` | login | stat-bearing lists, sorted in PHP via `listSort.php` |
 | `/music/audit` | `audit.php` | login | 100 per page, `?before=<id>` keyset paging; non-admins may read |

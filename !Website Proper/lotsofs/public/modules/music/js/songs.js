@@ -1477,7 +1477,9 @@ let ratingPollFailures = 0;
 
 const songToasts = document.getElementById("songToasts");
 const TOAST_SHOW_OWN_EVENTS = true;
-const TOAST_DURATION = 180000;
+const TOAST_DEFAULT_DURATION = 180000;
+/// From the cog menu: 0 is off for rating toasts, -1 is until closed.
+const toastSeconds = Number(JSON.parse(document.getElementById("songToastSeconds").textContent));
 const TOAST_LIMIT = 140;
 const TOAST_VALUE_MAX = 140;
 
@@ -1566,7 +1568,12 @@ function showToast(fill, songId) {
 		dismissToast(toast);
 	});
 
-	toastTimers.set(toast, setTimeout(() => dismissToast(toast), TOAST_DURATION));
+	/* Off only reaches here for the unsaved-rating warning, which is too
+	   important to drop, so it keeps the default lifetime. */
+	if (toastSeconds !== -1) {
+		const duration = toastSeconds > 0 ? toastSeconds * 1000 : TOAST_DEFAULT_DURATION;
+		toastTimers.set(toast, setTimeout(() => dismissToast(toast), duration));
+	}
 }
 
 /* Each half of a toast follows its own gate, read off this reader's own cell
@@ -1593,7 +1600,7 @@ function toastValueCovered(event) {
 }
 
 function showRatingEvent(event) {
-	if (!TOAST_SHOW_OWN_EVENTS && event.mine) {
+	if (toastSeconds === 0 || (!TOAST_SHOW_OWN_EVENTS && event.mine)) {
 		return;
 	}
 

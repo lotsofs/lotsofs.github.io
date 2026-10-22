@@ -1,5 +1,6 @@
 <?php require_once __ROOT__ . '/session.php' ?>
 <?php require_once __MODULES__ . '/music/blindRating.php' ?>
+<?php require_once __MODULES__ . '/music/toastDuration.php' ?>
 <?php sessionScope('music') ?>
 
 <nav>
@@ -41,6 +42,14 @@
 				<label class="navSettingsRow">
 					<input type="checkbox" name="blind_rating" value="1"<?= musicBlindRating() ? ' checked' : '' ?>>
 					<span><?= t('settings.blindRating') ?></span>
+				</label>
+				<label class="navSettingsField">
+					<span><?= t('settings.toastDuration') ?></span>
+					<select name="toast_seconds">
+						<?php foreach (musicToastChoiceLabels() as $seconds => $label): ?>
+							<option value="<?= $seconds ?>"<?= musicToastSeconds() === $seconds ? ' selected' : '' ?>><?= htmlspecialchars($label) ?></option>
+						<?php endforeach ?>
+					</select>
 				</label>
 				<button type="submit"><?= t('settings.save') ?></button>
 			</form>
