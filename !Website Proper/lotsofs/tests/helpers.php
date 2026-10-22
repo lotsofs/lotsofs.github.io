@@ -93,6 +93,11 @@ function assertClasses($needles, $body, $pattern, $what) {
 	}
 }
 
+// the poll caps audit rows at 50, so a test must start from the current cursor
+function songsAuditCursor($ctx) {
+	return (int)$ctx->db()->query("SELECT COALESCE(MAX(id), 0) c FROM rating_audit")->fetch()['c'];
+}
+
 // One chunk per song row; the id is the leading digits.
 function songsRowChunks($body) {
 	$chunks = explode('<tr data-song-id="', $body);

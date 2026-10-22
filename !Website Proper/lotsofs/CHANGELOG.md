@@ -7,3 +7,4 @@ What changed on lotsofs.com for the people who use it, one section per update of
 ### Changed
 
 - A score has to be a number from 0 to 10. The score box on the song list only takes what can become one: letters, a minus sign or a number over 10 simply don't go in, and on a phone it brings up a number keypad.
+- The pop-ups on the song list that say someone rated a song now show that person's name in their own site colour.

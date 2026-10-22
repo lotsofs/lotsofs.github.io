@@ -1495,6 +1495,13 @@ function toastStrong(text) {
 	return element;
 }
 
+/// The rater's own colour, matching .navColourSwatch in styles.css.
+function toastName(text, hue) {
+	const element = toastStrong(text);
+	element.style.color = `hsl(${Number(hue)}, 100%, 60%)`;
+	return element;
+}
+
 function toastQuote(text) {
 	const element = document.createElement("q");
 	element.textContent = text;
@@ -1594,7 +1601,7 @@ function showRatingEvent(event) {
 	const emphasise = isScore ? toastScore : toastQuote;
 
 	const parts = {
-		name: () => toastStrong(event.name),
+		name: () => toastName(event.name, event.hue),
 		song: () => toastStrong(event.songLabel),
 	};
 

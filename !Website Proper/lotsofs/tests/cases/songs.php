@@ -49,11 +49,6 @@ function songsAlbumCellFor($body, $songId) {
 	return $chunk === null ? null : songsCellValue($chunk, 'album');
 }
 
-// the poll caps audit rows at 50, so a test must start from the current cursor
-function songsAuditCursor($ctx) {
-	return (int)$ctx->db()->query("SELECT COALESCE(MAX(id), 0) c FROM rating_audit")->fetch()['c'];
-}
-
 function songsVisibleTitles($body) {
 	$visible = [];
 	foreach (songsRowChunks($body) as $chunk) {

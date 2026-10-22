@@ -122,4 +122,35 @@ return [
 		assertContains('fill="hsl(300, 70%, 62%)"', $moved, 'and follows them when they change it');
 	},
 
+	'a rating toast carries the hue of whoever rated' => function ($ctx) {
+		$ctx->ensureLoggedIn('hue_toaster');
+		pickColour($ctx, 19);
+
+		$artistId = $ctx->makeArtist('Hue Toast Artist');
+		$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Hue Toast Song']]);
+		$songId = $ctx->songId('Hue Toast Song');
+
+		$hueOfLatest = function ($from) use ($ctx, $songId) {
+			$events = $ctx->post('/music/ajax/song-rating-poll', ['since' => 0, 'sinceAudit' => $from])['json']['events'];
+			$events = array_values(array_filter($events, fn($event) => $event['songId'] === $songId));
+
+			return $events ? end($events)['hue'] : null;
+		};
+
+		$from = songsAuditCursor($ctx);
+		$ctx->post('/music/ajax/song-rating', ['id' => $songId, 'field' => 'score', 'value' => '6']);
+		assertSame(19, $hueOfLatest($from), 'the event names the hue that rater chose');
+
+		pickColour($ctx, 300);
+		$from = songsAuditCursor($ctx);
+		$ctx->post('/music/ajax/song-rating', ['id' => $songId, 'field' => 'score', 'value' => '7']);
+		assertSame(300, $hueOfLatest($from), 'and follows them when they change it');
+
+		$ctx->ensureLoggedIn('hue_toast_default');
+		$from = songsAuditCursor($ctx);
+		$ctx->post('/music/ajax/song-rating', ['id' => $songId, 'field' => 'score', 'value' => '4']);
+		$account = accountRow($ctx, 'hue_toast_default');
+		assertSame(((int)$account['id'] * 73) % 360, $hueOfLatest($from), 'an account that never picked one carries the hue its id gives it');
+	},
+
 ];

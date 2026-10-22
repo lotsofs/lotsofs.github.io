@@ -2,6 +2,7 @@
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
 require_once __MODULES__ . '/music/format.php';
+require_once __MODULES__ . '/music/hue.php';
 require_once __MODULES__ . '/music/stats.php';
 
 requireMusicAccountJson($db, t('ajax.notLoggedIn'));
@@ -56,7 +57,7 @@ if ($changedSongs) {
 
 $auditRows = $db->query("
 	SELECT ra.id, ra.account_id, ra.song_id, ra.field, ra.value, ra.previous_value,
-		a.account_name,
+		a.account_name, a.hue,
 		(SELECT name FROM song_alias WHERE song_id = ra.song_id
 			ORDER BY is_actual DESC, id LIMIT 1) AS song_title,
 		(SELECT group_concat(artist_name, ', ') FROM (
@@ -81,6 +82,7 @@ foreach ($auditRows as $row) {
 		'id' => (int)$row['id'],
 		'account' => (int)$row['account_id'],
 		'name' => $row['account_name'],
+		'hue' => musicHueOf($row['account_id'], $row['hue']),
 		'songId' => (int)$row['song_id'],
 		'songLabel' => musicSongLabel($row['artists'], $row['song_title']),
 		'field' => $row['field'],
