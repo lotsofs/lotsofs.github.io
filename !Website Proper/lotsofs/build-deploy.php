@@ -32,6 +32,14 @@ $excludeRel = [
 	'app' => ['modules/music/notes.txt'],
 ];
 
+// modules left out of both trees; shipping one means taking it off this list
+$unshippedModules = ['hideandseek'];
+
+foreach ($unshippedModules as $module) {
+	$excludeRel['public'][] = 'modules/' . $module;
+	$excludeRel['app'][] = 'modules/' . $module;
+}
+
 $excludeName = ['.git', '.gitinclude', '.DS_Store', 'Thumbs.db'];
 $excludeExt = ['sqlite', 'sqlite-journal', 'sqlite-wal', 'db', 'log', 'bak'];
 
@@ -148,6 +156,13 @@ $mustNotExist = [
 	'.gitignore',
 	'build-deploy.php',
 ];
+
+foreach ($unshippedModules as $module) {
+	$mustExist = array_filter($mustExist, fn($rel) => !str_starts_with($rel, "lotsofs.com/modules/{$module}/")
+		&& !str_starts_with($rel, "app/modules/{$module}/"));
+	$mustNotExist[] = "lotsofs.com/modules/{$module}";
+	$mustNotExist[] = "app/modules/{$module}";
+}
 
 $problems = [];
 

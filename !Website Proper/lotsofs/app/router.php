@@ -3,11 +3,10 @@
 
 $routes = [];
 
-include __MODULES__ . '/main/routes.php';
-include __MODULES__ . '/swat4/routes.php';
-include __MODULES__ . '/ss2/routes.php';
-include __MODULES__ . '/music/routes.php';
-include __MODULES__ . '/hideandseek/routes.php';
+// a module left off the host has no folder there, so it has no routes
+foreach (glob(__MODULES__ . '/*/routes.php') as $moduleRoutes) {
+	include $moduleRoutes;
+}
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
