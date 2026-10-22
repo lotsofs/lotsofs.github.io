@@ -43,9 +43,13 @@ return [
 	'gameMap.empty' => 'No game maps yet. Make one above.',
 	'gameMap.column.id' => 'ID',
 	'gameMap.column.name' => 'Name',
+	'gameMap.column.gemeente' => 'Gemeente',
 	'gameMap.column.action' => 'Action',
+	'gameMap.noGemeente' => '(none)',
+	'gameMap.setGemeente' => 'Set',
 	'gameMap.error.noName' => 'A game map needs a name.',
 	'gameMap.error.nameTaken' => 'There is already a game map with that name.',
+	'gameMap.error.noGemeente' => 'That gemeente is not in the buurten database, or this server has none.',
 
 	'poiImport.title' => 'Import POIs',
 	'poiImport.heading' => 'Import POIs',
@@ -84,6 +88,12 @@ return [
 	'poiImport.error.mapGone' => 'That game map no longer exists. Reload the page.',
 	'poiImport.error.badPoi' => 'The import held an entry that is not a POI.',
 	'poiImport.error.nothingFound' => 'The data holds nothing with a position. Ways and relations need "out center;" in the query.',
+
+
+	'buurten.show' => 'Show buurten',
+	'buurten.none' => 'No buurten shown: the loaded game map has no gemeente.',
+	'buurten.choose' => 'Choose one on the game maps page.',
+	'buurten.attribution' => 'Wijken and buurten: CBS, via PDOK (CC BY 4.0).',
 
 	'nav.home' => 'Home',
 	'nav.gameMaps' => 'Game maps',

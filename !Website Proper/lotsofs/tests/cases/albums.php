@@ -666,7 +666,8 @@ return [
 				'deviation' => $values[2],
 				'median' => $values[3],
 				'mode' => $values[4],
-				'rated' => $values[5],
+				'sum' => $values[5],
+				'rated' => $values[6],
 				'html' => $match[1],
 			];
 		}
@@ -677,12 +678,14 @@ return [
 		assertSame('8', $rows['test_runner']['mode'], 'the mode is the score given more than once');
 		assertSame('2.49', $rows['test_runner']['deviation'], 'and the spread is the standard deviation of those scores');
 		assertSame('4 / 5', $rows['test_runner']['rated'], 'with how many of the tracks that was');
+		assertSame('23', $rows['test_runner']['sum'], 'and the total is those four scores added up');
 
 		assertContains('style="color: hsl(', $rows['test_runner']['html'], 'the scores are coloured on the same ramp the song list uses');
 
 		assertSame('3', $rows['average_other_rater']['average'], 'each rater is worked out separately');
 		assertSame('—', $rows['average_other_rater']['mode'], 'one score each is no mode at all, not a mode of everything');
 		assertSame('0', $rows['average_other_rater']['deviation'], 'a single score has no spread');
+		assertSame('3', $rows['average_other_rater']['sum'], 'and is its own total');
 
 		$never = null;
 		foreach ($rows as $row) {
@@ -692,6 +695,7 @@ return [
 		}
 		assertTrue($never !== null, 'an account that rated nothing on this album still gets a row');
 		assertSame('—', $never['average'], 'and shows a dash rather than a zero');
+		assertSame('—', $never['sum'], 'its total included');
 		assertTrue(strpos($never['html'], 'hsl(') === false, 'with nothing coloured in');
 	},
 
@@ -730,7 +734,7 @@ return [
 		assertTrue((bool)preg_match('/<select id="cardStatsWho"[^>]*\bclass="[^"]*\bcardStatsWho\b/', $everyone), 'the tracks section carries the control');
 		assertTrue((bool)preg_match('/<select id="cardStatsWho"[^>]*\bclass="[^"]*\bcardWheelSelect\b/', $everyone), 'and it answers the wheel, like the order controls below it');
 		assertContains('<option value="' . $otherId . '"', $everyone, 'listing the other rater');
-		assertSame(['1', 'Whose One', '4', '2', '2 / ' . substr_count($everyone, '<tr class="albumStatsRow"'), ''], $trackCells($everyone)[0], 'pooled, the first track averages the 2 and the 6 and counts both');
+		assertSame(['1', 'Whose One', '4', '2', '8', '2 / ' . substr_count($everyone, '<tr class="albumStatsRow"'), ''], $trackCells($everyone)[0], 'pooled, the first track averages the 2 and the 6, totals them and counts both');
 
 		$mine = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'who' => $otherId])['json']['html'];
 
@@ -845,10 +849,12 @@ return [
 			}
 			preg_match('/albumTrackScore[^>]*>([^<]*)</', $row, $score);
 			preg_match('/albumTrackDeviation[^>]*>([^<]*)</', $row, $deviation);
+			preg_match('/albumTrackSum[^>]*>([^<]*)</', $row, $sum);
 			preg_match('/albumTrackRated[^>]*>([^<]*)</', $row, $rated);
 			$rows[$title[1]] = [
 				'score' => $score[1] ?? null,
 				'deviation' => $deviation[1] ?? null,
+				'sum' => $sum[1] ?? null,
 				'rated' => explode(' / ', $rated[1] ?? '')[0],
 			];
 		}
@@ -856,14 +862,17 @@ return [
 		assertSame('8', $rows['Track Average Agreed']['score'], 'two raters agreeing average to what they both said');
 		assertSame('0', $rows['Track Average Agreed']['deviation'], 'agreement is a spread of nothing');
 		assertSame('2', $rows['Track Average Agreed']['rated'], 'and both of them are counted');
+		assertSame('16', $rows['Track Average Agreed']['sum'], 'totalling both');
 
 		assertSame('6.5', $rows['Track Average Split']['score'], 'a 9 against a 4 averages between them');
 		assertSame('2.5', $rows['Track Average Split']['deviation'], 'and shows as a spread either side of it');
 		assertSame('2', $rows['Track Average Split']['rated'], 'from the same two people');
+		assertSame('13', $rows['Track Average Split']['sum'], 'adding up to less than the pair who agreed on 8');
 
 		assertSame('—', $rows['Track Average Ignored']['score'], 'a track nobody scored shows a dash, not a zero');
 		assertSame('—', $rows['Track Average Ignored']['deviation'], 'with no spread either');
 		assertSame('0', $rows['Track Average Ignored']['rated'], 'and nobody counted');
+		assertSame('—', $rows['Track Average Ignored']['sum'], 'and no total either, rather than a total of nought');
 
 		assertContains('<td class="albumTrackScore" style="color: hsl(', $html, 'the averages are coloured on the score ramp');
 		assertContains('<th class="albumTrackScore">Avg</th>', $html, 'and the column says what it is');
@@ -926,6 +935,11 @@ return [
 
 		$byLowestFlipped = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'sort' => 'lowest', 'dir' => 'asc'])['json']['html'];
 		assertSame('Reordered Zulu', $graphOrder($byLowestFlipped)[0], 'flipped, it finds the track somebody rated a 3');
+
+		// Zulu's 3 and 9 total 12, past Alpha's lone 9, while averaging 6.
+		$bySum = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'sort' => 'sum'])['json']['html'];
+		assertSame(['Reordered Zulu', 'Reordered Alpha', 'Reordered Mike'], $graphOrder($bySum), 'by total, two scores outweigh one higher score');
+		assertTrue(preg_match('/<option value="sum" data-default-dir="desc" selected>/', $bySum) === 1, 'starting from the biggest');
 
 		$nonsense = $ctx->post(ALBUM_CARD_ENDPOINT, ['album_id' => $albumId, 'sort' => 'whatever', 'dir' => 'sideways'])['json']['html'];
 		assertSame(['Reordered Zulu', 'Reordered Alpha', 'Reordered Mike'], $graphOrder($nonsense), 'an order it does not offer falls back to the running order');
@@ -1058,9 +1072,10 @@ return [
 		assertSame('Everyone', $values[0], 'the row says who it is for');
 		assertSame('5', $values[1], 'every score pooled, not the average of the averages');
 		assertSame('4', $values[3], 'and the median of all three scores, 2 4 and 9');
+		assertSame('15', $values[5], 'which add up to the total');
 		// The denominator is the column total of the rows above.
 		$raterRows = preg_match_all('/<tr class="albumStatsRow" data-account-id=/', $html);
-		assertSame('3 / ' . ($raterRows * 2), $values[5], 'counted against every rating that could exist, one per track per account');
+		assertSame('3 / ' . ($raterRows * 2), $values[6], 'counted against every rating that could exist, one per track per account');
 
 		assertTrue(strpos($row[1], 'albumStatsSwatch') === false, 'it carries no colour swatch, because it is not a rater on the graph');
 	},
@@ -1263,9 +1278,9 @@ return [
 
 		// 9, 5 and 9: mean 7.67, sigma 1.89, median 9, mode 9.
 		assertSame(
-			['7.67', '1.89', '9', '9', '9', '5'],
+			['7.67', '1.89', '9', '9', '9', '5', '23'],
 			listCells($row, 'albumStatsScoreCell'),
-			'average, deviation, median, mode, highest and lowest over every score on the record'
+			'average, deviation, median, mode, highest, lowest and total over every score on the record'
 		);
 
 		$accounts = (int)$ctx->db()->query("SELECT COUNT(*) AS n FROM account")->fetch()['n'];

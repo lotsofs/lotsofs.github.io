@@ -87,6 +87,7 @@ function hnsLoadMap() {
 
 			hnsMap.on("load", () => {
 				hnsHideLabels();
+				hnsAddBuurten();
 				hnsAddImportedLayers();
 				hnsMapReady = true;
 
@@ -136,6 +137,118 @@ function hnsHideLabels() {
 			console.warn("hideandseek: could not hide layer " + layer.id, error);
 		}
 	}
+}
+
+const HNS_BUURT_LAYERS = ["hnsBuurtenFill", "hnsBuurtenLine", "hnsBuurtenNames"];
+
+function hnsShowBuurten() {
+	return hnsReadSetting("hnsShowBuurten") !== "0";
+}
+
+function hnsRootColour(name, fallback) {
+	return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
+
+/* The CBS buurten of the loaded game map's gemeente and the gemeenten touching
+   it, drawn as outlines over the base map and named from a middling zoom. They
+   are megabytes, so they are fetched here, when the map loads, rather than
+   carried by every page view; the toggle in the page is the sign that there are
+   any. The fetch is asynchronous, so the layers arrive after hnsHideLabels() has
+   run - which is what keeps the blanket label rule from switching their names
+   off - and are placed by id rather than by call order.
+
+   The fill and the line go in beneath the first building or road layer, so the
+   streets stay legible on top of the tint; the names go beneath the POI layer
+   when there is one, so a place is never covered by a buurt's name. */
+function hnsAddBuurten() {
+	if (!document.getElementById("hnsBuurtenToggle")) {
+		return;
+	}
+
+	postJson("/hideandseek/ajax/buurten", {})
+		.then(result => hnsDrawBuurten(result.buurten))
+		.catch(error => console.warn("hideandseek: could not load the buurten", error));
+}
+
+function hnsDrawBuurten(buurten) {
+	if (!buurten.length) {
+		return;
+	}
+
+	const below = hnsMap.getStyle().layers.find(layer => layer["source-layer"] === "building" || layer["source-layer"] === "transportation");
+	const beforeId = below ? below.id : undefined;
+	const line = hnsRootColour("--accentDim", "#3aa583");
+
+	hnsMap.addSource("hnsBuurten", {
+		type: "geojson",
+		data: {
+			type: "FeatureCollection",
+			features: buurten.map(buurt => ({
+				type: "Feature",
+				geometry: buurt.geometry,
+				properties: { name: buurt.name, wijk: buurt.wijk, own: buurt.own, water: buurt.water },
+			})),
+		},
+	});
+
+	hnsMap.addLayer({
+		id: "hnsBuurtenFill",
+		type: "fill",
+		source: "hnsBuurten",
+		paint: { "fill-color": hnsRootColour("--accent", "#0a7a57"), "fill-opacity": ["case", ["get", "own"], 0.06, 0.02] },
+	}, beforeId);
+
+	hnsMap.addLayer({
+		id: "hnsBuurtenLine",
+		type: "line",
+		source: "hnsBuurten",
+		layout: { "line-join": "round" },
+		paint: { "line-color": line, "line-width": ["case", ["get", "own"], 1.5, 0.8] },
+	}, beforeId);
+
+	hnsMap.addLayer({
+		id: "hnsBuurtenNames",
+		type: "symbol",
+		source: "hnsBuurten",
+		minzoom: 12,
+		layout: {
+			"text-field": ["get", "name"],
+			"text-font": ["Noto Sans Bold"],
+			"text-size": 11,
+			"text-optional": true,
+		},
+		paint: {
+			"text-color": hnsRootColour("--inkDim", "#5b6a65"),
+			"text-halo-color": "#ffffff",
+			"text-halo-width": 1,
+		},
+	}, hnsMap.getLayer("hnsImportedPoints") ? "hnsImportedPoints" : undefined);
+
+	hnsApplyBuurtenVisibility();
+}
+
+function hnsApplyBuurtenVisibility() {
+	if (!hnsMap || !hnsMap.getSource("hnsBuurten")) {
+		return;
+	}
+
+	for (const id of HNS_BUURT_LAYERS) {
+		hnsMap.setLayoutProperty(id, "visibility", hnsShowBuurten() ? "visible" : "none");
+	}
+}
+
+function hnsInitBuurtenToggle() {
+	const toggle = document.getElementById("hnsBuurtenToggle");
+
+	if (!toggle) {
+		return;
+	}
+
+	toggle.checked = hnsShowBuurten();
+	toggle.addEventListener("change", () => {
+		hnsWriteSetting("hnsShowBuurten", toggle.checked ? "1" : "0");
+		hnsApplyBuurtenVisibility();
+	});
 }
 
 function hnsPoiRow(poi, onActivate) {
@@ -994,3 +1107,4 @@ if (hnsMapEl) {
 
 hnsRenderImportedPoiTable();
 hnsUpdateOverlay();
+hnsInitBuurtenToggle();

@@ -18,12 +18,20 @@ requireHnsAccount($db);
 $globalData['isAdmin'] = hnsIsAdmin($db);
 
 $globalData['imported'] = ['categories' => [], 'pois' => []];
+$globalData['hasBuurten'] = false;
 
 if (currentAccountId()) {
 	require_once __MODULES__ . '/hideandseek/gameMap.php';
+	require_once __MODULES__ . '/hideandseek/geo.php';
 	$loaded = hnsLoadedGameMap($db);
 
 	if ($loaded) {
+		$geo = $loaded['gemeente_code'] !== null ? hnsGeoDb() : null;
+
+		/// Only whether there are any: the buurten themselves are megabytes, so map.js
+		/// fetches them when the map loads rather than every page view carrying them.
+		$globalData['hasBuurten'] = $geo && hnsGeoGemeenteExists($geo, $loaded['gemeente_code']);
+
 		$categories = $db->query(
 			"SELECT id, name, colour, icon FROM poi_category WHERE game_map_id = ? ORDER BY name COLLATE NOCASE",
 			[$loaded['id']]

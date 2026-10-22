@@ -23,6 +23,13 @@
 		></div>
 
 		<p class="hnsMapHint"><?= t('map.hint') ?></p>
+
+		<?php if ($globalData['hasBuurten']): ?>
+			<label class="hnsPoiFilter"><input type="checkbox" id="hnsBuurtenToggle" checked> <?= t('buurten.show') ?></label>
+			<p class="hnsMapHint"><?= t('buurten.attribution') ?></p>
+		<?php elseif (currentAccountId()): ?>
+			<p class="hnsMapHint"><?= t('buurten.none') ?> <a href="/hideandseek/game-maps"><?= t('buurten.choose') ?></a></p>
+		<?php endif ?>
 	</section>
 
 	<section class="hnsPoiColumn">

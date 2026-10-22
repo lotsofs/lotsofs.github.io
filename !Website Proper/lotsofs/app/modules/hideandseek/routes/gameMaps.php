@@ -15,10 +15,14 @@ runHideAndSeekMigrations($db);
 
 require_once __MODULES__ . '/hideandseek/auth.php';
 require_once __MODULES__ . '/hideandseek/gameMap.php';
+require_once __MODULES__ . '/hideandseek/geo.php';
 requireHnsAccount($db);
 
 $globalData['isAdmin'] = hnsIsAdmin($db);
 $globalData['formError'] = '';
+
+/// Null on a server that has no buurten file; the page says so.
+$geo = hnsGeoDb();
 
 /// Dispatched on the action rather than on which field turned up, so a post this
 /// doesn't recognise does nothing at all.
@@ -49,6 +53,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && checkCsrf($_POST['csrf_token'] ?? n
 			$db->query("UPDATE game_map SET name = ? WHERE id = ?", [$name, $mapId]);
 		}
 	}
+	else if ($action === 'gemeente' && $mapId !== 0) {
+		$code = trim($_POST['gemeente'] ?? '');
+
+		if ($code === '') {
+			$db->query("UPDATE game_map SET gemeente_code = NULL WHERE id = ?", [$mapId]);
+		}
+		else if ($geo && hnsGeoGemeenteExists($geo, $code)) {
+			$db->query("UPDATE game_map SET gemeente_code = ? WHERE id = ?", [$code, $mapId]);
+		}
+		else {
+			$globalData['formError'] = t('gameMap.error.noGemeente');
+		}
+	}
 	else if ($action === 'delete' && $mapId !== 0) {
 		/// No session clearing here - hnsLoadedGameMap() drops an id whose row is
 		/// gone, so the unloading lives in one place rather than two.
@@ -71,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && checkCsrf($_POST['csrf_token'] ?? n
 }
 
 $globalData['loadedGameMap'] = hnsLoadedGameMap($db);
-$globalData['gameMaps'] = $db->query("SELECT id, name FROM game_map ORDER BY name COLLATE NOCASE")->fetchAll();
+$globalData['gameMaps'] = $db->query("SELECT id, name, gemeente_code FROM game_map ORDER BY name COLLATE NOCASE")->fetchAll();
+$globalData['gemeenten'] = $geo ? hnsGeoGemeenten($geo) : null;
 
 require __MODULES__ . '/hideandseek/views/gameMaps.view.php';

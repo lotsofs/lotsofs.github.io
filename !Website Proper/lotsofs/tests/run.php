@@ -176,6 +176,11 @@ class TestContext {
 
 	/// One module, one database. db() is music's because that is what nearly
 	/// every case file wants; another module names its own file.
+	/// A path inside the scratch copy, for tests that run a tool against it.
+	public function path($relative) {
+		return $this->tempRoot . '/' . $relative;
+	}
+
 	public function dbFor($file) {
 		$pdo = new PDO('sqlite:' . $this->tempRoot . '/data/' . $file);
 		$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);

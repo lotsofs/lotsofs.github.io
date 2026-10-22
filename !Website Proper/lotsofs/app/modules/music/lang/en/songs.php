@@ -81,6 +81,9 @@ return [
 	'song.list.toastNoteHidden' => '{name} wrote a note about {song}',
 	'song.list.toastNoteUpdatedHidden' => '{name} updated their note about {song}',
 	'song.list.toastNoteCleared' => '{name} cleared their note about {song}',
+	'song.list.ratingQueued' => 'Not saved yet. It will be sent when the connection is back',
+	'song.list.ratingQueuedLogin' => 'Not saved: you are logged out. Log in again and open this page, and it will be sent',
+	'song.list.toastRatingQueued' => 'Your rating for {song} is not saved yet. It will be sent when the connection is back.',
 
 	'song.list.cardModalClose' => 'Close',
 	'song.list.cardModalEdit' => 'Edit',

@@ -2500,28 +2500,28 @@ return [
 		$statsOf = function ($songId) use ($body) {
 			$chunk = songsRowFor($body, $songId);
 			$stats = [];
-			foreach (['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'rated'] as $field) {
+			foreach (['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated'] as $field) {
 				$stats[$field] = songsCellValue($chunk, $field);
 			}
 			return $stats;
 		};
 
 		assertSame(
-			['average' => '7', 'deviation' => '0', 'median' => '7', 'mode' => '7', 'highest' => '7', 'lowest' => '7', 'rated' => '2'],
+			['average' => '7', 'deviation' => '0', 'median' => '7', 'mode' => '7', 'highest' => '7', 'lowest' => '7', 'sum' => '14', 'rated' => '2'],
 			$statsOf($agreed),
 			'two people who agree have no spread, and their score is every statistic'
 		);
 
 		assertSame(
-			['average' => '5.5', 'deviation' => '3.5', 'median' => '5.5', 'mode' => '', 'highest' => '9', 'lowest' => '2', 'rated' => '2'],
+			['average' => '5.5', 'deviation' => '3.5', 'median' => '5.5', 'mode' => '', 'highest' => '9', 'lowest' => '2', 'sum' => '11', 'rated' => '2'],
 			$statsOf($split),
 			'two who disagree have a spread, and two different scores are no mode at all'
 		);
 
 		assertSame(
-			['average' => '', 'deviation' => '', 'median' => '', 'mode' => '', 'highest' => '', 'lowest' => '', 'rated' => '0'],
+			['average' => '', 'deviation' => '', 'median' => '', 'mode' => '', 'highest' => '', 'lowest' => '', 'sum' => '', 'rated' => '0'],
 			$statsOf($unheard),
-			'a song nobody scored is blank throughout, but its count is a real zero'
+			'a song nobody scored is blank throughout, its total included, but its count is a real zero'
 		);
 
 		/// The columns sit past the last rater's, which the horizontal scroll is for.
@@ -2540,6 +2540,17 @@ return [
 		assertContains('data-sort-value="9"', $tied, 'and sorts by the highest of them');
 	},
 
+	'the song list tells its script whose unsaved ratings it may resend' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+		$mine = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];
+		assertContains('<script id="songAccountId" type="application/json">' . $mine . '</script>', $ctx->get('/music/songs')['body'], 'the outbox is keyed by the signed-in account');
+
+		/// Another account's page must key a different outbox, or it would send the first one's ratings as its own.
+		$ctx->ensureLoggedIn('outbox_other_rater', 'test password', false);
+		$theirs = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'outbox_other_rater'")->fetch()['id'];
+		assertContains('<script id="songAccountId" type="application/json">' . $theirs . '</script>', $ctx->get('/music/songs')['body'], 'and switches with the account');
+	},
+
 	'a rating write hands back the statistics for the row it changed' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
@@ -2552,6 +2563,7 @@ return [
 		assertSame($songId, $written['stats']['song'], 'the write says which row it is for');
 		assertSame('4', $written['stats']['average'], 'and what that row now reads');
 		assertSame('1', $written['stats']['rated'], 'counting the one score there is');
+		assertSame('4', $written['stats']['sum'], 'which is the whole of its total');
 
 		$cursor = songsAuditCursor($ctx);
 		$ctx->ensureLoggedIn('restat_second_rater', 'test password', false);
@@ -2572,6 +2584,7 @@ return [
 		assertSame('6', $stats['average'], 'averaging both scores');
 		assertSame('2', $stats['deviation'], 'with the spread between them');
 		assertSame('2', $stats['rated'], 'over two ratings');
+		assertSame('12', $stats['sum'], 'adding up to both of them');
 	},
 
 	'every column keeps its blank rows at the bottom from either end' => function ($ctx) {
@@ -2640,6 +2653,57 @@ return [
 			$ordered('/music/songs?sort=median&dir=desc'),
 			'and every statistic is orderable, not only the average'
 		);
+	},
+
+	'the total ranks a song many people liked above a lone favourite' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Summed Artist');
+		$mine = ['Summed Popular', 'Summed Niche', 'Summed Unheard'];
+		foreach ($mine as $title) {
+			$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => $title]]);
+		}
+
+		/// One 10 against three 7s: the best average, and the smaller total. One of
+		/// the 7s is this reader's, or the blind-rating gate covers the cell read below.
+		$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Summed Niche'), 'field' => 'score', 'value' => '10']);
+		$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Summed Popular'), 'field' => 'score', 'value' => '7']);
+		foreach (['summed_one', 'summed_two'] as $name) {
+			$ctx->ensureLoggedIn($name, 'test password', false);
+			$ctx->post(RATING_ENDPOINT, ['id' => $ctx->songId('Summed Popular'), 'field' => 'score', 'value' => '7']);
+		}
+
+		$ctx->ensureLoggedIn();
+		$ordered = function ($path) use ($ctx, $mine) {
+			$titles = songsValuesInOrder($ctx->get($path)['body'], 'title');
+			return array_values(array_filter($titles, fn($t) => in_array($t, $mine, true)));
+		};
+
+		assertSame(
+			['Summed Niche', 'Summed Popular', 'Summed Unheard'],
+			$ordered('/music/songs?sort=average&dir=desc'),
+			'by average the lone 10 leads'
+		);
+
+		assertSame(
+			['Summed Popular', 'Summed Niche', 'Summed Unheard'],
+			$ordered('/music/songs?sort=sum&dir=desc'),
+			'by total the three 7s do'
+		);
+
+		assertSame(
+			['Summed Niche', 'Summed Popular', 'Summed Unheard'],
+			$ordered('/music/songs?sort=sum&dir=asc'),
+			'and a song nobody scored is no total, not a total of nought, so it stays last either way'
+		);
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertSame('21', songsCellValue(songsRowFor($body, $ctx->songId('Summed Popular')), 'sum'), 'the cell reads the scores added up');
+
+		/// A total is not a score, so the 0-10 ramp would paint every popular song green.
+		$header = preg_match('/<th[^>]*data-sort-key="sum"/', $body, $th) ? $th[0] : '';
+		assertTrue($header !== '', 'the column has a sortable header');
+		assertTrue(strpos($header, 'songScoreColoured') === false, 'and is not on the score ramp');
 	},
 
 	'a card hides another rater\'s note until this reader has written one' => function ($ctx) {
@@ -2813,7 +2877,7 @@ return [
 		$ctx->ensureLoggedIn();
 		$row = songsRowFor($ctx->get('/music/songs')['body'], $songId);
 
-		foreach (['average', 'deviation', 'median', 'mode', 'highest', 'lowest'] as $field) {
+		foreach (['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum'] as $field) {
 			assertContains('songGated', songsFieldCell($row, $field), "the {$field} column is covered");
 		}
 
@@ -2836,7 +2900,7 @@ return [
 
 		/* Per cell rather than over the chunk: songsRowFor hands back everything
 		   after the row it finds, and the newest song is the last one. */
-		foreach (['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'rated'] as $field) {
+		foreach (['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated'] as $field) {
 			assertTrue(strpos(songsFieldCell($row, $field), 'songGated') === false, "nobody has rated it, so {$field} has nothing to cover");
 		}
 

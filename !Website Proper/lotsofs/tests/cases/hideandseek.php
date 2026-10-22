@@ -95,6 +95,75 @@ function hnsPoi($type, $id, $lat, $lon, $name = null) {
 	return ['osmType' => $type, 'osmId' => (string)$id, 'name' => $name, 'lat' => $lat, 'lon' => $lon];
 }
 
+/// What the map fetches for the loaded game map: its gemeente and the ones
+/// touching it. Null when the endpoint refuses.
+function hnsBuurtenFor($ctx) {
+	$response = $ctx->post('/hideandseek/ajax/buurten', []);
+
+	return $response['status'] === 200 ? $response['json']['buurten'] : null;
+}
+
+/// A closed square of side 0.01 degrees from the given corner, with the Z that
+/// PDOK's 2026 data carries on every position.
+function hnsSquare($lon, $lat) {
+	$lon2 = round($lon + 0.01, 6);
+	$lat2 = round($lat + 0.01, 6);
+
+	return [[[$lon, $lat, 0], [$lon2, $lat, 0], [$lon2, $lat2, 0], [$lon, $lat2, 0], [$lon, $lat, 0]]];
+}
+
+/// One PDOK feature. Squares that share an edge share its vertices exactly, which
+/// is what the neighbour calculation looks for.
+function hnsFeature($gemeente, $wijk, $buurt, $coordinates, $water = 'NEE') {
+	return [
+		'type' => 'Feature',
+		'properties' => [
+			'bu_code' => $buurt[0], 'bu_naam' => $buurt[1],
+			'wk_code' => $wijk[0], 'wk_naam' => $wijk[1],
+			'gm_code' => $gemeente[0], 'gm_naam' => $gemeente[1],
+			'water' => $water,
+		],
+		'geometry' => ['type' => 'MultiPolygon', 'coordinates' => [$coordinates]],
+	];
+}
+
+/// Alpha holds two buurten side by side, Beta's one touches Alpha's second along
+/// an edge, Delta's touches only Beta's, and Gamma is nowhere near any of them.
+function hnsGeoFixture() {
+	$alpha = ['GM0001', 'Alpha'];
+	$beta = ['GM0002', 'Beta'];
+	$gamma = ['GM0003', 'Gamma'];
+	$delta = ['GM0004', 'Delta'];
+
+	return [
+		hnsFeature($alpha, ['WK000101', 'Centrum'], ['BU00010101', 'Eerste'], hnsSquare(6.50, 53.20)),
+		hnsFeature($alpha, ['WK000101', 'Centrum'], ['BU00010102', 'Tweede </script><b>buurt'], hnsSquare(6.51, 53.20)),
+		hnsFeature($beta, ['WK000201', 'Haven'], ['BU00020101', 'Derde'], hnsSquare(6.52, 53.20)),
+		hnsFeature($beta, ['WK000202', 'Meer'], ['BU00020201', 'Plas'], hnsSquare(6.52, 53.22), 'JA'),
+		hnsFeature($delta, ['WK000401', 'Rand'], ['BU00040101', 'Vierde'], hnsSquare(6.53, 53.20)),
+		hnsFeature($gamma, ['WK000301', 'Ver'], ['BU00030101', 'Ver weg'], hnsSquare(7.50, 52.00)),
+	];
+}
+
+/// Runs tools/import-buurten.php against a fixture file and a database in the
+/// scratch copy. [exit code, its output].
+function hnsBuildGeo($ctx, $features, $name = 'fixture.json') {
+	$file = $ctx->path('data/' . $name);
+	file_put_contents($file, json_encode(['type' => 'FeatureCollection', 'features' => $features]));
+
+	$command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($ctx->path('tools/import-buurten.php'))
+		. ' ' . escapeshellarg('--db=' . $ctx->path('data/hideandseek_geo.sqlite'))
+		. ' ' . escapeshellarg('--file=' . $file) . ' 2>&1';
+
+	exec($command, $output, $code);
+
+	return [$code, implode("\n", $output)];
+}
+
+function hnsGeoDbFile($ctx) {
+	return $ctx->dbFor('hideandseek_geo.sqlite');
+}
+
 /// Makes an invite as the signed-in admin and returns the code as typed.
 function hnsMakeInvite($ctx) {
 	$before = (int)$ctx->dbFor(HNS_DB)->query("SELECT COALESCE(MAX(id), 0) c FROM invite")->fetch()['c'];
@@ -1150,6 +1219,185 @@ return [
 		$strings = json_decode((string)preg_replace('#^.*<script id="langStrings" type="application/json">(.*?)</script>.*$#s', '$1', $ctx->get('/hideandseek')['body']), true);
 		assertContains('{class}', $strings['poi.circles'] ?? '', 'the circles button names its category');
 		assertSame('{n} km', $strings['poi.kilometres'] ?? null, 'and the distance has its units');
+	},
+
+	/* The buurten live in a database file of their own, built at home and copied to
+	   the host, so a server without one has to carry on without. This runs before
+	   anything builds it. */
+	'a server with no buurten database has none, and says how to get some' => function ($ctx) {
+		hnsLogIn($ctx, 'hns_first', 'test password');
+		hnsCreateGameMap($ctx, 'Geo Test');
+		$map = hnsGameMapRow($ctx, 'Geo Test');
+
+		assertTrue(!file_exists($ctx->path('data/hideandseek_geo.sqlite')), 'there is no geo file yet');
+
+		$body = $ctx->get('/hideandseek')['body'];
+		assertSame([], hnsBuurtenFor($ctx), 'the endpoint hands the map nothing');
+		assertTrue(strpos($body, 'hnsBuurtenToggle') === false, 'and offers no toggle');
+		assertContains('has no gemeente', $body, 'it says why');
+
+		$page = $ctx->get('/hideandseek/game-maps')['body'];
+		assertTrue(strpos($page, '<select name="gemeente"') === false, 'the game maps page has no gemeente to pick from');
+
+		$response = $ctx->postForm('/hideandseek/game-maps', [
+			'csrf_token' => $ctx->csrfTokenFrom('/hideandseek/game-maps'),
+			'action' => 'gemeente',
+			'map_id' => (int)$map['id'],
+			'gemeente' => 'GM0001',
+		]);
+		assertContains('formError', $response['body'], 'choosing one is refused');
+		assertTrue(!file_exists($ctx->path('data/hideandseek_geo.sqlite')), 'and the site did not create the file by asking');
+	},
+
+	'the build script makes one row per gemeente, wijk and buurt, drops the Z, and finds exact neighbours' => function ($ctx) {
+		[$code, $output] = hnsBuildGeo($ctx, hnsGeoFixture());
+		assertSame(0, $code, 'the script succeeds: ' . $output);
+		assertContains('4 gemeente, 5 wijk, 6 buurt', $output, 'and reports what it wrote');
+
+		$geo = hnsGeoDbFile($ctx);
+		assertSame(
+			[['code' => 'GM0001', 'name' => 'Alpha'], ['code' => 'GM0002', 'name' => 'Beta'], ['code' => 'GM0003', 'name' => 'Gamma'], ['code' => 'GM0004', 'name' => 'Delta']],
+			$geo->query("SELECT code, name FROM gemeente ORDER BY code")->fetchAll(),
+			'every gemeente once'
+		);
+		assertSame(2, (int)$geo->query("SELECT COUNT(*) c FROM buurt b JOIN wijk w ON w.id = b.wijk_id WHERE w.code = 'WK000101'")->fetch()['c'], 'two buurten share one wijk row');
+		assertSame(5, (int)$geo->query("SELECT COUNT(*) c FROM wijk")->fetch()['c'], 'and five wijken in all');
+
+		$stored = $geo->query("SELECT polygons FROM buurt WHERE code = 'BU00010101'")->fetch()['polygons'];
+		$polygons = json_decode(gzuncompress($stored), true);
+		assertSame([6.5, 53.2], $polygons[0][0][0], 'the polygons are stored zlib-compressed as bare coordinates, with two numbers to a position and the Z dropped');
+		assertTrue(strpos(gzuncompress($stored), 'MultiPolygon') === false, 'and without a type, which is the same for every buurt');
+		assertSame(1, (int)$geo->query("SELECT water FROM buurt WHERE code = 'BU00020201'")->fetch()['water'], 'water regions are kept, and flagged');
+
+		$pairs = $geo->query(
+			"SELECT a.code a, b.code b FROM gemeente_neighbour n JOIN gemeente a ON a.id = n.gemeente_id JOIN gemeente b ON b.id = n.neighbour_id ORDER BY a.code, b.code"
+		)->fetchAll();
+		assertSame(
+			[['a' => 'GM0001', 'b' => 'GM0002'], ['a' => 'GM0002', 'b' => 'GM0001'], ['a' => 'GM0002', 'b' => 'GM0004'], ['a' => 'GM0004', 'b' => 'GM0002']],
+			$pairs,
+			'neighbours are the gemeenten sharing a vertex, both ways, and a far one has none'
+		);
+
+		$geo = null;
+
+		/// Compressed bytes bound as text are cut at the first NUL, which only shows
+		/// on a shape big enough to contain one.
+		$ring = [];
+		for ($i = 0; $i < 3000; $i++) {
+			$ring[] = [round(5 + sin($i) * 0.01 + $i * 0.000001, 6), round(52 + cos($i * 3) * 0.01, 6), 0];
+		}
+		$ring[] = $ring[0];
+		[$code] = hnsBuildGeo($ctx, [hnsFeature(['GM0009', 'Big'], ['WK000901', 'Groot'], ['BU00090101', 'Veel punten'], [$ring])], 'big.json');
+		assertSame(0, $code, 'a large shape builds');
+
+		$stored = hnsGeoDbFile($ctx)->query("SELECT polygons FROM buurt")->fetchAll();
+		assertSame(1, count($stored), 'the one buurt');
+		assertSame(3001, count(json_decode(gzuncompress($stored[0]['polygons']), true)[0][0]), 'comes back whole, every vertex');
+
+		[$code] = hnsBuildGeo($ctx, hnsGeoFixture());
+		assertSame(0, $code, 'and the fixture is rebuilt for the tests after this one');
+
+		$geo = hnsGeoDbFile($ctx);
+		$tables = array_column($geo->query("SELECT name FROM sqlite_master WHERE type = 'table'")->fetchAll(), 'name');
+		assertTrue(!in_array('_vertex', $tables, true), 'the scratch table is gone');
+
+		foreach (['gemeente', 'wijk', 'buurt', 'gemeente_neighbour'] as $table) {
+			$sql = $geo->query("SELECT sql FROM sqlite_master WHERE name = '{$table}'")->fetch()['sql'];
+			assertTrue(stripos($sql, 'REFERENCES') === false && stripos($sql, 'CASCADE') === false, "{$table} declares no foreign key");
+		}
+	},
+
+	'a build that stores nothing leaves the existing database alone' => function ($ctx) {
+		$file = $ctx->path('data/hideandseek_geo.sqlite');
+		$before = md5_file($file);
+
+		[$code, $output] = hnsBuildGeo($ctx, [['type' => 'Feature', 'properties' => ['bu_code' => 'BU1'], 'geometry' => null]], 'bad.json');
+		assertTrue($code !== 0, 'the script fails');
+		assertContains('left alone', $output, 'and says so');
+		assertSame($before, md5_file($file), 'the database is byte for byte what it was');
+		assertTrue(!file_exists($file . '.building'), 'and no half-built file is left beside it');
+
+		[$code, $output] = hnsBuildGeo($ctx, array_merge(hnsGeoFixture(), [
+			hnsFeature(['GM0005', 'Epsilon'], ['WK000501', 'Kort'], ['BU00050101', 'Te kort'], [[[6.5, 53.2, 0], [6.6, 53.2, 0], [6.5, 53.2, 0]]]),
+		]), 'mixed.json');
+		assertSame(0, $code, 'one unusable feature among good ones does not stop the build');
+		assertContains('6 buurten stored, 1 skipped', $output, 'it is counted, and not written');
+		assertSame(0, (int)hnsGeoDbFile($ctx)->query("SELECT COUNT(*) c FROM gemeente WHERE code = 'GM0005'")->fetch()['c'], 'nor does its gemeente appear');
+	},
+
+	'a game map names its gemeente, and the homepage draws that one and its neighbours' => function ($ctx) {
+		hnsLogIn($ctx, 'hns_first', 'test password');
+		$map = hnsGameMapRow($ctx, 'Geo Test');
+		$mapId = (int)$map['id'];
+
+		$setGemeente = function ($code) use ($ctx, $mapId) {
+			return $ctx->postForm('/hideandseek/game-maps', [
+				'csrf_token' => $ctx->csrfTokenFrom('/hideandseek/game-maps'),
+				'action' => 'gemeente',
+				'map_id' => $mapId,
+				'gemeente' => $code,
+			]);
+		};
+
+		$page = $ctx->get('/hideandseek/game-maps?map=' . $mapId)['body'];
+		assertContains('<select name="gemeente"', $page, 'the game maps page offers the gemeenten');
+		assertContains('>Alpha</option>', $page, 'by name');
+
+		$home = $ctx->get('/hideandseek')['body'];
+		assertSame([], hnsBuurtenFor($ctx), 'a map with no gemeente shows no buurten');
+		assertTrue(strpos($home, 'hnsBuurtenToggle') === false, 'and offers no toggle');
+		assertContains('has no gemeente', $home, 'and says to choose one');
+
+		assertSame(302, $setGemeente('GM0001')['status'], 'choosing a gemeente is accepted');
+		assertSame('GM0001', $ctx->dbFor(HNS_DB)->query("SELECT gemeente_code FROM game_map WHERE id = {$mapId}")->fetch()['gemeente_code'], 'and stored on the map');
+
+		$home = $ctx->get('/hideandseek')['body'];
+		$buurten = hnsBuurtenFor($ctx);
+		assertSame(['Derde', 'Eerste', 'Plas', 'Tweede </script><b>buurt'], array_column($buurten, 'name'), 'Alpha and Beta are handed over, not Delta (a neighbour of a neighbour) or Gamma');
+		assertSame([false, true, false, true], array_column($buurten, 'own'), 'the chosen gemeente marked as such');
+		assertSame(['Haven', 'Centrum', 'Meer', 'Centrum'], array_column($buurten, 'wijk'), 'each with its wijk named');
+		assertSame([false, false, true, false], array_column($buurten, 'water'), 'and the water flag');
+		assertSame('MultiPolygon', $buurten[0]['geometry']['type'], 'and its geometry');
+		assertTrue(strpos($home, 'Tweede') === false && strpos($home, 'MultiPolygon') === false, 'the page itself carries none of it, only the toggle');
+		assertContains('id="hnsBuurtenToggle"', $home, 'the toggle is offered');
+		assertTrue(strpos($ctx->post('/hideandseek/ajax/buurten', [])['body'], '</script><b>') === false, 'and a name cannot close a script tag');
+
+		$setGemeente('GM0004');
+		assertSame(['Beta', 'Delta'], array_values(array_unique(array_column(hnsBuurtenFor($ctx), 'gemeente'))), 'a gemeente at the end of the chain sees its one neighbour and itself');
+
+		assertContains('formError', $setGemeente('GM9999')['body'], 'a code the database does not hold is refused');
+		assertSame('GM0004', $ctx->dbFor(HNS_DB)->query("SELECT gemeente_code FROM game_map WHERE id = {$mapId}")->fetch()['gemeente_code'], 'and leaves the choice as it was');
+
+		assertSame(302, $setGemeente('')['status'], 'an empty choice is accepted');
+		assertSame(null, $ctx->dbFor(HNS_DB)->query("SELECT gemeente_code FROM game_map WHERE id = {$mapId}")->fetch()['gemeente_code'], 'and clears it');
+		assertSame([], hnsBuurtenFor($ctx), 'so nothing is drawn again');
+
+		$ctx->dbFor(HNS_DB)->exec("UPDATE game_map SET gemeente_code = 'GM0001' WHERE id = {$mapId}");
+		hnsLogOut($ctx);
+		assertSame(null, hnsBuurtenFor($ctx), 'signed out, the endpoint refuses');
+
+		hnsLogIn($ctx, 'hns_first', 'test password');
+		$ctx->postForm('/hideandseek/game-maps', [
+			'csrf_token' => $ctx->csrfTokenFrom('/hideandseek/game-maps'),
+			'action' => 'delete',
+			'map_id' => $mapId,
+		]);
+		unlink($ctx->path('data/hideandseek_geo.sqlite'));
+	},
+
+	'the map draws the buurten after the labels are switched off, and the chosen gemeente stronger' => function ($ctx) {
+		$script = $ctx->get('/modules/hideandseek/js/map.js')['body'];
+
+		$hide = strpos($script, 'hnsHideLabels();');
+		$buurten = strpos($script, 'hnsAddBuurten();');
+		$pois = strpos($script, 'hnsAddImportedLayers();');
+
+		assertTrue($hide !== false && $buurten !== false && $pois !== false, 'all three calls are in the load handler');
+		assertTrue($hide < $buurten && $buurten < $pois, 'the buurten go in after the labels are hidden, and before the POIs, which can return early');
+
+		foreach (['hnsBuurtenFill', 'hnsBuurtenLine', 'hnsBuurtenNames', 'hnsShowBuurten', '["get", "own"]'] as $needle) {
+			assertContains($needle, $script, "map.js carries {$needle}");
+		}
 	},
 
 	'the stylesheet carries no line comments, which css does not have' => function ($ctx) {

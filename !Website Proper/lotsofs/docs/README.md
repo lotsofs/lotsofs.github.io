@@ -13,10 +13,13 @@ Reference material for working in this repo. `CLAUDE.md` (repo root) is the alwa
 | [hideandseek.md](hideandseek.md) | Design rules and traps of the hideandseek module (imported by CLAUDE.md). |
 | [hideandseek-reference.md](hideandseek-reference.md) | Looking up hideandseek facts: schema, routes, endpoints, import/export formats, JS file map. |
 | [other-modules.md](other-modules.md) | Working on `main`, `swat4`, or `ss2` (ss2 has a data-driven JS front end worth understanding). |
-| [TODO.md](TODO.md) | Before assuming a rough edge is unintentional: open tasks, unresolved design decisions, environment gotchas. |
+| [TODO.md](TODO.md) | Before assuming a rough edge is unintentional: the index of open work by three-letter code. Start here for any task. |
+| [tasks.md](tasks.md) | Working on a tracked task: its evidence, plan, how to verify it and which docs to update. |
+| [decisions.md](decisions.md) | Touching something an open decision covers (embeds, covers, versions, shared code). |
+| [DONE.md](DONE.md) | Finding when and why a tracked item was finished. |
 | [exampleImport.txt](exampleImport.txt) | Real Overpass Turbo JSON paste, for the hideandseek POI importer. |
 | [exampleExport.txt](exampleExport.txt) | Real `hideandseek-pois` export, which the same import box accepts. |
 
 ## Keeping these current
 
-docs/TODO.md is maintained freely (see CLAUDE.md). The docs here should be updated in the same pass as the code they describe. A fact that is only true of one moment ("X is not shipped yet") should carry a date.
+The tracked items (`TODO.md`, `tasks.md`, `decisions.md`, `DONE.md`) are maintained freely, in the same change as the work (see `conventions.md`). The docs here should be updated in the same pass as the code they describe. A fact that is only true of one moment ("X is not shipped yet") should carry a date.

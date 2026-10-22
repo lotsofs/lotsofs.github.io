@@ -160,8 +160,9 @@ return [
 		$row = $albumRow($theirs);
 
 		assertSame(['2', '1', '2'], array_slice($row, 2, 3), 'read as one person it is their 1 and 3 alone');
-		assertSame('2 / 3', $row[6], 'counted against the tracks, not against every rating that could exist');
-		assertSame(7, count($row), 'and the columns are the same ones, not collapsed');
+		assertSame('4', $row[6], 'their total is their two scores alone, too');
+		assertSame('2 / 3', $row[7], 'counted against the tracks, not against every rating that could exist');
+		assertSame(8, count($row), 'and the columns are the same ones, not collapsed');
 
 		$stale = $ctx->post(ARTIST_CARD_ENDPOINT, ['artist_id' => $artistId, 'who' => 999999])['json']['html'];
 		assertSame($albumRow($everyone), $albumRow($stale), 'a rater who is not here reads as everyone');
@@ -237,7 +238,7 @@ return [
 
 		/// Over 2, 4 and 9; three distinct scores have no mode.
 		assertContains('>1977<', $row[1], 'the row opens with the year');
-		assertSame(['5', '2.94', '4'], $scoreCells($row[1]), 'then the average, the deviation and the median');
+		assertSame(['5', '2.94', '4', '15'], $scoreCells($row[1]), 'then the average, the deviation, the median and the total');
 		assertContains('albumStatsEmpty', $row[1], 'three scores that are all different have no most common one');
 		/// Counted against every track by every account, not against the track count.
 		$accounts = preg_match_all('/<tr class="albumStatsRow" data-account-id=/', $html);

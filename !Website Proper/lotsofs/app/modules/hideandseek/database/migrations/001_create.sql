@@ -6,7 +6,10 @@
 -- and POIs imported onto one.
 --
 -- Still unshipped, so still editable - but a database that has already recorded
--- it will not re-run it, so an edit here means resetting dev databases too.
+-- it will not re-run it, so an edit here means deleting the dev database file.
+--
+-- The CBS gemeenten, wijken and buurten are not in this file or this database:
+-- they live in hideandseek_geo.sqlite, built by tools/import-buurten.php.
 
 PRAGMA foreign_keys = ON;
 
@@ -37,9 +40,12 @@ CREATE TABLE IF NOT EXISTS invite (
 );
 
 -- One game, named. Everything the game holds hangs off this id later.
+-- gemeente_code is a CBS code (GM0014) into hideandseek_geo.sqlite, which this
+-- database cannot join to and does not constrain.
 CREATE TABLE IF NOT EXISTS game_map (
     id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    gemeente_code TEXT
 );
 
 CREATE TABLE IF NOT EXISTS poi_category (

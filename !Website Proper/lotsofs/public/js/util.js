@@ -17,7 +17,10 @@ function postJson(endpoint, body, options = {}) {
     .then(async response => {
         const result = await response.json().catch(() => null);
         if (!response.ok) {
-            throw new Error(result && result.error ? result.error : `HTTP ${response.status}`);
+            const error = new Error(result && result.error ? result.error : `HTTP ${response.status}`);
+            // Absent on a network failure, which is how a caller tells the two apart.
+            error.status = response.status;
+            throw error;
         }
         return result;
     });

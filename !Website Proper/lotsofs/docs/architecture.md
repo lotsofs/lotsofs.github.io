@@ -15,7 +15,7 @@ app/               PHP source, never web-served (deploys to ~lotsofs/app/)
   session.php      sessions, login state, CSRF, password hashing
   router.php       route table assembly, URL canonicalisation, dispatch, abort()
   classes/Database.php   PDO/SQLite wrapper
-  config.php       returns [] and is loaded by nothing (see docs/TODO.md)
+  config.php       returns [] and is loaded by nothing (CFG in docs/TODO.md)
   modules/<m>/     routes.php, routes/, views/, ajax/, lang/, db.php, migrate.php, ...
   secure/          cacert.pem (gitignored, used only by disabled code)
 data/              local SQLite files and sessions (gitignored; prod uses /home/lotsofs/data)
@@ -80,7 +80,7 @@ Mind SQLite specifics used throughout: `group_concat`, partial unique indexes (`
 - **Per-module browser preferences** live in `$_SESSION['lang'][module]`, `$_SESSION['hue'][module]`, `$_SESSION['blind'][module]`, touched only through `modulePreference()`, `rememberModulePreference()`, `forgetModulePreference()` (in `util.php`, which loads first). They sit outside the scope array, so `logOut()` does not clear them; routes that should forget them (music `logout`) do so explicitly.
 - Guards: `requireLogin($path)` (302), `requireLoginJson($msg)` (401), `requireCsrfJson($msg)` (403, reads `X-CSRF-Token`), `checkCsrf($token)` for form posts (`csrf_token` field). `csrfToken()` mints lazily.
 - `hashPassword()` uses bcrypt cost 5 under `cli-server`, `PASSWORD_DEFAULT` otherwise. Never call `password_hash` directly in a route.
-- Login rate limit (per module, `rateLimit.php`): 5 failures per IP per 900 s, rows in `login_attempt`, cleared on success. `REMOTE_ADDR` only (no proxy header handling; see TODO).
+- Login rate limit (per module, `rateLimit.php`): 5 failures per IP per 900 s, rows in `login_attempt`, cleared on success. `REMOTE_ADDR` only (no proxy header handling).
 - Invite codes: 8 letters A–Z shown as `XXXX-XXXX`, normalised by stripping non-letters and upper-casing. The first account on an empty `account` table needs no invite and becomes admin.
 
 ## Ajax contract

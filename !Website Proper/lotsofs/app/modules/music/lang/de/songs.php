@@ -81,6 +81,9 @@ return [
 	'song.list.toastNoteHidden' => '{name} schrieb eine Notiz zu {song}',
 	'song.list.toastNoteUpdatedHidden' => '{name} änderte die Notiz zu {song}',
 	'song.list.toastNoteCleared' => '{name} löschte die eigene Notiz zu {song}',
+	'song.list.ratingQueued' => 'Noch nicht gespeichert. Wird gesendet, sobald die Verbindung wieder steht',
+	'song.list.ratingQueuedLogin' => 'Nicht gespeichert: Du bist abgemeldet. Melde dich wieder an und öffne diese Seite, dann wird es gesendet',
+	'song.list.toastRatingQueued' => 'Deine Wertung für {song} ist noch nicht gespeichert. Sie wird gesendet, sobald die Verbindung wieder steht.',
 
 	'song.list.cardModalClose' => 'Schließen',
 	'song.list.cardModalEdit' => 'Bearbeiten',

@@ -1365,6 +1365,11 @@ function beginCellEdit(cell, spec) {
 }
 
 function saveCell(songId, domField, cell, spec, original, value) {
+	if (spec.endpoint === RATING_ENDPOINT) {
+		saveRating(songId, spec.field, value, original);
+		return;
+	}
+
 	cell.dataset.pending = "1";
 
 	postJson(spec.endpoint, { id: songId, field: spec.field, value: value })
@@ -1668,7 +1673,7 @@ function applyRatingHalf(pair, field, spec, value) {
 }
 
 // The statistics columns after a score moved. The server sends finished strings.
-const SONG_STAT_FIELDS = ["average", "deviation", "median", "mode", "highest", "lowest", "rated"];
+const SONG_STAT_FIELDS = ["average", "deviation", "median", "mode", "highest", "lowest", "sum", "rated"];
 
 function applySongStats(stats) {
 	const pair = rowsBySongId.get(String(stats.song));
@@ -1736,6 +1741,8 @@ function pollRatings() {
 		ratingCursor = result.cursor;
 		ratingAuditCursor = result.auditCursor;
 		ratingPollFailures = 0;
+		/// An answered poll is the surest sign the connection is back.
+		flushUnsavedRatings();
 	})
 	.catch(() => {
 		ratingPollFailures++;
@@ -1758,6 +1765,338 @@ document.addEventListener("visibilitychange", () => {
 if (document.visibilityState === "visible") {
 	scheduleRatingPoll(RATING_POLL_INTERVAL);
 }
+
+/* Rating writes that have not reached the server, keyed "song:field". Each is
+   queued before it is sent and taken out once the server has it, so one that
+   never lands is resent. See docs/music.md for why it is shaped like this. */
+const songAccountId = JSON.parse(document.getElementById("songAccountId").textContent);
+const UNSAVED_RATINGS_KEY = "musicUnsavedRatings:" + songAccountId;
+const RATING_SAVE_TIMEOUT = 10000;
+const RATING_RESEND_MIN = 3000;
+const RATING_RESEND_MAX = 60000;
+const RATING_SPECS = { score: EDITABLE_CELLS.songMyScoreCell, note: EDITABLE_CELLS.songMyNoteCell };
+
+/// Set once storage refuses; the outbox then lives here, and leaving the page warns.
+let unsavedMemory = null;
+const ratingsInFlight = new Map();
+const unsavedToasted = new Set();
+let ratingResendTimer = null;
+let ratingResendDelay = RATING_RESEND_MIN;
+let ratingResendRunning = false;
+let ratingResendAgain = false;
+let ratingResendBlocked = false;
+
+function unsavedKey(songId, field) {
+	return songId + ":" + field;
+}
+
+function isUnsavedEntry(entry) {
+	return !!entry
+		&& /^\d+$/.test(String(entry.song))
+		&& Object.hasOwn(RATING_SPECS, entry.field)
+		&& typeof entry.value === "string";
+}
+
+/// Read fresh every time, so two open tabs share one outbox instead of each resending a stale copy.
+function readUnsaved() {
+	if (unsavedMemory) {
+		return { ...unsavedMemory };
+	}
+
+	let raw;
+	try {
+		raw = localStorage.getItem(UNSAVED_RATINGS_KEY);
+	}
+	catch (error) {
+		unsavedMemory = {};
+		return {};
+	}
+
+	let stored;
+	try {
+		stored = JSON.parse(raw || "{}");
+	}
+	catch (error) {
+		return {};
+	}
+
+	const outbox = {};
+	if (stored && typeof stored === "object") {
+		Object.values(stored).filter(isUnsavedEntry).forEach(entry => {
+			outbox[unsavedKey(entry.song, entry.field)] = { song: String(entry.song), field: entry.field, value: entry.value };
+		});
+	}
+
+	return outbox;
+}
+
+function writeUnsaved(outbox) {
+	if (!unsavedMemory) {
+		try {
+			if (Object.keys(outbox).length === 0) {
+				localStorage.removeItem(UNSAVED_RATINGS_KEY);
+			}
+			else {
+				localStorage.setItem(UNSAVED_RATINGS_KEY, JSON.stringify(outbox));
+			}
+			return;
+		}
+		catch (error) {
+			// Refused, so this page holds the outbox from here on.
+		}
+	}
+
+	unsavedMemory = { ...outbox };
+}
+
+function queueRating(songId, field, value) {
+	const outbox = readUnsaved();
+	outbox[unsavedKey(songId, field)] = { song: String(songId), field: field, value: value };
+	writeUnsaved(outbox);
+}
+
+/// Only while it still holds that value: a newer edit, here or in another tab, stays queued.
+function unqueueRating(songId, field, value) {
+	const outbox = readUnsaved();
+	const key = unsavedKey(songId, field);
+
+	if (outbox[key] && outbox[key].value === value) {
+		delete outbox[key];
+		writeUnsaved(outbox);
+	}
+}
+
+/// On both copies of the cell, so the poll overwrites neither while a write is out or queued.
+function holdRatingCell(songId, field, unsaved) {
+	syncField(songId, field + "_" + songAccountId, cell => {
+		cell.dataset.pending = "1";
+		if (unsaved) {
+			cell.classList.add("songCellUnsaved");
+		}
+	});
+}
+
+function releaseRatingCell(songId, field) {
+	syncField(songId, field + "_" + songAccountId, cell => {
+		delete cell.dataset.pending;
+		cell.classList.remove("songCellUnsaved");
+	});
+}
+
+/// "Artist — Title", as musicSongLabel() writes it for the poll's toasts.
+function songLabelOf(songId) {
+	const pair = rowsBySongId.get(String(songId));
+	const artist = cellText(fieldCell(pair.tr, "artist")).trim();
+	const title = cellText(fieldCell(pair.tr, "title")).trim();
+
+	return artist === "" ? title : artist + " — " + title;
+}
+
+/// Once per song, and the logged-out one once per page: the Result column is off-screen.
+function toastUnsavedRating(songId, login) {
+	const toastKey = login ? "login" : String(songId);
+	if (!rowsBySongId.has(String(songId)) || unsavedToasted.has(toastKey)) {
+		return;
+	}
+	unsavedToasted.add(toastKey);
+
+	if (login) {
+		showToast(container => container.textContent = t("song.list.ratingQueuedLogin"), songId);
+		return;
+	}
+
+	const label = songLabelOf(songId);
+	showToast(container => fillFromTemplate(container, t("song.list.toastRatingQueued"), { song: () => toastStrong(label) }), songId);
+}
+
+/* One rating write, which never rejects. Resolves to "saved", "refused" (the
+   server said no, so resending cannot help), "offline" (no answer, so it stays
+   queued) or "login" (logged out, or a token only a fresh page load replaces).
+   `original` is what to show if refused; null leaves the cell as it is. */
+function sendRating(songId, field, value, original) {
+	const key = unsavedKey(songId, field);
+	const spec = RATING_SPECS[field];
+	const domField = field + "_" + songAccountId;
+	const controller = new AbortController();
+	const timeout = setTimeout(() => controller.abort(), RATING_SAVE_TIMEOUT);
+
+	ratingsInFlight.set(key, value);
+	holdRatingCell(songId, field, false);
+
+	return postJson(RATING_ENDPOINT, { id: songId, field: field, value: value }, { signal: controller.signal })
+	.then(result => {
+		unqueueRating(songId, field, value);
+		// Straight away rather than on the next poll tick.
+		if (result.stats) {
+			applySongStats(result.stats);
+		}
+
+		const saved = result.status === "ok";
+		const shown = result.value === undefined ? original : String(result.value);
+
+		/// A newer edit is queued behind this one, and the cell is showing that.
+		if (!readUnsaved()[key]) {
+			releaseRatingCell(songId, field);
+			if (shown !== null) {
+				syncField(songId, domField, target => setCellValue(target, spec, shown));
+			}
+			syncResult(songId, saved ? "" : result.message);
+			unsavedToasted.delete(String(songId));
+		}
+
+		return saved ? "saved" : "refused";
+	})
+	.catch(error => {
+		const status = error.status || 0;
+		const login = status === 401 || status === 403;
+
+		if (status >= 400 && status < 500 && !login) {
+			unqueueRating(songId, field, value);
+			if (!readUnsaved()[key]) {
+				releaseRatingCell(songId, field);
+				if (original !== null) {
+					syncField(songId, domField, target => setCellValue(target, spec, original));
+				}
+				syncResult(songId, t("status.submitFailed", { error: error.message }));
+			}
+			return "refused";
+		}
+
+		holdRatingCell(songId, field, true);
+		toastUnsavedRating(songId, login);
+
+		if (login) {
+			ratingResendBlocked = true;
+			clearTimeout(ratingResendTimer);
+			syncResult(songId, t("song.list.ratingQueuedLogin"));
+			return "login";
+		}
+
+		syncResult(songId, t("song.list.ratingQueued"));
+		return "offline";
+	})
+	.finally(() => {
+		clearTimeout(timeout);
+		if (ratingsInFlight.get(key) === value) {
+			ratingsInFlight.delete(key);
+		}
+	});
+}
+
+function saveRating(songId, field, value, original) {
+	queueRating(songId, field, value);
+
+	sendRating(songId, field, value, original).then(outcome => {
+		if (outcome === "offline") {
+			scheduleRatingResend();
+		}
+	});
+}
+
+function scheduleRatingResend() {
+	if (ratingResendBlocked) {
+		return;
+	}
+
+	clearTimeout(ratingResendTimer);
+	ratingResendTimer = setTimeout(flushUnsavedRatings, ratingResendDelay);
+}
+
+/// Every queued value shown and marked, and any mark whose entry has gone (sent, perhaps by another tab) lifted.
+function showUnsaved(outbox) {
+	document.querySelectorAll(".songCellUnsaved").forEach(cell => {
+		const key = unsavedKey(cell.closest("[data-song-id]").dataset.songId, cell.dataset.field.split("_")[0]);
+
+		if (!outbox[key] && !ratingsInFlight.has(key)) {
+			delete cell.dataset.pending;
+			cell.classList.remove("songCellUnsaved");
+		}
+	});
+
+	Object.values(outbox).forEach(entry => {
+		if (ratingsInFlight.has(unsavedKey(entry.song, entry.field))) {
+			return;
+		}
+
+		syncField(entry.song, entry.field + "_" + songAccountId, cell => {
+			if (!isBeingEdited(cell) && cellText(cell) !== entry.value) {
+				setCellValue(cell, RATING_SPECS[entry.field], entry.value);
+			}
+		});
+		holdRatingCell(entry.song, entry.field, true);
+	});
+}
+
+/// One at a time, stopping at the first that gets no answer: the rest would only time out behind it.
+function flushUnsavedRatings() {
+	if (ratingResendBlocked) {
+		return;
+	}
+	if (ratingResendRunning) {
+		ratingResendAgain = true;
+		return;
+	}
+	clearTimeout(ratingResendTimer);
+
+	const outbox = readUnsaved();
+	showUnsaved(outbox);
+
+	const entries = Object.values(outbox);
+	if (entries.length === 0) {
+		ratingResendDelay = RATING_RESEND_MIN;
+		return;
+	}
+
+	ratingResendRunning = true;
+
+	const sendFrom = index => {
+		if (index >= entries.length) {
+			return Promise.resolve("saved");
+		}
+
+		const entry = entries[index];
+		const key = unsavedKey(entry.song, entry.field);
+		const current = readUnsaved()[key];
+
+		/// Sent or replaced since this run read the outbox, or already on its way.
+		if (!current || current.value !== entry.value || ratingsInFlight.get(key) === entry.value) {
+			return sendFrom(index + 1);
+		}
+
+		return sendRating(entry.song, entry.field, entry.value, null)
+		.then(outcome => outcome === "offline" || outcome === "login" ? outcome : sendFrom(index + 1));
+	};
+
+	sendFrom(0).then(outcome => {
+		ratingResendRunning = false;
+
+		if (outcome === "offline") {
+			ratingResendDelay = Math.min(ratingResendDelay * 2, RATING_RESEND_MAX);
+			scheduleRatingResend();
+		}
+		else {
+			ratingResendDelay = RATING_RESEND_MIN;
+			if (ratingResendAgain) {
+				scheduleRatingResend();
+			}
+		}
+
+		ratingResendAgain = false;
+	});
+}
+
+window.addEventListener("online", flushUnsavedRatings);
+
+/// Only when storage refused; otherwise the outbox outlives the page and goes on the next visit.
+window.addEventListener("beforeunload", event => {
+	if (unsavedMemory && Object.keys(unsavedMemory).length > 0) {
+		event.preventDefault();
+		event.returnValue = "";
+	}
+});
+
+/// Whatever a previous visit could not send: shown, marked, and sent.
+flushUnsavedRatings();
 
 // A link straight to a song's card, last so the rows are paired and filtered.
 const linkedSongCard = cardLinkValue("songCard");

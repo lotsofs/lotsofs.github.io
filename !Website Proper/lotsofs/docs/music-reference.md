@@ -35,7 +35,7 @@ All ids are `INTEGER PRIMARY KEY`. Foreign keys are enforced.
 |---|---|---|---|
 | `/music` | `index.php` | public | landing, links to login |
 | `/music/register` | `register.php` | public (signed-in → `/music/songs`) | form POST; invite needed once any account exists; the first account becomes admin; stores `activeLocale()` as the account's `lang` |
-| `/music/login`, `/music/logout` (POST) | `login.php`, `logout.php` | public | login primes session: locale (if shipped), hue (`musicHueOf`), blind flag. Logout forgets hue and blind, then `logOut()`; redirects to `/music/songs` which bounces to login (TODO) |
+| `/music/login`, `/music/logout` (POST) | `login.php`, `logout.php` | public | login primes session: locale (if shipped), hue (`musicHueOf`), blind flag. Logout forgets hue and blind, then `logOut()`; redirects to `/music/songs` which bounces to login (LGO) |
 | `/music/language`, `/music/colour`, `/music/settings` (POST) | same names | public (account written only if signed in) | nav menus. Redirect 303 to `return` if it matches `#^/music(/[a-z-]+)?$#`, else `/music`. `settings` treats an absent checkbox as off, and an absent or unknown `toast_seconds` as unchanged |
 | `/music/songs` | `songs.php` | login | the main page; see below |
 | `/music/artists`, `/music/albums` | `artists.php`, `albums.php` | login | stat-bearing lists, sorted in PHP via `listSort.php` |
@@ -45,13 +45,13 @@ All ids are `INTEGER PRIMARY KEY`. Foreign keys are enforced.
 
 ### `/music/songs` query parameters
 
-`sort` (a `$sortable` key, `score_<id>`/`note_<id>` for each rater, or a stat key `average|deviation|median|mode|highest|lowest|rated`; anything else → `id`), `dir` (`desc`, else asc), `artist`, `album` (validated against the option lists; an album only counts if it belongs to the chosen artist, or has no artist when none is chosen; album wins over artist for filtering), plus card links `songCard`, `albumCard`, `artistCard` (read client-side). The page always renders **all** songs and hides filtered ones with `hidden`; filtering/sorting then happens client-side on the same DOM and mirrors itself into the address with `replaceState`.
+`sort` (a `$sortable` key, `score_<id>`/`note_<id>` for each rater, or a stat key `average|deviation|median|mode|highest|lowest|sum|rated`; anything else → `id`), `dir` (`desc`, else asc), `artist`, `album` (validated against the option lists; an album only counts if it belongs to the chosen artist, or has no artist when none is chosen; album wins over artist for filtering), plus card links `songCard`, `albumCard`, `artistCard` (read client-side). The page always renders **all** songs and hides filtered ones with `hidden`; filtering/sorting then happens client-side on the same DOM and mirrors itself into the address with `replaceState`.
 
 `$globalData` produced: `isAdmin`, `raters` (own account first, then by id; each with `isMine`, `scoreClass`, `noteClass`), `sort`, `dir`, `artistOptions`, `albumOptions`, `filterArtist`, `filterAlbum`, `listHeading`, `ratingCursor` (`MAX(account_song.updated_at)`), `auditCursor` (`MAX(rating_audit.id)`), `songs` (one pivoted row per song: `score_<id>`/`note_<id>` columns built with `MAX(CASE WHEN account_id = N ...)`), `linkFields`, `songLinksBySong`, `albumsBySong`, `artistsBySong`, `trackAliases`, `listedAsBySong`, `columns`, `statColumns`, `blindRating`.
 
 The per-rater column pivot and ORDER BY expressions are the only dynamic SQL; rater ids are cast to int.
 
-Rendering is split: `views/songs.view.php` (table), `partials/songRows.php` (single derivation pass; see below), `partials/songCard.php` (card per row). Three `<script type="application/json">` blobs carry data to JS (`songArtistData`, `songAlbumData`, `songLinkFieldData`, `songTrackAliases`) plus `songGateSetting`, `songRatingCursor`, `songAuditCursor`.
+Rendering is split: `views/songs.view.php` (table), `partials/songRows.php` (single derivation pass; see below), `partials/songCard.php` (card per row). Three `<script type="application/json">` blobs carry data to JS (`songArtistData`, `songAlbumData`, `songLinkFieldData`, `songTrackAliases`) plus `songGateSetting`, `songAccountId` (keys the unsaved-ratings outbox, `localStorage` `musicUnsavedRatings:<id>`), `songRatingCursor`, `songAuditCursor`.
 
 ### `songRows.php` contract
 
@@ -65,7 +65,7 @@ All POST + JSON + CSRF header. "Admin" = `requireMusicAdminJson`. Business resul
 |---|---|---|---|
 | `artist-alias` | `artistAlias.php` | admin | Array of `{provided_name, og_name?, artist_id: id\|'new', is_actual, group?, store_name?, also_alias_provided_name?}` → array of `{provided_name, artist_id, artist_name, status, message, songs[]}`. One transaction. `'new'` creates an artist; rows sharing `group` (default the provided name) share one new artist. `store_name:false` resolves without storing a spelling. Returns the artist's songs for the song-step dropdown |
 | `song` | `song.php` | admin | Array of `{artist_id, title, song_id: 'new'\|'skip'\|id, og_name?, also_alias_provided_name?}` → results with `song_id`, `song_alias_id` (when the song is listed under a non-actual alias), `status` ∈ ok/duplicate/skipped/error. Duplicate = same artist + same name |
-| `song-edit` | `songEdit.php` | admin | `{id, field:'title', value}`: rename. Refuses empty or clashing (same artist, other song) names; promotes an existing alias, else renames the actual alias (no history kept: TODO decision) |
+| `song-edit` | `songEdit.php` | admin | `{id, field:'title', value}`: rename. Refuses empty or clashing (same artist, other song) names; promotes an existing alias, else renames the actual alias (no history kept: LFT) |
 | `song-artist`, `song-album` | `songArtist.php`, `songAlbum.php` (share `songJoin.php`, which is **not a route**) | admin | `{song_id, artist_id\|album_id, action: add\|remove}` → `ok`/`duplicate`/`error` |
 | `song-link` | `songLink.php` | admin | `{song_id, field ∈ six columns, value}`; Spotify/YouTube URLs are reduced to the bare id, empty clears |
 | `song-year`, `song-duration` | `songYear.php`, `songDuration.php` | admin | `{song_id, value}`; year digits only; duration `M:SS` (seconds 00–59) or whole seconds; empty clears |
@@ -88,7 +88,7 @@ Guard helpers available in endpoints: `requireSongJson($db, $id, $extra)`, `requ
 | `db.php` | returns `$db` (test vs live file) |
 | `migrate.php` | `runMusicMigrations($db)` |
 | `auth.php` | `musicAccount($db)` (cached row), `musicIsAdmin`, `requireMusicAccount` (boots sessions whose account vanished), `requireMusicAdmin($db, $redirect)`, `requireMusicAccountJson`, `requireMusicAdminJson` |
-| `stats.php` | `musicScoreStats($scores)` → `rated, average, median, deviation (population), modes[] (empty when all distinct), lowest, highest`; `musicSongStatFields($scores)` → finished strings incl. `modeSort`; `musicStatsWho($requested, $rows)` validates the "statistics for" choice against raters with something rated |
+| `stats.php` | `musicScoreStats($scores)` → `rated, sum, average, median, deviation (population), modes[] (empty when all distinct), lowest, highest` (null, and `modes` empty, when `rated` is 0 — `sum` included, not 0); `musicSongStatFields($scores)` → finished strings incl. `modeSort`; `musicStatsWho($requested, $rows)` validates the "statistics for" choice against raters with something rated |
 | `format.php` | `scoreText()` (2 dp, trailing zeros trimmed), `musicDuration()` (`M:SS`, minutes never roll into hours), `musicSongLabel()` (`Artist — Title`) |
 | `links.php` | `songLinkFields()`, `songLinkHref()`, `albumSongsHref()`, `spotifyTrackIdIn()`, `youtubeVideoIdIn()` |
 | `hue.php` | `MUSIC_HUE_DEFAULT` (240), `musicHueFor($id)` = `(id*73)%360`, `musicActiveHue()`, `musicHueOf($id, $stored)`, `musicReadHue($raw)` (0–359 or null) |
@@ -105,7 +105,7 @@ Guard helpers available in endpoints: `requireSongJson($db, $id, $extra)`, `requ
 
 **Score colour ramp:** `hsl(clamp(score,0,10) * 12, 75%, 55%)` (red 0 → green 10). Implemented twice on purpose: `scoreColourAttr()` in PHP and `scoreColour()` in `songs.js`. Change both. **Rater colour:** `hsl(<that account's hue>, 70%, 62%)`.
 
-**Graph geometry** (`scoreGraph.php`): fixed 528×270 viewBox, paddings (L38/R10/T14/B8 or 28 with track numbers), y = 0..10, dots r = clamp(slot/4, 2, 5.5), labels at most ~18, polylines split at gaps, one invisible `rect.albumGraphColumn` per song carrying the multi-line tooltip (`data-tooltip`, with an SVG `<title>` fallback). Inputs the including card must set: `$graphSongs`, `$graphScores` (`[song_id][account_id] => score`), `$graphRaters`, `$graphColours`, `$graphSortKey`, `$graphSortDir`, `$graphNaturalLabel` (null disables "Album order"). Orders offered: album (if natural label), year (if any song has one; becomes default), title, average, deviation, median, highest, lowest, mode, rated, duration, `rater_<id>`.
+**Graph geometry** (`scoreGraph.php`): fixed 528×270 viewBox, paddings (L38/R10/T14/B8 or 28 with track numbers), y = 0..10, dots r = clamp(slot/4, 2, 5.5), labels at most ~18, polylines split at gaps, one invisible `rect.albumGraphColumn` per song carrying the multi-line tooltip (`data-tooltip`, with an SVG `<title>` fallback). Inputs the including card must set: `$graphSongs`, `$graphScores` (`[song_id][account_id] => score`), `$graphRaters`, `$graphColours`, `$graphSortKey`, `$graphSortDir`, `$graphNaturalLabel` (null disables "Album order"). Orders offered: album (if natural label), year (if any song has one; becomes default), title, average, deviation, median, highest, lowest, mode, sum, rated, duration, `rater_<id>`.
 
 ## Language catalogue
 

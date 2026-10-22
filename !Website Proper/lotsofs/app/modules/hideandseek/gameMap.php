@@ -17,7 +17,7 @@ function hnsLoadedGameMap($db) {
 		return null;
 	}
 
-	$map = $db->query("SELECT id, name FROM game_map WHERE id = ?", [$id])->fetch();
+	$map = $db->query("SELECT id, name, gemeente_code FROM game_map WHERE id = ?", [$id])->fetch();
 
 	/// Looked up every time rather than trusted: a map deleted in another tab
 	/// would otherwise stay loaded for the rest of the session, with every page

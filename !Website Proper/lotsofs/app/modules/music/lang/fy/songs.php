@@ -81,6 +81,9 @@ return [
 	'song.list.toastNoteHidden' => '{name} skreau in notysje oer {song}',
 	'song.list.toastNoteUpdatedHidden' => '{name} wizige de notysje oer {song}',
 	'song.list.toastNoteCleared' => '{name} wiske de notysje oer {song}',
+	'song.list.ratingQueued' => 'Noch net bewarre. It wurdt ferstjoerd as de ferbining werom is',
+	'song.list.ratingQueuedLogin' => 'Net bewarre: do bist ôfmeld. Meld dy opnij oan en iepenje dizze side, dan wurdt it ferstjoerd',
+	'song.list.toastRatingQueued' => 'Dyn wurdearring foar {song} is noch net bewarre. Dy wurdt ferstjoerd as de ferbining werom is.',
 
 	'song.list.cardModalClose' => 'Slute',
 	'song.list.cardModalEdit' => 'Bewurkje',

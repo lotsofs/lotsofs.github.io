@@ -338,9 +338,9 @@ return [
 
 		// 8, 4 and 8: mean 6.67, sigma 1.89, median 8, mode 8.
 		assertSame(
-			['6.67', '1.89', '8', '8', '8', '4'],
+			['6.67', '1.89', '8', '8', '8', '4', '20'],
 			listCells($row, 'albumStatsScoreCell'),
-			'average, deviation, median, mode, highest and lowest over every score on the artist'
+			'average, deviation, median, mode, highest, lowest and total over every score on the artist'
 		);
 
 		$accounts = (int)$ctx->db()->query("SELECT COUNT(*) AS n FROM account")->fetch()['n'];
@@ -357,7 +357,7 @@ return [
 		$row = listRowFor($ctx->get('/music/artists')['body'], 'data-artist-card-id', $artistId);
 
 		assertSame(['0', '0'], listCells($row, 'listCountCell'), 'no songs and no albums');
-		assertSame(6, count(listCells($row, 'albumStatsScoreCell')), 'the statistics columns are still there');
+		assertSame(7, count(listCells($row, 'albumStatsScoreCell')), 'the statistics columns are still there');
 		assertClasses(['albumStatsEmpty'], $row, '/<td class="([^"]*albumStatsEmpty[^"]*)"/', 'reading as empty rather than as zero');
 		assertSame('0 / 0', listCells($row, 'albumStatsRatedCell')[0], 'with nothing rated out of nothing');
 	},
@@ -387,6 +387,26 @@ return [
 			[$quiet, $loud, $silent],
 			listOrderOf($ctx->get('/music/artists?sort=average&dir=asc')['body'], 'data-artist-card-id', $mine),
 			'and the lowest first, with the unrated artist still last rather than leading'
+		);
+
+		/// Two 4s on top of the 3 make the quiet band's total 11, against the loud band's lone 9.
+		$quietSong = $ctx->songId('Sorted Quiet Song');
+		foreach (['sorted_quiet_one', 'sorted_quiet_two'] as $name) {
+			$ctx->ensureLoggedIn($name, 'test password', false);
+			$ctx->post('/music/ajax/song-rating', ['id' => $quietSong, 'field' => 'score', 'value' => '4']);
+		}
+		$ctx->ensureLoggedIn();
+
+		assertSame(
+			[$quiet, $loud, $silent],
+			listOrderOf($ctx->get('/music/artists?sort=sum&dir=desc')['body'], 'data-artist-card-id', $mine),
+			'by total, three middling scores outrank one high one'
+		);
+
+		assertSame(
+			[$loud, $quiet, $silent],
+			listOrderOf($ctx->get('/music/artists?sort=sum&dir=asc')['body'], 'data-artist-card-id', $mine),
+			'and an artist nobody rated has no total, rather than a total of nought, so stays last'
 		);
 	},
 

@@ -6,11 +6,12 @@
 - **Never run `build-deploy.php`.** The owner runs it.
 - **Comments (policy set 2026-10-05):** a one-line warning next to a tricky spot and a short note on a non-obvious invariant are wanted. Design prose and narration of what code does are not; that goes in `docs/`. Use `///` in PHP/JS and `/* */` in CSS. Keep comments and the docs describing the same code current in the same pass as the change, and delete a comment that stopped being true. Register: plain and impersonal, no "you", no "so" connectives, no trailing consequence clauses.
 - **Do not publish Artifacts** unless explicitly asked.
-- **Do not delete or "clean up" files in `data/`** (the test databases are used and shared).
+- **Do not delete or "clean up" files in `data/`** (the test databases are used and shared). The one exception is `hideandseek_test.sqlite`, which is disposable (owner, 2026-10-06): deleting it is the way to apply an edit to its unshipped `001_create.sql`, and the next request recreates it.
+- **Never cascade, never block (owner, 2026-10-06; applies to the whole site).** New tables declare no `REFERENCES` and no `ON DELETE` action: with `PRAGMA foreign_keys = ON` (set on every connection) a bare `REFERENCES` refuses to delete a parent and `ON DELETE CASCADE` deletes the children unasked, so leaving the constraint out is the only way to orphan. The owner handles integrity in code. Reads that join upward use `LEFT JOIN`. Older tables (hideandseek's `poi_category`/`poi`, everything in music) predate the rule and are not retrofitted; music's shipped migrations are frozen.
 - **"Don't show X" means filter the query or UI**, never delete or mutate stored data to hide a display bug.
 - **Never kill processes by image name** (`taskkill /IM php.exe` killed the owner's dev server). Target a PID you started.
 - **Ambiguous requests default to the music module** unless another is named.
-- **`docs/TODO.md` is yours to maintain without asking**: close, update and add items in the same pass as the work.
+- **The tracked items are yours to maintain without asking**: `docs/TODO.md` is the index, `tasks.md` and `decisions.md` hold each item's detail, and `DONE.md` logs finished ones. Close, update and add items in the same change as the work.
 - Shipped migrations are frozen (see `music.md`).
 
 ## Code style (match the neighbours)
@@ -20,7 +21,7 @@
 - **PHP files** start `<?php`; route and view files have no closing tag. Views use the short echo `<?= ... ?>` and the alternative syntax (`if: ... endif`, `foreach: ... endforeach`) and `htmlspecialchars()` by hand.
 - **Naming:** camelCase for PHP functions, JS functions, variables and CSS classes/ids (`songCardModal`, `.albumStatsTable`). Module prefixes on helpers: music uses `music*` (`musicScoreStats`, `musicHueFor`) or plain nouns (`scoreText`, `songLinkFields`); hideandseek uses `hns*`. JSON/DB columns are snake_case (`artist_id`, `is_actual`); JSON keys that are only ever read by JS in the hideandseek module and the poll payloads are camelCase.
 - **File names:** routes/ajax/partials camelCase (`songRating.php`), URLs kebab-case (`/music/ajax/song-rating`), views `name.view.php`.
-- **Data flow in PHP:** controller → `$globalData` array → view. SQL lives inline in route and ajax files; there is no model layer (see "Two leftovers" in `TODO.md`). Do not introduce one casually.
+- **Data flow in PHP:** controller → `$globalData` array → view. SQL lives inline in route and ajax files; there is no model layer (see LFT in `TODO.md`). Do not introduce one casually.
 - **Transactions:** multi-statement writes use `$db->pdo->beginTransaction()` / `commit()` with `catch (PDOException $e) { rollBack(); throw $e; }`. The audit log write must share the transaction with the rating write.
 - **Parameterise everything.** The only interpolated SQL is built from validated whitelists or integer-cast ids (`score_{$id}` columns in `routes/songs.php`, the `$sortable` map, `$field` after an `in_array` check).
 - **Input validation helpers** live in the ajax guard; ids are validated with `ctype_digit` before `(int)`.

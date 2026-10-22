@@ -11,5 +11,6 @@ $routes += [
 	"/hideandseek/accounts" => __MODULES__ . "/hideandseek/routes/accounts.php",
 	"/hideandseek/ajax/import-pois" => __MODULES__ . "/hideandseek/ajax/importPois.php",
 	"/hideandseek/ajax/export-pois" => __MODULES__ . "/hideandseek/ajax/exportPois.php",
+	"/hideandseek/ajax/buurten" => __MODULES__ . "/hideandseek/ajax/buurten.php",
 	"/hideandseek/ajax/whoami" => __MODULES__ . "/hideandseek/ajax/whoami.php",
 ];

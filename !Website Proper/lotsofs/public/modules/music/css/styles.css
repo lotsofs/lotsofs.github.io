@@ -568,6 +568,16 @@ td.albumStatsRatedCell {
 	display: inline-block;
 }
 
+/* A rating the server has not got yet; songs.js resends it. Three id prefixes
+   for the same reason as the gate rules above. */
+#songListTable .songCellUnsaved,
+#songCards .songCellUnsaved,
+#songCardModal .songCellUnsaved {
+	outline: 1px dashed var(--mineAccent);
+	outline-offset: -2px;
+	font-style: italic;
+}
+
 /* The table's score and statistics columns are 2em and 2.6em, so the pill there
    is the short label at a smaller size. Those widths are hints under
    table-layout: auto, so an oversized pill simply widens the column. */
@@ -1391,6 +1401,7 @@ td.albumStatsRatedCell {
 		th.albumTrackPosition,
 		th.albumTrackScore,
 		th.albumTrackDeviation,
+		th.albumTrackSum,
 		th.albumTrackRated,
 		th.albumTrackDuration {
 			text-align: right;
@@ -1435,6 +1446,16 @@ td.albumStatsRatedCell {
 		text-align: right;
 		white-space: nowrap;
 		opacity: 0.75;
+	}
+
+	td.albumTrackSum {
+		width: 3em;
+		text-align: right;
+		white-space: nowrap;
+
+		&.albumTrackScoreEmpty {
+			opacity: 0.4;
+		}
 	}
 
 	td.albumTrackRated {

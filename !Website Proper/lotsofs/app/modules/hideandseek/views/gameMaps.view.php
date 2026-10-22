@@ -43,6 +43,7 @@
 			<tr>
 				<th><?= t('gameMap.column.id') ?></th>
 				<th><?= t('gameMap.column.name') ?></th>
+				<th><?= t('gameMap.column.gemeente') ?></th>
 				<th><?= t('gameMap.column.action') ?></th>
 			</tr>
 		</thead>
@@ -61,6 +62,27 @@
 							<input type="text" name="name" value="<?= htmlspecialchars($map['name']) ?>" autocomplete="off">
 							<button type="submit"><?= t('gameMap.rename') ?></button>
 						</form>
+					</td>
+					<td>
+						<?php /* The code lives in this database and the names in the geo
+						         one, so a code the geo file does not know is kept as it
+						         is rather than silently dropped by the select. */ ?>
+						<?php if ($globalData['gemeenten'] === null): ?>
+							<?= htmlspecialchars($map['gemeente_code'] ?? '') ?>
+						<?php else: ?>
+							<form method="post" action="/hideandseek/game-maps">
+								<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken()) ?>">
+								<input type="hidden" name="action" value="gemeente">
+								<input type="hidden" name="map_id" value="<?= (int)$map['id'] ?>">
+								<select name="gemeente" aria-label="<?= htmlspecialchars(t('gameMap.column.gemeente')) ?>">
+									<option value=""><?= t('gameMap.noGemeente') ?></option>
+									<?php foreach ($globalData['gemeenten'] as $gemeente): ?>
+										<option value="<?= htmlspecialchars($gemeente['code']) ?>"<?= $gemeente['code'] === $map['gemeente_code'] ? ' selected' : '' ?>><?= htmlspecialchars($gemeente['name']) ?></option>
+									<?php endforeach ?>
+								</select>
+								<button type="submit"><?= t('gameMap.setGemeente') ?></button>
+							</form>
+						<?php endif ?>
 					</td>
 					<td>
 						<?php if (!$isLoaded): ?>

@@ -8,24 +8,35 @@ Lookup companion to `hideandseek.md` (design and traps). Source: `app/modules/hi
 |---|---|
 | `account` | `account_name` (unique), `password_hash`, `is_admin`, `lang` (default `'en'`) |
 | `invite`, `login_attempt` | same shape and rules as music's |
-| `game_map` | `id`, `name`; unique index on `name COLLATE NOCASE`. No owner, no timestamps |
+| `game_map` | `id`, `name`, `gemeente_code` (nullable CBS code into the geo database, unconstrained); unique index on `name COLLATE NOCASE`. No owner, no timestamps |
 | `poi_category` | `game_map_id` (FK, **ON DELETE CASCADE**), `name`, `colour` (`#rrggbb` lowercase or NULL), `icon` (one grapheme or NULL); unique `(game_map_id, name COLLATE NOCASE)` |
 | `poi` | `poi_category_id` (FK, ON DELETE CASCADE), `osm_type` (`node`\|`way`\|`relation`), `osm_id`, `name` (nullable), `lat`, `lon`; unique `(poi_category_id, osm_type, osm_id)` |
 | `schema_migrations` | as music |
 
-Deleting a map removes its categories and POIs (a test pins it). Re-importing into a category upserts POIs by `(osm_type, osm_id)`.
+Deleting a map removes its categories and POIs (a test pins it). Re-importing into a category upserts POIs by `(osm_type, osm_id)`. ### The geo database (`hideandseek_geo.sqlite`, `database/geo.sql`)
+
+Separate file, built by `tools/import-buurten.php`, read-only to the site; see `hideandseek.md`. No `REFERENCES` anywhere (site rule, `conventions.md`).
+
+| Table | Columns |
+|---|---|
+| `gemeente` | `code` (unique, `GM0014`), `name` |
+| `wijk` | `code` (unique, `WK001400`), `name`, `gemeente_id` (indexed integer) |
+| `buurt` | `code` (unique, `BU00140000`), `name`, `wijk_id` (indexed integer), `water` (boolean), `polygons` (MultiPolygon coordinates as JSON, zlib-compressed BLOB, no type, 2-number positions, 6 decimals) |
+| `gemeente_neighbour` | `(gemeente_id, neighbour_id)` primary key, `WITHOUT ROWID`; both directions of every pair that shares a vertex |
+| `_vertex` | scratch used by the build, dropped before it finishes |
 
 ## Routes (`routes.php`)
 
 | URL | File | Access | Purpose |
 |---|---|---|---|
-| `/hideandseek` | `routes/index.php` | public shell; data only if signed in | Map + imported-POI list. Builds `$globalData['imported'] = {categories[{id,name,colour,icon}], pois[{category,name,lat,lng}]}` for the loaded game map and `mapCentre` (hardcoded Groningen 53.2194, 6.5665, zoom 13) |
+| `/hideandseek` | `routes/index.php` | public shell; data only if signed in | Map + imported-POI list. Builds `$globalData['imported'] = {categories[{id,name,colour,icon}], pois[{category,name,lat,lng}]}` for the loaded game map, `$globalData['hasBuurten']` (whether the loaded map's gemeente is in the geo file; it only gates the toggle, the buurten themselves come from `/ajax/buurten`) and `mapCentre` (hardcoded Groningen 53.2194, 6.5665, zoom 13) |
 | `/hideandseek/register`, `/login`, `/logout`(POST), `/language`(POST) | same-named | public | copies of music's flows; first account = admin, later ones need an invite |
-| `/hideandseek/game-maps` | `routes/gameMaps.php` | login | actions: `create` (opens the new map), `rename`, `delete`, `load`, `close`; unknown actions do nothing. Validation errors re-render without redirect |
+| `/hideandseek/game-maps` | `routes/gameMaps.php` | login | actions: `create` (opens the new map), `rename`, `gemeente` (sets `gemeente_code`, empty clears, a code not in the geo file is refused), `delete`, `load`, `close`; unknown actions do nothing. Validation errors re-render without redirect |
 | `/hideandseek/import-pois` | `routes/importPois.php` | login | the import form (processed in JS, see below) plus category table. Actions: `delete` (category), `styles` (rename/colour/icon, `only=<id>` for one row). Result banner from `?imported=&skipped=&categories=&category=` |
 | `/hideandseek/accounts` | `routes/accounts.php` | admin | one page for promote/demote (never self) and invites (`invite`, `revoke`) |
 | `/hideandseek/ajax/import-pois` | `ajax/importPois.php` | login | see below |
 | `/hideandseek/ajax/export-pois` | `ajax/exportPois.php` | login | `{mapId}` → `{status, export}` |
+| `/hideandseek/ajax/buurten` | `ajax/buurten.php` | login | `{}` → `{status, buurten: [{id, name, wijk, gemeente, own, water, geometry}]}` for the loaded game map's gemeente and its neighbours; `[]` when the map has no gemeente or the server no geo file. The geometry is spliced in as stored text |
 | `/hideandseek/ajax/whoami` | `ajax/whoami.php` | login | worked example of an endpoint; meant to be copied then deleted |
 
 Note: pages require *login* (any account), not admin, except `/accounts`. The game-map pages are open to every account and every account shares all maps.
@@ -52,17 +63,18 @@ Category edits (`hnsSaveCategoryEdits($db, $mapId, $rows, $only)`): validates ev
 ## Front-end files
 
 - **`js/map.js` (~1000 lines, global `hns*` names).** Click-to-load map: nothing contacts the tile server until the button is pressed. Libraries are injected on demand: MapLibre GL (`vendor/maplibre/`, v4.7.1) and d3-delaunay (`vendor/d3-delaunay/`). Groups: setup (`hnsMapCentre`, `hnsLoadScript/Stylesheet`, `hnsLoadMap`, `hnsRenderMapPlaceholder`, pins `hnsAddMarker` / `hnsMarkers`); styling (`hnsHideLabels`); imported data (`hnsImportedData`, `hnsImportedCategories`, `hnsImportedPois`, `hnsAddImportedLayers`, icon/halo helpers `hnsPoiIconImage`, `hnsTextPresentation`, `hnsIsDark`, `hnsLabelHalo`, `hnsLuminance`); the list (`hnsRenderImportedPoiTable`, `hnsImportedGroup`, `hnsPoiRow`, `hnsFocusPoi`, `hnsRingPoi`, `hnsApplyImportedFilter`); overlays (`hnsOverlay`, `hnsSetOverlay`, `hnsUpdateOverlay`, spherical geometry `hnsVec/Dot/Cross/Unit/Arc/Circumcentre/BisectorRay/NearestLines`, circle union `hnsCircleLines`, `hnsFormatDistance`).
+- **Buurten in `js/map.js`**: `hnsAddBuurten` (POSTs the endpoint when the page has the toggle), `hnsDrawBuurten`, `hnsApplyBuurtenVisibility`, `hnsInitBuurtenToggle`, `HNS_BUURT_LAYERS`. The build side is `tools/import-buurten.php` with `geoImport.php` (`hnsGeoStoreFeature`, `hnsGeoComputeNeighbours`, `hnsGeoPolygons`); the read side is `geo.php` (`hnsGeoDb`, `hnsGeoGemeenten`, `hnsGeoBuurtenJson`).
 - **`js/poiImport.js`**: parsing and form wiring above, plus the Export button (`hnsInitPoiExport`), colour-input defaulting (`hnsFillUnsetColours`: an `<input type=color>` with no `value` attribute reads `#000000`) and category prefill (`hnsPrefillFromCategory` from the datalist's `data-colour`/`data-icon`).
 - **`js/tooltip.js`**: a copy of music's delegated tooltip with `hns` names (`#hnsTooltip` box from `partials/tooltip.php`, `showHnsTooltip`, `hnsTooltipBox`); same `data-tooltip` / `data-tooltip-titles` contract.
 - **`json/mapStyle.json`**: OSM Bright (128 layers), repointed to OpenFreeMap tiles/glyphs; edit in Maputnik. Sprite stays on `openmaptiles.github.io`.
 - **`css/styles.css`**: ten theme custom properties on `:root` (`ink`, `inkDim`, `ground`, `panel`, `panelRaised`, `border`, `accent`, `accentDim`, `danger`, `imported`); light theme. Layout classes: `hnsLayout`, `hnsMain`, `hnsNav*`, `hnsMapLayout` (two columns ≥1200 px), `hnsMapColumn`, `hnsPoiColumn`, `hnsPoiArea`, `hnsPoiGroup*`.
-- **`localStorage` keys** (per-viewer, guarded by try/catch): `hnsHiddenCategories` (JSON list of category ids), `hnsShowUnnamed` (`"1"`).
+- **`localStorage` keys** (per-viewer, guarded by try/catch): `hnsHiddenCategories` (JSON list of category ids), `hnsShowUnnamed` (`"1"`), `hnsShowBuurten` (`"0"` = off).
 - Page chrome: `views/partials/head.php` opens `<div class="hnsLayout">`, includes `nav.php`, opens `<main class="hnsMain">`; `foot.php` closes both, so a view only has to include head and foot. `head.php` also ships `csrfToken` meta and `langStrings`.
 
 ## Language catalogue
 
-`lang/en.php` merges `lang/en/common.php` and `lang/en/accounts.php`. Key areas: `hideandseek.*`, `map.*`, `poi.*`, `poiImport.*` (incl. `poiImport.error.*`), `gameMap.*` (incl. `gameMap.error.*`), `nav.*`, `ajax.*`, `status.*`, `accounts.*`, `register.*`, `login.*`. Only `en` is configured, so the language menu does not render. Neither `tests/cases/strings.php` nor `i18n-coverage.php` checks this catalogue.
+`lang/en.php` merges `lang/en/common.php` and `lang/en/accounts.php`. Key areas: `hideandseek.*`, `map.*`, `poi.*`, `poiImport.*` (incl. `poiImport.error.*`), `buurten.*`, `gameMap.*` (incl. `gameMap.error.*`), `nav.*`, `ajax.*`, `status.*`, `accounts.*`, `register.*`, `login.*`. Only `en` is configured, so the language menu does not render. Neither `tests/cases/strings.php` nor `i18n-coverage.php` checks this catalogue.
 
 ## Duplicated-from-music code
 
-`rateLimit.php`, `inviteCode.php` (`hnsGenerateInviteCode`), `auth.php` (`hns*`), `ajaxGuard.php`, `migrate.php`, `db.php` and `tooltip.js` are intentional near-copies of music's (decision recorded in `hideandseek.md` and TODO). When fixing a bug in one, check the other.
+`rateLimit.php`, `inviteCode.php` (`hnsGenerateInviteCode`), `auth.php` (`hns*`), `ajaxGuard.php`, `migrate.php`, `db.php` and `tooltip.js` are intentional near-copies of music's (SHR in `TODO.md`). When fixing a bug in one, check the other.
