@@ -138,6 +138,9 @@ $mustExist = [
 	'lotsofs.com/modules/hideandseek/json/mapStyle.json',
 	'app/modules/hideandseek/ajaxGuard.php',
 	'app/modules/hideandseek/database/migrations/001_create.sql',
+	'lotsofs.com/modules/basstabs/css/styles.css',
+	'app/modules/basstabs/tabs.php',
+	'app/modules/basstabs/songs/my-favourite-game.php',
 ];
 // app/secure/cacert.pem is gitignored (large CA bundle, referenced only by
 // currently-disabled code); copied if present, not required.

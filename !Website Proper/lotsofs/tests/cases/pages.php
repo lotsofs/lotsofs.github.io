@@ -29,6 +29,8 @@ return [
 			'/swat4/2' => 200,
 			'/ss2/11' => 200,
 			'/ss2/18' => 200,
+			'/basstabs' => 200,
+			'/basstabs/my-favourite-game' => 200,
 		];
 		foreach ($expected as $path => $status) {
 			assertSame($status, $ctx->get($path)['status'], "GET {$path}");
@@ -148,7 +150,7 @@ return [
 	'pages carry no php warnings' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		foreach (['/', '/contact', '/exchange-rates', '/music/add-songs', '/music/songs', '/music/audit', '/ss2/11'] as $path) {
+		foreach (['/', '/contact', '/exchange-rates', '/music/add-songs', '/music/songs', '/music/audit', '/ss2/11', '/basstabs', '/basstabs/my-favourite-game'] as $path) {
 			$body = $ctx->get($path)['body'];
 			foreach (['Warning:', 'Notice:', 'Fatal error', 'Undefined variable'] as $sign) {
 				assertTrue(strpos($body, $sign) === false, "{$path} contains '{$sign}'");

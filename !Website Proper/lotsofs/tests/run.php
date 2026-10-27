@@ -1,10 +1,24 @@
 <?php
 
-// usage: php tests/run.php
+// usage: php tests/run.php [case ...]
 // copies the project to a temp dir, serves it, runs tests/cases/*.php against it
+// naming cases (basstabs pages) runs only those files; they share one database, so a filtered
+// run of cases that read what an earlier file wrote can fail where the full suite passes
 
 if (php_sapi_name() !== 'cli') {
 	exit;
+}
+
+$caseFiles = glob(__DIR__ . '/cases/*.php');
+$only = array_slice($argv, 1);
+if ($only) {
+	$caseNames = array_map(fn($file) => basename($file, '.php'), $caseFiles);
+	$unknown = array_diff($only, $caseNames);
+	if ($unknown) {
+		fwrite(STDERR, "no case file named " . implode(', ', $unknown) . "; there are " . implode(', ', $caseNames) . "\n");
+		exit(1);
+	}
+	$caseFiles = array_values(array_filter($caseFiles, fn($file) => in_array(basename($file, '.php'), $only, true)));
 }
 
 const SKIP_DIRS = ['public/modules/ss2/img', 'public/modules/ss2/fonts', 'public/raw', 'tests', '_deploy'];
@@ -56,7 +70,7 @@ $failed = 0;
 
 require __DIR__ . '/helpers.php';
 
-foreach (glob(__DIR__ . '/cases/*.php') as $caseFile) {
+foreach ($caseFiles as $caseFile) {
 	echo "\n" . basename($caseFile, '.php') . "\n";
 
 	foreach (require $caseFile as $name => $test) {
@@ -73,7 +87,7 @@ foreach (glob(__DIR__ . '/cases/*.php') as $caseFile) {
 	}
 }
 
-echo "\n{$passed} passed, {$failed} failed\n";
+echo "\n{$passed} passed, {$failed} failed" . ($only ? ' (only ' . implode(', ', $only) . ')' : '') . "\n";
 exit($failed === 0 ? 0 : 1);
 
 class TestContext {

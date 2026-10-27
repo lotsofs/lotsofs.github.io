@@ -1,0 +1,397 @@
+/* Paper on every screen, including dark-mode phones: the page is meant to look like its print. */
+:root {
+	--ink: #000000;
+	--inkDim: #666666;
+	--paper: #ffffff;
+	--line: #555555;
+	--link: #1a4fd6;
+	/* Greys only, as the owner prints in greyscale: light, mid and dark tell the fretboard's three kinds of dot apart. */
+	--boardScale: #dddddd;
+	--boardPosition: #707070;
+	--boardAnchor: #222222;
+	--boardInlay: #efefef;
+	--boardOutline: #c8c8c8;
+	--boardChord: #333333;
+}
+
+@page {
+	size: A4;
+	margin: 15mm;
+}
+
+html {
+	background-color: var(--paper);
+}
+
+body {
+	margin: 0;
+	padding: 16px;
+	color: var(--ink);
+	background-color: var(--paper);
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+a {
+	color: var(--link);
+}
+
+/* A container so a staff's cqw width is a share of the sheet, whichever column it sits in. */
+.bassTabSheet {
+	max-width: 180mm;
+	margin: 0 auto;
+	container-type: inline-size;
+}
+
+.bassTabListTitle {
+	margin: 0 0 0.5em;
+}
+
+.bassTabList {
+	padding-left: 1.2em;
+	line-height: 1.8;
+}
+
+.bassTabArtist {
+	color: var(--inkDim);
+}
+
+.bassTabHeader {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 0.25em 1em;
+}
+
+/* The page's top-left corner: the back link on screen, the artist and key on screen and paper. */
+.bassTabCorner {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15em;
+}
+
+.bassTabTitle {
+	margin: 0 0 0 auto;
+	font-size: 2.5rem;
+	line-height: 1.1;
+	text-align: right;
+}
+
+.bassTabSubtitle {
+	margin: 0;
+	color: var(--inkDim);
+	font-size: 1.1rem;
+}
+
+/* A sheet longer than a page breaks between sections, never inside one or after a heading. */
+.bassTabSection {
+	margin-top: 0.75em;
+	break-inside: avoid;
+}
+
+.bassTabSectionName {
+	margin: 0 0 0.2em;
+	font-size: 1.1rem;
+	break-after: avoid;
+}
+
+.bassTabStaffClip {
+	break-inside: avoid;
+}
+
+/* The band under the staff for brackets and arrows shares height with the next heading; the route decides when nothing collides. */
+.bassTabBleed {
+	margin-bottom: calc(-1 * var(--bleed));
+}
+
+/* The staff keeps at least its own width and the board gives way first, scaling down. The staff's
+   lines run on under the board to the section's edge, which is where they are cut off. */
+.bassTabWithBoard {
+	display: grid;
+	grid-template-columns: minmax(max-content, 1fr) minmax(0, max-content);
+	column-gap: 16px;
+	align-items: start;
+	break-inside: avoid;
+	overflow: hidden;
+}
+
+.bassTabWithBoard .bassTabStaffClip {
+	overflow: visible;
+}
+
+.bassTabSectionBoard {
+	position: relative;
+	z-index: 1;
+}
+
+/* Sections sharing a line, each as wide as its staff; one that does not fit wraps under. The last takes
+   the rest of the line, so its staff's lines run on to the page edge like any section's. */
+.bassTabRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	column-gap: 24px;
+	break-inside: avoid;
+}
+
+.bassTabRow > .bassTabSection:last-child {
+	flex-grow: 1;
+}
+
+/* Boards with no staff of their own, one above another at full size; a page may break between them. */
+.bassTabBoards {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 4px;
+	margin-top: 0.75em;
+}
+
+/* Under a section with a board beside it: the column that board stands in. */
+.bassTabBoardsRight {
+	justify-items: end;
+	/* Frame to frame, the same as between the boards in the block. */
+	margin-top: 4px;
+}
+
+.bassTabBoardOnly {
+	break-inside: avoid;
+}
+
+@container (max-width: 560px) {
+	.bassTabWithBoard {
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: 0.8em;
+	}
+
+	/* A shrunk staff's labels move left under a heading that does not shrink. */
+	.bassTabBleed {
+		margin-bottom: 0;
+	}
+}
+
+.bassTabSectionText {
+	margin: 0 0 0.2em;
+	font-style: italic;
+}
+
+.bassTabLines {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	line-height: 1.5;
+}
+
+/* The staff draws its lines far past its own box, and this is where they stop. */
+.bassTabStaffClip {
+	overflow: hidden;
+}
+
+.bassTabStaff {
+	display: block;
+	height: auto;
+	overflow: visible;
+}
+
+.bassTabStringName {
+	fill: var(--inkDim);
+	font-size: 11px;
+	dominant-baseline: central;
+}
+
+.bassTabLine,
+.bassTabBoardString {
+	stroke: var(--line);
+	stroke-width: 1px;
+}
+
+/* The paper-coloured stroke is painted under the digit, breaking the line behind it. */
+.bassTabFret {
+	fill: var(--ink);
+	stroke: var(--paper);
+	stroke-width: 6px;
+	stroke-linejoin: round;
+	paint-order: stroke;
+	font-size: 17px;
+	font-weight: bold;
+	text-anchor: middle;
+	dominant-baseline: central;
+}
+
+.bassTabNoteName {
+	fill: var(--inkDim);
+	font-size: 12px;
+	text-anchor: middle;
+	dominant-baseline: central;
+}
+
+.bassTabHold {
+	stroke: var(--ink);
+	stroke-width: 3px;
+	stroke-linecap: round;
+}
+
+.bassTabRest {
+	fill: none;
+	stroke: var(--ink);
+	stroke-width: 1.6px;
+	stroke-linejoin: round;
+	stroke-linecap: round;
+}
+
+.bassTabRestDot {
+	fill: var(--ink);
+}
+
+.bassTabHammer {
+	fill: none;
+	stroke: var(--ink);
+	stroke-width: 1.2px;
+}
+
+.bassTabSlide {
+	stroke: var(--ink);
+	stroke-width: 1.5px;
+	stroke-linecap: round;
+}
+
+/* Sits on the line above its arc, so it breaks that line the way a fret's digit breaks its own. */
+.bassTabHammerLabel {
+	fill: var(--ink);
+	stroke: var(--paper);
+	stroke-width: 3px;
+	paint-order: stroke;
+	font-size: 10px;
+	font-style: italic;
+	font-weight: bold;
+	text-anchor: middle;
+	dominant-baseline: central;
+}
+
+.bassTabMarkDot {
+	fill: var(--ink);
+}
+
+.bassTabMarkTilde {
+	fill: none;
+	stroke: var(--ink);
+	stroke-width: 1.3px;
+	stroke-linecap: round;
+}
+
+.bassTabBar,
+.bassTabArrow {
+	stroke: var(--ink);
+	stroke-width: 1.5px;
+}
+
+.bassTabRepeatDot,
+.bassTabArrowHead {
+	fill: var(--ink);
+}
+
+.bassTabBracket {
+	fill: none;
+	stroke: var(--ink);
+	stroke-width: 1.5px;
+}
+
+.bassTabLabel {
+	fill: var(--ink);
+	font-size: 12px;
+	font-style: italic;
+	text-anchor: middle;
+	dominant-baseline: central;
+}
+
+.bassTabBoard {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+/* Filled in the SVG rather than given a CSS background, which a print leaves out and lets the staff's lines show through. */
+.bassTabBoardFrame {
+	fill: var(--paper);
+	stroke: var(--boardOutline);
+	stroke-width: 1px;
+}
+
+.bassTabBoardKey {
+	fill: var(--ink);
+	font-size: 15px;
+	font-weight: bold;
+	dominant-baseline: central;
+}
+
+.bassTabBoardInlay {
+	fill: var(--boardInlay);
+}
+
+.bassTabNut {
+	stroke: var(--ink);
+	stroke-width: 4px;
+}
+
+.bassTabFretWire {
+	stroke: var(--line);
+	stroke-width: 1px;
+}
+
+.bassTabFretNumber {
+	fill: var(--inkDim);
+	font-size: 11px;
+	text-anchor: middle;
+	dominant-baseline: central;
+}
+
+.bassTabBoardDot {
+	stroke-width: 1px;
+}
+
+.bassTabBoardDot.bassTabBoardScale {
+	fill: var(--boardScale);
+	stroke: var(--inkDim);
+}
+
+.bassTabBoardDot.bassTabBoardPosition {
+	fill: var(--boardPosition);
+	stroke: var(--boardAnchor);
+}
+
+.bassTabBoardDot.bassTabBoardAnchor {
+	fill: var(--boardAnchor);
+	stroke: var(--boardAnchor);
+}
+
+/* A note of the board's own triad, fingered or not. Kept to 3px so dots a string apart at one fret still clear each other. */
+.bassTabBoardDot.bassTabBoardChord {
+	stroke: var(--ink);
+	stroke-width: 3px;
+}
+
+/* Outside the hand position the triad's notes are marked more lightly, so the fingered ones still lead. */
+.bassTabBoardDot.bassTabBoardScale.bassTabBoardChord {
+	stroke: var(--boardChord);
+	stroke-width: 2.5px;
+}
+
+.bassTabBoardName {
+	fill: var(--ink);
+	font-size: 10px;
+	font-weight: bold;
+	text-anchor: middle;
+	dominant-baseline: central;
+}
+
+.bassTabBoardNameOnDark {
+	fill: var(--paper);
+}
+
+@media print {
+	body {
+		padding: 0;
+	}
+
+	.bassTabBack {
+		display: none;
+	}
+}

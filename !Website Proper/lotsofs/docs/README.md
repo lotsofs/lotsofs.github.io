@@ -1,6 +1,6 @@
 # docs/ index
 
-Reference material for working in this repo. `CLAUDE.md` (repo root) is the always-loaded summary and imports `music.md` and `hideandseek.md`; everything else here is read on demand.
+Reference material for working in this repo. `CLAUDE.md` (repo root) is the always-loaded summary and imports `music.md`, `hideandseek.md` and `basstabs.md`; everything else here is read on demand.
 
 | File | Read it when |
 |---|---|
@@ -12,6 +12,7 @@ Reference material for working in this repo. `CLAUDE.md` (repo root) is the alwa
 | [music-frontend.md](music-frontend.md) | Editing `songs.js`, `albumCard.js`, `addSongs.js`, or the card/modal DOM. |
 | [hideandseek.md](hideandseek.md) | Design rules and traps of the hideandseek module (imported by CLAUDE.md). |
 | [hideandseek-reference.md](hideandseek-reference.md) | Looking up hideandseek facts: schema, routes, endpoints, import/export formats, JS file map. |
+| [basstabs.md](basstabs.md) | Adding a bass tab sheet or touching the basstabs module (imported by CLAUDE.md): the song file format and the notation. |
 | [other-modules.md](other-modules.md) | Working on `main`, `swat4`, or `ss2` (ss2 has a data-driven JS front end worth understanding). |
 | [TODO.md](TODO.md) | Before assuming a rough edge is unintentional: the index of open work by three-letter code. Start here for any task. |
 | [tasks.md](tasks.md) | Working on a tracked task: its evidence, plan, how to verify it and which docs to update. |
