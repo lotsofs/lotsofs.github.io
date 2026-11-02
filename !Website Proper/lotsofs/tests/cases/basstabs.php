@@ -94,6 +94,17 @@ return [
 		}
 	},
 
+	'the list and every song sheet ask search engines to leave them out' => function ($ctx) {
+		$paths = ['/basstabs'];
+		foreach (array_keys(bassTabSongs()) as $slug) {
+			$paths[] = "/basstabs/{$slug}";
+		}
+
+		foreach ($paths as $path) {
+			assertContains('<meta name="robots" content="noindex">', $ctx->get($path)['body'], "{$path} is noindex");
+		}
+	},
+
 	'my favourite game has its riff on the right strings' => function ($ctx) {
 		$body = $ctx->get('/basstabs/my-favourite-game')['body'];
 

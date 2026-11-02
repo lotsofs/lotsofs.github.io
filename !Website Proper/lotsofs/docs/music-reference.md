@@ -40,6 +40,7 @@ All ids are `INTEGER PRIMARY KEY`. Foreign keys are enforced.
 | `/music/songs` | `songs.php` | login | the main page; see below |
 | `/music/artists`, `/music/albums` | `artists.php`, `albums.php` | login | stat-bearing lists, sorted in PHP via `listSort.php` |
 | `/music/audit` | `audit.php` | login | 100 per page, `?before=<id>` keyset paging; non-admins may read |
+| `/music/changes` | `changes.php` | login | the What's New page: `changelog.php` rendered in the reader's locale, English where an entry lacks it; the undated release is headed "Latest changes" |
 | `/music/add-songs` | `addSongs.php` | admin | bulk import wizard |
 | `/music/invites`, `/music/accounts` | `invites.php`, `accounts.php` | admin | POST-redirect-GET. Accounts: promote/demote (never self). Invites: create (default action) or `revoke` |
 
@@ -93,6 +94,7 @@ Guard helpers available in endpoints: `requireSongJson($db, $id, $extra)`, `requ
 | `links.php` | `songLinkFields()`, `songLinkHref()`, `albumSongsHref()`, `spotifyTrackIdIn()`, `youtubeVideoIdIn()` |
 | `hue.php` | `MUSIC_HUE_DEFAULT` (240), `musicHueFor($id)` = `(id*73)%360`, `musicActiveHue()`, `musicHueOf($id, $stored)`, `musicReadHue($raw)` (0–359 or null) |
 | `blindRating.php` | `musicBlindRating()` (session pref, default on), `musicBlindRatingOf($stored)` |
+| `changes.php` | `MUSIC_CHANGE_GROUPS` (the five kinds of change, in page order), `musicChangelog()` (reads `changelog.php`), `musicChangeText($entry, $locale)` (blank or missing → `en`), `musicChangeHtml($text)` (escaped, `**bold**` only) |
 | `listSort.php` | `musicListSort`, `musicListDir`, `musicListStatColumns`, `musicListSorted`, `musicListHeaders` |
 | `rateLimit.php`, `inviteCode.php` | login throttle; invite code generation/format/normalise |
 | `ajaxGuard.php` | see `architecture.md`; plus `ajaxInt/Text/Trimmed/NumericText`, `requireSongJson`, `requireAlbumJson` |
@@ -109,7 +111,7 @@ Guard helpers available in endpoints: `requireSongJson($db, $id, $extra)`, `requ
 
 ## Language catalogue
 
-Keys are dotted and namespaced by area: `nav.*`, `ajax.*`, `status.*`, `register.*`, `login.*`, `accounts.*`, `invites.*`, `artist.*` (`artist.result.*`, `artist.card.*`, `artist.list.*`, `artist.column.*`), `song.*` (`song.result.*`, `song.link.*`, `song.list.*`, `song.column.*`, `song.extras.*`), `album.*` (`album.result.*`, `album.card.*`, `album.list.*`, `album.column.*`), `addSongs.*`, `audit.*`, `colour.*`, `settings.*`, `language.<code>`. Part files: `common` (nav, ajax, status, language names, colour, settings), `accounts` (register/login/accounts/invites), `artists`, `songs`, `albums`, `audit`. A key used in JS (via `langStrings`) must still appear as a literal `t('key')` in a `.js`/`.php` file under the music module or its public dir, or the orphan test fails.
+Keys are dotted and namespaced by area: `nav.*`, `ajax.*`, `status.*`, `register.*`, `login.*`, `accounts.*`, `invites.*`, `artist.*` (`artist.result.*`, `artist.card.*`, `artist.list.*`, `artist.column.*`), `song.*` (`song.result.*`, `song.link.*`, `song.list.*`, `song.column.*`, `song.extras.*`), `album.*` (`album.result.*`, `album.card.*`, `album.list.*`, `album.column.*`), `addSongs.*`, `audit.*`, `changes.*`, `colour.*`, `settings.*`, `language.<code>`. Part files: `common` (nav, ajax, status, language names, colour, settings), `accounts` (register/login/accounts/invites), `artists`, `songs`, `albums`, `audit`, `changes` (the What's New page's own chrome; its entries are in `changelog.php`, not the catalogue). A key used in JS (via `langStrings`) must still appear as a literal `t('key')` in a `.js`/`.php` file under the music module or its public dir, or the orphan test fails.
 
 ## CSS (`public/modules/music/css/styles.css`, ~1670 lines, starts with a UTF-8 BOM)
 

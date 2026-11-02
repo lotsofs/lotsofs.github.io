@@ -7,6 +7,7 @@ return [
 	'nav.artists' => 'Artists',
 	'nav.albums' => 'Albums',
 	'nav.audit' => 'History',
+	'nav.changes' => 'What\'s New',
 	'nav.invites' => 'Invites',
 	'nav.accounts' => 'Accounts',
 	'nav.login' => 'Log In',

@@ -7,6 +7,7 @@ return [
 	'nav.artists' => 'Interpreten', // ? oder "Künstler"
 	'nav.albums' => 'Alben',
 	'nav.audit' => 'Verlauf',
+	'nav.changes' => 'Neuigkeiten',
 	'nav.invites' => 'Einladungen',
 	'nav.accounts' => 'Konten',
 	'nav.login' => 'Anmelden',

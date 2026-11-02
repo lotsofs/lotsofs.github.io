@@ -33,7 +33,7 @@ $excludeRel = [
 ];
 
 // modules left out of both trees; shipping one means taking it off this list
-$unshippedModules = ['hideandseek'];
+$unshippedModules = ['hideandseek', 'basstabs'];
 
 foreach ($unshippedModules as $module) {
 	$excludeRel['public'][] = 'modules/' . $module;

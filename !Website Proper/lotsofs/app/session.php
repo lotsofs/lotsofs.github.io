@@ -1,5 +1,8 @@
 <?php
 
+const LOGIN_LIFETIME = 399 * 86400;
+const LOGIN_COOKIE_RENEWAL = 86400;
+
 function sessionScope($scope = null) {
 	static $active = null;
 
@@ -23,8 +26,10 @@ function startSession() {
 		}
 		if (is_writable($sessionPath)) {
 			session_save_path($sessionPath);
-			ini_set('session.gc_probability', '1');
-			ini_set('session.gc_divisor', '100');
+			ini_set('session.gc_probability', '0');
+			if (random_int(1, 100) === 1) {
+				sweepSessions($sessionPath);
+			}
 		}
 	}
 
@@ -35,6 +40,41 @@ function startSession() {
 	]);
 
 	session_start();
+
+	if (currentAccountId() && ($_SESSION['login_cookie_sent'] ?? 0) < time() - LOGIN_COOKIE_RENEWAL) {
+		sendLoginCookie();
+	}
+}
+
+/// PHP's collector has one lifetime for every session, and anonymous ones, a
+/// file per cookieless bot hit, must not last as long as a login.
+function sweepSessions($path) {
+	$anonymousBefore = time() - (int)ini_get('session.gc_maxlifetime');
+	$signedInBefore = time() - LOGIN_LIFETIME;
+
+	foreach (glob($path . '/sess_*') ?: [] as $file) {
+		$touched = @filemtime($file);
+
+		if ($touched === false || $touched >= $anonymousBefore) {
+			continue;
+		}
+
+		if ($touched < $signedInBefore || strpos((string)@file_get_contents($file), 'account_id') === false) {
+			@unlink($file);
+		}
+	}
+}
+
+/// PHP sends the session cookie only when the id changes, so without this its
+/// expiry counts from the login rather than the last visit.
+function sendLoginCookie() {
+	$_SESSION['login_cookie_sent'] = time();
+
+	$cookie = session_get_cookie_params();
+	unset($cookie['lifetime']);
+	$cookie['expires'] = time() + LOGIN_LIFETIME;
+
+	setcookie(session_name(), session_id(), $cookie);
 }
 
 function currentAccountId() {
@@ -64,10 +104,12 @@ function logIn($accountId, $accountName) {
 		'account_id' => $accountId,
 		'account_name' => $accountName,
 	];
+
+	sendLoginCookie();
 }
 
 function logOut() {
-	unset($_SESSION[sessionScope()]);
+	unset($_SESSION[sessionScope()], $_SESSION['login_cookie_sent']);
 	session_regenerate_id(true);
 }
 

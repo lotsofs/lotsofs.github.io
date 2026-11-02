@@ -9,6 +9,7 @@
 		<a href="/music/artists" class="<?= urlIs("/music/artists") ? "navCurrent" : "" ?>"><?= t('nav.artists') ?></a>
 		<a href="/music/albums" class="<?= urlIs("/music/albums") ? "navCurrent" : "" ?>"><?= t('nav.albums') ?></a>
 		<a href="/music/audit" class="<?= urlIs("/music/audit") ? "navCurrent" : "" ?>"><?= t('nav.audit') ?></a>
+		<a href="/music/changes" class="<?= urlIs("/music/changes") ? "navCurrent" : "" ?>"><?= t('nav.changes') ?></a>
 		<?php if ($globalData['isAdmin'] ?? false): ?>
 			<a href="/music/add-songs" class="<?= urlIs("/music/add-songs") ? "navCurrent" : "" ?>"><?= t('nav.addSongs') ?></a>
 			<a href="/music/invites" class="<?= urlIs("/music/invites") ? "navCurrent" : "" ?>"><?= t('nav.invites') ?></a>

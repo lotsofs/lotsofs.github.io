@@ -7,6 +7,7 @@ return [
 	'nav.artists' => 'Artysten',
 	'nav.albums' => 'Albums',
 	'nav.audit' => 'Skiednis',
+	'nav.changes' => 'Wat is nij',
 	'nav.invites' => 'Útnûgings',
 	'nav.accounts' => 'Akkounts',
 	'nav.login' => 'Oanmelde',

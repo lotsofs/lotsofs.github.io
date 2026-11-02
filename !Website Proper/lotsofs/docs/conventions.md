@@ -11,7 +11,7 @@
 - **"Don't show X" means filter the query or UI**, never delete or mutate stored data to hide a display bug.
 - **Never kill processes by image name** (`taskkill /IM php.exe` killed the owner's dev server). Target a PID you started.
 - **Ambiguous requests default to the music module** unless another is named.
-- **The tracked items are yours to maintain without asking**: `docs/TODO.md` is the index, `tasks.md` and `decisions.md` hold each item's detail, and `DONE.md` logs finished ones. Close, update and add items in the same change as the work.
+- **The tracked items are yours to maintain without asking**: `docs/TODO.md` is the index, `tasks.md` and `decisions.md` hold each item's detail, and `DONE.md` logs finished ones. Close, update and add items in the same change as the work. Unlike the owner's other projects, the index is grouped **by module first, then by kind** (`## Music`, then `### Defects and tasks` and so on, cross-module work under `## Site`), with no Area column, since the heading names the module; the detail docs follow the same order. `DONE.md` keeps its Area column.
 - Shipped migrations are frozen (see `music.md`).
 
 ## Code style (match the neighbours)

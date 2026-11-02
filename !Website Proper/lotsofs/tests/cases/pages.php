@@ -25,6 +25,7 @@ return [
 			'/music/artists' => 200,
 			'/music/albums' => 200,
 			'/music/audit' => 200,
+			'/music/changes' => 200,
 			'/music/accounts' => 200,
 			'/swat4/2' => 200,
 			'/ss2/11' => 200,
@@ -40,7 +41,7 @@ return [
 	'the music pages are hidden from signed out visitors' => function ($ctx) {
 		$ctx->newSession();
 
-		foreach (['/music/add-songs', '/music/songs', '/music/invites'] as $path) {
+		foreach (['/music/add-songs', '/music/songs', '/music/invites', '/music/changes'] as $path) {
 			$response = $ctx->get($path);
 			assertSame(302, $response['status'], "GET {$path} while signed out");
 			assertContains('/music/login', $response['location'], "{$path} redirect target");

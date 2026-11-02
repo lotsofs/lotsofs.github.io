@@ -1,6 +1,6 @@
 # Open decisions
 
-Detail for the **Open decisions** rows in [TODO.md](TODO.md). A decision closes when the owner makes it, and what is decided then becomes work in [tasks.md](tasks.md) or a rule in the module's doc. Until then they block work downstream and keep resurfacing.
+Detail for the **Open decisions** rows in [TODO.md](TODO.md), grouped by module in the index's order. A decision closes when the owner makes it, and what is decided then becomes work in [tasks.md](tasks.md) or a rule in the module's doc. Until then they block work downstream and keep resurfacing.
 
 ## EMB — Do the embeds need consent, and in what shape
 
@@ -13,6 +13,18 @@ The shape that works: an **account setting, off by default and changeable any ti
 **Verify.** With the setting off, loading the songs page makes no request to Spotify, YouTube or SoundCloud.
 
 **Docs.** `music.md` (the `song_link` bullet), `music-reference.md` (schema, settings route).
+
+## COV — How are covers modelled
+
+Not at all. `song_cover` and `composition` went in the ground-up rewrite (`app/modules/music/notes.txt` has the original sketch). The earlier reasoning: a cover is a separate song sharing a composition, which needs `composition` back. Nothing forces it until a cover needs recording.
+
+**Docs.** `music.md` (the data model), `music-reference.md` (schema).
+
+## VER — When is a recording a separate song
+
+The settled rule: split on edit or performance, not on master or encoding, and override when it would change the score. It is not implemented: `song_version` was dropped, and no constraint stops two same-titled songs by one artist (duplicate detection is an application check in `song.php`). Nothing blocks recording one; it is just not modelled on purpose.
+
+**Docs.** `music.md` (the data model), `music-reference.md` (schema).
 
 ## PER — Is music a personal tool or part of the site
 
@@ -29,15 +41,3 @@ Music is 60+ files and the most developed thing here, yet `main`'s home page sti
 **Revisit** once hideandseek has real pages. The invite code and the rate limiter are the obvious candidates; PWR would add a third if both modules get password reset.
 
 **Docs.** `hideandseek.md` (opening paragraph), `hideandseek-reference.md` (the near-copies line).
-
-## COV — How are covers modelled
-
-Not at all. `song_cover` and `composition` went in the ground-up rewrite (`app/modules/music/notes.txt` has the original sketch). The earlier reasoning: a cover is a separate song sharing a composition, which needs `composition` back. Nothing forces it until a cover needs recording.
-
-**Docs.** `music.md` (the data model), `music-reference.md` (schema).
-
-## VER — When is a recording a separate song
-
-The settled rule: split on edit or performance, not on master or encoding, and override when it would change the score. It is not implemented: `song_version` was dropped, and no constraint stops two same-titled songs by one artist (duplicate detection is an application check in `song.php`). Nothing blocks recording one; it is just not modelled on purpose.
-
-**Docs.** `music.md` (the data model), `music-reference.md` (schema).

@@ -101,10 +101,10 @@ return [
 	'no page renders a raw catalogue key' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
-		foreach (['/music', '/music/songs', '/music/artists', '/music/albums', '/music/add-songs', '/music/invites', '/music/accounts'] as $path) {
+		foreach (['/music', '/music/songs', '/music/artists', '/music/albums', '/music/add-songs', '/music/invites', '/music/accounts', '/music/changes'] as $path) {
 			$body = $ctx->get($path)['body'];
 
-			foreach (['artist.', 'album.', 'song.', 'nav.', 'status.', 'ajax.'] as $prefix) {
+			foreach (['artist.', 'album.', 'song.', 'nav.', 'status.', 'ajax.', 'changes.'] as $prefix) {
 				assertTrue(preg_match('/>\s*' . preg_quote($prefix, '/') . '\w/', $body) !== 1, "{$path} shows a raw {$prefix}* key");
 			}
 		}
