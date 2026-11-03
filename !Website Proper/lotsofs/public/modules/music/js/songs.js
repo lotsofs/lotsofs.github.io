@@ -821,6 +821,26 @@ songCardViewToggle.addEventListener("click", () => {
 	setCardView(!document.documentElement.classList.contains("songCardView"));
 });
 
+/* The column picker hides a column at once and saves the choice behind it. One
+   save at a time: each is a single upsert, but two clicks on the same box have to
+   reach the server in the order they were made. */
+const songColumnPicker = document.getElementById("songColumnPicker");
+let songColumnSaves = Promise.resolve();
+
+songColumnPicker.addEventListener("change", event => {
+	const box = event.target.closest("input[data-column]");
+	if (!box) {
+		return;
+	}
+
+	songListTable.classList.toggle(box.dataset.hideClass, !box.checked);
+
+	const choice = { column: box.dataset.column, shown: box.checked };
+	songColumnSaves = songColumnSaves
+		.then(() => postJson("/music/ajax/song-columns", choice))
+		.catch(error => showToast(container => container.textContent = t("song.list.columnsNotSaved", { error: error.message })));
+});
+
 function songQuery(sort, dir) {
 	const params = new URLSearchParams();
 	params.set("sort", sort);
@@ -916,8 +936,30 @@ function applySongTitles() {
 
 			valueElement(cell).textContent = listing ? listing.name : cell.dataset.canonicalTitle;
 			cell.classList.toggle("songTitleAliased", listing !== null && listing !== undefined);
+			applyAliasCell(container);
 		});
 	});
+}
+
+/// Every name the song has but the one its title cell shows, one per line.
+function applyAliasCell(container) {
+	const cell = fieldCell(container, "aliases");
+	if (!cell || !("titles" in cell.dataset)) {
+		return;
+	}
+
+	const shown = cellText(fieldCell(container, "title"));
+	const names = JSON.parse(cell.dataset.titles).filter(name => name !== shown).join("\n");
+
+	valueElement(cell).textContent = names;
+
+	// Whichever the cell currently uses, since tooltip.js moves title into data-tooltip.
+	if ("tooltip" in cell.dataset) {
+		cell.dataset.tooltip = names;
+	}
+	else if (cell.hasAttribute("title")) {
+		cell.title = names;
+	}
 }
 
 function songOptionLabel(select, value) {
@@ -1376,6 +1418,9 @@ function saveCell(songId, domField, cell, spec, original, value) {
 	.then(result => {
 		delete cell.dataset.pending;
 		syncField(songId, domField, target => setCellValue(target, spec, String(result.value)));
+		if (spec === TITLE_SPEC && result.status === "ok" && result.titles) {
+			applyRenamedTitles(songId, String(result.value), result.titles);
+		}
 		// Straight away rather than on the next poll tick.
 		if (result.stats) {
 			applySongStats(result.stats);
@@ -1387,6 +1432,35 @@ function saveCell(songId, domField, cell, spec, original, value) {
 		syncField(songId, domField, target => setCellValue(target, spec, original));
 		syncResult(songId, t("status.submitFailed", { error: error.message }));
 	});
+}
+
+/* A rename can promote one of the song's names or replace the current one, so
+   the names come back from the server rather than being worked out here. The
+   canonical title is what the album filter falls back to. */
+function applyRenamedTitles(songId, title, titles) {
+	syncField(songId, "title", cell => {
+		cell.dataset.canonicalTitle = title;
+
+		// Whichever the cell currently uses, since tooltip.js moves title into data-tooltip.
+		if ("tooltip" in cell.dataset) {
+			cell.dataset.tooltip = titles.join(", ");
+		}
+		else if (cell.hasAttribute("title")) {
+			cell.title = titles.join(", ");
+		}
+	});
+
+	syncField(songId, "aliases", cell => {
+		if ("titles" in cell.dataset) {
+			cell.dataset.titles = JSON.stringify(titles);
+		}
+	});
+
+	const pair = rowsBySongId.get(String(songId));
+	if (pair) {
+		applyAliasCell(pair.tr);
+		applyAliasCell(pair.card);
+	}
 }
 
 function editableCell(cell) {

@@ -194,7 +194,8 @@ return [
 
 			assertSame($hue, pageHue($ctx), 'the page is in the reader\'s hue');
 			assertTrue(preg_match('/<th colspan="2" class="[^"]*songRaterName[^"]*">hue_name_reader<\/th>/', $body) === 1, 'their name sets no hue of its own');
-			assertTrue(strpos($body, 'td[data-account-id="' . $id . '"]') === false, 'nor do their cells');
+			/// The rule, not the selector: the column picker's rule names their cells too.
+			assertTrue(strpos($body, 'td[data-account-id="' . $id . '"] { --hue') === false, 'nor do their cells');
 
 			foreach (['score', 'note'] as $field) {
 				assertTrue(preg_match('/<th class="[^"]*" data-sort-key="' . $field . '_' . $id . '"/', $body) === 1, "nor does their {$field} header");

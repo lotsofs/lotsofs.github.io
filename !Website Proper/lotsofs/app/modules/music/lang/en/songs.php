@@ -4,6 +4,7 @@ return [
 
 	'song.column.artist' => 'Artist',
 	'song.column.title' => 'Title',
+	'song.column.aliases' => 'Also Known As',
 	'song.column.album' => 'Album',
 	'song.column.year' => 'Year',
 	'song.column.statHighest' => 'High',
@@ -71,6 +72,8 @@ return [
 	'song.list.gateScoreHint' => 'Hidden until this song has a score of your own',
 	'song.list.cardViewToggleOn' => 'Card view',
 	'song.list.cardViewToggleOff' => 'Table view',
+	'song.list.columnPicker' => 'Columns',
+	'song.list.columnsNotSaved' => 'Your column choice wasn\'t saved, so it will be back to how it was next time: {error}',
 	'song.list.toastScore' => '{name} scored {song} a {value}',
 	'song.list.toastNote' => '{name} wrote a note about {song}: {value}',
 	'song.list.toastScoreUpdated' => '{name} updated their score for {song} from {previous} to {value}',

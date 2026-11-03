@@ -2,7 +2,7 @@
 
 Lookup companion to `music.md` (which explains *why*). Everything here is under `app/modules/music/` unless it starts with `public/`.
 
-## Schema (after migrations 001–008)
+## Schema (after migrations 001–009)
 
 All ids are `INTEGER PRIMARY KEY`. Foreign keys are enforced.
 
@@ -20,6 +20,7 @@ All ids are `INTEGER PRIMARY KEY`. Foreign keys are enforced.
 | `album_track` | `album_id`, `song_id`, `song_alias_id` (nullable), `position` (nullable) | unique `(album_id, song_id)`; `song_alias_id` = which of the song's names this release credits; NULL = its actual name |
 | `account` | `account_name` (unique), `password_hash`, `is_admin`, `lang` (default `'fy'`), `hue` (006, nullable), `blind_rating` (007, default 1), `toast_seconds` (008, default 180; 0 off, -1 until closed) | |
 | `account_song` | `account_id`, `song_id`, `score` REAL, `subjective_note`, `updated_at` (unix seconds) | unique pair; current state only; `score` is 0–10, enforced by `songRating.php` and the score box, not by a CHECK |
+| `account_song_column` | `account_id`, `column_key`, `shown` (009) | PK `(account_id, column_key)`, no `REFERENCES`; one row per song list column the account has ticked or unticked in the column picker; `column_key` is a `songColumns.php` key or `rater_<account id>`; no row = that column's default |
 | `rating_audit` | `account_id`, `song_id`, `field` (`score`\|`note`), `value`, `previous_value` (TEXT), `created_at` | append-only; polled by `id` |
 | `invite` | `code` (unique), `created_at`, `created_by_account_id`, `used_at`, `used_by_account_id`, `revoked_at` | usable = both `used_at` and `revoked_at` NULL |
 | `login_attempt` | `ip`, `attempted_at` | rate limiter |
@@ -48,7 +49,7 @@ All ids are `INTEGER PRIMARY KEY`. Foreign keys are enforced.
 
 `sort` (a `$sortable` key, `score_<id>`/`note_<id>` for each rater, or a stat key `average|deviation|median|mode|highest|lowest|sum|rated`; anything else → `id`), `dir` (`desc`, else asc), `artist`, `album` (validated against the option lists; an album only counts if it belongs to the chosen artist, or has no artist when none is chosen; album wins over artist for filtering), plus card links `songCard`, `albumCard`, `artistCard` (read client-side). The page always renders **all** songs and hides filtered ones with `hidden`; filtering/sorting then happens client-side on the same DOM and mirrors itself into the address with `replaceState`.
 
-`$globalData` produced: `isAdmin`, `raters` (own account first, then by id; each with `isMine`, `scoreClass`, `noteClass`), `sort`, `dir`, `artistOptions`, `albumOptions`, `filterArtist`, `filterAlbum`, `listHeading`, `ratingCursor` (`MAX(account_song.updated_at)`), `auditCursor` (`MAX(rating_audit.id)`), `songs` (one pivoted row per song: `score_<id>`/`note_<id>` columns built with `MAX(CASE WHEN account_id = N ...)`), `linkFields`, `songLinksBySong`, `albumsBySong`, `artistsBySong`, `trackAliases`, `listedAsBySong`, `columns`, `statColumns`, `blindRating`.
+`$globalData` produced: `isAdmin`, `raters` (own account first, then by id; each with `isMine`, `scoreClass`, `noteClass`), `sort`, `dir`, `artistOptions`, `albumOptions`, `filterArtist`, `filterAlbum`, `listHeading`, `ratingCursor` (`MAX(account_song.updated_at)`), `auditCursor` (`MAX(rating_audit.id)`), `songs` (one pivoted row per song: `score_<id>`/`note_<id>` columns built with `MAX(CASE WHEN account_id = N ...)`), `linkFields`, `songLinksBySong`, `albumsBySong`, `artistsBySong`, `trackAliases`, `listedAsBySong`, `namesBySong` (every name per song, current first, then by name), `columns` (`aliases` carries `sortable => false`), `statColumns`, `columnPicker` (`columns`, `raters`, `stats` groups of `{key, label, hueAttr, shown, hideClass}`), `tableHideClasses` (the `songHide…` classes of the hidden columns, for `#songListTable`), `blindRating`.
 
 The per-rater column pivot and ORDER BY expressions are the only dynamic SQL; rater ids are cast to int.
 
@@ -56,7 +57,7 @@ Rendering is split: `views/songs.view.php` (table), `partials/songRows.php` (sin
 
 ### `songRows.php` contract
 
-Requires `$globalData['songs']` (and optionally `raters`, `linkFields`, `songLinksBySong`, `albumsBySong`, `artistsBySong`, `listedAsBySong`, `filterArtist/Album`, `statColumns`, `blindRating`). Produces `$songRows[]`, each song augmented with escaped, ready-to-echo values: `hiddenAttr`, `artistHtml`/`albumsHtml` (comma-joined links carrying `data-artist-card-id` / `data-album-card-id`), `titleValue`, `titleTooltipAttr` (all names), `titleAliasedClass`, `displayYearValue`, `durationValue`, `linkChips`, `linkAbbrs`, embed ids, `ratings[raterId]` (value, empty/gated classes, pills, title attr), `stats` (from `musicSongStatFields`) and `statCells[key]`. Also defines `$raterLabels` (its `score` and `note` are HTML, the rater's name in a `.songRaterName` span, and belong in element content, never an attribute), `$visibleCount` and the label variables used by both view and card. Gate decision lives here for first render: `$notesGated` / `$scoresGated` = `blindRating` ∧ reader has no note / no score on that song; statistics cells (except `rated`) follow the score gate.
+Requires `$globalData['songs']` (and optionally `raters`, `linkFields`, `songLinksBySong`, `albumsBySong`, `artistsBySong`, `listedAsBySong`, `namesBySong`, `filterArtist/Album`, `statColumns`, `blindRating`). Produces `$songRows[]`, each song augmented with escaped, ready-to-echo values: `hiddenAttr`, `artistHtml`/`albumsHtml` (comma-joined links carrying `data-artist-card-id` / `data-album-card-id`), `titleValue`, `titleTooltipAttr` (all names, comma-joined), `titleAliasedClass`, `aliasesValue` (every name but the one `titleValue` shows, newline-joined), `titlesAttr` (` data-titles="…"`, every name as JSON, or `''` for a song with no name besides its current title), `displayYearValue`, `durationValue`, `linkChips`, `linkAbbrs`, embed ids, `ratings[raterId]` (value, empty/gated classes, pills, title attr), `stats` (from `musicSongStatFields`) and `statCells[key]`. Also defines `$raterLabels` (its `score` and `note` are HTML, the rater's name in a `.songRaterName` span, and belong in element content, never an attribute), `$visibleCount` and the label variables used by both view and card. Gate decision lives here for first render: `$notesGated` / `$scoresGated` = `blindRating` ∧ reader has no note / no score on that song; statistics cells (except `rated`) follow the score gate.
 
 ## Ajax endpoints (`ajax/`, route prefix `/music/ajax/`)
 
@@ -66,7 +67,8 @@ All POST + JSON + CSRF header. "Admin" = `requireMusicAdminJson`. Business resul
 |---|---|---|---|
 | `artist-alias` | `artistAlias.php` | admin | Array of `{provided_name, og_name?, artist_id: id\|'new', is_actual, group?, store_name?, also_alias_provided_name?}` → array of `{provided_name, artist_id, artist_name, status, message, songs[]}`. One transaction. `'new'` creates an artist; rows sharing `group` (default the provided name) share one new artist. `store_name:false` resolves without storing a spelling. Returns the artist's songs for the song-step dropdown |
 | `song` | `song.php` | admin | Array of `{artist_id, title, song_id: 'new'\|'skip'\|id, og_name?, also_alias_provided_name?}` → results with `song_id`, `song_alias_id` (when the song is listed under a non-actual alias), `status` ∈ ok/duplicate/skipped/error. Duplicate = same artist + same name |
-| `song-edit` | `songEdit.php` | admin | `{id, field:'title', value}`: rename. Refuses empty or clashing (same artist, other song) names; promotes an existing alias, else renames the actual alias (no history kept: LFT) |
+| `song-edit` | `songEdit.php` | admin | `{id, field:'title', value}`: rename. Refuses empty or clashing (same artist, other song) names; promotes an existing alias, else renames the actual alias (no history kept: LFT). `ok` also returns `titles`, every name the song now has, current first |
+| `song-columns` | `songColumns.php` | any account | `{column, shown}` → `{status:'ok'}`; one upsert into `account_song_column`. 400 for a column `musicSongColumnKey()` does not know or a `shown` that is not a JSON boolean |
 | `song-artist`, `song-album` | `songArtist.php`, `songAlbum.php` (share `songJoin.php`, which is **not a route**) | admin | `{song_id, artist_id\|album_id, action: add\|remove}` → `ok`/`duplicate`/`error` |
 | `song-link` | `songLink.php` | admin | `{song_id, field ∈ six columns, value}`; Spotify/YouTube URLs are reduced to the bare id, empty clears |
 | `song-year`, `song-duration` | `songYear.php`, `songDuration.php` | admin | `{song_id, value}`; year digits only; duration `M:SS` (seconds 00–59) or whole seconds; empty clears |
@@ -94,6 +96,7 @@ Guard helpers available in endpoints: `requireSongJson($db, $id, $extra)`, `requ
 | `links.php` | `songLinkFields()`, `songLinkHref()`, `albumSongsHref()`, `spotifyTrackIdIn()`, `youtubeVideoIdIn()` |
 | `hue.php` | `MUSIC_HUE_DEFAULT` (240), `musicHueFor($id)` = `(id*73)%360`, `musicActiveHue()`, `musicHueOf($id, $stored)`, `musicReadHue($raw)` (0–359 or null) |
 | `blindRating.php` | `musicBlindRating()` (session pref, default on), `musicBlindRatingOf($stored)` |
+| `songColumns.php` | `MUSIC_SONG_COLUMNS` (the fixed columns, in table order), `MUSIC_SONG_STAT_COLUMNS` (also `routes/songs.php`'s PHP-sorted orders), `MUSIC_SONG_COLUMNS_HIDDEN_BY_DEFAULT`, `musicSongColumnKey($raw)`, `musicSongColumnChoices($db, $accountId)`, `musicSongColumnShown($choices, $key)`, `musicSongHideClass($key)` |
 | `changes.php` | `MUSIC_CHANGE_GROUPS` (the five kinds of change, in page order), `musicChangelog()` (reads `changelog.php`), `musicChangeText($entry, $locale)` (blank or missing → `en`), `musicChangeHtml($text)` (escaped, `**bold**` only) |
 | `listSort.php` | `musicListSort`, `musicListDir`, `musicListStatColumns`, `musicListSorted`, `musicListHeaders` |
 | `rateLimit.php`, `inviteCode.php` | login throttle; invite code generation/format/normalise |

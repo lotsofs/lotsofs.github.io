@@ -4,6 +4,7 @@ return [
 
 	'song.column.artist' => 'Artyst',
 	'song.column.title' => 'Titel',
+	'song.column.aliases' => 'Ek bekend as',
 	'song.column.album' => 'Album',
 	'song.column.year' => 'Jier',
 	'song.column.statHighest' => 'Heechst',
@@ -71,6 +72,8 @@ return [
 	'song.list.gateScoreHint' => 'Ferstoppe oant dit nûmer in eigen skoare hat',
 	'song.list.cardViewToggleOn' => 'Kaartwerjefte',
 	'song.list.cardViewToggleOff' => 'Tabelwerjefte',
+	'song.list.columnPicker' => 'Kolommen',
+	'song.list.columnsNotSaved' => 'Dyn kar fan kolommen is net bewarre, dus de folgjende kear stiet it wer sa as earder: {error}',
 	'song.list.toastScore' => '{name} joech {song} in {value}',
 	'song.list.toastNote' => '{name} skreau in notysje oer {song}: {value}',
 	'song.list.toastScoreUpdated' => '{name} wizige de wurdearring foar {song} fan {previous} nei {value}',

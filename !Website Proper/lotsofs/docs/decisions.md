@@ -8,7 +8,7 @@ The songs page loads real Spotify, YouTube and SoundCloud iframes, which set coo
 
 The shape that works: an **account setting, off by default and changeable any time** ("load Spotify/YouTube players inline"), with a plain link in place of the player while it is off, optionally offered unticked at signup. Every viewer is logged in, so a setting covers the whole audience with no banner. It is not urgent while the audience is a few invited friends; it decides whether the embeds can ever be shown more widely.
 
-**If adopted.** An `account` column (migration `009` or later), a toggle in the cog menu beside blind rating, and `songRows.php` rendering the link while it is off.
+**If adopted.** An `account` column (migration `010` or later), a toggle in the cog menu beside blind rating, and `songRows.php` rendering the link while it is off.
 
 **Verify.** With the setting off, loading the songs page makes no request to Spotify, YouTube or SoundCloud.
 

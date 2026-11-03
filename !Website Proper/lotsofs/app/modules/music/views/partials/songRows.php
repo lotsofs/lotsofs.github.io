@@ -6,6 +6,7 @@ require_once __MODULES__ . '/music/stats.php';
 
 $artistLabel = htmlspecialchars(t('song.column.artist'));
 $albumLabel = htmlspecialchars(t('song.column.album'));
+$aliasesLabel = htmlspecialchars(t('song.column.aliases'));
 $yearLabel = htmlspecialchars(t('song.column.year'));
 $durationLabel = htmlspecialchars(t('song.column.duration'));
 $linksLabel = htmlspecialchars(t('song.column.links'));
@@ -16,6 +17,7 @@ $songRaters = $globalData['raters'] ?? [];
 $songLinkFields = $globalData['linkFields'] ?? songLinkFields();
 $songLinksBySong = $globalData['songLinksBySong'] ?? [];
 $listedAsBySong = $globalData['listedAsBySong'] ?? [];
+$namesBySong = $globalData['namesBySong'] ?? [];
 $albumsBySong = $globalData['albumsBySong'] ?? [];
 $artistsBySong = $globalData['artistsBySong'] ?? [];
 $filterArtist = $globalData['filterArtist'] ?? null;
@@ -88,12 +90,20 @@ foreach ($globalData['songs'] as $song) {
 
 	$canonicalTitle = $song['title'] ?? '';
 	$listedAs = $listedAsBySong[(int)$song['id']] ?? null;
-	$allNames = $song['all_names'] ?? '';
+	$names = $namesBySong[(int)$song['id']] ?? [];
 	$song['titleAliasedClass'] = $listedAs === null ? '' : ' songTitleAliased';
 	$song['canonicalTitleAttr'] = htmlspecialchars($canonicalTitle);
-	$titleTooltip = $allNames !== '' ? $allNames : $canonicalTitle;
+	$titleTooltip = $names ? implode(', ', $names) : $canonicalTitle;
 	$song['titleTooltipAttr'] = $titleTooltip === '' ? '' : ' title="' . htmlspecialchars($titleTooltip) . '"';
 	$song['titleValue'] = htmlspecialchars($listedAs ?? $canonicalTitle);
+
+	/* Every name but the one the title cell shows, so a track an album lists under
+	   another name has its real title here. The names travel with the cell for
+	   songs.js, which redoes this when the album filter changes the title. */
+	$song['aliasesValue'] = htmlspecialchars(implode("\n", array_values(array_diff($names, [$listedAs ?? $canonicalTitle]))));
+	$song['titlesAttr'] = array_diff($names, [$canonicalTitle])
+		? ' data-titles="' . htmlspecialchars(json_encode($names)) . '"'
+		: '';
 
 	$song['albumsValue'] = htmlspecialchars($song['albums'] ?? '');
 	$song['artistIdsAttr'] = htmlspecialchars($song['artist_ids'] ?? '');

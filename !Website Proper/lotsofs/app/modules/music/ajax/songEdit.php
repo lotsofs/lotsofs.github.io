@@ -65,4 +65,7 @@ else {
 	$db->query("UPDATE song_alias SET name = ? WHERE song_id = ? AND is_actual = 1", [$value, $id]);
 }
 
-echo json_encode(['status' => 'ok', 'value' => $value, 'message' => '']);
+/// Every name the song now has, in the song list's order, for its Also Known As cell.
+$titles = array_column($db->query("SELECT name FROM song_alias WHERE song_id = ? ORDER BY is_actual DESC, name COLLATE NOCASE", [$id])->fetchAll(), 'name');
+
+echo json_encode(['status' => 'ok', 'value' => $value, 'message' => '', 'titles' => $titles]);

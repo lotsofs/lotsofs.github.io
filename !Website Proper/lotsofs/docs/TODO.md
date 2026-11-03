@@ -13,11 +13,13 @@ Detail in [tasks.md](tasks.md).
 | [PWR](tasks.md#pwr--no-password-reset) | No password reset: a locked-out user needs the live database edited by hand (hideandseek has the same gap) | Medium |
 | [TRN](tasks.md#trn--de-and-fy-translations-are-unreviewed) | The `de` and `fy` (site default) translations are first drafts by Claude, never reviewed by a native speaker | Medium |
 | [ALI](tasks.md#ali--aliases-cannot-be-deleted-or-promoted) | Album, artist and song aliases can be added but never deleted or made current again | Medium |
+| [NAM](tasks.md#nam--wrong-song-names-and-album-listings-in-the-data) | All 16 songs with a second name have wrong data (14 album tracks listed under another name, 2 curly-apostrophe twins); the owner fixes them by hand | Low |
 | [LGO](tasks.md#lgo--logout-takes-two-redirects) | Logout redirects to `/music/songs`, which redirects again to `/music/login`; go straight to login | Low |
 | [REG](tasks.md#reg--registration-misreports-database-failures) | Registration reports "invalid invite" for any failure in its transaction, hiding real database errors (hideandseek too) | Low |
 | [REN](tasks.md#ren--rename-the-album-card-modal) | `#albumCardModal` and `albumCard.js` host artist cards too; rename them kind-neutral, as a change of its own | Low |
 | [LFT](tasks.md#lft--leftovers-from-the-2026-09-25-audit) | Audit leftovers: song renames keep no old name, and two SELECTs are duplicated between route and ajax files | Low |
 | [BND](tasks.md#bnd--bandcamp-does-not-embed) | Bandcamp links open Bandcamp instead of embedding; an embed needs a numeric id that the page URL lacks | Low |
+| [GRD](tasks.md#grd--song-table-lines-are-thicker-in-the-header-at-some-display-scales) | Song table column lines are shadows in the header and borders in the body, so at 150%+ (or 125% with columns hidden) some are 2px in the header and 1px in the body | Low |
 | [SWH](tasks.md#swh--statistics-for-does-not-reach-the-graph-or-song-card) | The cards' "Statistics for" control changes their tables but not the graph or the song card; deliberate for now | Low |
 | [TOA](tasks.md#toa--own-ratings-pop-toasts) | `TOAST_SHOW_OWN_EVENTS` is `true`, so raters get toasts for their own ratings; kept on by the owner, flip only when told | Low |
 

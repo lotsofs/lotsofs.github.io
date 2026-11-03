@@ -6,13 +6,14 @@ Dependencies between the plans:
 
 - hideandseek's `001` freezes the day the module first ships (MIG). CAS, and the table PIN needs, are edits in place before that and table rebuilds after, so they come first. PRV and WHO also want doing before players arrive. Shipping it means taking it off `$unshippedModules` in `build-deploy.php`.
 - LFT's song-rename half waits on ALI: keeping every old name is clutter until aliases can be deleted.
+- NAM can only be fixed through the site once ALI lands; until then it means editing the database by hand.
 - PAR waits on JST: there is nothing to run a JS test with.
 
 ## PWR — No password reset
 
 Music has no password reset. A user who forgets their password stays locked out until someone edits `account.password_hash` in the live database file (mode `0640`) by hand. hideandseek copied music's account system and has none either. Read in the code.
 
-**Plan.** The site has no email, so reset has to go through an admin: an admin action on the accounts page issues a one-time reset code (like an invite code; `inviteCode.php` already generates and normalises those), and the user redeems it on a reset page to set a new password. Hash with `hashPassword()`, never `password_hash()` directly (see `CLAUDE.md`). Clear that account's login rate-limit rows on success. Music needs a new migration for the code table, `009` or later.
+**Plan.** The site has no email, so reset has to go through an admin: an admin action on the accounts page issues a one-time reset code (like an invite code; `inviteCode.php` already generates and normalises those), and the user redeems it on a reset page to set a new password. Hash with `hashPassword()`, never `password_hash()` directly (see `CLAUDE.md`). Clear that account's login rate-limit rows on success. Music needs a new migration for the code table, `010` or later.
 
 **Verify.** A test that issues a code, resets, logs in with the new password, and refuses the same code a second time.
 
@@ -37,6 +38,38 @@ Album, artist and song cards can add an alias (a former or alternative name, sho
 **Verify.** Tests for delete, for refusing to delete the current name, and for promote; the lists and the songs page show the promoted name.
 
 **Docs.** `music-reference.md` (endpoints), `music-frontend.md` (card edit mode), `music.md` if the alias-pattern bullet needs it.
+
+## NAM — Wrong song names and album listings in the data
+
+Every song in `data/music.sqlite` that has a second `song_alias` name was judged wrong by the owner on 2026-11-03, who will fix them by hand. Which part of each is wrong (the current title, the second name, or the album listing) was not said. Read with a read-only query on 2026-11-03.
+
+Album tracks whose `album_track.song_alias_id` points at a name that is not the song's current one, so filtering the song list to that album retitles them (song id, current title, listed as, album and track):
+
+- 11 *Will Of The People*, as "Will of the People" (Will Of The People #1)
+- 17 *Kill Or Be Killed*, as "Kill or Be Killed" (Will Of The People #7)
+- 28 *Get up and Fight*, as "Get Up and Fight" (Simulation Theory #8)
+- 33 *(Drill Sergeant)*, as "Drill Sergeant" (Drones #2)
+- 38 *(JFK)*, as "JFK" (Drones #7)
+- 60 *United States of Eurasia (+Collateral Damage)*, as "United States of Eurasia" (The Resistance #4)
+- 64 *I Belong to You (+Mon Coeur S'Ouvre a Ta Voix)*, as "I Belong to You" (The Resistance #8)
+- 65 *Exogenesis: Symphony Pt. 1 (Overture)*, as "Exogenesis: Symphony Part 1 (Overture)" (The Resistance #9)
+- 66 *Exogenesis: Symphony Pt. 2 (Cross-pollination)*, as "Exogenesis: Symphony Part 2 (Cross-Pollination)" (The Resistance #10)
+- 67 *Exogenesis: Symphony Pt. 3 (Redemption)*, as "Exogenesis: Symphony Part 3 (Redemption)" (The Resistance #11)
+- 82 *Time is Running Out*, as "Time Is Running Out" (Absolution #3)
+- 89 *Butterflies & Hurricanes*, as "Butterflies and Hurricanes" (Absolution #10)
+- 99 *Plug in Baby*, as "Plug In Baby" (Origin of Symmetry #5)
+- 118 *Hate This and I'll Love You*, as "Hate This & I'll Love You" (Showbiz #12)
+
+Songs whose second name only swaps the straight apostrophe for a curly one, with no album listing them under it:
+
+- 14 *Won't Stand Down* (Won’t Stand Down), on Will Of The People
+- 16 *You Make Me Feel Like It's Halloween* (You Make Me Feel Like It’s Halloween), on Will Of The People
+
+**Plan.** The owner corrects each by hand. The site can rename a song (`song-edit` promotes a name the song already has, or overwrites the current one), but it cannot delete a name or clear a track's listed-as name. That is ALI, so either do ALI first or edit the database directly. The query ran against the local `data/music.sqlite`; check that the host's file holds the same before fixing there.
+
+**Verify.** Rerun both queries, `album_track` joined to `song_alias` where `is_actual = 0` and songs with any non-current name, and get only what the owner means to keep.
+
+**Docs.** None.
 
 ## LGO — Logout takes two redirects
 
@@ -90,6 +123,16 @@ Bandcamp links render as plain links, while Spotify, YouTube and SoundCloud embe
 **Verify.** A pasted embed URL stores the id, and the card shows the player.
 
 **Docs.** `music.md` (the `song_link` bullet says Bandcamp is link-only, and why), `music-reference.md`.
+
+## GRD — Song table lines are thicker in the header at some display scales
+
+The song table's column lines are box-shadows in the header (a sticky header cannot use borders, see `music.md`) but borders in the body, and the two round differently at a fractional display scale. Some lines come out 2 device pixels wide in the header and 1 in the body. They never sit in a different place: the first pixel always agrees. Reproduced 2026-11-03 in headless Chrome, comparing a header pixel row with the first body row. With the default columns it shows at 150% and 175%, but not at 100% or 125%. Which lines it hits depends on where the boundaries fall, so hiding columns with the column picker can bring it out at 125% too. The rater-edge check logged in DONE.md the same day found no differences at four scales, on different data. The rater edges and the note columns' grey line are already shadows in both, for this reason.
+
+**Plan.** Draw the body's grid lines as inset shadows too, and drop the `td` borders. A `box-shadow` list does not merge across rules, so every rule that gives a `td` a shadow (rater edges, the last row's bottom edge, the statistics block's left edge and its column-picker chain, the left-edge chain on the fixed columns) has to carry the grid lines in its own list.
+
+**Verify.** Header against body, line for line, at 100%, 125%, 150% and 175%, with the default columns and with some hidden.
+
+**Docs.** `music.md` (the sticky-header trap and the rater-edge note in "Cards").
 
 ## SWH — Statistics for does not reach the graph or song card
 

@@ -4,6 +4,7 @@ return [
 
 	'song.column.artist' => 'Interpret',
 	'song.column.title' => 'Titel',
+	'song.column.aliases' => 'Auch bekannt als',
 	'song.column.album' => 'Album',
 	'song.column.year' => 'Jahr',
 	'song.column.statHighest' => 'Max',
@@ -71,6 +72,8 @@ return [
 	'song.list.gateScoreHint' => 'Verborgen, bis dieses Lied eine eigene Wertung hat',
 	'song.list.cardViewToggleOn' => 'Kartenansicht',
 	'song.list.cardViewToggleOff' => 'Tabellenansicht',
+	'song.list.columnPicker' => 'Spalten',
+	'song.list.columnsNotSaved' => 'Deine Spaltenauswahl wurde nicht gespeichert, beim nächsten Mal ist sie also wieder wie vorher: {error}',
 	'song.list.toastScore' => '{name} bewertete {song} mit {value}',
 	'song.list.toastNote' => '{name} schrieb eine Notiz zu {song}: {value}',
 	'song.list.toastScoreUpdated' => '{name} änderte die Wertung für {song} von {previous} auf {value}',

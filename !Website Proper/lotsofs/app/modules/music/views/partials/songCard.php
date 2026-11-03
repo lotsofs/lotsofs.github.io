@@ -10,6 +10,10 @@
 		<div class="songCardInfo">
 			<dt><?= $artistLabel ?></dt>
 			<dd class="songArtistCell" data-field="artist"><?= $song['artistHtml'] ?></dd>
+			<?php if ($song['titlesAttr'] !== ''): ?>
+				<dt><?= $aliasesLabel ?></dt>
+				<dd class="songAliasesCell" data-field="aliases"<?= $song['titlesAttr'] ?>><?= $song['aliasesValue'] ?></dd>
+			<?php endif ?>
 			<dt><?= $albumLabel ?></dt>
 			<dd class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><?= $song['albumsHtml'] ?></dd>
 			<dt><?= $yearLabel ?></dt>

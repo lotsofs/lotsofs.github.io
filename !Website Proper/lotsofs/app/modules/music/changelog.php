@@ -7,6 +7,18 @@ return [
 	[
 		'date' => null,
 		'changes' => [
+			'added' => [
+				[
+					'en' => 'A Columns button beside Card view on the song list lets you choose which columns the table shows, down to one person\'s ratings or a single statistic. Your choice is saved to your account.',
+					'fy' => 'In knop Kolommen neist Kaartwerjefte op de side Lieten lit dy kieze hokker kolommen de tabel sjen lit, oant de wurdearrings fan ien persoan of ien inkelde statistyk ta. Dyn kar wurdt by dyn akkount bewarre.',
+					'de' => 'Eine Schaltfläche „Spalten“ neben „Kartenansicht“ in der Songliste lässt dich wählen, welche Spalten die Tabelle zeigt, bis hin zu den Wertungen einer einzelnen Person oder einer einzelnen Statistik. Deine Auswahl wird in deinem Konto gespeichert.',
+				],
+				[
+					'en' => 'A new Also Known As column on the song list shows a song\'s other titles, one per line. It is hidden until you tick it under Columns. A song\'s card always lists them.',
+					'fy' => 'In nije kolom Ek bekend as op de side Lieten lit de oare titels fan in nûmer sjen, ien per rigel. Hy is ferstoppe oant do him ûnder Kolommen oanfinkest. De kaart fan in nûmer lit se altyd sjen.',
+					'de' => 'Eine neue Spalte „Auch bekannt als“ in der Songliste zeigt die anderen Titel eines Lieds, einen pro Zeile. Sie ist ausgeblendet, bis du sie unter „Spalten“ ankreuzt. Die Karte eines Lieds zeigt sie immer.',
+				],
+			],
 			'changed' => [
 				[
 					'en' => 'On the song list, each person\'s name above their columns, and on the score and note labels in a card, is now in their own site colour.',

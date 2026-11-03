@@ -592,6 +592,7 @@ return [
 		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'title', 'value' =>'After Rename']);
 		assertSame('ok', $response['json']['status'], 'status');
 		assertSame('After Rename', $response['json']['value'], 'echoed title');
+		assertSame(['After Rename'], $response['json']['titles'], 'and the names the song now has, for its Also Known As cell');
 
 		$stored = $ctx->songTitle($songId);
 		assertSame('After Rename', $stored, 'stored title');
@@ -684,6 +685,7 @@ return [
 		$response = $ctx->post(EDIT_ENDPOINT, ['id' => $songId, 'field' => 'title', 'value' => 'Promoted Sleeve Title']);
 		assertSame(200, $response['status'], 'the rename does not blow up on the unique index');
 		assertSame('ok', $response['json']['status'], 'status');
+		assertSame(['Promoted Sleeve Title', 'Promoted Studio Title'], $response['json']['titles'], 'the names come back with the promoted one first');
 
 		$aliases = $ctx->db()->query("SELECT name, is_actual FROM song_alias WHERE song_id = {$songId} ORDER BY is_actual DESC")->fetchAll();
 		assertSame(2, count($aliases), 'both names are still there');

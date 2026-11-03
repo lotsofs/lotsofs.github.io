@@ -50,8 +50,10 @@ foreach ($raters as $rater) {
 
 $joins = " LEFT JOIN (SELECT song_id{$aggregates} FROM account_song GROUP BY song_id) r ON r.song_id = s.id";
 
+require_once __MODULES__ . '/music/songColumns.php';
+
 /// The orders SQLite cannot express; these rows are sorted in PHP below.
-$statOrders = ['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated'];
+$statOrders = MUSIC_SONG_STAT_COLUMNS;
 
 /// ORDER BY that keeps blank cells last in both directions.
 function songsOrderBy($column, $dir) {
@@ -160,11 +162,6 @@ $globalData['songs'] = $db->query("
 			ORDER BY album_name COLLATE NOCASE
 		)) AS albums,
 		st.name AS title,
-		(SELECT group_concat(name, ', ') FROM (
-			SELECT name FROM song_alias
-			WHERE song_id = s.id
-			ORDER BY is_actual DESC, name COLLATE NOCASE
-		)) AS all_names,
 		(SELECT group_concat(artist_name, ', ') FROM (
 			SELECT (SELECT name FROM artist_alias
 				WHERE artist_id = sa.artist_id
@@ -304,10 +301,19 @@ foreach ($trackAliases as $track) {
 $globalData['trackAliases'] = $trackAliases;
 $globalData['listedAsBySong'] = $listedAsBySong;
 
+/// Every name of every song, current first: the title's tooltip and the Also Known As column.
+$namesBySong = [];
+foreach ($db->query("SELECT song_id, name FROM song_alias ORDER BY song_id, is_actual DESC, name COLLATE NOCASE")->fetchAll() as $row) {
+	$namesBySong[(int)$row['song_id']][] = $row['name'];
+}
+
+$globalData['namesBySong'] = $namesBySong;
+
 $columns = [
 	['key' => 'id', 'type' => 'number', 'class' => 'songIdCell', 'label' => t('song.column.id')],
 	['key' => 'artist', 'type' => 'text', 'class' => 'songArtistCell', 'label' => t('song.column.artist')],
 	['key' => 'title', 'type' => 'text', 'class' => 'songTitleCell', 'label' => t('song.column.title')],
+	['key' => 'aliases', 'type' => 'text', 'class' => 'songAliasesCell', 'label' => t('song.column.aliases'), 'sortable' => false],
 	['key' => 'album', 'type' => 'text', 'class' => 'songAlbumCell', 'label' => t('song.column.album')],
 	['key' => 'year', 'type' => 'number', 'class' => 'songYearCell', 'label' => t('song.column.year')],
 	['key' => 'duration', 'type' => 'duration', 'class' => 'songDurationCell', 'label' => t('song.column.duration')],
@@ -334,7 +340,8 @@ foreach ($raters as $index => $rater) {
 		'group' => "rater_{$id}",
 		'groupStart' => true,
 		'groupLabel' => $rater['account_name'],
-		'groupClass' => 'songRaterGroup songRaterName' . ($isMine ? ' songMineCell songMineGroup' : ''),
+		/// songRaterGroup<id> is what the column picker hides this header by.
+		'groupClass' => 'songRaterGroup songRaterName songRaterGroup' . $id . ($isMine ? ' songMineCell songMineGroup' : ''),
 		'hueAttr' => $raters[$index]['hueAttr'],
 	];
 	$columns[] = [
@@ -373,6 +380,37 @@ foreach ($statColumns as $stat) {
 $globalData['statColumns'] = $statColumns;
 $globalData['raters'] = $raters;
 $globalData['accountId'] = $accountId;
+
+/// The column picker, in table order: the fixed columns, each rater, the statistics.
+$columnLabels = array_column($columns, 'label', 'key') + ['links' => t('song.column.links')];
+
+$columnPicker = ['columns' => [], 'raters' => [], 'stats' => []];
+foreach (MUSIC_SONG_COLUMNS as $key) {
+	$columnPicker['columns'][] = ['key' => $key, 'label' => $columnLabels[$key], 'hueAttr' => ''];
+}
+foreach ($raters as $rater) {
+	$columnPicker['raters'][] = ['key' => 'rater_' . (int)$rater['id'], 'label' => $rater['account_name'], 'hueAttr' => $rater['hueAttr']];
+}
+foreach ($statColumns as $stat) {
+	$columnPicker['stats'][] = ['key' => $stat['key'], 'label' => $stat['name'], 'hueAttr' => ''];
+}
+
+$columnChoices = musicSongColumnChoices($db, $accountId);
+$tableHideClasses = '';
+foreach ($columnPicker as $group => $entries) {
+	foreach ($entries as $index => $entry) {
+		$shown = musicSongColumnShown($columnChoices, $entry['key']);
+		$columnPicker[$group][$index]['shown'] = $shown;
+		$columnPicker[$group][$index]['hideClass'] = musicSongHideClass($entry['key']);
+
+		if (!$shown) {
+			$tableHideClasses .= ' ' . musicSongHideClass($entry['key']);
+		}
+	}
+}
+
+$globalData['columnPicker'] = $columnPicker;
+$globalData['tableHideClasses'] = $tableHideClasses;
 
 require_once __MODULES__ . '/music/blindRating.php';
 $globalData['blindRating'] = musicBlindRating();

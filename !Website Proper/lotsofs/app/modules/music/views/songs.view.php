@@ -18,6 +18,12 @@
 				#songListTable td[data-account-id="<?= (int)$rater['id'] ?>"] { --hue: <?= (int)$rater['hue'] ?>; }
 			<?php endif ?>
 		<?php endforeach ?>
+		<?php /* The column picker's rater entries; the reader's own columns can be hidden too.
+		         The header cells are matched by what they already carry, which tests pin. */ ?>
+		<?php foreach ($globalData['raters'] as $rater): ?>
+			<?php $raterId = (int)$rater['id'] ?>
+			#songListTable.songHideRater<?= $raterId ?> :is(td[data-account-id="<?= $raterId ?>"], th[data-sort-key="score_<?= $raterId ?>"], th[data-sort-key="note_<?= $raterId ?>"], th.songRaterGroup<?= $raterId ?>) { display: none; }
+		<?php endforeach ?>
 	</style>
 	<script>
 		if (window.matchMedia("(max-width: 700px)").matches) {
@@ -68,7 +74,28 @@
 		</form>
 
 		<div class="songSidePanel">
-			<button type="button" id="songCardViewToggle" class="songCardViewToggle" aria-pressed="false"><?= t('song.list.cardViewToggleOn') ?></button>
+			<div class="songSideButtons">
+				<button type="button" id="songCardViewToggle" class="songCardViewToggle" aria-pressed="false"><?= t('song.list.cardViewToggleOn') ?></button>
+				<details class="songColumnPicker" id="songColumnPicker">
+					<summary class="songColumnPickerButton"><?= t('song.list.columnPicker') ?></summary>
+					<div class="songColumnPickerMenu">
+						<?php foreach ($globalData['columnPicker'] as $group => $entries): ?>
+							<div class="songColumnPickerGroup">
+								<?php foreach ($entries as $entry): ?>
+									<label class="songColumnPickerRow">
+										<input type="checkbox" data-column="<?= htmlspecialchars($entry['key']) ?>" data-hide-class="<?= htmlspecialchars($entry['hideClass']) ?>"<?= $entry['shown'] ? ' checked' : '' ?>>
+										<?php if ($group === 'raters'): ?>
+											<span class="songRaterName"<?= $entry['hueAttr'] ?>><?= htmlspecialchars($entry['label']) ?></span>
+										<?php else: ?>
+											<span><?= htmlspecialchars($entry['label']) ?></span>
+										<?php endif ?>
+									</label>
+								<?php endforeach ?>
+							</div>
+						<?php endforeach ?>
+					</div>
+				</details>
+			</div>
 			<p id="songEditHint"><?= t('song.list.editHint') ?></p>
 		</div>
 
@@ -82,14 +109,18 @@
 				</select>
 			</div>
 			<div class="songListScroll">
-				<table id="songListTable" class="hideResultColumn" data-tooltip-titles>
+				<table id="songListTable" class="hideResultColumn<?= $globalData['tableHideClasses'] ?>" data-tooltip-titles>
 					<thead>
 						<tr>
 							<?php foreach ($globalData['columns'] as $column): ?>
 								<?php if (!isset($column['group']) && ($column['section'] ?? '') !== 'stats'): ?>
-									<th rowspan="2" class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>">
-										<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
-									</th>
+									<?php if ($column['sortable'] ?? true): ?>
+										<th rowspan="2" class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>">
+											<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
+										</th>
+									<?php else: ?>
+										<th rowspan="2" class="<?= $column['class'] ?>"><?= htmlspecialchars($column['label']) ?></th>
+									<?php endif ?>
 								<?php endif ?>
 							<?php endforeach ?>
 							<th rowspan="2" class="songLinksCell"><?= $linksLabel ?></th>
@@ -123,6 +154,7 @@
 								<td class="songIdCell" data-field="id"><?= htmlspecialchars($song['id']) ?></td>
 								<td class="songArtistCell" data-field="artist" title="<?= $song['artistValue'] ?>"><span class="songCellText"><?= $song['artistHtml'] ?></span></td>
 								<td class="songTitleCell<?= $song['titleAliasedClass'] ?>" data-field="title" data-canonical-title="<?= $song['canonicalTitleAttr'] ?>"<?= $song['titleTooltipAttr'] ?>><span class="songCellText"><?= $song['titleValue'] ?></span></td>
+								<td class="songAliasesCell" data-field="aliases" title="<?= $song['aliasesValue'] ?>"<?= $song['titlesAttr'] ?>><span class="songCellText"><?= $song['aliasesValue'] ?></span></td>
 								<td class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><span class="songCellText"><?= $song['albumsHtml'] ?></span></td>
 								<td class="songYearCell" data-field="year"><?= $song['displayYearValue'] ?></td>
 								<td class="songDurationCell" data-field="duration"><?= $song['durationValue'] ?></td>

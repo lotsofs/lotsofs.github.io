@@ -37,6 +37,7 @@ nav .navMenuButton,
 nav .navLogout button,
 .songFilters button[type="submit"],
 .songCardViewToggle,
+.songColumnPickerButton,
 .cardEditBtn,
 .cardModalBtn,
 .songEditRowRemove,
@@ -72,7 +73,8 @@ nav a,
 nav .navMenuButton,
 nav .navLogout button,
 .songFilters button[type="submit"],
-.songCardViewToggle {
+.songCardViewToggle,
+.songColumnPickerButton {
 	padding: .4em .8em;
 	text-decoration: none;
 	white-space: nowrap;
@@ -458,6 +460,83 @@ td.albumStatsRatedCell {
 	}
 }
 
+.songSideButtons {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.6em;
+}
+
+.songColumnPicker {
+	position: relative;
+
+	&[open] .songColumnPickerButton {
+		background-color: #333333;
+		border-color: var(--mineAccent);
+	}
+}
+
+.songColumnPickerButton {
+	display: block;
+	list-style: none;
+
+	&::-webkit-details-marker,
+	&::marker {
+		display: none;
+	}
+
+	&:hover {
+		background-color: var(--buttonFillHover);
+	}
+}
+
+/* Above the table's sticky header, which is z-index 3. */
+.songColumnPickerMenu {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 4;
+	margin-top: 0.4em;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5em;
+	max-height: 70vh;
+	overflow-y: auto;
+	background-color: var(--buttonFill);
+	border: solid 1px #000000;
+	border-radius: 12px;
+	padding: 0.6em;
+	white-space: nowrap;
+}
+
+.songColumnPickerGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2em;
+
+	& + & {
+		border-top: 1px solid var(--border);
+		padding-top: 0.5em;
+	}
+}
+
+.songColumnPickerRow {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	font-size: 0.9em;
+	cursor: pointer;
+
+	input[type="checkbox"] {
+		margin: 0;
+		accent-color: hsl(var(--hue), 100%, 60%);
+	}
+}
+
+/* The picker only changes the table, so in card view it would do nothing. */
+.songCardView .songColumnPicker {
+	display: none;
+}
+
 .songListArea {
 	grid-column: 1 / -1;
 	grid-row: 2;
@@ -636,7 +715,17 @@ td.albumStatsRatedCell {
 		box-shadow: inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
-	thead .songIdCell {
+	/* The table's left edge is the ID column's, or with the column picker hiding
+	   it, the first fixed column still showing. The td rule below follows the
+	   same chain. */
+	thead .songIdCell,
+	&.songHideId thead .songArtistCell,
+	&.songHideId.songHideArtist thead .songTitleCell,
+	&.songHideId.songHideArtist.songHideTitle thead .songAliasesCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases thead .songAlbumCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum thead .songYearCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear thead .songDurationCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration thead .songLinksCell {
 		box-shadow: inset 1px 0 0 var(--border), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
@@ -645,8 +734,16 @@ td.albumStatsRatedCell {
 		box-shadow: inset -1px 0 0 var(--border), inset 2px 0 0 var(--raterEdge), inset -3px 0 0 var(--raterEdge), inset 0 2px 0 var(--raterEdge);
 	}
 
-	/* Left edge setting the statistics block apart; a header cell's edges are one shadow. */
-	thead .songStatAverageCell {
+	/* Left edge setting the statistics block apart; a header cell's edges are one
+	   shadow. Average draws it, or the first statistic the picker leaves showing. */
+	thead .songStatAverageCell,
+	&.songHideAverage thead .songStatDeviationCell,
+	&.songHideAverage.songHideDeviation thead .songStatMedianCell,
+	&.songHideAverage.songHideDeviation.songHideMedian thead .songStatModeCell,
+	&.songHideAverage.songHideDeviation.songHideMedian.songHideMode thead .songStatHighestCell,
+	&.songHideAverage.songHideDeviation.songHideMedian.songHideMode.songHideHighest thead .songStatLowestCell,
+	&.songHideAverage.songHideDeviation.songHideMedian.songHideMode.songHideHighest.songHideLowest thead .songStatSumCell,
+	&.songHideAverage.songHideDeviation.songHideMedian.songHideMode.songHideHighest.songHideLowest.songHideSum thead .songStatRatedCell {
 		box-shadow: inset 1px 0 0 var(--border), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
@@ -663,7 +760,14 @@ td.albumStatsRatedCell {
 		border-width: 0 1px 1px 0;
 	}
 
-	td.songIdCell {
+	td.songIdCell,
+	&.songHideId td.songArtistCell,
+	&.songHideId.songHideArtist td.songTitleCell,
+	&.songHideId.songHideArtist.songHideTitle td.songAliasesCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases td.songAlbumCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum td.songYearCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear td.songDurationCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration td.songLinksCell {
 		border-left-width: 1px;
 	}
 
@@ -700,12 +804,20 @@ td.albumStatsRatedCell {
 		text-align: right;
 	}
 
-	td.songStatAverageCell {
+	td.songStatAverageCell,
+	&.songHideAverage td.songStatDeviationCell,
+	&.songHideAverage.songHideDeviation td.songStatMedianCell,
+	&.songHideAverage.songHideDeviation.songHideMedian td.songStatModeCell,
+	&.songHideAverage.songHideDeviation.songHideMedian.songHideMode td.songStatHighestCell,
+	&.songHideAverage.songHideDeviation.songHideMedian.songHideMode.songHideHighest td.songStatLowestCell,
+	&.songHideAverage.songHideDeviation.songHideMedian.songHideMode.songHideHighest.songHideLowest td.songStatSumCell,
+	&.songHideAverage.songHideDeviation.songHideMedian.songHideMode.songHideHighest.songHideLowest.songHideSum td.songStatRatedCell {
 		box-shadow: inset 1px 0 0 var(--border);
 	}
 
-	td.songStatDeviationCell,
-	td.songStatRatedCell {
+	/* The contents, not the cell, or its lines would be fainter than the header's. */
+	td.songStatDeviationCell > *,
+	td.songStatRatedCell > * {
 		opacity: 0.65;
 	}
 
@@ -728,6 +840,12 @@ td.albumStatsRatedCell {
 
 	.songTitleCell .songCellText {
 		max-width: 14em;
+	}
+
+	/* One name per line, each clipped by the shared ellipsis rather than wrapped. */
+	.songAliasesCell .songCellText {
+		max-width: 14em;
+		white-space: pre;
 	}
 
 	.songAlbumCell .songCellText {
@@ -818,6 +936,27 @@ td.albumStatsRatedCell {
 	}
 
 	&.hideResultColumn .songResultCell {
+		display: none;
+	}
+
+	/* The column picker. Hidden, not left out: songs.js reads a row's title and
+	   artist whatever is on screen. Each rater's rule is in songs.view.php. */
+	&.songHideId .songIdCell,
+	&.songHideArtist .songArtistCell,
+	&.songHideTitle .songTitleCell,
+	&.songHideAliases .songAliasesCell,
+	&.songHideAlbum .songAlbumCell,
+	&.songHideYear .songYearCell,
+	&.songHideDuration .songDurationCell,
+	&.songHideLinks .songLinksCell,
+	&.songHideAverage .songStatAverageCell,
+	&.songHideDeviation .songStatDeviationCell,
+	&.songHideMedian .songStatMedianCell,
+	&.songHideMode .songStatModeCell,
+	&.songHideHighest .songStatHighestCell,
+	&.songHideLowest .songStatLowestCell,
+	&.songHideSum .songStatSumCell,
+	&.songHideRated .songStatRatedCell {
 		display: none;
 	}
 }
@@ -1017,6 +1156,11 @@ td.albumStatsRatedCell {
 
 	.songTitleCell {
 		order: -2;
+	}
+
+	/* One name per line, and a long one wraps. */
+	.songAliasesCell {
+		white-space: pre-line;
 	}
 
 	.songCardMeta {
