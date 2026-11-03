@@ -1051,14 +1051,14 @@ return [
 		assertClasses(
 			['songRaterGroup', 'songMineCell', 'songMineGroup'],
 			$body,
-			'/<th colspan="2" class="([^"]*)">test_runner<\/th>/',
+			'/<th colspan="2" class="([^"]*)"[^>]*>test_runner<\/th>/',
 			'your name spans both of your columns'
 		);
 
 		$others = $ctx->db()->query("SELECT account_name FROM account WHERE account_name != 'test_runner'")->fetchAll(PDO::FETCH_COLUMN);
 		foreach ($others as $name) {
-			assertClasses(['songRaterGroup'], $body, '/<th colspan="2" class="([^"]*)">' . preg_quote($name, '/') . '<\/th>/', "{$name} is grouped too");
-			assertTrue(preg_match('/<th colspan="2" class="[^"]*songMineGroup[^"]*">' . preg_quote($name, '/') . '<\/th>/', $body) === 0, "{$name} is not highlighted as yours");
+			assertClasses(['songRaterGroup'], $body, '/<th colspan="2" class="([^"]*)"[^>]*>' . preg_quote($name, '/') . '<\/th>/', "{$name} is grouped too");
+			assertTrue(preg_match('/<th colspan="2" class="[^"]*songMineGroup[^"]*"[^>]*>' . preg_quote($name, '/') . '<\/th>/', $body) === 0, "{$name} is not highlighted as yours");
 		}
 	},
 

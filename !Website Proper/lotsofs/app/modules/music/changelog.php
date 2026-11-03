@@ -7,6 +7,23 @@ return [
 	[
 		'date' => null,
 		'changes' => [
+			'changed' => [
+				[
+					'en' => 'On the song list, each person\'s name above their columns, and on the score and note labels in a card, is now in their own site colour.',
+					'fy' => 'Op de side Lieten steane de nammen boppe de kolommen, en by de skoare en de notysje op in kaart, no yn de eigen kleur fan dy persoan.',
+					'de' => 'In der Songliste stehen die Namen über den Spalten sowie bei Wertung und Notiz auf einer Karte jetzt in der eigenen Farbe der jeweiligen Person.',
+				],
+				[
+					'en' => 'On the song list, each person\'s columns now have a thin border in their own site colour, a little stronger around your own.',
+					'fy' => 'Op de side Lieten hawwe de kolommen fan elke persoan no in tinne râne yn harren eigen kleur, om dyn eigen kolommen wat sterker.',
+					'de' => 'In der Songliste haben die Spalten jeder Person jetzt einen dünnen Rand in ihrer eigenen Farbe, um deine eigenen Spalten etwas kräftiger.',
+				],
+			],
+		],
+	],
+	[
+		'date' => '2026-11-02',
+		'changes' => [
 			'added' => [
 				[
 					'en' => 'A What\'s New page in the menu bar, listing what has changed on these pages, newest first.',

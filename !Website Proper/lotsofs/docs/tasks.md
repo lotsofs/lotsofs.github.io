@@ -12,7 +12,7 @@ Dependencies between the plans:
 
 Music has no password reset. A user who forgets their password stays locked out until someone edits `account.password_hash` in the live database file (mode `0640`) by hand. hideandseek copied music's account system and has none either. Read in the code.
 
-**Plan.** The site has no email, so reset has to go through an admin: an admin action on the accounts page issues a one-time reset code (like an invite code; `inviteCode.php` already generates and normalises those), and the user redeems it on a reset page to set a new password. Hash with `hashPassword()`, never `password_hash()` directly (see `CLAUDE.md`). Clear that account's login rate-limit rows on success. Music needs migration `008` for the code table.
+**Plan.** The site has no email, so reset has to go through an admin: an admin action on the accounts page issues a one-time reset code (like an invite code; `inviteCode.php` already generates and normalises those), and the user redeems it on a reset page to set a new password. Hash with `hashPassword()`, never `password_hash()` directly (see `CLAUDE.md`). Clear that account's login rate-limit rows on success. Music needs a new migration for the code table, `009` or later.
 
 **Verify.** A test that issues a code, resets, logs in with the new password, and refuses the same code a second time.
 
@@ -173,7 +173,7 @@ To settle first: are pins shared between the accounts on a game map or private t
 
 ## MIG — hideandseek 001 freezes when it first ships
 
-hideandseek's `001_create.sql` has not shipped (owner, 2026-10-06; the 2026-10-19 deploy left the whole module out). New tables therefore go straight into it rather than into a `002`, and applying an edit means deleting the disposable `data/hideandseek_test.sqlite`. The day the module first deploys, music's freeze rule applies: `001` is never edited again, and the next schema change is `002`.
+hideandseek's `001_create.sql` has not shipped (owner, 2026-10-06; the deploys of 2026-10-19 and 2026-11-02 left the whole module out). New tables therefore go straight into it rather than into a `002`, and applying an edit means deleting the disposable `data/hideandseek_test.sqlite`. The day the module first deploys, music's freeze rule applies: `001` is never edited again, and the next schema change is `002`.
 
 **Plan.** Before that deploy, land what is cheaper in `001` (CAS, PIN's table). The deploy itself is taking `hideandseek` off `$unshippedModules` in `build-deploy.php`, which puts the module back in `_deploy/` and its `$mustExist` checks back in force. After it, confirm the host's hideandseek database lists `001_create.sql` in `schema_migrations`, then close this item.
 
@@ -247,7 +247,7 @@ The ss2 nav (`views/partials/nav.php`) links `/ss2/` and `/ss2/1` to `/ss2/7`, n
 
 ## TAB — Bass tabs are held back from the deploy
 
-The owner took the module out of the build for now on 2026-11-02, by adding `basstabs` to `$unshippedModules` in `build-deploy.php`. It has never shipped: the last build, of 2026-10-19, has no `basstabs` folder. Read from that build, not checked on the host.
+The owner took the module out of the build for now on 2026-11-02, by adding `basstabs` to `$unshippedModules` in `build-deploy.php`. It has never shipped: the 2026-11-02 build has no `basstabs` folder, and `/basstabs` is a 404 on the host (reproduced 2026-11-02).
 
 **Plan.** Take `basstabs` off `$unshippedModules`, which puts the module back in `_deploy/` and its `$mustExist` checks back in force. Put this entry back under Unreleased in `CHANGELOG.md`, under `### Added`, updated for any sheets added since:
 

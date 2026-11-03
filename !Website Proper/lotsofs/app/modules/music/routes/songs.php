@@ -19,7 +19,7 @@ $globalData['isAdmin'] = musicIsAdmin($db);
 $accountId = (int)currentAccountId();
 
 $raters = $db->query("
-	SELECT a.id, a.account_name
+	SELECT a.id, a.account_name, a.hue
 	FROM account a
 	ORDER BY a.id = ? DESC, a.id
 ", [$accountId])->fetchAll();
@@ -313,11 +313,15 @@ $columns = [
 	['key' => 'duration', 'type' => 'duration', 'class' => 'songDurationCell', 'label' => t('song.column.duration')],
 ];
 
+require_once __MODULES__ . '/music/hue.php';
+
 foreach ($raters as $index => $rater) {
 	$id = (int)$rater['id'];
 	$isMine = $id === $accountId;
 
 	$raters[$index]['isMine'] = $isMine;
+	$raters[$index]['hue'] = musicHueOf($id, $rater['hue']);
+	$raters[$index]['hueAttr'] = $isMine ? '' : ' style="--hue: ' . $raters[$index]['hue'] . '"';
 	$raters[$index]['scoreClass'] = 'songRatingCell songRatingScoreCell songScoreColoured' . ($isMine ? ' songMineCell songMyScoreCell' : '');
 	$raters[$index]['noteClass'] = 'songRatingCell songRatingNoteCell' . ($isMine ? ' songMineCell songMyNoteCell' : '');
 
@@ -330,7 +334,8 @@ foreach ($raters as $index => $rater) {
 		'group' => "rater_{$id}",
 		'groupStart' => true,
 		'groupLabel' => $rater['account_name'],
-		'groupClass' => 'songRaterGroup' . ($isMine ? ' songMineCell songMineGroup' : ''),
+		'groupClass' => 'songRaterGroup songRaterName' . ($isMine ? ' songMineCell songMineGroup' : ''),
+		'hueAttr' => $raters[$index]['hueAttr'],
 	];
 	$columns[] = [
 		'key' => "note_{$id}",
@@ -339,6 +344,7 @@ foreach ($raters as $index => $rater) {
 		'label' => t('song.column.ratingNote'),
 		'name' => t('song.list.raterNoteLabel', ['name' => $rater['account_name']]),
 		'group' => "rater_{$id}",
+		'hueAttr' => $raters[$index]['hueAttr'],
 	];
 }
 

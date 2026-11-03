@@ -314,6 +314,12 @@ th a {
 	text-decoration: none;
 }
 
+/* A rater's name, with their --hue set on the element itself. As light as the
+   nav's current page, which is what keeps a deep blue readable on black. */
+.songRaterName {
+	color: hsl(var(--hue), 100%, 80%);
+}
+
 th.albumStatsScoreCell,
 th.albumStatsRatedCell {
 	text-align: right;
@@ -611,6 +617,12 @@ td.albumStatsRatedCell {
 }
 
 #songListTable {
+	/* Separate, so a body cell has the same box as the header cell above it: a
+	   collapsed line is centred on the column's edge and rounds per column, which
+	   left the rater edges up to a pixel apart between the header and the body. */
+	border-collapse: separate;
+	border-spacing: 0;
+
 	thead {
 		position: sticky;
 		top: var(--navHeight, 3.35em);
@@ -628,8 +640,9 @@ td.albumStatsRatedCell {
 		box-shadow: inset 1px 0 0 var(--border), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
+	/* The right edge stops short of a grey line, as a body cell's does of its border. */
 	thead .songRaterGroup {
-		box-shadow: inset -1px 0 0 var(--border), inset 0 1px 0 var(--border);
+		box-shadow: inset -1px 0 0 var(--border), inset 2px 0 0 var(--raterEdge), inset -3px 0 0 var(--raterEdge), inset 0 2px 0 var(--raterEdge);
 	}
 
 	/* Left edge setting the statistics block apart; a header cell's edges are one shadow. */
@@ -637,16 +650,21 @@ td.albumStatsRatedCell {
 		box-shadow: inset 1px 0 0 var(--border), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
-	thead .songMineGroup {
-		box-shadow: inset 1px 0 0 var(--mineAccent), inset -1px 0 0 var(--mineAccent), inset 0 1px 0 var(--mineAccent);
+	thead .songRatingScoreCell {
+		box-shadow: inset 2px 0 0 var(--raterEdge), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
-	thead .songMyScoreCell {
-		box-shadow: inset 1px 0 0 var(--mineAccent), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
+	thead .songRatingNoteCell {
+		box-shadow: inset -1px 0 0 var(--border), inset -3px 0 0 var(--raterEdge), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
-	thead .songMyNoteCell {
-		box-shadow: inset -1px 0 0 var(--mineAccent), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
+	/* Each cell draws one side of a line, or separate borders would double up. */
+	td {
+		border-width: 0 1px 1px 0;
+	}
+
+	td.songIdCell {
+		border-left-width: 1px;
 	}
 
 	td input {
@@ -720,25 +738,37 @@ td.albumStatsRatedCell {
 		text-align: center;
 	}
 
+	/* On the cells themselves: a var() resolves where it is declared, so any
+	   higher up and this would be the reader's hue rather than the rater's.
+	   Mixed with black, not given alpha, or two edges double up at a corner. */
+	.songRaterGroup,
+	.songRatingCell {
+		--raterEdge: color-mix(in srgb, hsl(var(--hue), 100%, 80%) 60%, #000000);
+	}
+
 	.songMineCell {
+		--raterEdge: hsl(var(--hue), 100%, 80%);
 		background-color: #101010;
 	}
 
-	.songMyScoreCell {
-		box-shadow: inset 1px 0 0 var(--mineAccent);
+	.songRatingScoreCell {
+		box-shadow: inset 2px 0 0 var(--raterEdge);
 	}
 
-	.songMyNoteCell {
-		box-shadow: inset -1px 0 0 var(--mineAccent);
+	/* The grey line as the header draws it: at a fractional display scale a border
+	   and a shadow round differently, and the edge beside them would shift. */
+	.songRatingNoteCell {
+		border-right-width: 0;
+		box-shadow: inset -1px 0 0 var(--border), inset -3px 0 0 var(--raterEdge);
 	}
 
 	.songRowLast {
-		.songMyScoreCell {
-			box-shadow: inset 1px 0 0 var(--mineAccent), inset 0 -1px 0 var(--mineAccent);
+		.songRatingScoreCell {
+			box-shadow: inset 2px 0 0 var(--raterEdge), inset 0 -2px 0 var(--raterEdge);
 		}
 
-		.songMyNoteCell {
-			box-shadow: inset -1px 0 0 var(--mineAccent), inset 0 -1px 0 var(--mineAccent);
+		.songRatingNoteCell {
+			box-shadow: inset -1px 0 0 var(--border), inset -3px 0 0 var(--raterEdge), inset 0 -2px 0 var(--raterEdge);
 		}
 	}
 

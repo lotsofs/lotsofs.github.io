@@ -10,6 +10,15 @@
 	<p><?= t('song.list.empty') ?></p>
 <?php else: ?>
 	<?php require(__MODULES__ . '/music/views/partials/songRows.php') ?>
+	<?php /* One rule per rater, not a style on each of their cells in every row.
+	         None for the reader: theirs inherit the page's, which the colour slider moves. */ ?>
+	<style>
+		<?php foreach ($globalData['raters'] as $rater): ?>
+			<?php if (!$rater['isMine']): ?>
+				#songListTable td[data-account-id="<?= (int)$rater['id'] ?>"] { --hue: <?= (int)$rater['hue'] ?>; }
+			<?php endif ?>
+		<?php endforeach ?>
+	</style>
 	<script>
 		if (window.matchMedia("(max-width: 700px)").matches) {
 			document.documentElement.classList.add("songCardView");
@@ -86,7 +95,7 @@
 							<th rowspan="2" class="songLinksCell"><?= $linksLabel ?></th>
 							<?php foreach ($globalData['columns'] as $column): ?>
 								<?php if (isset($column['group']) && ($column['groupStart'] ?? false)): ?>
-									<th colspan="2" class="<?= $column['groupClass'] ?>"><?= htmlspecialchars($column['groupLabel']) ?></th>
+									<th colspan="2" class="<?= $column['groupClass'] ?>"<?= $column['hueAttr'] ?>><?= htmlspecialchars($column['groupLabel']) ?></th>
 								<?php endif ?>
 							<?php endforeach ?>
 							<?php foreach ($globalData['columns'] as $column): ?>
@@ -101,7 +110,7 @@
 						<tr>
 							<?php foreach ($globalData['columns'] as $column): ?>
 								<?php if (isset($column['group'])): ?>
-									<th class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>">
+									<th class="<?= $column['class'] ?>"<?= $column['hueAttr'] ?> data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>">
 										<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
 									</th>
 								<?php endif ?>

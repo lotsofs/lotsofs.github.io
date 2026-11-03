@@ -77,9 +77,14 @@ return [
 		$body = $ctx->get('/music/changes')['body'];
 		assertContains(musicChangeHtml(musicChangeText($entry, 'fy')), $body, 'and in frisian once that is picked');
 
-		if (musicChangelog()[0]['date'] === null) {
-			$fy = require __DIR__ . '/../../app/modules/music/lang/fy.php';
-			assertContains('<h2>' . $fy['changes.latest'] . '</h2>', $body, 'the undated release is headed as the latest');
+		$fy = require __DIR__ . '/../../app/modules/music/lang/fy.php';
+		$latest = '<h2>' . $fy['changes.latest'] . '</h2>';
+		$newest = musicChangelog()[0];
+
+		if ($newest['date'] === null && $newest['changes']) {
+			assertContains($latest, $body, 'the undated release is headed as the latest');
+		} else {
+			assertTrue(strpos($body, $latest) === false, 'an undated release with nothing in it is not shown');
 		}
 	},
 
