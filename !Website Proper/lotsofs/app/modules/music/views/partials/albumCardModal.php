@@ -6,6 +6,7 @@
 		<div id="albumCardModalBody"></div>
 	</div>
 </div>
-<?php /* Before albumCard.js and songs.js, which both call into it. */ ?>
+<?php /* Before albumCard.js and songs.js, which both call into them. */ ?>
 <script src="<?= asset('/modules/music/js/cardLink.js') ?>"></script>
+<script src="<?= asset('/modules/music/js/aliasEditor.js') ?>"></script>
 <script src="<?= asset('/modules/music/js/albumCard.js') ?>"></script>

@@ -15,7 +15,7 @@
 	$artistGraphRaters = scoreActiveRaters($artistAverages);
 	$artistStatsWho = $artist['statsWho'] ?? null;
 ?>
-<dl class="artistCard card" data-card-kind="artist" data-card-id="<?= (int)$artist['id'] ?>" data-artist-name="<?= htmlspecialchars($artist['name'] ?? '') ?>">
+<dl class="artistCard card" data-card-kind="artist" data-card-id="<?= (int)$artist['id'] ?>" data-artist-name="<?= htmlspecialchars($artist['name'] ?? '') ?>"<?php if ($artistIsAdmin): ?> data-alias-names="<?= htmlspecialchars(json_encode($artist['names'] ?? [])) ?>"<?php endif ?>>
 	<div class="artistCardIdRow cardIdRow">
 		<dd class="artistIdCell cardIdCell"><?= (int)$artist['id'] ?></dd>
 		<?php if ($artistIsAdmin): ?>
@@ -28,7 +28,7 @@
 		<dd class="artistSongCountCell"><?= (int)$artist['songCount'] ?></dd>
 		<?php if ($artistAliases !== ''): ?>
 			<dt><?= htmlspecialchars(t('album.column.aliases')) ?></dt>
-			<dd class="artistAliasCell"><?= htmlspecialchars($artistAliases) ?></dd>
+			<dd class="artistAliasCell" data-field="aliases"><?= htmlspecialchars($artistAliases) ?></dd>
 		<?php endif ?>
 	</div>
 	<?php if ($artistAlbums): ?>

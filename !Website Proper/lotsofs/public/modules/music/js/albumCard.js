@@ -143,6 +143,7 @@ const albumNameEditor = {
 					input.disabled = false;
 					if (result.status === "ok") {
 						card.dataset.albumName = result.value;
+						cardAliasEditor.refresh(card, result.names);
 						albumCardStatus(card, "");
 					}
 					else {
@@ -478,6 +479,7 @@ const artistNameEditor = {
 					input.disabled = false;
 					if (result.status === "ok") {
 						card.dataset.artistName = result.value;
+						cardAliasEditor.refresh(card, result.names);
 						albumCardStatus(card, "");
 					}
 					else {
@@ -496,6 +498,66 @@ const artistNameEditor = {
 	},
 };
 
+/* The card's other names, each to delete or make current, album and artist
+   alike. The row is only rendered when there are some, so it is made here when
+   it is missing: a rename's old name shows up at once, ready to delete. */
+const cardAliasEditor = {
+	cell(card) {
+		let cell = albumCardField(card, "aliases");
+		if (!cell) {
+			const term = document.createElement("dt");
+			term.textContent = t("album.column.aliases");
+
+			cell = document.createElement("dd");
+			cell.className = card.dataset.cardKind === "album" ? "albumAliasCell" : "artistAliasCell";
+			cell.dataset.field = "aliases";
+
+			card.querySelector(".albumCardInfo").append(term, cell);
+		}
+		return cell;
+	},
+
+	enter(card) {
+		const kind = card.dataset.cardKind;
+		const nameKey = kind === "album" ? "albumName" : "artistName";
+		const names = JSON.parse(card.dataset.aliasNames || "[]");
+
+		if (names.length < 2 && !albumCardField(card, "aliases")) {
+			return;
+		}
+
+		renderAliasEditor(cardAliasEditor.cell(card), {
+			kind,
+			id: card.dataset.cardId,
+			names,
+			use: name => kind === "album"
+				? postJson(ALBUM_EDIT_ENDPOINT, { album_id: card.dataset.albumId, field: "name", value: name })
+				: postJson(ARTIST_EDIT_ENDPOINT, { artist_id: card.dataset.cardId, field: "name", value: name }),
+			status: message => albumCardStatus(card, message),
+			onChange: (result, action) => {
+				if (action === "use") {
+					card.dataset[nameKey] = result.value;
+
+					const title = albumCardField(card, "name").querySelector("input");
+					if (title) {
+						title.value = result.value;
+					}
+				}
+				cardAliasEditor.refresh(card, result.names);
+			},
+		});
+	},
+
+	/// Only while editing; "Done" re-fetches the card.
+	refresh(card, names) {
+		if (!names || card.dataset.editing !== "1") {
+			return;
+		}
+		card.dataset.aliasNames = JSON.stringify(names);
+		cardAliasEditor.enter(card);
+	},
+};
+
 function enterArtistEditMode(card) {
 	card.dataset.editing = "1";
 
@@ -505,6 +567,7 @@ function enterArtistEditMode(card) {
 	}
 
 	artistNameEditor.enter(card);
+	cardAliasEditor.enter(card);
 }
 
 function enterAlbumEditMode(card) {
@@ -518,6 +581,7 @@ function enterAlbumEditMode(card) {
 	albumNameEditor.enter(card);
 	albumArtistEditor.enter(card);
 	albumYearEditor.enter(card);
+	cardAliasEditor.enter(card);
 	albumTrackEditor.enter(card);
 }
 

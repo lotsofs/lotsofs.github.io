@@ -715,6 +715,68 @@ const durationFieldEditor = {
 	},
 };
 
+/* The song's other names, each to delete or make its title. Only a song with
+   one has the row. Making one the title is a rename to it, which promotes it. */
+const aliasFieldEditor = {
+	enter(card) {
+		const cell = fieldCell(card, "aliases");
+		if (!cell || !("titles" in cell.dataset)) {
+			return;
+		}
+
+		const songId = card.dataset.songId;
+
+		renderAliasEditor(cell, {
+			kind: "song",
+			id: songId,
+			names: JSON.parse(cell.dataset.titles),
+			use: name => postJson(SONG_EDIT_ENDPOINT, { id: songId, field: "title", value: name }),
+			status: message => syncResult(songId, message),
+			onChange: (result, action, name) => {
+				if (action === "use") {
+					applyRenamedTitles(songId, String(result.value), result.titles);
+				}
+				else {
+					syncField(songId, "aliases", target => target.dataset.titles = JSON.stringify(result.names));
+					forgetTrackListing(songId, name);
+				}
+
+				const pair = rowsBySongId.get(String(songId));
+				if (pair) {
+					applySongTitle(pair.tr);
+					applySongTitle(pair.card);
+				}
+
+				aliasFieldEditor.enter(card);
+			},
+		});
+	},
+	exit(card) {
+		const cell = fieldCell(card, "aliases");
+		if (!cell || !cell.querySelector(".cardAliasList")) {
+			return;
+		}
+
+		cell.textContent = "";
+		applyAliasCell(card);
+
+		/// As the server renders it: no row for a song with no other name.
+		if (JSON.parse(cell.dataset.titles).length < 2) {
+			cell.previousElementSibling.remove();
+			cell.remove();
+		}
+	},
+};
+
+/// A deleted name no album lists the song under any more, and the album filter reads this.
+function forgetTrackListing(songId, name) {
+	for (let index = songTrackAliases.length - 1; index >= 0; index--) {
+		if (String(songTrackAliases[index].song_id) === String(songId) && songTrackAliases[index].name === name) {
+			songTrackAliases.splice(index, 1);
+		}
+	}
+}
+
 function setCardEditLabel(card, editing) {
 	const button = card.querySelector(".songCardEditBtn");
 	if (button) {
@@ -730,6 +792,7 @@ function enterCardEditMode(card) {
 	yearFieldEditor.enter(card);
 	durationFieldEditor.enter(card);
 	linkFieldEditor.enter(card);
+	aliasFieldEditor.enter(card);
 }
 
 function exitCardEditMode(card) {
@@ -743,6 +806,7 @@ function exitCardEditMode(card) {
 	yearFieldEditor.exit(card);
 	durationFieldEditor.exit(card);
 	linkFieldEditor.exit(card);
+	aliasFieldEditor.exit(card);
 }
 
 function handleCardEditClick(event) {
@@ -920,31 +984,36 @@ function repopulateSongAlbums() {
 }
 
 function applySongTitles() {
-	const album = songAlbumSelect.value;
-
 	rowPairs().forEach(pair => {
-		[pair.tr, pair.card].forEach(container => {
-			const cell = fieldCell(container, "title");
-			if (!cell || cell.querySelector("input")) {
-				return;
-			}
-
-			const songId = container.dataset.songId;
-			const listing = album
-				? songTrackAliases.find(entry => String(entry.album_id) === album && String(entry.song_id) === songId)
-				: null;
-
-			valueElement(cell).textContent = listing ? listing.name : cell.dataset.canonicalTitle;
-			cell.classList.toggle("songTitleAliased", listing !== null && listing !== undefined);
-			applyAliasCell(container);
-		});
+		applySongTitle(pair.tr);
+		applySongTitle(pair.card);
 	});
+}
+
+/// A row's or card's title: the album's name for the track while that album is the filter.
+function applySongTitle(container) {
+	const cell = fieldCell(container, "title");
+	if (!cell || cell.querySelector("input")) {
+		return;
+	}
+
+	const album = songAlbumSelect.value;
+	const songId = container.dataset.songId;
+	const listing = album
+		? songTrackAliases.find(entry => String(entry.album_id) === album && String(entry.song_id) === songId)
+		: null;
+
+	valueElement(cell).textContent = listing ? listing.name : cell.dataset.canonicalTitle;
+	cell.classList.toggle("songTitleAliased", listing !== null && listing !== undefined);
+	applyAliasCell(container);
 }
 
 /// Every name the song has but the one its title cell shows, one per line.
 function applyAliasCell(container) {
 	const cell = fieldCell(container, "aliases");
-	if (!cell || !("titles" in cell.dataset)) {
+
+	/// Not while the card's name editor is in it: that redraws itself.
+	if (!cell || !("titles" in cell.dataset) || cell.querySelector(".cardAliasList")) {
 		return;
 	}
 

@@ -27,6 +27,14 @@ return [
 	'colour.hue' => 'Site colour',
 	'colour.save' => 'Use this colour',
 
+	'alias.use' => 'Use this name',
+	'alias.delete' => 'Delete this name',
+	'alias.deleteConfirm' => 'Delete the name "{name}"?',
+	'alias.deleteAndRelist' => 'Delete it, and list the song under its current title there',
+	'alias.result.listed' => 'Listed under this name on: {albums}',
+	'alias.result.current' => '❌ The current name can\'t be deleted; use another name first',
+	'alias.result.notFound' => '❌ That name is already gone',
+
 	'language.en' => 'English',
 	'language.de' => 'German',
 	'language.fy' => 'West Frisian',

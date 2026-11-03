@@ -16,13 +16,7 @@ $statsWho = ajaxInt($data['who'] ?? null);
 $artist = $db->query("
 	SELECT
 		a.id,
-		(SELECT name FROM artist_alias WHERE artist_id = a.id ORDER BY is_actual DESC, id LIMIT 1) AS name,
-		(SELECT group_concat(name, ', ') FROM (
-			SELECT name FROM artist_alias
-			WHERE artist_id = a.id
-				AND id != (SELECT id FROM artist_alias WHERE artist_id = a.id ORDER BY is_actual DESC, id LIMIT 1)
-			ORDER BY name COLLATE NOCASE
-		)) AS aliases
+		(SELECT name FROM artist_alias WHERE artist_id = a.id ORDER BY is_actual DESC, id LIMIT 1) AS name
 	FROM artist a
 	WHERE a.id = ?
 ", [$artistId])->fetch();
@@ -153,6 +147,12 @@ $artist['songCount'] = count($artist['songs']);
 $artist['graphSort'] = $graphSort;
 $artist['graphDir'] = $graphDir;
 $artist['isAdmin'] = musicIsAdmin($db);
+
+require_once __MODULES__ . '/music/aliases.php';
+
+/// Every name, current first; the card lists the rest and its edit mode all of them.
+$artist['names'] = musicAliasNames($db, 'artist', $artistId);
+$artist['aliases'] = implode(', ', array_slice($artist['names'], 1));
 
 ob_start();
 require __MODULES__ . '/music/views/partials/artistCard.php';

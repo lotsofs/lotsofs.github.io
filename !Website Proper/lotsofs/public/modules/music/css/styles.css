@@ -44,6 +44,9 @@ nav .navLogout button,
 .songEditRowAdd,
 .albumEditTrackAdd,
 .albumEditTrackRemove,
+.cardAliasUse,
+.cardAliasDelete,
+.cardAliasRelist,
 .songGateReveal {
 	border: solid 1px #000000;
 	border-radius: 16px;
@@ -1292,6 +1295,61 @@ td.albumStatsRatedCell {
 
 .songEditRowAdd {
 	align-self: flex-start;
+}
+
+/* A card's other names in edit mode (aliasEditor.js), on all three cards. The
+   note about albums still listing a name wraps under its row. */
+.cardAliasList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3em;
+}
+
+.cardAliasRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.3em 0.4em;
+}
+
+.cardAliasName {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.cardAliasUse,
+.cardAliasDelete,
+.cardAliasRelist {
+	flex: 0 0 auto;
+	line-height: 1.2;
+	padding: .2em .6em;
+	font-size: 0.85em;
+
+	&:hover:not(:disabled) {
+		background-color: var(--buttonFillHover);
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+}
+
+.cardAliasListed {
+	flex: 1 0 100%;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.3em 0.5em;
+	font-size: 0.85em;
+}
+
+/* A sentence, not a word: it wraps inside the card's column rather than running out of it. */
+.cardAliasRelist {
+	flex-shrink: 1;
+	min-width: 0;
+	text-align: left;
+	font-size: 1em;
 }
 
 #songCardModalBody .songCard[hidden] {

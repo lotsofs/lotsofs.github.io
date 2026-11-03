@@ -27,6 +27,14 @@ return [
 	'colour.hue' => 'Seitenfarbe',
 	'colour.save' => 'Diese Farbe verwenden',
 
+	'alias.use' => 'Diesen Namen verwenden',
+	'alias.delete' => 'Diesen Namen löschen',
+	'alias.deleteConfirm' => 'Den Namen „{name}“ löschen?',
+	'alias.deleteAndRelist' => 'Löschen und das Lied dort unter seinem aktuellen Titel führen',
+	'alias.result.listed' => 'Unter diesem Namen geführt auf: {albums}',
+	'alias.result.current' => '❌ Der aktuelle Name kann nicht gelöscht werden; verwende zuerst einen anderen Namen',
+	'alias.result.notFound' => '❌ Diesen Namen gibt es schon nicht mehr',
+
 	'language.en' => 'Englisch',
 	'language.de' => 'Deutsch',
 	'language.fy' => 'Westfriesisch',

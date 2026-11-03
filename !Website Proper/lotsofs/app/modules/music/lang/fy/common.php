@@ -27,6 +27,14 @@ return [
 	'colour.hue' => 'Sidekleur',
 	'colour.save' => 'Dizze kleur brûke',
 
+	'alias.use' => 'Dizze namme brûke',
+	'alias.delete' => 'Dizze namme wiskje',
+	'alias.deleteConfirm' => 'De namme "{name}" wiskje?',
+	'alias.deleteAndRelist' => 'Wiskje, en it nûmer dêr ûnder syn hjoeddeistige titel sette',
+	'alias.result.listed' => 'Under dizze namme op: {albums}',
+	'alias.result.current' => '❌ De hjoeddeistige namme kin net wiske wurde; brûk earst in oare namme',
+	'alias.result.notFound' => '❌ Dy namme is der al net mear',
+
 	'language.en' => 'Ingelsk',
 	'language.de' => 'Dútsk',
 	'language.fy' => 'Frysk',

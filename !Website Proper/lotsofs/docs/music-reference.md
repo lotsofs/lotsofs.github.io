@@ -78,9 +78,10 @@ All POST + JSON + CSRF header. "Admin" = `requireMusicAdminJson`. Business resul
 | `album-card` | `albumCard.php` | any account | `{album_id, sort?, dir?, who?}` → `{status, html}` (+ `trackAliases` for admins). Renders `partials/albumCard.php` server-side |
 | `artist-card` | `artistCard.php` | any account | `{artist_id, sort?, dir?, who?}` → `{status, html}` |
 | `album-options` | `albumOptions.php` | admin | `{}` → `{artists[], songs[]}`, the whole catalogue for the card's edit dropdowns (fetched once per page) |
-| `album-edit` | `albumEdit.php` | admin | `{album_id, field: name\|artist\|year, value}`; rename promotes/creates an alias, keeping the old one |
+| `album-edit` | `albumEdit.php` | admin | `{album_id, field: name\|artist\|year, value}`; rename promotes/creates an alias, keeping the old one. `name` also returns `names`, every name current first |
 | `album-track` | `albumTrack.php` | admin | `{album_id, song_id, action: add\|remove\|position\|alias, position?, song_alias_id?}`; `add` returns the song's aliases |
-| `artist-edit` | `artistEdit.php` | admin | `{artist_id, field:'name', value}` |
+| `artist-edit` | `artistEdit.php` | admin | `{artist_id, field:'name', value}`; promotes an existing name or adds one, keeping the old; returns `names`, every name current first |
+| `alias-delete` | `aliasDelete.php` | admin | `{kind: song\|album\|artist, id, name, clear_listings?}` → `{status, names, message}`. Refuses the current name (`error`). For a song name that `album_track` rows list it under, `status: listed` with `albums[]` and nothing written, unless `clear_listings` is JSON `true`, which nulls those tracks' `song_alias_id` and deletes in one transaction. Unknown kind → 400 |
 
 Guard helpers available in endpoints: `requireSongJson($db, $id, $extra)`, `requireAlbumJson(...)` (emit a 200 `{status:'error', message}` and exit).
 
@@ -96,6 +97,7 @@ Guard helpers available in endpoints: `requireSongJson($db, $id, $extra)`, `requ
 | `links.php` | `songLinkFields()`, `songLinkHref()`, `albumSongsHref()`, `spotifyTrackIdIn()`, `youtubeVideoIdIn()` |
 | `hue.php` | `MUSIC_HUE_DEFAULT` (240), `musicHueFor($id)` = `(id*73)%360`, `musicActiveHue()`, `musicHueOf($id, $stored)`, `musicReadHue($raw)` (0–359 or null) |
 | `blindRating.php` | `musicBlindRating()` (session pref, default on), `musicBlindRatingOf($stored)` |
+| `aliases.php` | `MUSIC_ALIAS_KINDS` (`song`/`album`/`artist` → entity, alias table and owner column; the only source of those names in alias SQL), `musicCurrentAliasId($db, $kind, $id)` (the `is_actual DESC, id` first row), `musicAliasNames($db, $kind, $id)` (every name, current first, the rest by name) |
 | `songColumns.php` | `MUSIC_SONG_COLUMNS` (the fixed columns, in table order), `MUSIC_SONG_STAT_COLUMNS` (also `routes/songs.php`'s PHP-sorted orders), `MUSIC_SONG_COLUMNS_HIDDEN_BY_DEFAULT`, `musicSongColumnKey($raw)`, `musicSongColumnChoices($db, $accountId)`, `musicSongColumnShown($choices, $key)`, `musicSongHideClass($key)` |
 | `changes.php` | `MUSIC_CHANGE_GROUPS` (the five kinds of change, in page order), `musicChangelog()` (reads `changelog.php`), `musicChangeText($entry, $locale)` (blank or missing → `en`), `musicChangeHtml($text)` (escaped, `**bold**` only) |
 | `listSort.php` | `musicListSort`, `musicListDir`, `musicListStatColumns`, `musicListSorted`, `musicListHeaders` |
@@ -106,7 +108,7 @@ Guard helpers available in endpoints: `requireSongJson($db, $id, $extra)`, `requ
 
 ## Views and partials
 
-`views/partials/`: `head.php` (stamps `--hue` on `<html>`), `nav.php` (tabs; hue picker, ⚙ settings, 🌐 language, account menu; loads `nav.js` and `colour.js`), `foot.php` (includes `tooltip.php`), `tooltip.php` (`#musicTooltip` + `tooltip.js`), `songCard.php`, `songRows.php`, `albumCard.php`, `artistCard.php`, `albumCardModal.php` (the one shared modal; loads `cardLink.js` then `albumCard.js`), `scoreStats.php` (per-rater table), `scoreGraph.php` (inline SVG), `scorePresentation.php` (`scoreColourAttr`, `scoreRaterColours`, `scoreStatCells`, `scoreWhoSelect`, `scoreWhoName`, `scoreActiveRaters`).
+`views/partials/`: `head.php` (stamps `--hue` on `<html>`), `nav.php` (tabs; hue picker, ⚙ settings, 🌐 language, account menu; loads `nav.js` and `colour.js`), `foot.php` (includes `tooltip.php`), `tooltip.php` (`#musicTooltip` + `tooltip.js`), `songCard.php`, `songRows.php`, `albumCard.php`, `artistCard.php`, `albumCardModal.php` (the one shared modal; loads `cardLink.js` and `aliasEditor.js`, then `albumCard.js`), `scoreStats.php` (per-rater table), `scoreGraph.php` (inline SVG), `scorePresentation.php` (`scoreColourAttr`, `scoreRaterColours`, `scoreStatCells`, `scoreWhoSelect`, `scoreWhoName`, `scoreActiveRaters`).
 
 **Score colour ramp:** `hsl(clamp(score,0,10) * 12, 75%, 55%)` (red 0 → green 10). Implemented twice on purpose: `scoreColourAttr()` in PHP and `scoreColour()` in `songs.js`. Change both. **Rater colour:** `hsl(<that account's hue>, 70%, 62%)`.
 

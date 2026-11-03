@@ -61,20 +61,6 @@ function columnsAccountId($ctx, $name) {
 	return (int)$stmt->fetch()['id'];
 }
 
-function columnsMakeAlbum($ctx, $name, $artistId, $tracks) {
-	$response = $ctx->post('/music/ajax/album', [[
-		'provided_name' => $name,
-		'album_id' => 'new',
-		'og_name' => $name,
-		'is_actual' => true,
-		'artist_id' => $artistId,
-		'release_year' => '',
-		'tracks' => $tracks,
-	]]);
-
-	return (int)$response['json'][0]['album_id'];
-}
-
 /// The names a cell carries for songs.js, decoded.
 function columnsCellTitles($cell) {
 	return preg_match('/data-titles="([^"]*)"/', $cell, $match)
@@ -185,7 +171,7 @@ return [
 		]]);
 		$single = makeSong($ctx, $artistId, 'Known By One Name');
 
-		$odd = columnsMakeAlbum($ctx, 'Known Odd Listing', $artistId, [
+		$odd = makeAlbum($ctx, 'Known Odd Listing', $artistId, [
 			['song_id' => $songId, 'song_alias_id' => (int)$sleeve['json'][0]['song_alias_id'], 'position' => 1],
 		]);
 

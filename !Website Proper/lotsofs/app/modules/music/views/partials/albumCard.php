@@ -19,7 +19,7 @@
 	$albumGraphRaters = scoreActiveRaters($albumAverages);
 	$albumStatsWho = $album['statsWho'] ?? null;
 ?>
-<dl class="albumCard card" data-card-kind="album" data-card-id="<?= (int)$album['id'] ?>" data-album-id="<?= (int)$album['id'] ?>" data-artist-id="<?= $albumArtistId === null ? '' : $albumArtistId ?>" data-release-year="<?= htmlspecialchars($album['release_year'] ?? '') ?>" data-album-name="<?= htmlspecialchars($album['name'] ?? '') ?>">
+<dl class="albumCard card" data-card-kind="album" data-card-id="<?= (int)$album['id'] ?>" data-album-id="<?= (int)$album['id'] ?>" data-artist-id="<?= $albumArtistId === null ? '' : $albumArtistId ?>" data-release-year="<?= htmlspecialchars($album['release_year'] ?? '') ?>" data-album-name="<?= htmlspecialchars($album['name'] ?? '') ?>"<?php if ($albumIsAdmin): ?> data-alias-names="<?= htmlspecialchars(json_encode($album['names'] ?? [])) ?>"<?php endif ?>>
 	<div class="albumCardIdRow cardIdRow">
 		<dd class="albumIdCell cardIdCell"><?= (int)$album['id'] ?></dd>
 		<?php if ($albumIsAdmin): ?>
@@ -34,7 +34,7 @@
 		<dd class="albumYearCell" data-field="year"><?= htmlspecialchars($album['release_year'] ?? '') ?></dd>
 		<?php if ($albumAliases !== ''): ?>
 			<dt><?= htmlspecialchars(t('album.column.aliases')) ?></dt>
-			<dd class="albumAliasCell"><?= htmlspecialchars($albumAliases) ?></dd>
+			<dd class="albumAliasCell" data-field="aliases"><?= htmlspecialchars($albumAliases) ?></dd>
 		<?php endif ?>
 	</div>
 	<dt class="albumTrackHeading"><?= htmlspecialchars(t('album.column.tracks')) ?></dt>

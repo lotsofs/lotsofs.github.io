@@ -12,7 +12,6 @@ Detail in [tasks.md](tasks.md).
 |---|---|---|
 | [PWR](tasks.md#pwr--no-password-reset) | No password reset: a locked-out user needs the live database edited by hand (hideandseek has the same gap) | Medium |
 | [TRN](tasks.md#trn--de-and-fy-translations-are-unreviewed) | The `de` and `fy` (site default) translations are first drafts by Claude, never reviewed by a native speaker | Medium |
-| [ALI](tasks.md#ali--aliases-cannot-be-deleted-or-promoted) | Album, artist and song aliases can be added but never deleted or made current again | Medium |
 | [NAM](tasks.md#nam--wrong-song-names-and-album-listings-in-the-data) | All 16 songs with a second name have wrong data (14 album tracks listed under another name, 2 curly-apostrophe twins); the owner fixes them by hand | Low |
 | [LGO](tasks.md#lgo--logout-takes-two-redirects) | Logout redirects to `/music/songs`, which redirects again to `/music/login`; go straight to login | Low |
 | [REG](tasks.md#reg--registration-misreports-database-failures) | Registration reports "invalid invite" for any failure in its transaction, hiding real database errors (hideandseek too) | Low |

@@ -65,7 +65,7 @@ else {
 	$db->query("UPDATE song_alias SET name = ? WHERE song_id = ? AND is_actual = 1", [$value, $id]);
 }
 
-/// Every name the song now has, in the song list's order, for its Also Known As cell.
-$titles = array_column($db->query("SELECT name FROM song_alias WHERE song_id = ? ORDER BY is_actual DESC, name COLLATE NOCASE", [$id])->fetchAll(), 'name');
+require_once __MODULES__ . '/music/aliases.php';
 
-echo json_encode(['status' => 'ok', 'value' => $value, 'message' => '', 'titles' => $titles]);
+/// Every name the song now has, for its Also Known As cell and the card's name editor.
+echo json_encode(['status' => 'ok', 'value' => $value, 'message' => '', 'titles' => musicAliasNames($db, 'song', $id)]);

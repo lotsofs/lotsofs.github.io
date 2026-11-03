@@ -5,8 +5,6 @@ Detail for the **Defects and tasks** and **Possible, not planned** rows in [TODO
 Dependencies between the plans:
 
 - hideandseek's `001` freezes the day the module first ships (MIG). CAS, and the table PIN needs, are edits in place before that and table rebuilds after, so they come first. PRV and WHO also want doing before players arrive. Shipping it means taking it off `$unshippedModules` in `build-deploy.php`.
-- LFT's song-rename half waits on ALI: keeping every old name is clutter until aliases can be deleted.
-- NAM can only be fixed through the site once ALI lands; until then it means editing the database by hand.
 - PAR waits on JST: there is nothing to run a JS test with.
 
 ## PWR — No password reset
@@ -28,16 +26,6 @@ Every music key is translated into `de` and `fy` (`php tests/i18n-coverage.php`)
 **Verify.** `php tests/i18n-coverage.php` stays clean; no `// ?` is left in `lang/de`.
 
 **Docs.** None, unless a term choice becomes a rule worth recording in `music.md`.
-
-## ALI — Aliases cannot be deleted or promoted
-
-Album, artist and song cards can add an alias (a former or alternative name, shown on the "also known as" line) but cannot delete one or make an old one current again. A typo'd rename stays on the card for good, and going back to an earlier name means typing it again. No code deletes from `album_alias`, `artist_alias` or `song_alias` outside migration `002`. Read in the code.
-
-**Plan.** In a card's edit mode, a delete button and a "make current" button per alias, backed by an endpoint per entity or one dispatching on kind. Refuse to delete the current name (`is_actual = 1`). Promoting must clear the old `is_actual` before setting the new one, because the partial unique index allows at most one. Admin-only, like the card's other edits.
-
-**Verify.** Tests for delete, for refusing to delete the current name, and for promote; the lists and the songs page show the promoted name.
-
-**Docs.** `music-reference.md` (endpoints), `music-frontend.md` (card edit mode), `music.md` if the alias-pattern bullet needs it.
 
 ## NAM — Wrong song names and album listings in the data
 
@@ -65,7 +53,7 @@ Songs whose second name only swaps the straight apostrophe for a curly one, with
 - 14 *Won't Stand Down* (Won’t Stand Down), on Will Of The People
 - 16 *You Make Me Feel Like It's Halloween* (You Make Me Feel Like It’s Halloween), on Will Of The People
 
-**Plan.** The owner corrects each by hand. The site can rename a song (`song-edit` promotes a name the song already has, or overwrites the current one), but it cannot delete a name or clear a track's listed-as name. That is ALI, so either do ALI first or edit the database directly. The query ran against the local `data/music.sqlite`; check that the host's file holds the same before fixing there.
+**Plan.** The owner corrects each in the song's card, in edit mode, where every other name has "Use this name" and a delete button. Where the second name is the wrong one, delete it. If an album lists the song under it, the row names the album and offers to list the song there under its current title, all in one go. Where the second name is the right one, use it, then delete the old title, which is now the other name. The query ran against the local `data/music.sqlite`; check that the host's file holds the same before fixing there.
 
 **Verify.** Rerun both queries, `album_track` joined to `song_alias` where `is_actual = 0` and songs with any non-current name, and get only what the owner means to keep.
 
@@ -105,10 +93,10 @@ Songs whose second name only swaps the straight apostrophe for a curly one, with
 
 Loose ends from that audit. Read in the code.
 
-- **Song renames keep no history.** `ajax/songEdit.php` promotes an alias the song already has, and otherwise overwrites the current one. `albumEdit.php` keeps the old name instead. Doing the same for songs would be consistent, but every rename would leave a permanent alias until ALI makes them deletable.
+- **Song renames keep no history.** `ajax/songEdit.php` promotes an alias the song already has, and otherwise overwrites the current one. `albumEdit.php` keeps the old name instead. Doing the same for songs would be consistent, and an unwanted old name can now be deleted from the song's card.
 - **Two SELECTs are written out twice**: the album header in `routes/albums.php` and `ajax/albumCard.php`, and the audit row in `routes/audit.php` and `ajax/songRatingPoll.php`. Sharing them means a shared SQL fragment, which cuts against "SQL lives in route and ajax files" (`conventions.md`).
 
-**Plan.** After ALI, make `songEdit.php` keep the old name as an alias. For the SELECTs, decide whether a shared fragment is worth the exception; if not, drop that half of this item.
+**Plan.** Make `songEdit.php` keep the old name as an alias. For the SELECTs, decide whether a shared fragment is worth the exception; if not, drop that half of this item.
 
 **Verify.** A test that a rename leaves the old name among the song's aliases.
 

@@ -18,6 +18,11 @@ return [
 					'fy' => 'In nije kolom Ek bekend as op de side Lieten lit de oare titels fan in nûmer sjen, ien per rigel. Hy is ferstoppe oant do him ûnder Kolommen oanfinkest. De kaart fan in nûmer lit se altyd sjen.',
 					'de' => 'Eine neue Spalte „Auch bekannt als“ in der Songliste zeigt die anderen Titel eines Lieds, einen pro Zeile. Sie ist ausgeblendet, bis du sie unter „Spalten“ ankreuzt. Die Karte eines Lieds zeigt sie immer.',
 				],
+				[
+					'en' => 'When editing a song, album or artist card, you can now delete one of its other names, or make one its name again. Deleting asks first. If an album lists the song under the name you are deleting, the card says which album and offers to list it there under the song\'s current title.',
+					'fy' => 'By it bewurkjen fan de kaart fan in nûmer, album of artyst kinst no ien fan de oare nammen wiskje, of der wer de namme fan meitsje. Foar it wiskjen wurdt earst frege. As in album it nûmer ûnder de namme stiet dy\'tsto wiskest, seit de kaart hokker album en biedt oan it dêr ûnder de hjoeddeistige titel fan it nûmer te setten.',
+					'de' => 'Beim Bearbeiten der Karte eines Lieds, Albums oder Interpreten kannst du jetzt einen seiner anderen Namen löschen oder wieder zu seinem Namen machen. Vor dem Löschen wird nachgefragt. Führt ein Album das Lied unter dem Namen, den du löschst, nennt die Karte das Album und bietet an, das Lied dort unter seinem aktuellen Titel zu führen.',
+				],
 			],
 			'changed' => [
 				[

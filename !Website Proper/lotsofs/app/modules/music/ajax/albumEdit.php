@@ -36,7 +36,9 @@ if ($field === 'name') {
 		throw $e;
 	}
 
-	echo json_encode(['status' => 'ok', 'value' => $value, 'message' => '']);
+	require_once __MODULES__ . '/music/aliases.php';
+
+	echo json_encode(['status' => 'ok', 'value' => $value, 'message' => '', 'names' => musicAliasNames($db, 'album', $albumId)]);
 	exit;
 }
 

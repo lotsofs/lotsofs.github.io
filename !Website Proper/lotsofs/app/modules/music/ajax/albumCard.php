@@ -17,12 +17,6 @@ $album = $db->query("
 		al.artist_id,
 		al.release_year,
 		(SELECT name FROM album_alias WHERE album_id = al.id ORDER BY is_actual DESC, id LIMIT 1) AS name,
-		(SELECT group_concat(name, ', ') FROM (
-			SELECT name FROM album_alias
-			WHERE album_id = al.id
-				AND id != (SELECT id FROM album_alias WHERE album_id = al.id ORDER BY is_actual DESC, id LIMIT 1)
-			ORDER BY name COLLATE NOCASE
-		)) AS aliases,
 		(SELECT name FROM artist_alias
 			WHERE artist_id = al.artist_id
 			ORDER BY is_actual DESC, id LIMIT 1) AS artist
@@ -122,6 +116,12 @@ $album['graphSort'] = $graphSort;
 $album['graphDir'] = $graphDir;
 $album['trackCount'] = count($album['tracks']);
 $album['isAdmin'] = musicIsAdmin($db);
+
+require_once __MODULES__ . '/music/aliases.php';
+
+/// Every name, current first; the card lists the rest and its edit mode all of them.
+$album['names'] = musicAliasNames($db, 'album', $albumId);
+$album['aliases'] = implode(', ', array_slice($album['names'], 1));
 
 ob_start();
 require __MODULES__ . '/music/views/partials/albumCard.php';
