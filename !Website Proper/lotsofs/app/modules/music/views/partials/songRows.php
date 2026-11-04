@@ -25,13 +25,10 @@ $filterAlbum = $globalData['filterAlbum'] ?? null;
 
 $raterLabels = [];
 foreach ($songRaters as $rater) {
-	$raterName = htmlspecialchars($rater['account_name']);
-	$raterNameHtml = '<span class="songRaterName"' . ($rater['hueAttr'] ?? '') . '>' . $raterName . '</span>';
-
 	$raterLabels[(int)$rater['id']] = [
-		'score' => str_replace('{name}', $raterNameHtml, htmlspecialchars(t('song.list.raterScoreLabel'))),
-		'note' => str_replace('{name}', $raterNameHtml, htmlspecialchars(t('song.list.raterNoteLabel'))),
-		'name' => $raterName,
+		'score' => htmlspecialchars(t('song.list.raterScoreLabel', ['name' => $rater['account_name']])),
+		'note' => htmlspecialchars(t('song.list.raterNoteLabel', ['name' => $rater['account_name']])),
+		'name' => htmlspecialchars($rater['account_name']),
 		'placeholder' => ($rater['isMine'] ?? false) ? $tapToEnterAttr : '',
 		/* The rater's class list with the colour ramp taken out, derived rather
 		   than written out a second time: a covered score must not be painted,

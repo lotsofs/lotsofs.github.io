@@ -10,16 +10,10 @@
 	<p><?= t('song.list.empty') ?></p>
 <?php else: ?>
 	<?php require(__MODULES__ . '/music/views/partials/songRows.php') ?>
-	<?php /* One rule per rater, not a style on each of their cells in every row.
-	         None for the reader: theirs inherit the page's, which the colour slider moves. */ ?>
+	<?php /* The column picker's rater entries, one rule per rater rather than a class on
+	         each of their cells in every row; the reader's own columns can be hidden too.
+	         The header cells are matched by what they already carry, which tests pin. */ ?>
 	<style>
-		<?php foreach ($globalData['raters'] as $rater): ?>
-			<?php if (!$rater['isMine']): ?>
-				#songListTable td[data-account-id="<?= (int)$rater['id'] ?>"] { --hue: <?= (int)$rater['hue'] ?>; }
-			<?php endif ?>
-		<?php endforeach ?>
-		<?php /* The column picker's rater entries; the reader's own columns can be hidden too.
-		         The header cells are matched by what they already carry, which tests pin. */ ?>
 		<?php foreach ($globalData['raters'] as $rater): ?>
 			<?php $raterId = (int)$rater['id'] ?>
 			#songListTable.songHideRater<?= $raterId ?> :is(td[data-account-id="<?= $raterId ?>"], th[data-sort-key="score_<?= $raterId ?>"], th[data-sort-key="note_<?= $raterId ?>"], th.songRaterGroup<?= $raterId ?>) { display: none; }
@@ -79,16 +73,12 @@
 				<details class="songColumnPicker" id="songColumnPicker">
 					<summary class="songColumnPickerButton"><?= t('song.list.columnPicker') ?></summary>
 					<div class="songColumnPickerMenu">
-						<?php foreach ($globalData['columnPicker'] as $group => $entries): ?>
+						<?php foreach ($globalData['columnPicker'] as $entries): ?>
 							<div class="songColumnPickerGroup">
 								<?php foreach ($entries as $entry): ?>
 									<label class="songColumnPickerRow">
 										<input type="checkbox" data-column="<?= htmlspecialchars($entry['key']) ?>" data-hide-class="<?= htmlspecialchars($entry['hideClass']) ?>"<?= $entry['shown'] ? ' checked' : '' ?>>
-										<?php if ($group === 'raters'): ?>
-											<span class="songRaterName"<?= $entry['hueAttr'] ?>><?= htmlspecialchars($entry['label']) ?></span>
-										<?php else: ?>
-											<span><?= htmlspecialchars($entry['label']) ?></span>
-										<?php endif ?>
+										<span><?= htmlspecialchars($entry['label']) ?></span>
 									</label>
 								<?php endforeach ?>
 							</div>
@@ -126,7 +116,7 @@
 							<th rowspan="2" class="songLinksCell"><?= $linksLabel ?></th>
 							<?php foreach ($globalData['columns'] as $column): ?>
 								<?php if (isset($column['group']) && ($column['groupStart'] ?? false)): ?>
-									<th colspan="2" class="<?= $column['groupClass'] ?>"<?= $column['hueAttr'] ?>><?= htmlspecialchars($column['groupLabel']) ?></th>
+									<th colspan="2" class="<?= $column['groupClass'] ?>"><?= htmlspecialchars($column['groupLabel']) ?></th>
 								<?php endif ?>
 							<?php endforeach ?>
 							<?php foreach ($globalData['columns'] as $column): ?>
@@ -141,7 +131,7 @@
 						<tr>
 							<?php foreach ($globalData['columns'] as $column): ?>
 								<?php if (isset($column['group'])): ?>
-									<th class="<?= $column['class'] ?>"<?= $column['hueAttr'] ?> data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>">
+									<th class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>">
 										<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
 									</th>
 								<?php endif ?>

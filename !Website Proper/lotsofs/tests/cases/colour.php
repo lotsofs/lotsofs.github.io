@@ -153,12 +153,12 @@ return [
 		assertSame(((int)$account['id'] * 73) % 360, $hueOfLatest($from), 'an account that never picked one carries the hue its id gives it');
 	},
 
-	'a rater\'s name on the song list is in their own colour' => function ($ctx) {
+	/* Names and column edges were in each rater's colour for a day (2026-11-03),
+	   and the owner took both back out: the song list draws nobody in their own
+	   colour, while the page itself is still in the reader's. */
+	'the song list draws nobody\'s name or columns in their own colour' => function ($ctx) {
 		$ctx->ensureLoggedIn('hue_name_other');
 		pickColour($ctx, 19);
-
-		$ctx->ensureLoggedIn('hue_name_default');
-		$default = accountRow($ctx, 'hue_name_default');
 
 		$ctx->ensureLoggedIn('hue_name_reader');
 		pickColour($ctx, 200);
@@ -167,52 +167,27 @@ return [
 		$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Hue Name Song']]);
 		$songId = $ctx->songId('Hue Name Song');
 
-		$named = function ($name, $hue) use ($ctx, $songId) {
-			$body = $ctx->get('/music/songs')['body'];
-			$card = songsCardFor($body, $songId);
+		$body = $ctx->get('/music/songs')['body'];
+		$card = songsCardFor($body, $songId);
 
+		assertSame(200, pageHue($ctx), 'the page is in the reader\'s hue');
+
+		foreach (['hue_name_other', 'hue_name_reader'] as $name) {
 			$id = (int)accountRow($ctx, $name)['id'];
 
-			assertTrue(preg_match('/<th colspan="2" class="[^"]*songRaterName[^"]*" style="--hue: ' . $hue . '">' . $name . '<\/th>/', $body) === 1, "{$name} is in hue {$hue} over their columns");
+			assertTrue(preg_match('/<th colspan="2" class="[^"]*">' . $name . '<\/th>/', $body) === 1, "the header over {$name}'s columns carries no colour");
+			assertTrue(strpos($body, 'td[data-account-id="' . $id . '"] { --hue') === false, "nor do {$name}'s cells");
 
 			foreach (['score', 'note'] as $field) {
-				assertContains('style="--hue: ' . $hue . '" data-sort-key="' . $field . '_' . $id . '"', $body, "their {$field} header carries the hue for its edge");
-			}
-
-			assertContains('#songListTable td[data-account-id="' . $id . '"] { --hue: ' . $hue . '; }', $body, 'and so do their cells, in one rule');
-
-			foreach ([' score', ' note'] as $label) {
-				assertContains('<dt><span class="songRaterName" style="--hue: ' . $hue . '">' . $name . '</span>' . $label . '</dt>', $card, "and on their{$label} label in a card");
-			}
-		};
-
-		/// The reader's own cells set no hue, so they inherit the page's, which the slider moves.
-		$own = function ($hue) use ($ctx, $songId) {
-			$body = $ctx->get('/music/songs')['body'];
-			$card = songsCardFor($body, $songId);
-			$id = (int)accountRow($ctx, 'hue_name_reader')['id'];
-
-			assertSame($hue, pageHue($ctx), 'the page is in the reader\'s hue');
-			assertTrue(preg_match('/<th colspan="2" class="[^"]*songRaterName[^"]*">hue_name_reader<\/th>/', $body) === 1, 'their name sets no hue of its own');
-			/// The rule, not the selector: the column picker's rule names their cells too.
-			assertTrue(strpos($body, 'td[data-account-id="' . $id . '"] { --hue') === false, 'nor do their cells');
-
-			foreach (['score', 'note'] as $field) {
-				assertTrue(preg_match('/<th class="[^"]*" data-sort-key="' . $field . '_' . $id . '"/', $body) === 1, "nor does their {$field} header");
+				assertTrue(preg_match('/<th class="[^"]*" data-sort-key="' . $field . '_' . $id . '"/', $body) === 1, "nor does {$name}'s {$field} header");
 			}
 
 			foreach ([' score', ' note'] as $label) {
-				assertContains('<dt><span class="songRaterName">hue_name_reader</span>' . $label . '</dt>', $card, "nor their{$label} label in a card");
+				assertContains('<dt>' . $name . $label . '</dt>', $card, "and {$name}'s{$label} label in a card is plain text");
 			}
-		};
+		}
 
-		$own(200);
-		$named('hue_name_other', 19);
-		$named('hue_name_default', ((int)$default['id'] * 73) % 360);
-
-		pickColour($ctx, 300);
-		$own(300);
-		$named('hue_name_other', 19);
+		assertTrue(strpos($body, 'songRaterName') === false, 'no name is drawn in a colour of its own');
 	},
 
 ];
