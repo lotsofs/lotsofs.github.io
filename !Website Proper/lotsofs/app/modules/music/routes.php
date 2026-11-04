@@ -20,6 +20,7 @@ $routes += [
 	"/music/ajax/song" => __MODULES__ . "/music/ajax/song.php",
 	"/music/ajax/song-edit" => __MODULES__ . "/music/ajax/songEdit.php",
 	"/music/ajax/song-columns" => __MODULES__ . "/music/ajax/songColumns.php",
+	"/music/ajax/alias-add" => __MODULES__ . "/music/ajax/aliasAdd.php",
 	"/music/ajax/alias-delete" => __MODULES__ . "/music/ajax/aliasDelete.php",
 	"/music/ajax/song-rating" => __MODULES__ . "/music/ajax/songRating.php",
 	"/music/ajax/song-rating-poll" => __MODULES__ . "/music/ajax/songRatingPoll.php",

@@ -27,6 +27,8 @@ return [
 	'colour.hue' => 'Site colour',
 	'colour.save' => 'Use this colour',
 
+	'alias.add' => 'Write in another name; it is saved when you leave the box or press Enter',
+	'alias.addPlaceholder' => 'Another name',
 	'alias.use' => 'Use this name',
 	'alias.delete' => 'Delete this name',
 	'alias.deleteConfirm' => 'Delete the name "{name}"?',
@@ -34,6 +36,8 @@ return [
 	'alias.result.listed' => 'Listed under this name on: {albums}',
 	'alias.result.current' => '❌ The current name can\'t be deleted; use another name first',
 	'alias.result.notFound' => '❌ That name is already gone',
+	'alias.result.required' => '❌ A name can\'t be empty',
+	'alias.result.duplicate' => '✅ That is already one of its names',
 
 	'language.en' => 'English',
 	'language.de' => 'German',

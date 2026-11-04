@@ -715,15 +715,29 @@ const durationFieldEditor = {
 	},
 };
 
-/* The song's other names, each to delete or make its title. Only a song with
-   one has the row. Making one the title is a rename to it, which promotes it. */
+/* The song's other names, each to delete or make its title, and a box to write in
+   another. Making one the title is a rename to it, which promotes it. */
 const aliasFieldEditor = {
-	enter(card) {
-		const cell = fieldCell(card, "aliases");
-		if (!cell || !("titles" in cell.dataset)) {
-			return;
-		}
+	/// The server renders the row only for a song with another name; edit mode is where one is added.
+	cell(card) {
+		let cell = fieldCell(card, "aliases");
+		if (!cell) {
+			const title = fieldCell(card, "title").dataset.canonicalTitle;
 
+			const term = document.createElement("dt");
+			term.textContent = t("song.column.aliases");
+
+			cell = document.createElement("dd");
+			cell.className = "songAliasesCell";
+			cell.dataset.field = "aliases";
+			cell.dataset.titles = JSON.stringify(title ? [title] : []);
+
+			fieldCell(card, "album").previousElementSibling.before(term, cell);
+		}
+		return cell;
+	},
+	enter(card) {
+		const cell = aliasFieldEditor.cell(card);
 		const songId = card.dataset.songId;
 
 		renderAliasEditor(cell, {
@@ -738,7 +752,9 @@ const aliasFieldEditor = {
 				}
 				else {
 					syncField(songId, "aliases", target => target.dataset.titles = JSON.stringify(result.names));
-					forgetTrackListing(songId, name);
+					if (action === "delete") {
+						forgetTrackListing(songId, name);
+					}
 				}
 
 				const pair = rowsBySongId.get(String(songId));
@@ -747,7 +763,14 @@ const aliasFieldEditor = {
 					applySongTitle(pair.card);
 				}
 
-				aliasFieldEditor.enter(card);
+				if (card.dataset.editing === "1") {
+					aliasFieldEditor.enter(card);
+				}
+				/// A name written in and then Done: the blur saves it after leaving edit mode took the empty row away.
+				else if (action === "add") {
+					aliasFieldEditor.cell(card).dataset.titles = JSON.stringify(result.names);
+					applyAliasCell(card);
+				}
 			},
 		});
 	},

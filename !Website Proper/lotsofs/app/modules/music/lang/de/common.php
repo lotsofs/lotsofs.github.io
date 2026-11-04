@@ -27,6 +27,8 @@ return [
 	'colour.hue' => 'Seitenfarbe',
 	'colour.save' => 'Diese Farbe verwenden',
 
+	'alias.add' => 'Einen weiteren Namen eintragen; er wird gespeichert, wenn du das Feld verlässt oder Enter drückst',
+	'alias.addPlaceholder' => 'Ein weiterer Name',
 	'alias.use' => 'Diesen Namen verwenden',
 	'alias.delete' => 'Diesen Namen löschen',
 	'alias.deleteConfirm' => 'Den Namen „{name}“ löschen?',
@@ -34,6 +36,8 @@ return [
 	'alias.result.listed' => 'Unter diesem Namen geführt auf: {albums}',
 	'alias.result.current' => '❌ Der aktuelle Name kann nicht gelöscht werden; verwende zuerst einen anderen Namen',
 	'alias.result.notFound' => '❌ Diesen Namen gibt es schon nicht mehr',
+	'alias.result.required' => '❌ Ein Name darf nicht leer sein',
+	'alias.result.duplicate' => '✅ Das ist schon einer seiner Namen',
 
 	'language.en' => 'Englisch',
 	'language.de' => 'Deutsch',

@@ -498,9 +498,9 @@ const artistNameEditor = {
 	},
 };
 
-/* The card's other names, each to delete or make current, album and artist
-   alike. The row is only rendered when there are some, so it is made here when
-   it is missing: a rename's old name shows up at once, ready to delete. */
+/* The card's other names, each to delete or make current, and a box to write in
+   another, album and artist alike. The row is only rendered when there are some,
+   so edit mode makes it when it is missing. */
 const cardAliasEditor = {
 	cell(card) {
 		let cell = albumCardField(card, "aliases");
@@ -521,10 +521,6 @@ const cardAliasEditor = {
 		const kind = card.dataset.cardKind;
 		const nameKey = kind === "album" ? "albumName" : "artistName";
 		const names = JSON.parse(card.dataset.aliasNames || "[]");
-
-		if (names.length < 2 && !albumCardField(card, "aliases")) {
-			return;
-		}
 
 		renderAliasEditor(cardAliasEditor.cell(card), {
 			kind,

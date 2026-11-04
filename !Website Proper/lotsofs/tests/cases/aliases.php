@@ -1,10 +1,16 @@
 <?php
 
-/* Deleting a name, and making an old one current again, from the song, album
-   and artist cards. Making one current is a rename to it, through each kind's
-   own rename endpoint; deleting is /music/ajax/alias-delete. */
+/* Writing in another name, deleting one, and making an old one current again,
+   from the song, album and artist cards. Making one current is a rename to it,
+   through each kind's own rename endpoint; adding and deleting are
+   /music/ajax/alias-add and /music/ajax/alias-delete. */
 
+const ALIAS_ADD_ENDPOINT = '/music/ajax/alias-add';
 const ALIAS_DELETE_ENDPOINT = '/music/ajax/alias-delete';
+
+function aliasesAdd($ctx, $kind, $id, $name) {
+	return $ctx->post(ALIAS_ADD_ENDPOINT, ['kind' => $kind, 'id' => $id, 'name' => $name]);
+}
 
 function aliasesDelete($ctx, $kind, $id, $name, $clearListings = null) {
 	$body = ['kind' => $kind, 'id' => $id, 'name' => $name];
@@ -119,6 +125,49 @@ return [
 		assertSame('Alias Studio Title', songsCellValue($row, 'title'), 'which is what the song list shows for that album');
 	},
 
+	'another name can be written in for an album, an artist or a song' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+		$artistId = $ctx->makeArtist('Alias Writer Artist');
+		$albumId = makeAlbum($ctx, 'Alias Written Record', $artistId, []);
+		$songId = makeSong($ctx, $artistId, 'Alias Written Song');
+
+		$album = aliasesAdd($ctx, 'album', $albumId, '  Alias Written Record (Deluxe)  ');
+		assertSame('ok', $album['json']['status'], 'an album takes another name');
+		assertSame(['Alias Written Record', 'Alias Written Record (Deluxe)'], $album['json']['names'], 'trimmed, and not as its current one');
+
+		$card = $ctx->post('/music/ajax/album-card', ['album_id' => $albumId])['json']['html'];
+		assertContains('<dd class="albumAliasCell" data-field="aliases">Alias Written Record (Deluxe)</dd>', $card, 'which the card lists');
+
+		$again = aliasesAdd($ctx, 'album', $albumId, 'Alias Written Record (Deluxe)');
+		assertSame('duplicate', $again['json']['status'], 'the same name twice is a duplicate');
+		assertSame(['Alias Written Record', 'Alias Written Record (Deluxe)'], aliasesStored($ctx, 'album', $albumId), 'and is not stored twice');
+		assertSame('error', aliasesAdd($ctx, 'album', $albumId, '   ')['json']['status'], 'an empty name is refused');
+
+		assertSame(['Alias Writer Artist', 'The Alias Writers'], aliasesAdd($ctx, 'artist', $artistId, 'The Alias Writers')['json']['names'], 'an artist takes one too');
+
+		$song = aliasesAdd($ctx, 'song', $songId, 'Alias Written Song (Live)');
+		assertSame(['Alias Written Song', 'Alias Written Song (Live)'], $song['json']['names'], 'and so does a song');
+		assertSame('Alias Written Song', $ctx->songTitle($songId), 'whose title stays as it was');
+
+		$body = $ctx->get("/music/songs?artist={$artistId}")['body'];
+		assertContains('<span class="songCellText">Alias Written Song (Live)</span>', songsFieldCell(songsRowFor($body, $songId), 'aliases'), 'the song list shows it');
+		assertContains('>Alias Written Song (Live)</dd>', songsFieldCell(songsCardFor($body, $songId), 'aliases'), 'and the card has the row now');
+	},
+
+	'a song cannot take a name another song by its artist goes by' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+		$artistId = $ctx->makeArtist('Alias Clash Artist');
+		makeSong($ctx, $artistId, 'Alias Clash Taken');
+		$songId = makeSong($ctx, $artistId, 'Alias Clash Other');
+
+		$clash = aliasesAdd($ctx, 'song', $songId, 'Alias Clash Taken');
+		assertSame('error', $clash['json']['status'], 'refused, as a rename to it is');
+		assertSame(['Alias Clash Other'], aliasesStored($ctx, 'song', $songId), 'and nothing is added');
+
+		$elsewhere = makeSong($ctx, $ctx->makeArtist('Alias Clash Elsewhere'), 'Alias Clash Elsewhere Song');
+		assertSame('ok', aliasesAdd($ctx, 'song', $elsewhere, 'Alias Clash Taken')['json']['status'], 'another artist\'s song may share it');
+	},
+
 	'only an admin deletes names, and only by POST' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 		$artistId = $ctx->makeArtist('Alias Guard Artist');
@@ -130,6 +179,7 @@ return [
 
 		$ctx->ensureLoggedIn('aliases_reader', 'test password', false);
 		assertSame(403, aliasesDelete($ctx, 'artist', $artistId, 'Alias Guard Artist')['status'], 'a non-admin is refused');
+		assertSame(403, aliasesAdd($ctx, 'artist', $artistId, 'Alias Guard Artist Again')['status'], 'and cannot add one either');
 		assertSame(['Alias Guard Artist Renamed', 'Alias Guard Artist'], aliasesStored($ctx, 'artist', $artistId), 'and nothing went');
 
 		$card = $ctx->post('/music/ajax/artist-card', ['artist_id' => $artistId])['json']['html'];

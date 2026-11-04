@@ -10,20 +10,9 @@ $id = ajaxInt($data['id'] ?? null);
 $name = ajaxText($data['name'] ?? null);
 $clearListings = ($data['clear_listings'] ?? false) === true;
 
-if (!isset(MUSIC_ALIAS_KINDS[$kind])) {
-	http_response_code(400);
-	echo json_encode(['error' => 'Unknown kind']);
-	exit;
-}
+requireAliasOwnerJson($db, $kind, $id);
 
 $spec = MUSIC_ALIAS_KINDS[$kind];
-$notFound = ['song' => 'song.result.notFound', 'album' => 'album.card.notFound', 'artist' => 'artist.card.notFound'];
-
-if (!$db->query("SELECT id FROM {$spec['entity']} WHERE id = ?", [$id])->fetch()) {
-	echo json_encode(['status' => 'error', 'message' => t($notFound[$kind])]);
-	exit;
-}
-
 $alias = $db->query("SELECT id FROM {$spec['table']} WHERE {$spec['owner']} = ? AND name = ?", [$id, $name])->fetch();
 
 if (!$alias) {

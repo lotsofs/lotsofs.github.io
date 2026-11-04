@@ -1317,6 +1317,17 @@ td.albumStatsRatedCell {
 	min-width: 0;
 }
 
+.cardAliasNew {
+	flex: 1 1 auto;
+	min-width: 0;
+	font: inherit;
+	background-color: #000000;
+	color: inherit;
+	border: 1px solid var(--mineAccent);
+	border-radius: 4px;
+	padding: 0.2em 0.3em;
+}
+
 .cardAliasUse,
 .cardAliasDelete,
 .cardAliasRelist {

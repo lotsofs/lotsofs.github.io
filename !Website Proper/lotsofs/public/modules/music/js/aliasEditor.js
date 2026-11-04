@@ -1,11 +1,13 @@
+const ALIAS_ADD_ENDPOINT = "/music/ajax/alias-add";
 const ALIAS_DELETE_ENDPOINT = "/music/ajax/alias-delete";
 
 /* A card's other names in edit mode, each with a button to make it the current
-   name and one to delete it. Shared by the song card (songs.js) and the album
-   and artist cards (albumCard.js), each of which says how to make a name current
-   and what to do with the answer. config: kind and id for alias-delete; names as
-   the server lists them, current first; use(name) returning the rename's promise;
-   onChange(result, action, name) after a write; status(message). */
+   name and one to delete it, and a box under them to write in another. Shared by
+   the song card (songs.js) and the album and artist cards (albumCard.js), each of
+   which says how to make a name current and what to do with the answer. config:
+   kind and id for alias-add and alias-delete; names as the server lists them,
+   current first; use(name) returning the rename's promise; onChange(result,
+   action, name) after a write, action being use, add or delete; status(message). */
 function renderAliasEditor(cell, config) {
 	cell.textContent = "";
 
@@ -13,8 +15,71 @@ function renderAliasEditor(cell, config) {
 	list.className = "cardAliasList";
 
 	config.names.slice(1).forEach(name => list.appendChild(aliasEditorRow(name, config)));
+	list.appendChild(aliasEditorAddRow(cell, config));
 
 	cell.appendChild(list);
+}
+
+/* Saved on blur, as every other box in the card editors is; Enter does the same
+   and leaves the cursor in the fresh box for the next one. */
+function aliasEditorAddRow(cell, config) {
+	const row = document.createElement("div");
+	row.className = "cardAliasRow cardAliasAddRow";
+
+	const input = document.createElement("input");
+	input.type = "text";
+	input.className = "cardAliasNew";
+	input.placeholder = t("alias.addPlaceholder");
+	input.title = t("alias.add");
+
+	let viaEnter = false;
+
+	input.addEventListener("keydown", event => {
+		if (event.key === "Enter") {
+			event.preventDefault();
+			viaEnter = true;
+			input.blur();
+		}
+	});
+
+	input.addEventListener("blur", () => {
+		const name = input.value.trim();
+		const refocus = viaEnter;
+		viaEnter = false;
+
+		if (name === "" || input.disabled) {
+			return;
+		}
+
+		input.disabled = true;
+		postJson(ALIAS_ADD_ENDPOINT, { kind: config.kind, id: Number(config.id), name })
+			.then(result => {
+				input.disabled = false;
+				if (result.status === "ok") {
+					config.status("");
+					config.onChange(result, "add", name);
+
+					const fresh = cell.querySelector(".cardAliasNew");
+					if (refocus && fresh) {
+						fresh.focus();
+					}
+					return;
+				}
+
+				/// Already one of its names: nothing to fix, so the box empties.
+				if (result.status === "duplicate") {
+					input.value = "";
+				}
+				config.status(result.message);
+			})
+			.catch(error => {
+				input.disabled = false;
+				config.status(t("status.submitFailed", { error: error.message }));
+			});
+	});
+
+	row.appendChild(input);
+	return row;
 }
 
 function aliasEditorRow(name, config) {

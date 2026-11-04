@@ -27,6 +27,8 @@ return [
 	'colour.hue' => 'Sidekleur',
 	'colour.save' => 'Dizze kleur brûke',
 
+	'alias.add' => 'Skriuw in oare namme; dy wurdt bewarre as do it fak ferlitst of op Enter drukst',
+	'alias.addPlaceholder' => 'In oare namme',
 	'alias.use' => 'Dizze namme brûke',
 	'alias.delete' => 'Dizze namme wiskje',
 	'alias.deleteConfirm' => 'De namme "{name}" wiskje?',
@@ -34,6 +36,8 @@ return [
 	'alias.result.listed' => 'Under dizze namme op: {albums}',
 	'alias.result.current' => '❌ De hjoeddeistige namme kin net wiske wurde; brûk earst in oare namme',
 	'alias.result.notFound' => '❌ Dy namme is der al net mear',
+	'alias.result.required' => '❌ In namme kin net leech wêze',
+	'alias.result.duplicate' => '✅ Dat is al ien fan de nammen',
 
 	'language.en' => 'Ingelsk',
 	'language.de' => 'Dútsk',
