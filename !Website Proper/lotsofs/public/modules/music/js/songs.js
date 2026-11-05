@@ -1254,6 +1254,114 @@ songColumnPicker.addEventListener("change", event => {
 		.catch(error => showToast(container => container.textContent = t("song.list.columnsNotSaved", { error: error.message })));
 });
 
+/* Dragging a text column's right edge sets its width, kept in this browser only.
+   A width is a custom property on <html> that the stylesheet reads, which
+   songs.view.php puts back before the table is drawn; double-clicking the edge
+   gives the column its own width back. Storage is read fresh each time, so two
+   tabs keep each other's other columns. */
+const SONG_WIDTHS_KEY = "musicSongColumnWidths";
+const SONG_WIDTH_MIN_EM = 3;
+const SONG_WIDTH_MAX_EM = 60;
+
+function readSongWidths() {
+	try {
+		const widths = JSON.parse(localStorage.getItem(SONG_WIDTHS_KEY));
+		return widths && typeof widths === "object" ? widths : {};
+	}
+	catch (error) {
+		return {};
+	}
+}
+
+function storeSongWidth(property, em) {
+	const widths = readSongWidths();
+	if (em === null) {
+		delete widths[property];
+	}
+	else {
+		widths[property] = em;
+	}
+
+	try {
+		localStorage.setItem(SONG_WIDTHS_KEY, JSON.stringify(widths));
+	}
+	catch (error) {
+		/* Refused storage: the width lasts as long as the page. */
+	}
+}
+
+const songResizableColumns = [
+	...[["songArtistCell", "Artist"], ["songTitleCell", "Title"], ["songAliasesCell", "Aliases"], ["songAlbumCell", "Album"]]
+		.map(([cellClass, name]) => ({
+			header: songListTable.querySelector(`thead th.${cellClass}`),
+			body: `td.${cellClass}`,
+			property: `--songWidth${name}`,
+		})),
+	...Array.from(songListTable.querySelectorAll("thead th.songRatingNoteCell"), header => {
+		const accountId = header.dataset.sortKey.slice("note_".length);
+		return { header, body: `td[data-field="note_${accountId}"]`, property: `--songWidthRater${accountId}` };
+	}),
+];
+
+/// The width the property would have to be to keep the column as it is.
+function songColumnContentWidth(column) {
+	const cell = songListBody.querySelector(`tr:not([hidden]) > ${column.body}`) || column.header;
+	const style = getComputedStyle(cell);
+
+	return {
+		px: cell.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight),
+		fontSize: parseFloat(style.fontSize),
+	};
+}
+
+songResizableColumns.forEach(column => {
+	const grip = document.createElement("span");
+	grip.className = "songColumnGrip";
+	column.header.appendChild(grip);
+
+	grip.addEventListener("pointerdown", event => {
+		if (event.button !== 0) {
+			return;
+		}
+		event.preventDefault();
+
+		const start = songColumnContentWidth(column);
+		const startX = event.clientX;
+		let em = null;
+
+		grip.setPointerCapture(event.pointerId);
+		grip.classList.add("songColumnGripActive");
+		document.documentElement.classList.add("songColumnResizing");
+
+		function move(moveEvent) {
+			const wanted = (start.px + moveEvent.clientX - startX) / start.fontSize;
+			em = Math.round(Math.min(Math.max(wanted, SONG_WIDTH_MIN_EM), SONG_WIDTH_MAX_EM) * 100) / 100;
+			document.documentElement.style.setProperty(column.property, em + "em");
+		}
+
+		function end() {
+			grip.removeEventListener("pointermove", move);
+			grip.removeEventListener("pointerup", end);
+			grip.removeEventListener("pointercancel", end);
+			grip.classList.remove("songColumnGripActive");
+			document.documentElement.classList.remove("songColumnResizing");
+
+			if (em !== null) {
+				storeSongWidth(column.property, em);
+			}
+		}
+
+		grip.addEventListener("pointermove", move);
+		grip.addEventListener("pointerup", end);
+		grip.addEventListener("pointercancel", end);
+	});
+
+	grip.addEventListener("dblclick", () => {
+		document.documentElement.style.removeProperty(column.property);
+		storeSongWidth(column.property, null);
+	});
+});
+
 function songQuery(sort, dir) {
 	const params = new URLSearchParams();
 	params.set("sort", sort);

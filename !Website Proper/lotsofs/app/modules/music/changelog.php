@@ -16,6 +16,11 @@ return [
 				'de' => 'Eine Schaltfläche „Spalten“ wählt, welche Spalten die Songliste zeigt.',
 			],
 			[
+				'en' => 'The song list\'s text columns can be made wider or narrower by dragging, and Album starts wider.',
+				'fy' => 'De tekstkolommen fan de side Lieten kinne breder of smeller sleept wurde, en Album begjint breder.',
+				'de' => 'Die Textspalten der Songliste lassen sich durch Ziehen breiter oder schmaler machen, und Album ist von Anfang an breiter.',
+			],
+			[
 				'en' => 'New Other names & versions column on the song list, off by default.',
 				'fy' => 'Nije kolom Oare nammen & ferzjes op de side Lieten, standert út.',
 				'de' => 'Neue Spalte „Andere Namen & Fassungen“ in der Songliste, standardmäßig aus.',

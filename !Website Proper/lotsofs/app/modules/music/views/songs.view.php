@@ -12,17 +12,31 @@
 	<?php require(__MODULES__ . '/music/views/partials/songRows.php') ?>
 	<?php /* The column picker's rater entries, one rule per rater rather than a class on
 	         each of their cells in every row; the reader's own columns can be hidden too.
-	         The header cells are matched by what they already carry, which tests pin. */ ?>
+	         The header cells are matched by what they already carry, which tests pin.
+	         The second rule hands a rater's dragged note width to the stylesheet; unset,
+	         it is invalid and the stylesheet's own width applies. */ ?>
 	<style>
 		<?php foreach ($globalData['raters'] as $rater): ?>
 			<?php $raterId = (int)$rater['id'] ?>
 			#songListTable.songHideRater<?= $raterId ?> :is(td[data-account-id="<?= $raterId ?>"], th[data-sort-key="score_<?= $raterId ?>"], th[data-sort-key="note_<?= $raterId ?>"], th.songRaterGroup<?= $raterId ?>) { display: none; }
+			#songListTable :is(td[data-field="note_<?= $raterId ?>"], th[data-sort-key="note_<?= $raterId ?>"]) { --songNoteWidth: var(--songWidthRater<?= $raterId ?>); }
 		<?php endforeach ?>
 	</style>
 	<script>
 		if (window.matchMedia("(max-width: 700px)").matches) {
 			document.documentElement.classList.add("songCardView");
 		}
+
+		/* The column widths dragged in songs.js, before the table is drawn. */
+		try {
+			const widths = JSON.parse(localStorage.getItem("musicSongColumnWidths")) || {};
+			for (const [name, em] of Object.entries(widths)) {
+				if (/^--songWidth\w+$/.test(name) && Number.isFinite(em)) {
+					document.documentElement.style.setProperty(name, em + "em");
+				}
+			}
+		}
+		catch (error) {}
 	</script>
 	<div class="songLayout">
 		<form class="songFilters" method="get" action="/music/songs">

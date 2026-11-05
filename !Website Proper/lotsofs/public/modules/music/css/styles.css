@@ -826,8 +826,10 @@ td.albumStatsRatedCell {
 		text-align: right;
 	}
 
+	/* A dragged width, through the per-rater rule in songs.view.php. */
 	.songRatingNoteCell {
-		width: 12em;
+		width: var(--songNoteWidth, 12em);
+		min-width: var(--songNoteWidth, auto);
 		white-space: nowrap;
 	}
 
@@ -864,25 +866,44 @@ td.albumStatsRatedCell {
 
 	.ratingNoteText {
 		display: block;
-		max-width: 10em;
+		max-width: var(--songNoteWidth, 10em);
 	}
 
 	/* A borrowed note clips as a written one does. */
 	.songRatingNoteCell .songInherited {
 		display: block;
-		max-width: 10em;
+		max-width: var(--songNoteWidth, 10em);
 	}
 
 	.songCellText {
 		display: block;
 	}
 
+	/* A width dragged in songs.js is the cell's width, minimum and clip at once,
+	   which pins the column to it; unset, the column sizes to its text up to the
+	   clip. The minimum is what holds: the table is laid out at about its
+	   narrowest, where a cell's width counts for nothing. */
+	.songArtistCell {
+		width: var(--songWidthArtist, auto);
+		min-width: var(--songWidthArtist, auto);
+	}
+
 	.songArtistCell .songCellText {
-		max-width: 14em;
+		max-width: var(--songWidthArtist, 14em);
+	}
+
+	.songTitleCell {
+		width: var(--songWidthTitle, auto);
+		min-width: var(--songWidthTitle, auto);
 	}
 
 	.songTitleCell .songCellText {
-		max-width: 14em;
+		max-width: var(--songWidthTitle, 14em);
+	}
+
+	.songAliasesCell {
+		width: var(--songWidthAliases, auto);
+		min-width: var(--songWidthAliases, auto);
 	}
 
 	/* Other names, then relationships, one per line, each clipped rather than
@@ -890,14 +911,41 @@ td.albumStatsRatedCell {
 	   this was, wider than either. */
 	.songAliasesCell .songAlias,
 	.songAliasesCell .songRelation {
-		max-width: 22em;
+		max-width: var(--songWidthAliases, 22em);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 
+	.songAlbumCell {
+		width: var(--songWidthAlbum, auto);
+		min-width: var(--songWidthAlbum, auto);
+	}
+
 	.songAlbumCell .songCellText {
-		max-width: 10em;
+		max-width: var(--songWidthAlbum, 18em);
+	}
+
+	/* The grip songs.js puts on a text column's right edge, half over the next
+	   header; the note headers are positioned already. */
+	thead :is(.songArtistCell, .songTitleCell, .songAliasesCell, .songAlbumCell) {
+		position: relative;
+	}
+
+	.songColumnGrip {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		right: -4px;
+		z-index: 1;
+		width: 8px;
+		cursor: col-resize;
+		touch-action: none;
+	}
+
+	.songColumnGrip:hover,
+	.songColumnGripActive {
+		background: linear-gradient(to right, transparent 3px, hsl(var(--hue), 100%, 70%) 3px 5px, transparent 5px);
 	}
 
 	.songRaterGroup {
@@ -998,6 +1046,12 @@ td.albumStatsRatedCell {
 	&.songHideRated .songStatRatedCell {
 		display: none;
 	}
+}
+
+/* While a column's grip is dragged; the grip holds the pointer, so its cursor stays. */
+html.songColumnResizing {
+	cursor: col-resize;
+	user-select: none;
 }
 
 .songCardView .songMobileSort {

@@ -163,6 +163,31 @@ return [
 		assertSame(401, $ctx->post(COLUMNS_ENDPOINT, ['column' => 'album', 'shown' => false])['status'], 'and so is nobody');
 	},
 
+	'a dragged column width is put back before the table, and every text column reads its own' => function ($ctx) {
+		$body = columnsPage($ctx, 'columns_widths');
+
+		$restore = strpos($body, 'localStorage.getItem("musicSongColumnWidths")');
+		assertTrue($restore !== false && $restore < strpos($body, '<table id="songListTable"'), 'the widths are set before the table is drawn');
+
+		foreach ($ctx->db()->query("SELECT id FROM account")->fetchAll() as $row) {
+			$id = (int)$row['id'];
+			assertContains("#songListTable :is(td[data-field=\"note_{$id}\"], th[data-sort-key=\"note_{$id}\"]) { --songNoteWidth: var(--songWidthRater{$id}); }", $body, "rater {$id}'s note column reads its own width");
+		}
+
+		$css = $ctx->get('/modules/music/css/styles.css')['body'];
+		$fallbacks = [
+			'--songWidthArtist' => '14em',
+			'--songWidthTitle' => '14em',
+			'--songWidthAliases' => '22em',
+			'--songWidthAlbum' => '18em',
+			'--songNoteWidth' => '10em',
+		];
+		foreach ($fallbacks as $property => $width) {
+			assertContains("max-width: var({$property}, {$width});", $css, "{$property} unset clips at {$width}, as before");
+		}
+		assertContains('width: var(--songNoteWidth, 12em);', $css, 'and a note cell is 12em wide');
+	},
+
 	'Other names & versions lists every name but the one the title shows, a line each' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
