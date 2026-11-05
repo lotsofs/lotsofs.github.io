@@ -5,6 +5,7 @@
 
 <nav>
 	<?php if (currentAccountId()): ?>
+		<a href="/music" class="<?= urlIs("/music") ? "navCurrent" : "" ?>"><?= t('nav.home') ?></a>
 		<a href="/music/songs" class="<?= urlIs("/music/songs") ? "navCurrent" : "" ?>"><?= t('nav.songs') ?></a>
 		<a href="/music/artists" class="<?= urlIs("/music/artists") ? "navCurrent" : "" ?>"><?= t('nav.artists') ?></a>
 		<a href="/music/albums" class="<?= urlIs("/music/albums") ? "navCurrent" : "" ?>"><?= t('nav.albums') ?></a>

@@ -7,5 +7,6 @@ return array_merge(
 	require __DIR__ . '/de/songs.php',
 	require __DIR__ . '/de/albums.php',
 	require __DIR__ . '/de/audit.php',
-	require __DIR__ . '/de/changes.php'
+	require __DIR__ . '/de/changes.php',
+	require __DIR__ . '/de/home.php'
 );

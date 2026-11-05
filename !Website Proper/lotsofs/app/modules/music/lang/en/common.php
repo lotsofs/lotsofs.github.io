@@ -2,6 +2,7 @@
 
 return [
 
+	'nav.home' => 'Home',
 	'nav.addSongs' => 'Add Songs',
 	'nav.songs' => 'Songs',
 	'nav.artists' => 'Artists',

@@ -15,7 +15,7 @@ runMusicMigrations($db);
 require_once __MODULES__ . '/music/rateLimit.php';
 
 if (currentAccountId()) {
-	header('Location: /music/songs', true, 302);
+	header('Location: /music', true, 302);
 	exit;
 }
 
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 			require_once __MODULES__ . '/music/toastDuration.php';
 			rememberModulePreference('toast', 'music', musicToastSecondsOf($account['toast_seconds']));
-			header('Location: /music/songs', true, 302);
+			header('Location: /music', true, 302);
 			exit;
 		}
 

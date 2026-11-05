@@ -52,3 +52,21 @@ CREATE TABLE edit_audit (
 	previous_value TEXT,
 	created_at INTEGER NOT NULL DEFAULT 0
 );
+
+-- The links on the music home page, in position order, each a view of the song
+-- list: an artist or album filter and a sort, stored as parts rather than as an
+-- address so a rename shows in the label. label NULL means the song list's own
+-- heading for that filter. At most one of artist_id and album_id is set; an
+-- album link takes its artist from the album when it is drawn, since the song
+-- list wants both. Admins pick them on the home page (homeLinks.php); not in
+-- edit_audit, which is for songs, albums and artists.
+CREATE TABLE home_link (
+	id INTEGER PRIMARY KEY,
+	position INTEGER NOT NULL,
+	label TEXT,
+	note TEXT,
+	artist_id INTEGER,
+	album_id INTEGER,
+	sort TEXT NOT NULL DEFAULT 'id',
+	dir TEXT NOT NULL DEFAULT 'asc'
+);

@@ -104,7 +104,7 @@ return [
 		foreach (['/music', '/music/songs', '/music/artists', '/music/albums', '/music/add-songs', '/music/invites', '/music/accounts', '/music/changes'] as $path) {
 			$body = $ctx->get($path)['body'];
 
-			foreach (['artist.', 'album.', 'song.', 'nav.', 'status.', 'ajax.', 'changes.'] as $prefix) {
+			foreach (['artist.', 'album.', 'song.', 'nav.', 'status.', 'ajax.', 'changes.', 'home.'] as $prefix) {
 				assertTrue(preg_match('/>\s*' . preg_quote($prefix, '/') . '\w/', $body) !== 1, "{$path} shows a raw {$prefix}* key");
 			}
 		}

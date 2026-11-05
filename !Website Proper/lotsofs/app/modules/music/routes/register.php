@@ -15,7 +15,7 @@ runMusicMigrations($db);
 require_once __MODULES__ . '/music/inviteCode.php';
 
 if (currentAccountId()) {
-	header('Location: /music/songs', true, 302);
+	header('Location: /music', true, 302);
 	exit;
 }
 
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 		if ($globalData['formError'] === null) {
 			logIn($accountId, $accountName);
-			header('Location: /music/songs', true, 302);
+			header('Location: /music', true, 302);
 			exit;
 		}
 	}

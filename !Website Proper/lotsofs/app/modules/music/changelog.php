@@ -11,6 +11,17 @@ return [
 		'date' => null,
 		'changes' => [
 			[
+				'en' => 'A home page with featured links into the song list, each saying how much of it is rated; logging in opens it.',
+				'fy' => 'In thússide mei útljochte keppelings nei de side Lieten, elk mei hoefolle dêrfan wurdearre is; by it oanmelden giest dêr hinne.',
+				'de' => 'Eine Startseite mit hervorgehobenen Links in die Songliste, jeweils mit dem Anteil bewerteter Songs; die Anmeldung führt dorthin.',
+			],
+			[
+				'en' => 'The home page\'s links are picked on the home page.',
+				'fy' => 'De keppelings fan de thússide wurde op de thússide útkeazen.',
+				'de' => 'Die Links der Startseite werden auf der Startseite ausgewählt.',
+				'admin' => true,
+			],
+			[
 				'en' => 'A Columns button picks which columns the song list shows.',
 				'fy' => 'In knop Kolommen kiest hokker kolommen de side Lieten sjen lit.',
 				'de' => 'Eine Schaltfläche „Spalten“ wählt, welche Spalten die Songliste zeigt.',

@@ -133,9 +133,13 @@ class TestContext {
 
 	private function csrfHeaderToken() {
 		if ($this->csrfToken === null) {
+			/// The home page signs a visitor out to login, and login sends a signed-in one home.
 			$body = $this->request('GET', '/music', null, false)['body'];
 			if (!preg_match('/name="csrfToken" content="([^"]+)"/', $body, $m)) {
-				throw new RuntimeException('no csrf token meta on /music');
+				$body = $this->request('GET', '/music/login', null, false)['body'];
+			}
+			if (!preg_match('/name="csrfToken" content="([^"]+)"/', $body, $m)) {
+				throw new RuntimeException('no csrf token meta on /music or /music/login');
 			}
 			$this->csrfToken = $m[1];
 		}

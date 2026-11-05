@@ -4,6 +4,7 @@ Finished work, one row per commit, newest first; `—` where the work had no cod
 
 | Date | Code | Area | Change | Why / how |
 |---|---|---|---|---|
+| 2026-11-05 | — | Music | Fill the music home page with featured links into the song list, each with how much of it is rated, picked on the page, and land there on login | `/music` was an empty public page; it now needs a login, welcomes you and lists song list views an admin picks there. Checked by the suite and in headless Chrome. |
 | 2026-11-05 | — | Music | Let the song list's text columns be dragged wider or narrower, and widen Album to 18em | Long names were clipped at fixed widths; each text column's header now has a grip, the width kept in the browser, and Album starts at 18em instead of 10. Checked by the suite and headless Chrome at 100% and 125%. |
 | 2026-11-05 | — | Music | Draw the nav's settings and language icons in Noto Emoji | The system's stand-in font drew the cog smaller than the globe. Checked in headless Chrome at three scales. |
 | 2026-11-05 | — | Music | Shorten the What's New entries, drop their kinds, and list admin-only changes apart | The owner found the entries too long and Added/Changed pointless; admin-only items now sit under For admins. Checked by the page's tests. |

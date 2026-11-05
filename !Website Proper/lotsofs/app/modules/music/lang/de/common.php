@@ -2,6 +2,7 @@
 
 return [
 
+	'nav.home' => 'Start',
 	'nav.addSongs' => 'Songs hinzufügen',
 	'nav.songs' => 'Songs',
 	'nav.artists' => 'Interpreten', // ? oder "Künstler"

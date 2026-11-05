@@ -2,6 +2,7 @@
 
 return [
 
+	'nav.home' => 'Thús',
 	'nav.addSongs' => 'Lieten tafoegje',
 	'nav.songs' => 'Lieten',
 	'nav.artists' => 'Artysten',

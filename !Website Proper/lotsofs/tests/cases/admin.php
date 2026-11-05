@@ -173,7 +173,7 @@ return [
 		assertSame(302, $response['status'], 'the deleted account is turned away');
 		assertContains('/music/login', $response['location'], 'sent to login');
 
-		$landing = $ctx->get('/music')['body'];
+		$landing = $ctx->get('/music/login')['body'];
 		assertContains('href="/music/register"', $landing, 'the signed out nav is shown');
 		assertTrue(strpos($landing, 'ghost_account') === false, 'the stale name is gone');
 	},

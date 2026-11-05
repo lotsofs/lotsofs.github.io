@@ -20,6 +20,7 @@ return [
 			'/contact' => 200,
 			'/exchange-rates' => 200,
 			'/ktane' => 302,
+			'/music' => 200,
 			'/music/add-songs' => 200,
 			'/music/songs' => 200,
 			'/music/songs?artist=1&album=1' => 200,
@@ -42,7 +43,7 @@ return [
 	'the music pages are hidden from signed out visitors' => function ($ctx) {
 		$ctx->newSession();
 
-		foreach (['/music/add-songs', '/music/songs', '/music/invites', '/music/changes'] as $path) {
+		foreach (['/music', '/music/add-songs', '/music/songs', '/music/invites', '/music/changes'] as $path) {
 			$response = $ctx->get($path);
 			assertSame(302, $response['status'], "GET {$path} while signed out");
 			assertContains('/music/login', $response['location'], "{$path} redirect target");
@@ -95,18 +96,11 @@ return [
 		}
 	},
 
-	'the music landing, login and register pages stay public' => function ($ctx) {
+	'the music login and register pages stay public' => function ($ctx) {
 		$ctx->newSession();
 
-		assertSame(200, $ctx->get('/music')['status'], 'GET /music');
 		assertSame(200, $ctx->get('/music/login')['status'], 'GET /music/login');
 		assertSame(200, $ctx->get('/music/register')['status'], 'GET /music/register');
-	},
-
-	'the music landing page links to login' => function ($ctx) {
-		$ctx->newSession();
-
-		assertContains('href="/music/login"', $ctx->get('/music')['body'], 'login link');
 	},
 
 	'unknown paths 404' => function ($ctx) {
@@ -174,7 +168,7 @@ return [
 	'the music and hideandseek modules serve their own favicon' => function ($ctx) {
 		$ctx->newSession();
 
-		foreach (['/music' => 'music', '/hideandseek' => 'hideandseek'] as $path => $module) {
+		foreach (['/music/login' => 'music', '/hideandseek' => 'hideandseek'] as $path => $module) {
 			$icon = "/modules/{$module}/favicon.ico";
 			$body = $ctx->get($path)['body'];
 
