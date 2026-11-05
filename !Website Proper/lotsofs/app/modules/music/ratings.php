@@ -18,7 +18,7 @@ require_once __MODULES__ . '/music/stats.php';
 
    TEMP views on this request's connection, created by every reader after the
    migrations. Window functions are avoided: the host's SQLite version is not
-   known (see migration 010), so the newest note is found with NOT EXISTS. */
+   known (see migration 009), so the newest note is found with NOT EXISTS. */
 function musicRatingView($db) {
 	$lending = [];
 	foreach (musicSongRelationTypes() as $type => $spec) {

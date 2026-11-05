@@ -58,6 +58,7 @@ return [
 	'addSongs.columnMapping.needsArtistAndTitle' => 'Pick one column for Artist and one for Title before continuing.',
 	'addSongs.separateAll' => 'Add every song whose title its artist already has as a separate song',
 	'addSongs.separateRelation' => 'Each separate song is the {relation} the song it shares its title with.',
+	'addSongs.chooseAmbiguous' => 'Some titles belong to more than one song by their artist: Choose which one each of the outlined rows means.',
 
 	'ajax.notLoggedIn' => 'You need to be logged in.',
 	'ajax.badCsrf' => 'That page expired, please reload it and try again.',

@@ -54,11 +54,9 @@ foreach ($locales as $locale) {
 
 	$missingChanges = [];
 	foreach (musicChangelog() as $release) {
-		foreach ($release['changes'] as $group => $entries) {
-			foreach ($entries as $entry) {
-				if (trim($entry[$locale] ?? '') === '') {
-					$missingChanges[] = ($release['date'] ?? 'undated') . " {$group}: " . substr($entry['en'], 0, 60);
-				}
+		foreach ($release['changes'] as $entry) {
+			if (trim($entry[$locale] ?? '') === '') {
+				$missingChanges[] = ($release['date'] ?? 'undated') . ': ' . substr($entry['en'], 0, 60);
 			}
 		}
 	}

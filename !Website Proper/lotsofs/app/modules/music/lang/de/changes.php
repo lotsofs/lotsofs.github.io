@@ -4,9 +4,5 @@ return [
 	'changes.title' => 'Neuigkeiten',
 	'changes.intro' => 'Was sich auf diesen Seiten seit dem Update vom 19. Oktober 2026 geändert hat, das Neueste zuerst.',
 	'changes.latest' => 'Neueste Änderungen',
-	'changes.group.action' => 'Bitte selbst erledigen',
-	'changes.group.added' => 'Hinzugefügt',
-	'changes.group.changed' => 'Geändert',
-	'changes.group.fixed' => 'Behoben',
-	'changes.group.removed' => 'Entfernt',
+	'changes.forAdmins' => 'Für Admins',
 ];

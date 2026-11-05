@@ -6,6 +6,7 @@ return [
 	'song.column.title' => 'Title',
 	'song.column.aliases' => 'Also Known As',
 	'song.column.relations' => 'Related',
+	'song.column.otherNames' => 'Other names & versions',
 	'song.column.album' => 'Album',
 	'song.column.year' => 'Year',
 	'song.column.statHighest' => 'High',
@@ -22,6 +23,7 @@ return [
 
 	'song.submit' => 'Submit Songs',
 	'song.option.separate' => '<New, separate>',
+	'song.option.choose' => '<Choose a song>',
 
 	'song.result.added' => '🆕 Added "{title}" by {artist}',
 	'song.result.duplicate' => '✅ Song already existed',
@@ -69,6 +71,7 @@ return [
 	'song.link.abbr.other' => 'O',
 	'song.extras.submit' => 'Submit Extras',
 
+	'song.list.alternativeName' => 'alternative name',
 	'song.list.heading' => 'All Songs',
 	'song.list.headingAlbumBy' => '{artist} — {album}',
 	'song.list.empty' => 'No songs yet.',

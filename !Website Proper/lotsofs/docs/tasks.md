@@ -11,7 +11,7 @@ Dependencies between the plans:
 
 Music has no password reset. A user who forgets their password stays locked out until someone edits `account.password_hash` in the live database file (mode `0640`) by hand. hideandseek copied music's account system and has none either. Read in the code.
 
-**Plan.** The site has no email, so reset has to go through an admin: an admin action on the accounts page issues a one-time reset code (like an invite code; `inviteCode.php` already generates and normalises those), and the user redeems it on a reset page to set a new password. Hash with `hashPassword()`, never `password_hash()` directly (see `CLAUDE.md`). Clear that account's login rate-limit rows on success. Music needs a new migration for the code table, `010` or later.
+**Plan.** The site has no email, so reset has to go through an admin: an admin action on the accounts page issues a one-time reset code (like an invite code; `inviteCode.php` already generates and normalises those), and the user redeems it on a reset page to set a new password. Hash with `hashPassword()`, never `password_hash()` directly (see `CLAUDE.md`). Clear that account's login rate-limit rows on success. Music's code table goes in the unshipped migration (see `music.md`).
 
 **Verify.** A test that issues a code, resets, logs in with the new password, and refuses the same code a second time.
 
@@ -93,7 +93,7 @@ Songs whose second name only swaps the straight apostrophe for a curly one, with
 
 Loose ends from that audit. Read in the code.
 
-- **Song renames keep no history.** `ajax/songEdit.php` promotes an alias the song already has, and otherwise overwrites the current one. `albumEdit.php` keeps the old name instead. Doing the same for songs would be consistent, and an unwanted old name can now be deleted from the song's card.
+- **A song rename does not keep the old name.** `ajax/songEdit.php` promotes an alias the song already has, and otherwise overwrites the current one. `albumEdit.php` keeps the old name as another name instead. The History page records the rename either way (`edit_audit`), but the song no longer answers to its old name. Doing as albums do would be consistent, and an unwanted old name can now be deleted from the song's card.
 - **Two SELECTs are written out twice**: the album header in `routes/albums.php` and `ajax/albumCard.php`, and the audit row in `routes/audit.php` and `ajax/songRatingPoll.php`. Sharing them means a shared SQL fragment, which cuts against "SQL lives in route and ajax files" (`conventions.md`).
 
 **Plan.** Make `songEdit.php` keep the old name as an alias. For the SELECTs, decide whether a shared fragment is worth the exception; if not, drop that half of this item.
@@ -131,16 +131,6 @@ The poll finds changes through `account_song.updated_at`. Linking, unlinking or 
 **Verify.** Headless: hover a card editor's × until its tooltip shows, click it, move the cursor a pixel; the box is gone. Hovering from one tooltip to another still swaps the text.
 
 **Docs.** `music.md` (the tooltip bullet) if the rule needs saying.
-
-## TWN — Songs that share a title look alike when picking one
-
-Since 2026-11-04 the import can give an artist two songs with one title (`<New, separate>`), and the 1998 Grim Fandango soundtrack brings 19 such pairs beside the 2015 remaster. Read in the code, not reproduced: the Song step's dropdown labels an existing song by its name alone (`buildSongTable` in `addSongs.js`), so two such songs are two identical options, and a pasted title preselects whichever `aliases.find()` meets first. The album card's song dropdown labels a song `Title — Artist` (`albumSongLabel` in `albumCard.js`), which is just as identical. A re-import of either soundtrack, or adding one of them to an album from its card, can pick the wrong song with nothing on screen to say so. The song card's relationship picker already adds the albums (`relationChoices()` in `songs.js`).
-
-**Plan.** Where two options would read the same, add the song's albums (or its id) to both dropdowns' labels. In the Song step, preselect nothing when a title matches more than one song.
-
-**Verify.** With two songs by one artist sharing a title on different albums, both dropdowns show two different labels, and pasting that title leaves the Song step's choice open.
-
-**Docs.** `music.md` (bulk import), `music-frontend.md`.
 
 ## BND — Bandcamp does not embed
 
@@ -182,9 +172,9 @@ On the album and artist cards, the "Statistics for" control re-reads the track t
 
 ## AFL — Audit page links and filters
 
-`/music/audit` shows each song as plain text and cannot be filtered by rater or song. A song card can be linked now (`/music/songs?songCard=<id>`, see the linking bullet in `music.md`), which gives the names something to point at. Paging (100 rows a page) is already in place. Read in the code. Possible, not planned.
+`/music/audit` shows each song, album and artist as plain text and cannot be filtered by person, by what an entry is about, or by ratings against edits. A song card can be linked now (`/music/songs?songCard=<id>`, see the linking bullet in `music.md`), which gives the names something to point at. Paging (100 rows a page) is already in place. Read in the code. Possible, not planned.
 
-**Plan.** Link each song name to its card; add rater and song filters to the audit query as query parameters, kept across the paging links.
+**Plan.** Link each subject to its card (`?songCard=`, `?albumCard=`, `?artistCard=`); add the filters to both halves of the audit query as query parameters, kept across the paging links.
 
 **Verify.** A test that a filter narrows the rows and survives paging.
 

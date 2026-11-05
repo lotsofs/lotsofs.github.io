@@ -35,6 +35,7 @@ function loadAlbumOptions() {
 			.then(result => {
 				albumCardArtists = result.artists || [];
 				albumCardSongs = result.songs || [];
+				labelAlbumCardSongs();
 			})
 			.catch(error => {
 				// Left unset so the next Edit click tries again.
@@ -119,6 +120,20 @@ function albumOptionLabel(option) {
 
 function albumSongLabel(song) {
 	return albumOptionLabel(song) + (song.artist ? " — " + song.artist : "");
+}
+
+/// Once per catalogue: two songs by one artist may share a title, and those take their ids to read apart.
+function labelAlbumCardSongs() {
+	const counts = new Map();
+	albumCardSongs.forEach(song => {
+		song.label = albumSongLabel(song);
+		counts.set(song.label, (counts.get(song.label) || 0) + 1);
+	});
+	albumCardSongs.forEach(song => {
+		if (counts.get(song.label) > 1) {
+			song.label += " #" + song.id;
+		}
+	});
 }
 
 const albumNameEditor = {
@@ -295,7 +310,7 @@ const albumTrackEditor = {
 
 		const select = document.createElement("select");
 		select.add(new Option("—", ""));
-		albumCardSongs.forEach(song => select.add(new Option(albumSongLabel(song), String(song.id))));
+		albumCardSongs.forEach(song => select.add(new Option(song.label, String(song.id))));
 		select.value = songId || "";
 
 		const alias = document.createElement("select");

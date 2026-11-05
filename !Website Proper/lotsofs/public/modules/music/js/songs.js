@@ -1357,7 +1357,22 @@ function applySongTitle(container) {
 	applyAliasCell(container);
 }
 
-/// Every name the song has but the one its title cell shows, one per line.
+/// One of a song's other names in the table, a line like a relationship's, carrying its whole text.
+function aliasLine(name) {
+	const label = t("song.list.alternativeName") + ": ";
+
+	const title = document.createElement("span");
+	title.className = "songAliasTitle";
+	title.textContent = name;
+
+	const line = document.createElement("div");
+	line.className = "songAlias";
+	line.title = label + name;
+	line.append(label, title);
+	return line;
+}
+
+/// Every name the song has but the one its title cell shows: a line each in the table, one per line on the card.
 function applyAliasCell(container) {
 	const cell = fieldCell(container, "aliases");
 
@@ -1367,16 +1382,14 @@ function applyAliasCell(container) {
 	}
 
 	const shown = cellText(fieldCell(container, "title"));
-	const names = JSON.parse(cell.dataset.titles).filter(name => name !== shown).join("\n");
+	const names = JSON.parse(cell.dataset.titles).filter(name => name !== shown);
 
-	valueElement(cell).textContent = names;
-
-	// Whichever the cell currently uses, since tooltip.js moves title into data-tooltip.
-	if ("tooltip" in cell.dataset) {
-		cell.dataset.tooltip = names;
+	if (container.tagName === "TR") {
+		cell.textContent = "";
+		names.forEach(name => cell.appendChild(aliasLine(name)));
 	}
-	else if (cell.hasAttribute("title")) {
-		cell.title = names;
+	else {
+		cell.textContent = names.join("\n");
 	}
 }
 

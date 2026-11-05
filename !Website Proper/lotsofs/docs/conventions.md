@@ -6,7 +6,7 @@
 - **Never run `build-deploy.php`.** The owner runs it.
 - **Comments (policy set 2026-10-05):** a one-line warning next to a tricky spot and a short note on a non-obvious invariant are wanted. Design prose and narration of what code does are not; that goes in `docs/`. Use `///` in PHP/JS and `/* */` in CSS. Keep comments and the docs describing the same code current in the same pass as the change, and delete a comment that stopped being true. Register: plain and impersonal, no "you", no "so" connectives, no trailing consequence clauses.
 - **Do not publish Artifacts** unless explicitly asked.
-- **Do not delete or "clean up" files in `data/`** (the test databases are used and shared). The one exception is `hideandseek_test.sqlite`, which is disposable (owner, 2026-10-06): deleting it is the way to apply an edit to its unshipped `001_create.sql`, and the next request recreates it.
+- **Do not delete or "clean up" files in `data/`** (the test databases are used and shared). The exceptions are the two dev databases, which are disposable whenever the schema moves: `hideandseek_test.sqlite` (owner, 2026-10-06), where deleting it is the way to apply an edit to its unshipped `001_create.sql` and the next request recreates it, and `music_test.sqlite` (owner, 2026-11-05), where deleting it applies an edit to music's unshipped migration and the next dev-server request copies `music.sqlite` again. Their rows are still never edited or tidied as a fix for something else.
 - **Never cascade, never block (owner, 2026-10-06; applies to the whole site).** New tables declare no `REFERENCES` and no `ON DELETE` action: with `PRAGMA foreign_keys = ON` (set on every connection) a bare `REFERENCES` refuses to delete a parent and `ON DELETE CASCADE` deletes the children unasked, so leaving the constraint out is the only way to orphan. The owner handles integrity in code. Reads that join upward use `LEFT JOIN`. Older tables (hideandseek's `poi_category`/`poi`, everything in music) predate the rule and are not retrofitted; music's shipped migrations are frozen.
 - **"Don't show X" means filter the query or UI**, never delete or mutate stored data to hide a display bug.
 - **Never kill processes by image name** (`taskkill /IM php.exe` killed the owner's dev server). Target a PID you started.
@@ -22,7 +22,7 @@
 - **Naming:** camelCase for PHP functions, JS functions, variables and CSS classes/ids (`songCardModal`, `.albumStatsTable`). Module prefixes on helpers: music uses `music*` (`musicScoreStats`, `musicHueFor`) or plain nouns (`scoreText`, `songLinkFields`); hideandseek uses `hns*`. JSON/DB columns are snake_case (`artist_id`, `is_actual`); JSON keys that are only ever read by JS in the hideandseek module and the poll payloads are camelCase.
 - **File names:** routes/ajax/partials camelCase (`songRating.php`), URLs kebab-case (`/music/ajax/song-rating`), views `name.view.php`.
 - **Data flow in PHP:** controller → `$globalData` array → view. SQL lives inline in route and ajax files; there is no model layer (see LFT in `TODO.md`). Do not introduce one casually.
-- **Transactions:** multi-statement writes use `$db->pdo->beginTransaction()` / `commit()` with `catch (PDOException $e) { rollBack(); throw $e; }`. The audit log write must share the transaction with the rating write.
+- **Transactions:** multi-statement writes use `$db->pdo->beginTransaction()` / `commit()` with `catch (PDOException $e) { rollBack(); throw $e; }`. A write to `rating_audit` or `edit_audit` shares the transaction with the write it records.
 - **Parameterise everything.** The only interpolated SQL is built from validated whitelists or integer-cast ids (`score_{$id}` columns in `routes/songs.php`, the `$sortable` map, `$field` after an `in_array` check).
 - **Input validation helpers** live in the ajax guard; ids are validated with `ctype_digit` before `(int)`.
 - **No `mbstring`.** Use `strlen`, `strtolower`, `strcasecmp`. PCRE `\X` with `/u` works (hideandseek icons rely on it).
@@ -35,7 +35,7 @@
 
 1. **CSS has no `//` comments.** The parser swallows the next rule. Use `/* */`. Two tests forbid it.
 2. **Nested-looking selector groups in the stylesheets.** `#songCards, #songCardModal {` and `.albumCard, .artistCard {` open one long block; a rule inside applies to every branch. Resolve a selector by walking *up* through every line of the group. A bare `.x .y` rule can lose to an id-prefixed rule elsewhere; the blind-rating hiding rules carry three id prefixes for exactly this reason.
-3. **Editing a shipped migration is a silent no-op** on databases that already recorded it. New file, next number.
+3. **Editing a shipped migration is a silent no-op** on databases that already recorded it. New file, next number, and only one per deploy: until it ships, every schema change goes into that one file (`music.md`).
 4. **Positional pairing in the song list**: nothing may ever be added as a child of `#songCards` or the table `<tbody>`.
 5. **Numbers sent as JSON numbers** are not strings: use `ajaxNumericText`, not `ajaxTrimmed`, for scores, years, durations, positions.
 6. **`0` is a real score.** Test `=== null`, `=== ''`, `.trim() === ""`, never truthiness.

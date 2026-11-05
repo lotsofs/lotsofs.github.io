@@ -58,6 +58,7 @@ return [
 	'addSongs.columnMapping.needsArtistAndTitle' => 'Kies ien kolom foar Artyst en ien foar Titel foardat jo trochgeane.',
 	'addSongs.separateAll' => 'Elk liet dêr\'t de artyst de titel al fan hat as in apart liet tafoegje',
 	'addSongs.separateRelation' => 'Elk apart liet is de {relation} it liet mei deselde titel.',
+	'addSongs.chooseAmbiguous' => 'Guon titels hearre by mear as ien liet fan harren artyst: Kies hokker liet elk fan de omrâne rigen bedoelt.',
 
 	'ajax.notLoggedIn' => 'Do moatst oanmeld wêze.',
 	'ajax.badCsrf' => 'Dizze side is ferrûn, laad opnij en besykje it nochris.',

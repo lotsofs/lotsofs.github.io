@@ -8,7 +8,7 @@ The songs page loads real Spotify, YouTube and SoundCloud iframes, which set coo
 
 The shape that works: an **account setting, off by default and changeable any time** ("load Spotify/YouTube players inline"), with a plain link in place of the player while it is off, optionally offered unticked at signup. Every viewer is logged in, so a setting covers the whole audience with no banner. It is not urgent while the audience is a few invited friends; it decides whether the embeds can ever be shown more widely.
 
-**If adopted.** An `account` column (migration `010` or later), a toggle in the cog menu beside blind rating, and `songRows.php` rendering the link while it is off.
+**If adopted.** An `account` column (in the unshipped migration, see `music.md`), a toggle in the cog menu beside blind rating, and `songRows.php` rendering the link while it is off.
 
 **Verify.** With the setting off, loading the songs page makes no request to Spotify, YouTube or SoundCloud.
 
@@ -22,7 +22,7 @@ Not at all. `song_cover` and `composition` went in the ground-up rewrite (`app/m
 
 ## VER — When is a recording a separate song
 
-The settled rule: split on edit or performance, not on master or encoding, and override when it would change the score. Partly built since 2026-11-04: the import's Song step can add a song under a title its artist already has (`<New, separate>`, which skips the duplicate check in `song.php`), and `song_relationship` says how two songs relate, shown on both cards (only a `remaster` type so far). What is left is the rule itself: nothing applies it or suggests a split, rename and adding a name still refuse a name another song by the artist has, and two such songs look alike in the import and the album card (TWN).
+The settled rule: split on edit or performance, not on master or encoding, and override when it would change the score. Partly built since 2026-11-04: the import's Song step can add a song under a title its artist already has (`<New, separate>`, which skips the duplicate check in `song.php`), and `song_relationship` says how two songs relate, shown on both cards (only a `remaster` type so far). What is left is the rule itself: nothing applies it or suggests a split, rename and adding a name still refuse a name another song by the artist has.
 
 **Docs.** `music.md` (the data model), `music-reference.md` (schema).
 

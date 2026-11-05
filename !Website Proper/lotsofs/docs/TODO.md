@@ -16,11 +16,10 @@ Detail in [tasks.md](tasks.md).
 | [LGO](tasks.md#lgo--logout-takes-two-redirects) | Logout redirects to `/music/songs`, which redirects again to `/music/login`; go straight to login | Low |
 | [REG](tasks.md#reg--registration-misreports-database-failures) | Registration reports "invalid invite" for any failure in its transaction, hiding real database errors (hideandseek too) | Low |
 | [REN](tasks.md#ren--rename-the-album-card-modal) | `#albumCardModal` and `albumCard.js` host artist cards too; rename them kind-neutral, as a change of its own | Low |
-| [LFT](tasks.md#lft--leftovers-from-the-2026-09-25-audit) | Audit leftovers: song renames keep no old name, and two SELECTs are duplicated between route and ajax files | Low |
+| [LFT](tasks.md#lft--leftovers-from-the-2026-09-25-audit) | Audit leftovers: a song rename does not keep the old name as another name (History records it), and two SELECTs are duplicated between route and ajax files | Low |
 | [CHN](tasks.md#chn--borrowed-ratings-reach-only-direct-versions) | A song borrows ratings only from versions it is related to directly; in a chain A–B–C, A gets nothing from C | Low |
 | [LNK](tasks.md#lnk--a-relationship-change-reaches-other-open-pages-only-on-reload) | Linking or unlinking two songs reaches other open song lists only on reload: the poll never hears of it, so their borrowed values, statistics, covers and Related lines stay old | Low |
 | [TIP](tasks.md#tip--a-tooltip-outlives-the-element-it-belongs-to) | A hover tooltip stays on screen when its element is removed under the cursor, as a card editor's × or name box is | Low |
-| [TWN](tasks.md#twn--songs-that-share-a-title-look-alike-when-picking-one) | Two songs by one artist with one title (possible since `<New, separate>`) show identical labels in the import's Song step and the album card's song dropdown, and the Song step preselects either | Low |
 | [BND](tasks.md#bnd--bandcamp-does-not-embed) | Bandcamp links open Bandcamp instead of embedding; an embed needs a numeric id that the page URL lacks | Low |
 | [GRD](tasks.md#grd--song-table-lines-are-thicker-in-the-header-at-some-display-scales) | Song table column lines are shadows in the header and borders in the body, so at 150%+ (or 125% with columns hidden) some are 2px in the header and 1px in the body | Low |
 | [SWH](tasks.md#swh--statistics-for-does-not-reach-the-graph-or-song-card) | The cards' "Statistics for" control changes their tables but not the graph or the song card; deliberate for now | Low |
@@ -42,7 +41,7 @@ Detail in [tasks.md](tasks.md).
 
 | Code | Summary | Severity |
 |---|---|---|
-| [AFL](tasks.md#afl--audit-page-links-and-filters) | `/music/audit` shows songs as plain text and has no filter by rater or song; song cards are linkable now | Low |
+| [AFL](tasks.md#afl--audit-page-links-and-filters) | `/music/audit` shows songs, albums and artists as plain text, with no filter by person, subject, or ratings against edits; all three cards are linkable now | Low |
 
 ## Hide and seek
 

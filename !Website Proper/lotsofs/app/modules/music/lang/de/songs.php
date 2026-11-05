@@ -6,6 +6,7 @@ return [
 	'song.column.title' => 'Titel',
 	'song.column.aliases' => 'Auch bekannt als',
 	'song.column.relations' => 'Verwandt',
+	'song.column.otherNames' => 'Andere Namen & Fassungen',
 	'song.column.album' => 'Album',
 	'song.column.year' => 'Jahr',
 	'song.column.statHighest' => 'Max',
@@ -22,6 +23,7 @@ return [
 
 	'song.submit' => 'Songs senden',
 	'song.option.separate' => '<Neu, getrennt>',
+	'song.option.choose' => '<Song wählen>',
 
 	'song.result.added' => '🆕 "{title}" von {artist} hinzugefügt',
 	'song.result.duplicate' => '✅ Song existierte bereits',
@@ -69,6 +71,7 @@ return [
 	'song.link.abbr.other' => 'A',
 	'song.extras.submit' => 'Extras senden',
 
+	'song.list.alternativeName' => 'alternativer Name',
 	'song.list.heading' => 'Alle Songs',
 	'song.list.headingAlbumBy' => '{artist} — {album}',
 	'song.list.empty' => 'Noch keine Songs.',

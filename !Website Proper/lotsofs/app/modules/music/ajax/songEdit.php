@@ -43,29 +43,32 @@ if ($clash) {
 	exit;
 }
 
+require_once __MODULES__ . '/music/editAudit.php';
+
 /// Promote the alias the song already has, or the rename collides with idx_song_alias_unique.
 $existing = $db->query("SELECT id FROM song_alias WHERE song_id = ? AND name = ?", [$id, $value])->fetch();
+$previousTitle = musicAuditName($db, 'song', $id);
 
-if ($existing) {
-	$db->pdo->beginTransaction();
-	try {
+$db->pdo->beginTransaction();
+try {
+	if ($existing) {
 		$db->query("UPDATE song_alias SET is_actual = 0 WHERE song_id = ?", [$id]);
 		$db->query("UPDATE song_alias SET is_actual = 1 WHERE id = ?", [$existing['id']]);
-		$db->pdo->commit();
 	}
-	catch (PDOException $e) {
-		$db->pdo->rollBack();
-		throw $e;
+	else if ($song['title'] === null) {
+		$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 1)", [$id, $value]);
 	}
-}
-else if ($song['title'] === null) {
-	$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 1)", [$id, $value]);
-}
-else {
-	$db->query("UPDATE song_alias SET name = ? WHERE song_id = ? AND is_actual = 1", [$value, $id]);
-}
+	else {
+		$db->query("UPDATE song_alias SET name = ? WHERE song_id = ? AND is_actual = 1", [$value, $id]);
+	}
 
-require_once __MODULES__ . '/music/aliases.php';
+	musicLogEdit($db, 'song', $id, 'title', $previousTitle, $value);
+	$db->pdo->commit();
+}
+catch (PDOException $e) {
+	$db->pdo->rollBack();
+	throw $e;
+}
 
 /// Every name the song now has, for its Also Known As cell and the card's name editor.
 echo json_encode(['status' => 'ok', 'value' => $value, 'message' => '', 'titles' => musicAliasNames($db, 'song', $id)]);

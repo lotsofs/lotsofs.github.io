@@ -2,6 +2,7 @@
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
 require_once __MODULES__ . '/music/relationships.php';
+require_once __MODULES__ . '/music/editAudit.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 const SONG_ID_NEW = 'new';
@@ -62,6 +63,7 @@ try {
 			}
 
 			$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 0)", [$songId, $providedName]);
+			musicLogEdit($db, 'song', $songId, 'alias', null, $providedName);
 			$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => $songId, 'song_alias_id' => listedAsAliasId($db, $songId, $providedName), 'title' => $providedName, 'status' => 'ok', 'message' => t('song.result.aliased', ['name' => $providedName, 'title' => $targetTitle])];
 			continue;
 		}
@@ -105,17 +107,21 @@ try {
 		$songId = (int)$db->pdo->lastInsertId();
 		$db->query("INSERT INTO song_artist (song_id, artist_id) VALUES (?, ?)", [$songId, $artistId]);
 		$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 1)", [$songId, $aliasName]);
+		musicLogEdit($db, 'song', $songId, 'added', null, $aliasName);
 
 		if ($relatedId !== 0) {
 			/// The role is the new song's end of the row.
 			[$variantId, $targetId] = $relationRole === 'variant' ? [$songId, $relatedId] : [$relatedId, $songId];
-			musicAddSongRelation($db, $variantId, $targetId, $relationType);
+			if (musicAddSongRelation($db, $variantId, $targetId, $relationType) === 'ok') {
+				musicLogRelationEdit($db, null, ['variant' => $variantId, 'target' => $targetId, 'type' => $relationType]);
+			}
 		}
 
 		$message = t('song.result.added', ['title' => $aliasName, 'artist' => $artistName]);
 
 		if (!empty($datum['also_alias_provided_name']) && $providedName !== '' && $providedName !== $aliasName) {
 			$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 0)", [$songId, $providedName]);
+			musicLogEdit($db, 'song', $songId, 'alias', null, $providedName);
 			$message .= t('song.result.alsoAliased', ['name' => $providedName]);
 		}
 

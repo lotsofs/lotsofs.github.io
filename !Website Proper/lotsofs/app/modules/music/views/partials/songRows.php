@@ -8,6 +8,7 @@ $artistLabel = htmlspecialchars(t('song.column.artist'));
 $albumLabel = htmlspecialchars(t('song.column.album'));
 $aliasesLabel = htmlspecialchars(t('song.column.aliases'));
 $relationsLabel = htmlspecialchars(t('song.column.relations'));
+$alternativeName = t('song.list.alternativeName');
 $yearLabel = htmlspecialchars(t('song.column.year'));
 $durationLabel = htmlspecialchars(t('song.column.duration'));
 $linksLabel = htmlspecialchars(t('song.column.links'));
@@ -98,8 +99,15 @@ foreach ($globalData['songs'] as $song) {
 
 	/* Every name but the one the title cell shows, so a track an album lists under
 	   another name has its real title here. The names travel with the cell for
-	   songs.js, which redoes this when the album filter changes the title. */
-	$song['aliasesValue'] = htmlspecialchars(implode("\n", array_values(array_diff($names, [$listedAs ?? $canonicalTitle]))));
+	   songs.js, which redoes this when the album filter changes the title. The
+	   table writes each as a line like a relationship's, its whole text in its title. */
+	$otherNames = array_values(array_diff($names, [$listedAs ?? $canonicalTitle]));
+	$song['aliasesValue'] = htmlspecialchars(implode("\n", $otherNames));
+	$song['aliasesTableHtml'] = '';
+	foreach ($otherNames as $name) {
+		$song['aliasesTableHtml'] .= '<div class="songAlias" title="' . htmlspecialchars($alternativeName . ': ' . $name) . '">'
+			. htmlspecialchars($alternativeName) . ': <span class="songAliasTitle">' . htmlspecialchars($name) . '</span></div>';
+	}
 	$song['titlesAttr'] = array_diff($names, [$canonicalTitle])
 		? ' data-titles="' . htmlspecialchars(json_encode($names)) . '"'
 		: '';

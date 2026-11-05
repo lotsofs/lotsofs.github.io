@@ -1,6 +1,7 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
+require_once __MODULES__ . '/music/editAudit.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 const ARTIST_ID_NEW = 'new';
@@ -64,6 +65,7 @@ try {
 		}
 
 		$existing = $db->query("SELECT id, is_actual FROM artist_alias WHERE artist_id = ? AND name = ?", [$id, $aliasName])->fetch();
+		$previousName = $createdArtist ? null : musicAuditName($db, 'artist', $id);
 
 		$status = 'ok';
 
@@ -84,6 +86,17 @@ try {
 			}
 			$db->query("INSERT INTO artist_alias (artist_id, name, is_actual) VALUES (?, ?, ?)", [$id, $aliasName, $isActual ? 1 : 0]);
 			$outcome = $createdArtist ? 'created' : 'added';
+		}
+
+		/// A name made current is a rename; the name it replaced stays as another name.
+		if ($createdArtist) {
+			musicLogEdit($db, 'artist', $id, 'added', null, $aliasName);
+		}
+		else {
+			musicLogEdit($db, 'artist', $id, 'name', $previousName, musicAuditName($db, 'artist', $id));
+			if (!$existing && !$isActual) {
+				musicLogEdit($db, 'artist', $id, 'alias', null, $aliasName);
+			}
 		}
 
 		$artistNameRow = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC, id LIMIT 1", [$id])->fetch();
@@ -107,6 +120,7 @@ try {
 		if (!empty($datum['also_alias_provided_name']) && $providedName !== '' && $providedName !== $aliasName) {
 			if (!$db->query("SELECT id FROM artist_alias WHERE artist_id = ? AND name = ?", [$id, $providedName])->fetch()) {
 				$db->query("INSERT INTO artist_alias (artist_id, name, is_actual) VALUES (?, ?, 0)", [$id, $providedName]);
+				musicLogEdit($db, 'artist', $id, 'alias', null, $providedName);
 				$message .= t('artist.result.alsoAliased', ['name' => $providedName]);
 			}
 		}
@@ -121,7 +135,37 @@ catch (PDOException $e) {
 	throw $e;
 }
 
+/* Each song's albums, for two songs of one artist that share a title: labels to
+   tell them apart in the Song step, and every name of those albums, which a
+   pasted album is matched against as the Album step matches one. */
+function artistSongAlbums($db, $artistId) {
+	$albums = [];
+
+	foreach ($db->query("
+		SELECT at.song_id,
+			(SELECT name FROM album_alias WHERE album_id = at.album_id ORDER BY is_actual DESC, id LIMIT 1) AS label,
+			aa.name
+		FROM album_track at
+		JOIN song_artist art ON art.song_id = at.song_id
+		JOIN album_alias aa ON aa.album_id = at.album_id
+		WHERE art.artist_id = ?
+		ORDER BY at.song_id, at.album_id, aa.id
+	", [$artistId])->fetchAll() as $row) {
+		$songId = (int)$row['song_id'];
+		$albums[$songId] ??= ['labels' => [], 'names' => []];
+		if ($row['label'] !== null && !in_array($row['label'], $albums[$songId]['labels'], true)) {
+			$albums[$songId]['labels'][] = $row['label'];
+		}
+		if (!in_array($row['name'], $albums[$songId]['names'], true)) {
+			$albums[$songId]['names'][] = $row['name'];
+		}
+	}
+
+	return (object)$albums;
+}
+
 $songsByArtist = [];
+$albumsByArtist = [];
 foreach ($results as $index => $result) {
 	$artistId = $result['artist_id'] ?? null;
 	if (!$artistId) {
@@ -137,9 +181,11 @@ foreach ($results as $index => $result) {
 			WHERE art.artist_id = ?
 			ORDER BY sa.name COLLATE NOCASE
 		", [$artistId])->fetchAll();
+		$albumsByArtist[$artistId] = artistSongAlbums($db, $artistId);
 	}
 
 	$results[$index]['songs'] = $songsByArtist[$artistId];
+	$results[$index]['song_albums'] = $albumsByArtist[$artistId];
 }
 
 echo json_encode($results);

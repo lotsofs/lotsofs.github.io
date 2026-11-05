@@ -1,6 +1,7 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
+require_once __MODULES__ . '/music/editAudit.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 $albumId = ajaxInt($data['album_id'] ?? null);
@@ -11,7 +12,7 @@ $rawPosition = ajaxNumericText($data['position'] ?? null);
 requireAlbumJson($db, $albumId);
 
 if ($action === 'remove') {
-	$db->query("DELETE FROM album_track WHERE album_id = ? AND song_id = ?", [$albumId, $songId]);
+	musicWriteTrack($db, $albumId, $songId, "DELETE FROM album_track WHERE album_id = ? AND song_id = ?", [$albumId, $songId]);
 	echo json_encode(['status' => 'ok', 'message' => '']);
 	exit;
 }
@@ -66,7 +67,7 @@ if ($action === 'alias') {
 		exit;
 	}
 
-	$db->query("UPDATE album_track SET song_alias_id = ? WHERE id = ?", [$aliasId, $existing['id']]);
+	musicWriteTrack($db, $albumId, $songId, "UPDATE album_track SET song_alias_id = ? WHERE id = ?", [$aliasId, $existing['id']]);
 	echo json_encode(['status' => 'ok', 'value' => $aliasId, 'message' => '']);
 	exit;
 }
@@ -77,7 +78,7 @@ if ($action === 'position') {
 		exit;
 	}
 
-	$db->query("UPDATE album_track SET position = ? WHERE id = ?", [$position, $existing['id']]);
+	musicWriteTrack($db, $albumId, $songId, "UPDATE album_track SET position = ? WHERE id = ?", [$position, $existing['id']]);
 	echo json_encode(['status' => 'ok', 'value' => $position, 'message' => '']);
 	exit;
 }
@@ -94,6 +95,6 @@ if ($existing) {
 }
 
 /// song_alias_id stays null: picking a song here says nothing about which name.
-$db->query("INSERT INTO album_track (album_id, song_id, song_alias_id, position) VALUES (?, ?, NULL, ?)", [$albumId, $songId, $position]);
+musicWriteTrack($db, $albumId, $songId, "INSERT INTO album_track (album_id, song_id, song_alias_id, position) VALUES (?, ?, NULL, ?)", [$albumId, $songId, $position]);
 
 echo json_encode(['status' => 'ok', 'value' => $position, 'message' => '', 'aliases' => albumTrackAliases($db, $songId)]);

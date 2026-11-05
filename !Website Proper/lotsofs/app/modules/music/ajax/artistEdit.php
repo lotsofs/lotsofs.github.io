@@ -1,6 +1,7 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
+require_once __MODULES__ . '/music/editAudit.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 $artistId = ajaxInt($data['artist_id'] ?? null);
@@ -25,6 +26,7 @@ if ($value === '') {
 
 /// Renaming promotes an alias, keeping the old name. Clear before set: one is_actual row per artist.
 $existing = $db->query("SELECT id FROM artist_alias WHERE artist_id = ? AND name = ?", [$artistId, $value])->fetch();
+$previousName = musicAuditName($db, 'artist', $artistId);
 
 $db->pdo->beginTransaction();
 try {
@@ -37,13 +39,12 @@ try {
 		$db->query("INSERT INTO artist_alias (artist_id, name, is_actual) VALUES (?, ?, 1)", [$artistId, $value]);
 	}
 
+	musicLogEdit($db, 'artist', $artistId, 'name', $previousName, $value);
 	$db->pdo->commit();
 }
 catch (PDOException $e) {
 	$db->pdo->rollBack();
 	throw $e;
 }
-
-require_once __MODULES__ . '/music/aliases.php';
 
 echo json_encode(['status' => 'ok', 'value' => $value, 'message' => '', 'names' => musicAliasNames($db, 'artist', $artistId)]);

@@ -615,6 +615,7 @@ data_relationTypes.forEach(type => {
 });
 
 let songsByArtistId = new Map();
+let songAlbumsByArtistId = new Map();
 let artistNameById = new Map();
 
 function songExtrasFor(selectValue, providedName, artistId) {
@@ -624,7 +625,7 @@ function songExtrasFor(selectValue, providedName, artistId) {
 	if (selectValue === SONG_OPTION_NEW || selectValue === SONG_OPTION_SEPARATE) {
 		return { typedName: false, rawName: true, keepRawAlias: false };
 	}
-	if (selectValue === SONG_OPTION_SKIP) {
+	if (selectValue === SONG_OPTION_SKIP || selectValue === "") {
 		return { typedName: false, rawName: false, keepRawAlias: false };
 	}
 	const alreadyAnAlias = (songsByArtistId.get(artistId) || []).some(song => song.name === providedName && song.id == selectValue);
@@ -659,14 +660,16 @@ function refreshSeparateControls() {
 	songSeparateRelation.hidden = separate === 0;
 }
 
-/// Every matched row still to be sent becomes separate, or goes back to the song it matched. Never ticked for you.
+/// Every matched row still to be sent becomes separate, or goes back to what it preselected. Never ticked for you.
 songSeparateAll.addEventListener("change", () => {
 	matchedSongRows()
 		.filter(row => !row.classList.contains("rowHandled"))
 		.forEach(row => {
-			row.querySelector(".songSelectCell select").value = songSeparateAll.checked
+			const select = row.querySelector(".songSelectCell select");
+			select.value = songSeparateAll.checked
 				? SONG_OPTION_SEPARATE
-				: row.getAttribute("data_matched_song_id");
+				: row.getAttribute("data_preselect");
+			select.classList.toggle("songSelectUnchosen", select.value === "");
 			syncSongRow(row);
 		});
 
@@ -674,14 +677,49 @@ songSeparateAll.addEventListener("change", () => {
 	refreshSeparateControls();
 });
 
+/* Of the songs a title matches, the one to preselect: the only one, or of
+   several, the only one on the pasted album, under any of its names. Null
+   leaves the choice to the person importing. */
+function matchingSong(candidates, songAlbums, albumName) {
+	if (candidates.length === 1) {
+		return candidates[0];
+	}
+	if (candidates.length === 0 || !albumName) {
+		return null;
+	}
+
+	const onAlbum = candidates.filter(id => (songAlbums[id]?.names || []).includes(albumName));
+	return onAlbum.length === 1 ? onAlbum[0] : null;
+}
+
+/// Each song's option label, "139: Title · Album", which tells apart two songs that share a title.
+function songOptionLabels(aliases, songAlbums) {
+	const names = new Map();
+	aliases.forEach(song => {
+		if (song.is_actual || !names.has(song.id)) {
+			names.set(song.id, song.name);
+		}
+	});
+
+	const labels = new Map();
+	names.forEach((name, songId) => {
+		const albums = songAlbums[songId]?.labels || [];
+		labels.set(songId, songId + ": " + name + (albums.length > 0 ? " · " + albums.join(", ") : ""));
+	});
+
+	return labels;
+}
+
 function buildSongTable(artistResults) {
 	artistIdByProvidedName = new Map();
 	songsByArtistId = new Map();
+	songAlbumsByArtistId = new Map();
 	artistNameById = new Map();
 	artistResults.forEach(result => {
 		if (result.artist_id) {
 			artistIdByProvidedName.set(result.provided_name, result.artist_id);
 			songsByArtistId.set(result.artist_id, result.songs || []);
+			songAlbumsByArtistId.set(result.artist_id, result.song_albums || {});
 			if (result.artist_name) {
 				artistNameById.set(result.artist_id, result.artist_name);
 			}
@@ -736,32 +774,34 @@ function buildSongTable(artistResults) {
 		resultCell.classList.add("resultCell");
 
 		const aliases = songsByArtistId.get(artistId) || [];
-		const matchedAlias = aliases.find(song => song.name === item.Title);
+		const candidates = [...new Set(aliases.filter(song => song.name === item.Title).map(song => song.id))];
+		const preselect = matchingSong(candidates, songAlbumsByArtistId.get(artistId) || {}, item.Album);
 
+		/// A title more than one song has, with no album to settle it: nothing is chosen for you.
+		if (candidates.length > 0 && preselect === null) {
+			appendChildToElement(select, "option", t("song.option.choose")).value = "";
+		}
 		appendChildToElement(select, "option", t("artist.option.new")).value = SONG_OPTION_NEW;
 		/// Only where New would be answered with the song that already has the title.
-		if (matchedAlias) {
+		if (candidates.length > 0) {
 			appendChildToElement(select, "option", t("song.option.separate")).value = SONG_OPTION_SEPARATE;
-			row.setAttribute("data_matched_song_id", matchedAlias.id);
+			row.setAttribute("data_matched_song_id", preselect ?? candidates[0]);
+			row.setAttribute("data_preselect", preselect ?? "");
 		}
 		appendChildToElement(select, "option", t("artist.option.custom")).value = SONG_OPTION_CUSTOM;
 		appendChildToElement(select, "option", t("artist.option.skip")).value = SONG_OPTION_SKIP;
 
-		const songLabels = new Map();
-		aliases.forEach(song => {
-			if (song.is_actual || !songLabels.has(song.id)) {
-				songLabels.set(song.id, song.name);
-			}
-		});
-		songLabels.forEach((name, songId) => {
-			appendChildToElement(select, "option", name).value = songId;
+		songOptionLabels(aliases, songAlbumsByArtistId.get(artistId) || {}).forEach((label, songId) => {
+			appendChildToElement(select, "option", label).value = songId;
 		});
 
-		if (matchedAlias) {
-			select.value = matchedAlias.id;
+		if (candidates.length > 0) {
+			select.value = preselect ?? "";
 		}
+		select.classList.toggle("songSelectUnchosen", select.value === "");
 
 		select.addEventListener("change", () => {
+			select.classList.toggle("songSelectUnchosen", select.value === "");
 			syncSongRow(row);
 			refreshSeparateControls();
 		});
@@ -795,6 +835,12 @@ function firstProvidedNameByArtistId() {
 }
 
 submitSongsButton.addEventListener('click', () => {
+	/// A title more than one song has must be settled first: guessing wrote one recording's links over the other's.
+	if (songRows.querySelector("tr:not(.rowHandled) select.songSelectUnchosen")) {
+		songStatusMessage.textContent = t("addSongs.chooseAmbiguous");
+		return;
+	}
+
 	const songs = [];
 	songRows.querySelectorAll("tr:not(.rowHandled)").forEach(row => {
 		const select = row.querySelector(".songSelectCell select");

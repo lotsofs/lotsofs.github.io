@@ -1,6 +1,7 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
+require_once __MODULES__ . '/music/editAudit.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 const ALBUM_ID_NEW = 'new';
@@ -31,6 +32,9 @@ try {
 		$artistId = isset($datum['artist_id']) && ctype_digit((string)$datum['artist_id']) ? (int)$datum['artist_id'] : null;
 		$releaseYear = isset($datum['release_year']) && ctype_digit((string)$datum['release_year']) ? (int)$datum['release_year'] : null;
 
+		$albumBefore = null;
+		$previousName = null;
+
 		if ($rawId === ALBUM_ID_NEW) {
 			$db->query("INSERT INTO album (artist_id, release_year) VALUES (?, ?)", [$artistId, $releaseYear]);
 			$id = (int)$db->pdo->lastInsertId();
@@ -38,6 +42,8 @@ try {
 		else {
 			/// COALESCE, so re-importing tracks cannot blank an existing artist or year.
 			$id = (int)$rawId;
+			$albumBefore = $db->query("SELECT artist_id, release_year FROM album WHERE id = ?", [$id])->fetch() ?: null;
+			$previousName = musicAuditName($db, 'album', $id);
 			$db->query("UPDATE album SET artist_id = COALESCE(?, artist_id), release_year = COALESCE(?, release_year) WHERE id = ?", [$artistId, $releaseYear, $id]);
 		}
 
@@ -61,9 +67,25 @@ try {
 			$message = $isActual ? t('album.result.addedActual', ['name' => $aliasName]) : t('album.result.added', ['name' => $aliasName]);
 		}
 
+		/// A name made current is a rename; the name it replaced stays as another name.
+		if ($rawId === ALBUM_ID_NEW) {
+			musicLogEdit($db, 'album', $id, 'added', null, $aliasName);
+		}
+		else {
+			musicLogEdit($db, 'album', $id, 'name', $previousName, musicAuditName($db, 'album', $id));
+			if (!$existing && !$isActual) {
+				musicLogEdit($db, 'album', $id, 'alias', null, $aliasName);
+			}
+		}
+
+		$albumAfter = $db->query("SELECT artist_id, release_year FROM album WHERE id = ?", [$id])->fetch();
+		musicLogEdit($db, 'album', $id, 'artist', musicAuditName($db, 'artist', $albumBefore['artist_id'] ?? null), musicAuditName($db, 'artist', $albumAfter['artist_id']));
+		musicLogEdit($db, 'album', $id, 'year', $albumBefore['release_year'] ?? null, $albumAfter['release_year']);
+
 		if (!empty($datum['also_alias_provided_name']) && $providedName !== '' && $providedName !== $aliasName) {
 			if (!$db->query("SELECT id FROM album_alias WHERE album_id = ? AND name = ?", [$id, $providedName])->fetch()) {
 				$db->query("INSERT INTO album_alias (album_id, name, is_actual) VALUES (?, ?, 0)", [$id, $providedName]);
+				musicLogEdit($db, 'album', $id, 'alias', null, $providedName);
 				$message .= t('album.result.alsoAliased', ['name' => $providedName]);
 			}
 		}
@@ -77,14 +99,17 @@ try {
 
 			$position = isset($track['position']) && ctype_digit((string)$track['position']) ? (int)$track['position'] : null;
 			$aliasId = isset($track['song_alias_id']) && ctype_digit((string)$track['song_alias_id']) ? (int)$track['song_alias_id'] : null;
+			$trackLine = musicAuditTrackLine($db, $id, $songId);
 
-			if ($db->query("SELECT id FROM album_track WHERE album_id = ? AND song_id = ?", [$id, $songId])->fetch()) {
+			if ($trackLine !== null) {
 				$db->query("UPDATE album_track SET position = ?, song_alias_id = ? WHERE album_id = ? AND song_id = ?", [$position, $aliasId, $id, $songId]);
-				continue;
+			}
+			else {
+				$db->query("INSERT INTO album_track (album_id, song_id, song_alias_id, position) VALUES (?, ?, ?, ?)", [$id, $songId, $aliasId, $position]);
+				$added++;
 			}
 
-			$db->query("INSERT INTO album_track (album_id, song_id, song_alias_id, position) VALUES (?, ?, ?, ?)", [$id, $songId, $aliasId, $position]);
-			$added++;
+			musicLogEdit($db, 'album', $id, 'track', $trackLine, musicAuditTrackLine($db, $id, $songId));
 		}
 
 		$results[] = [

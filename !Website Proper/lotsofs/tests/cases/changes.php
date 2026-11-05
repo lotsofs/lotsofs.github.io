@@ -2,12 +2,12 @@
 
 require_once __DIR__ . '/../../app/modules/music/changes.php';
 
-/// The first entry the page shows, in the order it shows them.
-function changesFirstEntry() {
+/// The first entry the page shows for everyone, or under For admins.
+function changesFirstEntry($forAdmins = false) {
 	foreach (musicChangelog() as $release) {
-		foreach (MUSIC_CHANGE_GROUPS as $group) {
-			if (!empty($release['changes'][$group])) {
-				return $release['changes'][$group][0];
+		foreach ($release['changes'] as $entry) {
+			if (!empty($entry['admin']) === $forAdmins) {
+				return $entry;
 			}
 		}
 	}
@@ -20,13 +20,12 @@ return [
 		$locales = (require __DIR__ . '/../../app/modules/music/config.php')['locales'];
 
 		foreach (musicChangelog() as $i => $release) {
-			foreach ($release['changes'] as $group => $entries) {
-				assertTrue(in_array($group, MUSIC_CHANGE_GROUPS, true), "release {$i}: '{$group}' is not a kind of change the page shows");
+			assertTrue(array_is_list($release['changes']), "release {$i}: one list of entries, with no kinds of change");
 
-				foreach ($entries as $j => $entry) {
-					assertTrue(trim($entry['en'] ?? '') !== '', "release {$i}, {$group} {$j}: english is required");
-					assertSame([], array_values(array_diff(array_keys($entry), $locales)), "release {$i}, {$group} {$j}: a locale music does not offer would never render");
-				}
+			foreach ($release['changes'] as $j => $entry) {
+				assertTrue(trim($entry['en'] ?? '') !== '', "release {$i}, entry {$j}: english is required");
+				assertSame([], array_values(array_diff(array_keys($entry), $locales, ['admin'])), "release {$i}, entry {$j}: a locale music does not offer would never render");
+				assertTrue(!isset($entry['admin']) || $entry['admin'] === true, "release {$i}, entry {$j}: admin is true or left out");
 			}
 		}
 	},
@@ -55,6 +54,41 @@ return [
 		assertSame('English', musicChangeText($entry, 'fy'), 'a blank one falls back');
 		assertSame('English', musicChangeText(['en' => 'English'], 'fy'), 'and so does a missing one');
 		assertSame('<strong>Do this</strong> first &lt;b&gt;', musicChangeHtml('**Do this** first <b>'), 'bold is converted and everything else escaped');
+	},
+
+	'what only admins can use is listed apart, after everyone\'s, and everyone sees it' => function ($ctx) {
+		$ctx->ensureLoggedIn('changes_reader', 'test password', false);
+		$ctx->postForm('/music/language', [
+			'csrf_token' => $ctx->csrfTokenFrom('/music/changes'),
+			'lang' => 'en',
+			'return' => '/music/changes',
+		]);
+
+		$body = $ctx->get('/music/changes')['body'];
+		$heading = strpos($body, '<h3>For admins</h3>');
+		$admin = changesFirstEntry(true);
+
+		if ($admin === null) {
+			assertTrue($heading === false, 'with nothing for admins there is no heading for it');
+			return;
+		}
+
+		/// The release the first admin entry is in, and the first of everyone's entries there.
+		foreach (musicChangelog() as $release) {
+			if (in_array($admin, $release['changes'], true)) {
+				$everyone = array_values(array_filter($release['changes'], fn($entry) => empty($entry['admin'])))[0] ?? null;
+				break;
+			}
+		}
+
+		$at = strpos($body, musicChangeHtml($admin['en']));
+		assertTrue($heading !== false, 'a non-admin sees the For admins heading');
+		assertTrue($at !== false && $at > $heading, 'with the entry under it');
+		assertSame(1, substr_count($body, musicChangeHtml($admin['en'])), 'and only there');
+		assertTrue(strpos($body, '<h3>Added</h3>') === false && strpos($body, '<h3>Changed</h3>') === false, 'with no kinds of change anywhere on the page');
+		if ($everyone !== null) {
+			assertTrue(strpos($body, musicChangeHtml($everyone['en'])) < $heading, 'which comes first in its release');
+		}
 	},
 
 	'the page lists the changes in the reader\'s language' => function ($ctx) {

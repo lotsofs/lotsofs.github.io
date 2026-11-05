@@ -150,7 +150,7 @@ return [
 		assertSame('Alias Written Song', $ctx->songTitle($songId), 'whose title stays as it was');
 
 		$body = $ctx->get("/music/songs?artist={$artistId}")['body'];
-		assertContains('<span class="songCellText">Alias Written Song (Live)</span>', songsFieldCell(songsRowFor($body, $songId), 'aliases'), 'the song list shows it');
+		assertContains('alternative name: <span class="songAliasTitle">Alias Written Song (Live)</span>', songsRowFor($body, $songId), 'the song list shows it');
 		assertContains('>Alias Written Song (Live)</dd>', songsFieldCell(songsCardFor($body, $songId), 'aliases'), 'and the card has the row now');
 	},
 

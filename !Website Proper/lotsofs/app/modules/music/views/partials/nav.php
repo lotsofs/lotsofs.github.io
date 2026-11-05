@@ -36,7 +36,7 @@
 		</details>
 
 		<details class="navSettings">
-			<summary class="navMenuButton" aria-label="<?= t('nav.settings') ?>">⚙&#xFE0E;</summary>
+			<summary class="navMenuButton" aria-label="<?= t('nav.settings') ?>"><span class="navIcon">⚙&#xFE0E;</span></summary>
 			<form method="post" action="/music/settings" class="navSettingsMenu">
 				<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken()) ?>">
 				<input type="hidden" name="return" value="<?= htmlspecialchars(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) ?>">
@@ -57,7 +57,7 @@
 		</details>
 
 		<details class="navLanguage">
-			<summary class="navMenuButton" aria-label="<?= t('nav.language') ?>">🌐&#xFE0E;</summary>
+			<summary class="navMenuButton" aria-label="<?= t('nav.language') ?>"><span class="navIcon">🌐&#xFE0E;</span></summary>
 			<form method="post" action="/music/language" class="navLanguageMenu">
 				<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken()) ?>">
 				<input type="hidden" name="return" value="<?= htmlspecialchars(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) ?>">

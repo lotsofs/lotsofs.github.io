@@ -1,6 +1,8 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
+require_once __MODULES__ . '/music/editAudit.php';
+require_once __MODULES__ . '/music/format.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 $songId = ajaxInt($data['song_id'] ?? null);
@@ -23,6 +25,17 @@ if ($value !== '') {
 	}
 }
 
-$db->query("UPDATE song SET duration = ? WHERE id = ?", [$duration, $songId]);
+$previous = $db->query("SELECT duration FROM song WHERE id = ?", [$songId])->fetch()['duration'];
+
+$db->pdo->beginTransaction();
+try {
+	$db->query("UPDATE song SET duration = ? WHERE id = ?", [$duration, $songId]);
+	musicLogEdit($db, 'song', $songId, 'duration', musicDuration($previous), musicDuration($duration));
+	$db->pdo->commit();
+}
+catch (PDOException $e) {
+	$db->pdo->rollBack();
+	throw $e;
+}
 
 echo json_encode(['status' => 'ok', 'value' => $duration, 'message' => '']);

@@ -144,8 +144,7 @@
 								<td class="songIdCell" data-field="id"><?= htmlspecialchars($song['id']) ?></td>
 								<td class="songArtistCell" data-field="artist" title="<?= $song['artistValue'] ?>"><span class="songCellText"><?= $song['artistHtml'] ?></span></td>
 								<td class="songTitleCell<?= $song['titleAliasedClass'] ?>" data-field="title" data-canonical-title="<?= $song['canonicalTitleAttr'] ?>"<?= $song['titleTooltipAttr'] ?>><span class="songCellText"><?= $song['titleValue'] ?></span></td>
-								<td class="songAliasesCell" data-field="aliases" title="<?= $song['aliasesValue'] ?>"<?= $song['titlesAttr'] ?>><span class="songCellText"><?= $song['aliasesValue'] ?></span></td>
-								<td class="songRelationsCell" data-field="relations"<?= $song['relationsAttr'] ?>><?= $song['relationsTableHtml'] ?></td>
+								<td class="songAliasesCell"><div class="songAliasLines" data-field="aliases"<?= $song['titlesAttr'] ?>><?= $song['aliasesTableHtml'] ?></div><div class="songRelationLines" data-field="relations"<?= $song['relationsAttr'] ?>><?= $song['relationsTableHtml'] ?></div></td>
 								<td class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><span class="songCellText"><?= $song['albumsHtml'] ?></span></td>
 								<td class="songYearCell" data-field="year"><?= $song['displayYearValue'] ?></td>
 								<td class="songDurationCell" data-field="duration"><?= $song['durationValue'] ?></td>

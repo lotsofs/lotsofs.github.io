@@ -2,6 +2,7 @@
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
 require_once __MODULES__ . '/music/links.php';
+require_once __MODULES__ . '/music/editAudit.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 $allowedFields = ['spotify_url', 'youtube_url', 'soundcloud_url', 'bandcamp_url', 'filepath', 'other_url'];
@@ -36,12 +37,23 @@ elseif ($field === 'youtube_url' && $value !== '') {
 requireSongJson($db, $songId);
 
 $storedValue = $value === '' ? null : $value;
+$existing = $db->query("SELECT {$field} AS value FROM song_link WHERE song_id = ?", [$songId])->fetch();
 
-if ($db->query("SELECT song_id FROM song_link WHERE song_id = ?", [$songId])->fetch()) {
-	$db->query("UPDATE song_link SET {$field} = ? WHERE song_id = ?", [$storedValue, $songId]);
+$db->pdo->beginTransaction();
+try {
+	if ($existing) {
+		$db->query("UPDATE song_link SET {$field} = ? WHERE song_id = ?", [$storedValue, $songId]);
+	}
+	else {
+		$db->query("INSERT INTO song_link (song_id, {$field}) VALUES (?, ?)", [$songId, $storedValue]);
+	}
+
+	musicLogEdit($db, 'song', $songId, $field, $existing ? $existing['value'] : null, $storedValue);
+	$db->pdo->commit();
 }
-else {
-	$db->query("INSERT INTO song_link (song_id, {$field}) VALUES (?, ?)", [$songId, $storedValue]);
+catch (PDOException $e) {
+	$db->pdo->rollBack();
+	throw $e;
 }
 
 echo json_encode(['status' => 'ok', 'field' => $field, 'value' => $storedValue, 'message' => '']);

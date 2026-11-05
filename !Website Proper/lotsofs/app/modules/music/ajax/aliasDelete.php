@@ -2,6 +2,7 @@
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
 require_once __MODULES__ . '/music/aliases.php';
+require_once __MODULES__ . '/music/editAudit.php';
 
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
@@ -46,10 +47,19 @@ if ($kind === 'song' && !$clearListings) {
 
 $db->pdo->beginTransaction();
 try {
+	$listedOn = [];
 	if ($kind === 'song') {
+		foreach ($db->query("SELECT album_id FROM album_track WHERE song_alias_id = ?", [$alias['id']])->fetchAll(PDO::FETCH_COLUMN) as $albumId) {
+			$listedOn[$albumId] = musicAuditTrackLine($db, $albumId, $id);
+		}
 		$db->query("UPDATE album_track SET song_alias_id = NULL WHERE song_alias_id = ?", [$alias['id']]);
 	}
 	$db->query("DELETE FROM {$spec['table']} WHERE id = ?", [$alias['id']]);
+
+	musicLogEdit($db, $kind, $id, 'alias', $name, null);
+	foreach ($listedOn as $albumId => $line) {
+		musicLogEdit($db, 'album', $albumId, 'track', $line, musicAuditTrackLine($db, $albumId, $id));
+	}
 	$db->pdo->commit();
 }
 catch (PDOException $e) {

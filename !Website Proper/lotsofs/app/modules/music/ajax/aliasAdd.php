@@ -2,6 +2,7 @@
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
 require_once __MODULES__ . '/music/aliases.php';
+require_once __MODULES__ . '/music/editAudit.php';
 
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
@@ -42,6 +43,15 @@ if ($kind === 'song') {
 /// Another name, not the current one, unless it is the only name there is.
 $isActual = musicCurrentAliasId($db, $kind, $id) === null ? 1 : 0;
 
-$db->query("INSERT INTO {$spec['table']} ({$spec['owner']}, name, is_actual) VALUES (?, ?, ?)", [$id, $name, $isActual]);
+$db->pdo->beginTransaction();
+try {
+	$db->query("INSERT INTO {$spec['table']} ({$spec['owner']}, name, is_actual) VALUES (?, ?, ?)", [$id, $name, $isActual]);
+	musicLogEdit($db, $kind, $id, 'alias', null, $name);
+	$db->pdo->commit();
+}
+catch (PDOException $e) {
+	$db->pdo->rollBack();
+	throw $e;
+}
 
 echo json_encode(['status' => 'ok', 'names' => musicAliasNames($db, $kind, $id), 'message' => '']);

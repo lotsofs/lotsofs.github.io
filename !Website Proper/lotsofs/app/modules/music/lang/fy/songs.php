@@ -6,6 +6,7 @@ return [
 	'song.column.title' => 'Titel',
 	'song.column.aliases' => 'Ek bekend as',
 	'song.column.relations' => 'Besibbe',
+	'song.column.otherNames' => 'Oare nammen & ferzjes',
 	'song.column.album' => 'Album',
 	'song.column.year' => 'Jier',
 	'song.column.statHighest' => 'Heechst',
@@ -22,6 +23,7 @@ return [
 
 	'song.submit' => 'Lieten ferstjoere',
 	'song.option.separate' => '<Nij, apart>',
+	'song.option.choose' => '<Kies in liet>',
 
 	'song.result.added' => '🆕 "{title}" fan {artist} tafoege',
 	'song.result.duplicate' => '✅ Liet bestie al',
@@ -69,6 +71,7 @@ return [
 	'song.link.abbr.other' => 'O',
 	'song.extras.submit' => 'Ekstra\'s ferstjoere',
 
+	'song.list.alternativeName' => 'oare namme',
 	'song.list.heading' => 'Alle lieten',
 	'song.list.headingAlbumBy' => '{artist} — {album}',
 	'song.list.empty' => 'Noch gjin lieten.',

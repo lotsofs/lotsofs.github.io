@@ -64,9 +64,10 @@ return [
 
 		assertTrue(strpos(songsCardFor($body, $loner), 'songRelationsCell') === false, 'a song with none has no row');
 
-		$tableCell = songsFieldCell(songsRowFor($body, $original), 'relations');
-		assertContains('<div class="songRelation" title="original version of ' . $remaster . ': Relation Card Remaster">original version of <a class="songRelationLink" href="/music/songs?songCard=' . $remaster . '" data-song-card-id="' . $remaster . '">', $tableCell, 'the table cell has the line, its whole text in the title');
-		assertSame('<td class="songRelationsCell" data-field="relations"></td>', songsFieldCell(songsRowFor($body, $loner), 'relations'), 'and a song with none has an empty cell');
+		/// The table lists them in the Other names & versions column, in the half after the other names.
+		$tableHalf = fn($songId) => preg_match('/<div class="songRelationLines" data-field="relations"[^>]*>.*?<\/td>/s', songsRowFor($body, $songId), $match) ? $match[0] : '';
+		assertContains('<div class="songRelation" title="original version of ' . $remaster . ': Relation Card Remaster">original version of <a class="songRelationLink" href="/music/songs?songCard=' . $remaster . '" data-song-card-id="' . $remaster . '">', $tableHalf($original), 'the table has the line, its whole text in the title');
+		assertSame('<div class="songRelationLines" data-field="relations"></div></td>', $tableHalf($loner), 'and a song with none has an empty half');
 	},
 
 	'a relationship can be turned round in place' => function ($ctx) {
@@ -237,6 +238,27 @@ return [
 
 		assertSame('ok', $response['json'][0]['status'], 'status');
 		assertSame(0, count(relationshipRows($ctx, (int)$response['json'][0]['song_id'])), 'no row');
+	},
+
+	'the Song step is told which albums two songs with one title are on' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Twin Owner');
+		$older = makeSong($ctx, $artistId, 'Twin Title');
+		$separate = (int)$ctx->post('/music/ajax/song', [['artist_id' => $artistId, 'title' => 'Twin Title', 'song_id' => 'separate']])['json'][0]['song_id'];
+		$remastered = makeAlbum($ctx, 'Twin Remastered', $artistId, [['song_id' => $older, 'position' => 1]]);
+		makeAlbum($ctx, 'Twin Original', $artistId, [['song_id' => $separate, 'position' => 1]]);
+		$ctx->post('/music/ajax/alias-add', ['kind' => 'album', 'id' => $remastered, 'name' => 'Twin Remastered (Deluxe)']);
+
+		$lookup = fn($id, $name) => $ctx->post('/music/ajax/artist-alias', [['artist_id' => $id, 'provided_name' => $name, 'og_name' => $name, 'is_actual' => true, 'store_name' => false]]);
+		$albums = $lookup($artistId, 'Twin Owner')['json'][0]['song_albums'];
+
+		assertSame(['labels' => ['Twin Remastered'], 'names' => ['Twin Remastered', 'Twin Remastered (Deluxe)']], $albums[$older] ?? null, 'the older song, with every name its album goes by to match a paste against');
+		assertSame(['labels' => ['Twin Original'], 'names' => ['Twin Original']], $albums[$separate] ?? null, 'and the separate one, with its own');
+
+		$albumless = $ctx->makeArtist('Twin Albumless Owner');
+		makeSong($ctx, $albumless, 'Twin Albumless Title');
+		assertContains('"song_albums":{}', $lookup($albumless, 'Twin Albumless Owner')['body'], 'an artist with no albums still gets an object');
 	},
 
 	'an import cannot relate a song to another artists song' => function ($ctx) {

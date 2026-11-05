@@ -12,14 +12,21 @@
 	<?php foreach ($globalData['releases'] as $release): ?>
 		<section class="changesRelease">
 			<h2><?= htmlspecialchars($release['heading']) ?></h2>
-			<?php foreach ($release['groups'] as $group): ?>
-				<h3><?= $group['label'] ?></h3>
+			<?php if ($release['entries']): ?>
 				<ul>
-					<?php foreach ($group['entries'] as $entry): ?>
+					<?php foreach ($release['entries'] as $entry): ?>
 						<li><?= $entry ?></li>
 					<?php endforeach ?>
 				</ul>
-			<?php endforeach ?>
+			<?php endif ?>
+			<?php if ($release['adminEntries']): ?>
+				<h3><?= t('changes.forAdmins') ?></h3>
+				<ul>
+					<?php foreach ($release['adminEntries'] as $entry): ?>
+						<li><?= $entry ?></li>
+					<?php endforeach ?>
+				</ul>
+			<?php endif ?>
 		</section>
 	<?php endforeach ?>
 </div>

@@ -1,8 +1,8 @@
 <?php
 
-/* The song list's column picker and its Also Known As column. The picker's
-   tests use accounts of their own, so test_runner's table is left as every
-   later case file expects it. */
+/* The song list's column picker and its Other names & versions column. The
+   picker's tests use accounts of their own, so test_runner's table is left as
+   every later case file expects it. */
 
 const COLUMNS_ENDPOINT = '/music/ajax/song-columns';
 
@@ -68,13 +68,24 @@ function columnsCellTitles($cell) {
 		: null;
 }
 
+/// A row's Other names & versions cell, whole.
+function columnsNamesCell($row) {
+	return preg_match('/<td class="songAliasesCell">.*?<\/td>/s', (string)$row, $match) ? $match[0] : '';
+}
+
+/// Each other-name line of that cell as it reads.
+function columnsAliasLines($cell) {
+	preg_match_all('/<div class="songAlias"[^>]*>(.*?)<\/div>/s', $cell, $matches);
+	return array_map(fn($line) => html_entity_decode(strip_tags($line), ENT_QUOTES), $matches[1]);
+}
+
 return [
 
-	'a new account sees every column but Also Known As and Related' => function ($ctx) {
+	'a new account sees every column but Other names & versions' => function ($ctx) {
 		$body = columnsPage($ctx, 'columns_fresh');
 		$me = columnsAccountId($ctx, 'columns_fresh');
 
-		assertSame(['songHideAliases', 'songHideRelations'], columnsTableHides($body), 'only Also Known As and Related start hidden');
+		assertSame(['songHideAliases'], columnsTableHides($body), 'only Other names & versions starts hidden');
 
 		$boxes = columnsPickerBoxes($body);
 		$raters = [];
@@ -84,15 +95,15 @@ return [
 
 		assertSame(
 			array_merge(
-				['id', 'artist', 'title', 'aliases', 'relations', 'album', 'year', 'duration', 'links'],
+				['id', 'artist', 'title', 'aliases', 'album', 'year', 'duration', 'links'],
 				$raters,
 				['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated']
 			),
 			array_keys($boxes),
 			'the picker lists the fixed columns, every rater with you first, then the statistics'
 		);
-		assertSame([false, false], [$boxes['aliases'], $boxes['relations']], 'Also Known As and Related are unticked');
-		assertSame([], array_keys(array_filter($boxes, fn($ticked, $key) => !$ticked && !in_array($key, ['aliases', 'relations'], true), ARRAY_FILTER_USE_BOTH)), 'and everything else ticked');
+		assertSame(false, $boxes['aliases'], 'Other names & versions is unticked');
+		assertSame([], array_keys(array_filter($boxes, fn($ticked, $key) => !$ticked && $key !== 'aliases', ARRAY_FILTER_USE_BOTH)), 'and everything else ticked');
 
 		assertContains('<summary class="songColumnPickerButton">Columns</summary>', $body, 'the picker is a button labelled Columns');
 		assertTrue(strpos($body, 'id="songCardViewToggle"') < strpos($body, 'id="songColumnPicker"'), 'beside the card view button');
@@ -110,7 +121,7 @@ return [
 		assertSame(['album' => 0], columnsChoiceRows($ctx, 'columns_picker'), 'and stored as one row');
 
 		$body = $ctx->get('/music/songs')['body'];
-		assertSame(['songHideAliases', 'songHideRelations', 'songHideAlbum'], columnsTableHides($body), 'the table hides it');
+		assertSame(['songHideAliases', 'songHideAlbum'], columnsTableHides($body), 'the table hides it');
 		assertSame(false, columnsPickerBoxes($body)['album'], 'and its box is unticked');
 
 		$ctx->post(COLUMNS_ENDPOINT, ['column' => 'album', 'shown' => true]);
@@ -120,12 +131,12 @@ return [
 		$ctx->post(COLUMNS_ENDPOINT, ['column' => "rater_{$other}", 'shown' => false]);
 
 		$body = $ctx->get('/music/songs')['body'];
-		assertSame(['songHideRelations', "songHideRater{$other}"], columnsTableHides($body), 'Also Known As shows once ticked, and a rater hides');
+		assertSame(["songHideRater{$other}"], columnsTableHides($body), 'Other names & versions shows once ticked, and a rater hides');
 		assertSame(true, columnsPickerBoxes($body)['aliases'], 'with its box ticked');
 		assertSame(['album' => 1, 'aliases' => 1, "rater_{$other}" => 0], columnsChoiceRows($ctx, 'columns_picker'), 'each key is a row of its own');
 
 		$ctx->ensureLoggedIn('columns_fresh', 'test password', false);
-		assertSame(['songHideAliases', 'songHideRelations'], columnsTableHides($ctx->get('/music/songs')['body']), 'another account keeps its own columns');
+		assertSame(['songHideAliases'], columnsTableHides($ctx->get('/music/songs')['body']), 'another account keeps its own columns');
 	},
 
 	'the picker refuses what it does not offer' => function ($ctx) {
@@ -152,7 +163,7 @@ return [
 		assertSame(401, $ctx->post(COLUMNS_ENDPOINT, ['column' => 'album', 'shown' => false])['status'], 'and so is nobody');
 	},
 
-	'Also Known As lists every name but the one the title shows, one per line' => function ($ctx) {
+	'Other names & versions lists every name but the one the title shows, a line each' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
 		$artistId = $ctx->makeArtist('Known As Artist');
@@ -176,27 +187,29 @@ return [
 		]);
 
 		$body = $ctx->get("/music/songs?artist={$artistId}")['body'];
-		$cell = songsFieldCell(songsRowFor($body, $songId), 'aliases');
+		$cell = columnsNamesCell(songsRowFor($body, $songId));
 
-		assertContains('<span class="songCellText">Known Alternate Take' . "\n" . 'Known Sleeve Version</span>', $cell, 'the other names, one per line');
-		assertContains('title="Known Alternate Take' . "\n" . 'Known Sleeve Version"', $cell, 'and the same in its tooltip');
+		assertSame(['alternative name: Known Alternate Take', 'alternative name: Known Sleeve Version'], columnsAliasLines($cell), 'the other names, a line each');
+		assertContains('<div class="songAlias" title="alternative name: Known Alternate Take">alternative name: <span class="songAliasTitle">Known Alternate Take</span></div>', $cell, 'the name set apart, and the whole line in its tooltip');
 		assertSame(['Known Studio Version', 'Known Alternate Take', 'Known Sleeve Version'], columnsCellTitles($cell), 'every name travels with the cell, the current one first');
+		assertTrue(strpos($cell, 'class="songAliasLines" data-field="aliases"') < strpos($cell, 'class="songRelationLines" data-field="relations"'), 'above the relationships, each half under its own field');
 
 		$card = songsCardFor($body, $songId);
 		$cardCell = songsFieldCell($card, 'aliases');
 		assertContains('>Known Alternate Take' . "\n" . 'Known Sleeve Version</dd>', $cardCell, 'the card lists them too');
 		assertTrue(strpos($card, 'data-field="aliases"') < strpos($card, 'data-field="album"'), 'before the album, as the table has them');
 
-		$retitled = songsFieldCell(songsRowFor($ctx->get("/music/songs?artist={$artistId}&album={$odd}")['body'], $songId), 'aliases');
-		assertContains('<span class="songCellText">Known Studio Version' . "\n" . 'Known Alternate Take</span>', $retitled, 'under the album\'s name for it, the real title is listed');
+		$retitled = columnsNamesCell(songsRowFor($ctx->get("/music/songs?artist={$artistId}&album={$odd}")['body'], $songId));
+		assertSame(['alternative name: Known Studio Version', 'alternative name: Known Alternate Take'], columnsAliasLines($retitled), 'under the album\'s name for it, the real title is listed');
 
-		$alone = songsFieldCell(songsRowFor($body, $single), 'aliases');
-		assertContains('<span class="songCellText"></span>', $alone, 'a song with one name has an empty cell');
+		$alone = columnsNamesCell(songsRowFor($body, $single));
+		assertContains('<div class="songAliasLines" data-field="aliases"></div><div class="songRelationLines" data-field="relations"></div>', $alone, 'a song with one name and no relationship has an empty cell');
 		assertSame(null, columnsCellTitles($alone), 'with no names for the script');
 		assertSame('', songsFieldCell(songsCardFor($body, $single), 'aliases'), 'and no row on its card');
 
 		assertTrue(strpos($body, 'data-sort-key="aliases"') === false, 'the column does not sort');
-		assertContains('<th rowspan="2" class="songAliasesCell">Also Known As</th>', $body, 'and its header is plain text, like Links');
+		assertContains('<th rowspan="2" class="songAliasesCell">Other names &amp; versions</th>', $body, 'and its header is plain text, like Links');
+		assertTrue(strpos($body, '<th rowspan="2" class="songRelationsCell">') === false, 'and there is no Related column of its own');
 	},
 
 ];

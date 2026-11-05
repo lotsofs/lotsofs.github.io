@@ -32,6 +32,12 @@ body {
 	src: url('/modules/music/fonts/NotoSans-VariableFont_wdth,wght.ttf') format('truetype');
 }
 
+@font-face {
+	font-family: 'Noto Emoji';
+	src: url('/modules/music/fonts/NotoEmoji-Regular.ttf') format('truetype');
+	font-display: swap;
+}
+
 nav a,
 nav .navMenuButton,
 nav .navLogout button,
@@ -66,7 +72,7 @@ nav .navLogout button,
 #artistMatchRows .aliasNameInLabel,
 #columnMapping .columnMapRow .columnMapExample,
 #extrasTable .extraValueCell,
-#auditTable .auditSongCell,
+#auditTable .auditSubjectCell,
 #auditTable .auditValueCell,
 #songListTable .songCellText {
 	overflow: hidden;
@@ -269,6 +275,12 @@ nav {
 		}
 	}
 
+	/* Noto Sans has no ⚙ or 🌐, and each system font's stand-in came out a different size. */
+	.navIcon {
+		font-family: 'Noto Emoji';
+		line-height: 1;
+	}
+
 	/* A swatch, not a palette emoji, which renders in its own colours. Follows --hue live. */
 	.navColourSwatch {
 		display: inline-block;
@@ -365,6 +377,11 @@ td.albumStatsRatedCell {
 
 	.songTitleCell {
 		width: 32em;
+	}
+
+	/* A title more than one song has, not yet settled: Submit waits for it. */
+	select.songSelectUnchosen {
+		outline: 2px solid hsl(0, 80%, 60%);
 	}
 }
 
@@ -737,11 +754,10 @@ td.albumStatsRatedCell {
 	&.songHideId thead .songArtistCell,
 	&.songHideId.songHideArtist thead .songTitleCell,
 	&.songHideId.songHideArtist.songHideTitle thead .songAliasesCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases thead .songRelationsCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations thead .songAlbumCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum thead .songYearCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum.songHideYear thead .songDurationCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum.songHideYear.songHideDuration thead .songLinksCell {
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases thead .songAlbumCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum thead .songYearCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear thead .songDurationCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration thead .songLinksCell {
 		box-shadow: inset 1px 0 0 var(--border), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
@@ -785,11 +801,10 @@ td.albumStatsRatedCell {
 	&.songHideId td.songArtistCell,
 	&.songHideId.songHideArtist td.songTitleCell,
 	&.songHideId.songHideArtist.songHideTitle td.songAliasesCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases td.songRelationsCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations td.songAlbumCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum td.songYearCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum.songHideYear td.songDurationCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum.songHideYear.songHideDuration td.songLinksCell {
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases td.songAlbumCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum td.songYearCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear td.songDurationCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration td.songLinksCell {
 		border-left-width: 1px;
 	}
 
@@ -870,15 +885,12 @@ td.albumStatsRatedCell {
 		max-width: 14em;
 	}
 
-	/* One name per line, each clipped by the shared ellipsis rather than wrapped. */
-	.songAliasesCell .songCellText {
-		max-width: 14em;
-		white-space: pre;
-	}
-
-	/* One relationship per line, clipped the same way; each line's title holds it whole. */
-	.songRelationsCell .songRelation {
-		max-width: 18em;
+	/* Other names, then relationships, one per line, each clipped rather than
+	   wrapped; each line's title holds it whole. Narrower than the two columns
+	   this was, wider than either. */
+	.songAliasesCell .songAlias,
+	.songAliasesCell .songRelation {
+		max-width: 22em;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -972,7 +984,6 @@ td.albumStatsRatedCell {
 	&.songHideArtist .songArtistCell,
 	&.songHideTitle .songTitleCell,
 	&.songHideAliases .songAliasesCell,
-	&.songHideRelations .songRelationsCell,
 	&.songHideAlbum .songAlbumCell,
 	&.songHideYear .songYearCell,
 	&.songHideDuration .songDurationCell,
@@ -1506,10 +1517,6 @@ td.albumStatsRatedCell {
 
 #extrasTable {
 	max-width: 100%;
-
-	.extraValueCell {
-		max-width: 16em;
-	}
 }
 
 .tableProcessed {
@@ -1627,7 +1634,7 @@ td.albumStatsRatedCell {
 		white-space: nowrap;
 	}
 
-	.auditSongCell {
+	.auditSubjectCell {
 		max-width: 26em;
 	}
 
@@ -1664,8 +1671,9 @@ td.albumStatsRatedCell {
 	cursor: pointer;
 }
 
-/* A related song's title is set apart from the words naming the relationship. */
-.songRelationTitle {
+/* A related song's title, or another name's, is set apart from the words before it. */
+.songRelationTitle,
+.songAliasTitle {
 	font-style: italic;
 }
 

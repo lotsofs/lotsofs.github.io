@@ -1,6 +1,7 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
+require_once __MODULES__ . '/music/editAudit.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 $albumId = ajaxInt($data['album_id'] ?? null);
@@ -17,6 +18,7 @@ if ($field === 'name') {
 	}
 
 	$existing = $db->query("SELECT id FROM album_alias WHERE album_id = ? AND name = ?", [$albumId, $value])->fetch();
+	$previousName = musicAuditName($db, 'album', $albumId);
 
 	$db->pdo->beginTransaction();
 	try {
@@ -29,14 +31,13 @@ if ($field === 'name') {
 			$db->query("INSERT INTO album_alias (album_id, name, is_actual) VALUES (?, ?, 1)", [$albumId, $value]);
 		}
 
+		musicLogEdit($db, 'album', $albumId, 'name', $previousName, $value);
 		$db->pdo->commit();
 	}
 	catch (PDOException $e) {
 		$db->pdo->rollBack();
 		throw $e;
 	}
-
-	require_once __MODULES__ . '/music/aliases.php';
 
 	echo json_encode(['status' => 'ok', 'value' => $value, 'message' => '', 'names' => musicAliasNames($db, 'album', $albumId)]);
 	exit;
@@ -55,7 +56,18 @@ if ($field === 'artist') {
 		exit;
 	}
 
-	$db->query("UPDATE album SET artist_id = ? WHERE id = ?", [$artistId, $albumId]);
+	$previous = $db->query("SELECT artist_id FROM album WHERE id = ?", [$albumId])->fetch()['artist_id'];
+
+	$db->pdo->beginTransaction();
+	try {
+		$db->query("UPDATE album SET artist_id = ? WHERE id = ?", [$artistId, $albumId]);
+		musicLogEdit($db, 'album', $albumId, 'artist', musicAuditName($db, 'artist', $previous), musicAuditName($db, 'artist', $artistId));
+		$db->pdo->commit();
+	}
+	catch (PDOException $e) {
+		$db->pdo->rollBack();
+		throw $e;
+	}
 
 	echo json_encode(['status' => 'ok', 'value' => $artistId, 'message' => '']);
 	exit;
@@ -69,7 +81,18 @@ if ($field === 'year') {
 
 	$year = $value === '' ? null : (int)$value;
 
-	$db->query("UPDATE album SET release_year = ? WHERE id = ?", [$year, $albumId]);
+	$previous = $db->query("SELECT release_year FROM album WHERE id = ?", [$albumId])->fetch()['release_year'];
+
+	$db->pdo->beginTransaction();
+	try {
+		$db->query("UPDATE album SET release_year = ? WHERE id = ?", [$year, $albumId]);
+		musicLogEdit($db, 'album', $albumId, 'year', $previous, $year);
+		$db->pdo->commit();
+	}
+	catch (PDOException $e) {
+		$db->pdo->rollBack();
+		throw $e;
+	}
 
 	echo json_encode(['status' => 'ok', 'value' => $year, 'message' => '']);
 	exit;
