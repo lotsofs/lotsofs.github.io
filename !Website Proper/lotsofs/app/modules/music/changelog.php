@@ -9,6 +9,10 @@
 return [
 	[
 		'date' => null,
+		'changes' => [],
+	],
+	[
+		'date' => '2026-11-05',
 		'changes' => [
 			[
 				'en' => 'A home page with featured links into the song list, each saying how much of it is rated; logging in opens it.',

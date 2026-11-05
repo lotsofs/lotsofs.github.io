@@ -234,7 +234,7 @@ To settle first: are pins shared between the accounts on a game map or private t
 
 ## MIG — hideandseek 001 freezes when it first ships
 
-hideandseek's `001_create.sql` has not shipped (owner, 2026-10-06; the deploys of 2026-10-19 and 2026-11-02 left the whole module out). New tables therefore go straight into it rather than into a `002`, and applying an edit means deleting the disposable `data/hideandseek_test.sqlite`. The day the module first deploys, music's freeze rule applies: `001` is never edited again, and the next schema change is `002`.
+hideandseek's `001_create.sql` has not shipped (owner, 2026-10-06; the deploys of 2026-10-19, 2026-11-02 and 2026-11-05 left the whole module out). New tables therefore go straight into it rather than into a `002`, and applying an edit means deleting the disposable `data/hideandseek_test.sqlite`. The day the module first deploys, music's freeze rule applies: `001` is never edited again, and the next schema change is `002`.
 
 **Plan.** Before that deploy, land what is cheaper in `001` (CAS, PIN's table). The deploy itself is taking `hideandseek` off `$unshippedModules` in `build-deploy.php`, which puts the module back in `_deploy/` and its `$mustExist` checks back in force. After it, confirm the host's hideandseek database lists `001_create.sql` in `schema_migrations`, then close this item.
 
@@ -308,7 +308,7 @@ The ss2 nav (`views/partials/nav.php`) links `/ss2/` and `/ss2/1` to `/ss2/7`, n
 
 ## TAB — Bass tabs are held back from the deploy
 
-The owner took the module out of the build for now on 2026-11-02, by adding `basstabs` to `$unshippedModules` in `build-deploy.php`. It has never shipped: the 2026-11-02 build has no `basstabs` folder, and `/basstabs` is a 404 on the host (reproduced 2026-11-02).
+The owner took the module out of the build for now on 2026-11-02, by adding `basstabs` to `$unshippedModules` in `build-deploy.php`. It has never shipped: the 2026-11-05 build has no `basstabs` folder, and `/basstabs` is a 404 on the host (reproduced 2026-11-05).
 
 **Plan.** Take `basstabs` off `$unshippedModules`, which puts the module back in `_deploy/` and its `$mustExist` checks back in force. Put this entry back under Unreleased in `CHANGELOG.md`, under `### Added`, updated for any sheets added since:
 
