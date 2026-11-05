@@ -1,10 +1,13 @@
 <?php
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
+require_once __MODULES__ . '/music/relationships.php';
 requireMusicAdminJson($db, t('ajax.notAdmin'));
 
 const SONG_ID_NEW = 'new';
 const SONG_ID_SKIP = 'skip';
+/// A new song even though one by this artist already goes by the name: another recording of it.
+const SONG_ID_SEPARATE = 'separate';
 
 function listedAsAliasId($db, $songId, $providedName) {
 	$row = $db->query("SELECT id FROM song_alias WHERE song_id = ? AND name = ? AND is_actual = 0", [$songId, $providedName])->fetch();
@@ -37,7 +40,7 @@ try {
 		$artistRow = $db->query("SELECT name FROM artist_alias WHERE artist_id = ? ORDER BY is_actual DESC, id LIMIT 1", [$artistId])->fetch();
 		$artistName = $artistRow ? $artistRow['name'] : $artistId;
 
-		if ($rawId !== SONG_ID_NEW) {
+		if ($rawId !== SONG_ID_NEW && $rawId !== SONG_ID_SEPARATE) {
 			$songId = (int)$rawId;
 
 			if (!$db->query("SELECT id FROM song WHERE id = ? AND EXISTS (SELECT 1 FROM song_artist WHERE song_id = song.id AND artist_id = ?)", [$songId, $artistId])->fetch()) {
@@ -63,23 +66,51 @@ try {
 			continue;
 		}
 
-		$existing = $db->query("
-			SELECT s.id
-			FROM song s
-			JOIN song_alias sa ON sa.song_id = s.id
-			JOIN song_artist art ON art.song_id = s.id
-			WHERE art.artist_id = ? AND sa.name = ?
-		", [$artistId, $aliasName])->fetch();
+		if ($rawId === SONG_ID_NEW) {
+			$existing = $db->query("
+				SELECT s.id
+				FROM song s
+				JOIN song_alias sa ON sa.song_id = s.id
+				JOIN song_artist art ON art.song_id = s.id
+				WHERE art.artist_id = ? AND sa.name = ?
+			", [$artistId, $aliasName])->fetch();
 
-		if ($existing) {
-			$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => (int)$existing['id'], 'song_alias_id' => listedAsAliasId($db, (int)$existing['id'], $providedName), 'title' => $aliasName, 'status' => 'duplicate', 'message' => t('song.result.duplicate')];
-			continue;
+			if ($existing) {
+				$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'song_id' => (int)$existing['id'], 'song_alias_id' => listedAsAliasId($db, (int)$existing['id'], $providedName), 'title' => $aliasName, 'status' => 'duplicate', 'message' => t('song.result.duplicate')];
+				continue;
+			}
+		}
+
+		/// A separate song may say how it relates to the song of this artist it was kept apart from.
+		$relatedId = $rawId === SONG_ID_SEPARATE ? ajaxInt($datum['related_song_id'] ?? null) : 0;
+		$relationType = ajaxText($datum['relationship_type'] ?? null);
+		$relationRole = ajaxText($datum['relationship_role'] ?? null);
+
+		if ($relatedId !== 0) {
+			$refusal = null;
+			if (!isset(musicSongRelationTypes()[$relationType]) || !isset(MUSIC_RELATION_ROLES[$relationRole])) {
+				$refusal = t('relation.result.unknownType');
+			}
+			elseif (!$db->query("SELECT 1 FROM song_artist WHERE song_id = ? AND artist_id = ?", [$relatedId, $artistId])->fetch()) {
+				$refusal = t('relation.result.notThisArtist');
+			}
+
+			if ($refusal !== null) {
+				$results[] = ['provided_name' => $providedName, 'artist_id' => (int)$artistId, 'title' => $providedName, 'status' => 'error', 'message' => $refusal];
+				continue;
+			}
 		}
 
 		$db->query("INSERT INTO song DEFAULT VALUES");
 		$songId = (int)$db->pdo->lastInsertId();
 		$db->query("INSERT INTO song_artist (song_id, artist_id) VALUES (?, ?)", [$songId, $artistId]);
 		$db->query("INSERT INTO song_alias (song_id, name, is_actual) VALUES (?, ?, 1)", [$songId, $aliasName]);
+
+		if ($relatedId !== 0) {
+			/// The role is the new song's end of the row.
+			[$variantId, $targetId] = $relationRole === 'variant' ? [$songId, $relatedId] : [$relatedId, $songId];
+			musicAddSongRelation($db, $variantId, $targetId, $relationType);
+		}
 
 		$message = t('song.result.added', ['title' => $aliasName, 'artist' => $artistName]);
 

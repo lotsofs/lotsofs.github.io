@@ -17,6 +17,7 @@ const songArtistData = JSON.parse(document.getElementById("songArtistData").text
 const songAlbumData = JSON.parse(document.getElementById("songAlbumData").textContent);
 const songLinkFieldData = JSON.parse(document.getElementById("songLinkFieldData").textContent);
 const songTrackAliases = JSON.parse(document.getElementById("songTrackAliases").textContent);
+const songRelationTypes = JSON.parse(document.getElementById("songRelationTypes").textContent);
 const songCardModal = document.getElementById("songCardModal");
 const songCardModalBody = document.getElementById("songCardModalBody");
 const songCardModalClose = document.getElementById("songCardModalClose");
@@ -732,7 +733,8 @@ const aliasFieldEditor = {
 			cell.dataset.field = "aliases";
 			cell.dataset.titles = JSON.stringify(title ? [title] : []);
 
-			fieldCell(card, "album").previousElementSibling.before(term, cell);
+			/// Above Related, as the server renders them.
+			(fieldCell(card, "relations") || fieldCell(card, "album")).previousElementSibling.before(term, cell);
 		}
 		return cell;
 	},
@@ -800,6 +802,328 @@ function forgetTrackListing(songId, name) {
 	}
 }
 
+const SONG_RELATIONSHIP_ENDPOINT = "/music/ajax/song-relationship";
+
+/// The other song by id and title, since two songs may share a title, as songRows.php writes it.
+function relationLink(relation) {
+	const link = document.createElement("a");
+	link.className = "songRelationLink";
+	link.href = "/music/songs?songCard=" + Number(relation.song_id);
+	link.dataset.songCardId = String(relation.song_id);
+
+	const id = document.createElement("span");
+	id.className = "songRelationId";
+	id.textContent = Number(relation.song_id) + ":";
+
+	const title = document.createElement("span");
+	title.className = "songRelationTitle";
+	title.textContent = relation.title;
+
+	link.append(id, " ", title);
+	return link;
+}
+
+/// One line of a song's relationships. The table clips its lines, so there each carries its whole text.
+function relationLine(relation, withTitle) {
+	const line = document.createElement("div");
+	line.className = "songRelation";
+	line.append(relation.label + " ", relationLink(relation));
+	if (withTitle) {
+		line.title = relation.label + " " + Number(relation.song_id) + ": " + relation.title;
+	}
+	return line;
+}
+
+const SONG_RELATION_CHOICES_ID = "songRelationChoices";
+let relationChoiceIds = null;
+let relationChoiceLabels = null;
+
+/* Every song on the page as the song box's suggestions, one <datalist> built on
+   first use. The album is what tells two songs with one title apart, and a label
+   that would still repeat takes the song's id, so each label names one song. */
+function relationChoices() {
+	if (relationChoiceIds !== null) {
+		return relationChoiceIds;
+	}
+
+	const choices = rowPairs().map(pair => {
+		const albums = cellText(fieldCell(pair.tr, "album"));
+		const label = cellText(fieldCell(pair.tr, "artist")) + " — " + fieldCell(pair.tr, "title").dataset.canonicalTitle;
+		return { id: pair.tr.dataset.songId, label: albums ? label + " · " + albums : label };
+	});
+
+	const counts = new Map();
+	choices.forEach(choice => counts.set(choice.label, (counts.get(choice.label) || 0) + 1));
+
+	const list = document.createElement("datalist");
+	list.id = SONG_RELATION_CHOICES_ID;
+	relationChoiceIds = new Map();
+	relationChoiceLabels = new Map();
+
+	choices
+		.map(choice => counts.get(choice.label) > 1 ? { id: choice.id, label: choice.label + " #" + choice.id } : choice)
+		.sort((a, b) => a.label.localeCompare(b.label))
+		.forEach(choice => {
+			const option = document.createElement("option");
+			option.value = choice.label;
+			list.appendChild(option);
+			relationChoiceIds.set(choice.label, choice.id);
+			relationChoiceLabels.set(choice.id, choice.label);
+		});
+
+	document.body.appendChild(list);
+	return relationChoiceIds;
+}
+
+/// A rename changes a label, so the list is built again when next needed.
+function forgetRelationChoices() {
+	const list = document.getElementById(SONG_RELATION_CHOICES_ID);
+	if (list) {
+		list.remove();
+	}
+	relationChoiceIds = null;
+	relationChoiceLabels = null;
+}
+
+/* The songs this one relates to, each line from this song's end of the row, so
+   the other song's card shows the same row from the other end. They show on the
+   card and in the table; edit mode makes each a kind and a song to change, as an
+   artist or album row is, with a + for another. */
+const relationFieldEditor = {
+	/// The server renders the row only for a song with a relationship; edit mode is where one is added.
+	cell(card) {
+		let cell = fieldCell(card, "relations");
+		if (!cell) {
+			const term = document.createElement("dt");
+			term.textContent = t("song.column.relations");
+
+			cell = document.createElement("dd");
+			cell.className = "songRelationsCell";
+			cell.dataset.field = "relations";
+			cell.dataset.relations = "[]";
+
+			fieldCell(card, "album").previousElementSibling.before(term, cell);
+		}
+		return cell;
+	},
+	/// The lines, in a card or a table row. The table keeps its cell when there are none.
+	show(container) {
+		const cell = fieldCell(container, "relations");
+		if (!cell) {
+			return;
+		}
+
+		const relations = JSON.parse(cell.dataset.relations || "[]");
+		const inTable = container.tagName === "TR";
+
+		/// As the server renders it: no card row for a song with no relationship.
+		if (relations.length === 0 && !inTable) {
+			cell.previousElementSibling.remove();
+			cell.remove();
+			return;
+		}
+
+		cell.textContent = "";
+		relations.forEach(relation => cell.appendChild(relationLine(relation, inTable)));
+	},
+	/// Every song the answer names, row and card, since a relationship shows at both ends.
+	apply(relationsBySong) {
+		Object.entries(relationsBySong).forEach(([songId, relations]) => {
+			const pair = rowsBySongId.get(String(songId));
+			if (!pair) {
+				return;
+			}
+
+			const json = JSON.stringify(relations);
+			fieldCell(pair.tr, "relations").dataset.relations = json;
+			relationFieldEditor.show(pair.tr);
+
+			if (relations.length === 0 && !fieldCell(pair.card, "relations")) {
+				return;
+			}
+
+			relationFieldEditor.cell(pair.card).dataset.relations = json;
+			if (pair.card.dataset.editing === "1") {
+				relationFieldEditor.enter(pair.card);
+			}
+			else {
+				relationFieldEditor.show(pair.card);
+			}
+		});
+	},
+	/// A refusal carries no lists to redraw from; onRefused puts a saved row back as stored.
+	send(songId, body, controls, onRefused) {
+		controls.forEach(control => control.disabled = true);
+		postJson(SONG_RELATIONSHIP_ENDPOINT, body)
+			.then(result => {
+				controls.forEach(control => control.disabled = false);
+				syncResult(songId, result.status === "ok" ? "" : result.message);
+				if (result.relations) {
+					relationFieldEditor.apply(result.relations);
+
+					/// A link of a lending kind changes what both songs borrow.
+					(result.ratings || []).forEach(applyRatingChange);
+					(result.stats || []).forEach(applySongStats);
+					Object.keys(result.relations).forEach(refreshVersionTooltips);
+				}
+				else if (onRefused) {
+					onRefused();
+				}
+			})
+			.catch(error => {
+				controls.forEach(control => control.disabled = false);
+				syncResult(songId, t("status.submitFailed", { error: error.message }));
+			});
+	},
+	enter(card) {
+		const cell = relationFieldEditor.cell(card);
+		const songId = card.dataset.songId;
+
+		const list = document.createElement("div");
+		list.className = "cardRelationList";
+
+		JSON.parse(cell.dataset.relations).forEach(relation => list.appendChild(relationFieldEditor.row(songId, relation)));
+
+		/// As the artists and albums do: + adds a row above it, and the row saves itself; an answer redraws the list.
+		const open = document.createElement("button");
+		open.type = "button";
+		open.className = "songEditRowAdd cardRelationOpen";
+		open.textContent = "+";
+		open.addEventListener("click", () => {
+			const row = relationFieldEditor.row(songId, null);
+			open.before(row);
+			row.querySelector(".cardRelationKind").focus();
+		});
+		list.appendChild(open);
+
+		cell.textContent = "";
+		cell.appendChild(list);
+	},
+	/* One relationship as a kind and a song, saved once both are chosen and again
+	   whenever either changes. A new row starts on neither, or picking the song
+	   first would save a kind nobody chose, and its × drops it unsaved. A picked
+	   suggestion saves at once; typing waits for Enter or leaving the box, since
+	   one label can be the start of another. */
+	row(songId, relation) {
+		const row = document.createElement("div");
+		row.className = "cardRelationRow cardRelationEditRow" + (relation ? "" : " cardRelationAddRow");
+
+		const current = relation ? relation.type + ":" + relation.role : "";
+
+		const kind = document.createElement("select");
+		kind.className = "cardRelationKind";
+		if (!relation) {
+			kind.add(new Option("—", ""));
+		}
+		songRelationTypes.forEach(type => {
+			["variant", "target"].forEach(role => kind.add(new Option(type[role], type.type + ":" + role)));
+		});
+		/// A type no longer in the list stays as it is, under its code.
+		if (relation && !Array.from(kind.options).some(option => option.value === current)) {
+			kind.add(new Option(relation.label, current));
+		}
+		kind.value = current;
+
+		/// Read afresh on every lookup: a rename drops the list (forgetRelationChoices).
+		relationChoices();
+		const currentLabel = relation ? (relationChoiceLabels.get(String(relation.song_id)) || relation.title) : "";
+
+		const other = document.createElement("input");
+		other.type = "text";
+		other.className = "cardRelationSong";
+		other.setAttribute("list", SONG_RELATION_CHOICES_ID);
+		other.placeholder = t("relation.songPlaceholder");
+		other.value = currentLabel;
+
+		const remove = document.createElement("button");
+		remove.type = "button";
+		remove.className = "cardRelationRemove";
+		remove.textContent = "×";
+
+		/// A saved row the server refused shows what is stored again.
+		const putBack = relation
+			? () => {
+				const card = row.closest(".songCard");
+				if (card) {
+					relationFieldEditor.enter(card);
+				}
+			}
+			: null;
+
+		function save() {
+			const otherId = relationChoices().get(other.value);
+			if (kind.disabled || kind.value === "" || !otherId) {
+				return;
+			}
+			if (relation && kind.value === current && otherId === String(relation.song_id)) {
+				return;
+			}
+
+			/// The list has every song on the page, this one too, which can never be related to itself.
+			if (otherId === String(songId)) {
+				syncResult(songId, t("relation.result.sameSong"));
+				other.value = currentLabel;
+				return;
+			}
+
+			const [type, role] = kind.value.split(":");
+			const body = { action: relation ? "update" : "add", song_id: Number(songId), other_song_id: Number(otherId), type, role };
+			if (relation) {
+				body.id = relation.id;
+			}
+			relationFieldEditor.send(songId, body, [kind, other, remove], putBack);
+		}
+
+		kind.addEventListener("change", save);
+		other.addEventListener("input", event => {
+			if (!event.inputType || event.inputType === "insertReplacementText") {
+				save();
+			}
+		});
+		/// A name that matches no song puts a saved row's own song back.
+		other.addEventListener("change", () => {
+			if (relationChoices().has(other.value)) {
+				save();
+			}
+			else if (relation) {
+				other.value = currentLabel;
+			}
+		});
+
+		if (relation) {
+			remove.title = t("relation.remove");
+			remove.addEventListener("click", () => relationFieldEditor.send(songId, { action: "remove", id: relation.id }, [kind, other, remove], putBack));
+		}
+		else {
+			remove.addEventListener("click", () => row.remove());
+		}
+
+		row.append(kind, other, remove);
+		return row;
+	},
+	exit(card) {
+		const cell = fieldCell(card, "relations");
+		if (cell && cell.querySelector(".cardRelationList")) {
+			relationFieldEditor.show(card);
+		}
+	},
+};
+
+/// A card the filter hides cannot open here, so its link loads the page without the filter instead.
+function handleRelationClick(event) {
+	const link = event.target.closest("a[data-song-card-id]");
+	if (!link) {
+		return false;
+	}
+
+	const pair = rowsBySongId.get(link.dataset.songCardId);
+	if (pair && !pair.card.hidden) {
+		event.preventDefault();
+		openCardModal(link.dataset.songCardId);
+	}
+	return true;
+}
+
 function setCardEditLabel(card, editing) {
 	const button = card.querySelector(".songCardEditBtn");
 	if (button) {
@@ -816,6 +1140,7 @@ function enterCardEditMode(card) {
 	durationFieldEditor.enter(card);
 	linkFieldEditor.enter(card);
 	aliasFieldEditor.enter(card);
+	relationFieldEditor.enter(card);
 }
 
 function exitCardEditMode(card) {
@@ -830,6 +1155,7 @@ function exitCardEditMode(card) {
 	durationFieldEditor.exit(card);
 	linkFieldEditor.exit(card);
 	aliasFieldEditor.exit(card);
+	relationFieldEditor.exit(card);
 }
 
 function handleCardEditClick(event) {
@@ -1114,7 +1440,8 @@ function fieldValue(container, field) {
 	if (!cell) {
 		return "";
 	}
-	return "sortValue" in cell.dataset ? cell.dataset.sortValue : cellText(cell).trim();
+	/// A borrowed rating sorts like a real one, as the server's ORDER BY over effective_rating has it.
+	return "sortValue" in cell.dataset ? cell.dataset.sortValue : (cellText(cell).trim() || borrowedValue(cell));
 }
 
 function sortRows(key, type) {
@@ -1221,7 +1548,7 @@ function scoreFits(text) {
 }
 
 const SCORE_SPEC = { selectOnFocus: true, fits: scoreFits };
-const NOTE_SPEC = { syncTitle: true, multiline: true };
+const NOTE_SPEC = { multiline: true };
 
 const EDITABLE_CELLS = {
 	songMyScoreCell: { ...SCORE_SPEC, field: "score", endpoint: RATING_ENDPOINT, required: false },
@@ -1288,8 +1615,17 @@ function gateKey(container, cell) {
    they are looking at it. */
 function ownValue(cell) {
 	const input = cell.querySelector("input, textarea");
+	const typed = (input ? input.value : cellText(cell)).trim();
 
-	return (input ? input.value : cellText(cell)).trim();
+	/// A rating borrowed from another version counts as the reader's own, as the server's gate has it.
+	return typed !== "" ? typed : borrowedValue(cell);
+}
+
+/// What a rating cell borrows from the song's other versions (ratings.php), or "".
+function borrowedValue(cell) {
+	const span = cell.querySelector(".songInherited");
+
+	return span ? span.textContent.trim() : "";
 }
 
 function gateRevealButton(cell) {
@@ -1319,6 +1655,7 @@ function setCellGate(cell, gated) {
 		gateRevealButton(cell);
 		/// Withheld with the value: the tooltip would hand it straight back.
 		delete cell.dataset.tooltip;
+		delete cell.dataset.tooltipRich;
 		cell.removeAttribute("title");
 		cell.classList.remove("songScoreColoured");
 		cell.style.removeProperty("color");
@@ -1330,17 +1667,44 @@ function setCellGate(cell, gated) {
 		colorScoreCell(cell);
 	}
 
-	if (cell.classList.contains("songRatingNoteCell")) {
-		const note = cellText(cell);
-
-		// Whichever the cell currently uses, since tooltip.js moves title into data-tooltip.
-		if ("tooltip" in cell.dataset) {
-			cell.dataset.tooltip = note;
-		}
-		else {
-			cell.title = note;
-		}
+	if (cell.classList.contains("songRatingCell")) {
+		refreshCellTooltip(cell);
 	}
+}
+
+/* A rating cell's tooltip: a note's own text, then what that rater gave the
+   song's other versions (refreshVersionTooltips). Whichever of title and
+   data-tooltip the cell currently uses, since tooltip.js moves one into the other. */
+function refreshCellTooltip(cell) {
+	const own = cell.classList.contains("songRatingNoteCell") ? cellText(cell) : "";
+	const lines = JSON.parse(cell.dataset.versions || "[]");
+	const list = lines.map(line => line.map(([piece]) => piece).join("")).join("\n");
+	const text = [own, list].filter(part => part !== "").join("\n\n");
+
+	if ("tooltip" in cell.dataset) {
+		cell.dataset.tooltip = text;
+	}
+	else if (text !== "") {
+		cell.title = text;
+	}
+	else {
+		cell.removeAttribute("title");
+	}
+
+	/// The list's sentences in bold, through tooltip.js; anything somebody wrote stays plain.
+	if (lines.length === 0) {
+		delete cell.dataset.tooltipRich;
+		return;
+	}
+
+	const pieces = own === "" ? [] : [[own + "\n\n", false]];
+	lines.forEach((line, index) => {
+		if (index > 0) {
+			pieces.push(["\n", false]);
+		}
+		pieces.push(...line);
+	});
+	cell.dataset.tooltipRich = JSON.stringify(pieces);
 }
 
 function applySpoilerGate(container) {
@@ -1358,7 +1722,7 @@ function applySpoilerGate(container) {
 	container.querySelectorAll(SONG_GATE_CELLS).forEach(cell => {
 		const isNote = cell.classList.contains("songRatingNoteCell");
 		const gated = (isNote ? notesGated : scoresGated)
-			&& cellText(cell).trim() !== ""
+			&& (cellText(cell).trim() !== "" || borrowedValue(cell) !== "")
 			&& !songRevealed.has(gateKey(container, cell));
 
 		setCellGate(cell, gated);
@@ -1390,20 +1754,18 @@ document.addEventListener("click", event => {
 
 	songRevealed.add(gateKey(container, cell));
 	regateSong(container.dataset.songId);
+
+	/// The songs this one lends to may list the value just uncovered.
+	lendingVersions(container.dataset.songId).forEach(version => refreshVersionTooltips(version.song_id));
 });
 
 function setCellValue(cell, spec, value) {
 	valueElement(cell).textContent = value;
 	cell.classList.toggle("songCellEmpty", value === "");
 
-	// Whichever the cell currently uses, since tooltip.js moves title into data-tooltip.
-	if (spec.syncTitle) {
-		if ("tooltip" in cell.dataset) {
-			cell.dataset.tooltip = value;
-		}
-		else {
-			cell.title = value;
-		}
+	/// Every rating cell, since beginCellEdit strips the title a score's version list lives in too.
+	if (cell.classList.contains("songRatingCell")) {
+		refreshCellTooltip(cell);
 	}
 
 	if (cell.classList.contains("songScoreColoured")) {
@@ -1411,11 +1773,150 @@ function setCellValue(cell, spec, value) {
 	}
 
 	/// A rating landing anywhere on a song can open or close the gate on the rest.
-	applySpoilerGate(gateContainer(cell));
+	const container = gateContainer(cell);
+	applySpoilerGate(container);
+
+	/// The songs this one lends to list its ratings in their tooltips.
+	if (container && cell.classList.contains("songRatingCell")) {
+		lendingVersions(container.dataset.songId).forEach(version => refreshVersionTooltips(version.song_id));
+	}
 }
 
-// Every cell holding one score on the 0-10 ramp, rater and statistic alike.
+/* A rating borrowed from another version, shown faded beside an empty value
+   (ratings.php). The server works out what it is; this only writes it, before
+   setCellValue so the gate that runs there sees it. */
+function setBorrowed(cell, value) {
+	let span = cell.querySelector(".songInherited");
+	if (!span && value === "") {
+		return;
+	}
+
+	if (!span) {
+		span = document.createElement("span");
+		span.className = "songInherited";
+		valueElement(cell).after(span);
+	}
+
+	span.textContent = value;
+	cell.classList.toggle("songInheritedCell", value !== "");
+	colourBorrowed(cell);
+}
+
+function colourBorrowed(cell) {
+	const span = cell.querySelector(".songInherited");
+	if (!span || !cell.classList.contains("songRatingScoreCell")) {
+		return;
+	}
+
+	const score = Number(span.textContent);
+	if (span.textContent === "" || Number.isNaN(score)) {
+		span.style.removeProperty("color");
+	}
+	else {
+		span.style.color = scoreColour(score);
+	}
+}
+
+const SONG_LENDING_TYPES = new Set(songRelationTypes.filter(type => type.inherits).map(type => type.type));
+
+/// The songs a song borrows ratings from, and lends them to: its relationships of a lending kind, once each.
+function lendingVersions(songId) {
+	const pair = rowsBySongId.get(String(songId));
+	const cell = pair && fieldCell(pair.tr, "relations");
+	const seen = new Set();
+	const versions = [];
+
+	JSON.parse((cell && cell.dataset.relations) || "[]").forEach(relation => {
+		if (SONG_LENDING_TYPES.has(relation.type) && !seen.has(relation.song_id)) {
+			seen.add(relation.song_id);
+			versions.push(relation);
+		}
+	});
+
+	return versions;
+}
+
+/* One line of a rater cell's tooltip, "You scored the remastered version (2:
+   Remaster Song) 8", or a note under "…(2: Remaster Song):", as [[piece, bold],
+   ...] for tooltip.js. The sentence is
+   bold and what was written is not. The template is split at {value} before
+   anything is filled in, wherever the language puts the value and whatever a
+   title holds. The version is named from the other song's end, since the line
+   is about that song. */
+function versionLine(cell, container, version, value) {
+	const type = songRelationTypes.find(candidate => candidate.type === version.type);
+	const otherEnd = version.role === "variant" ? "target" : "variant";
+	const isNote = cell.classList.contains("songRatingNoteCell");
+	const nameCell = fieldCell(container, "note_" + cell.dataset.accountId);
+	const params = {
+		name: nameCell ? nameCell.dataset.raterName : "",
+		version: type ? type[otherEnd + "Noun"] : version.type,
+		id: version.song_id,
+		title: version.title,
+	};
+
+	const template = cell.classList.contains("songMineCell")
+		? (isNote ? t("song.list.versionNoteMine") : t("song.list.versionScoreMine"))
+		: (isNote ? t("song.list.versionNote") : t("song.list.versionScore"));
+	/// One pass, as fillFromTemplate does: a name or title holding "{title}" is not filled in twice.
+	const fill = text => text.replace(/\{(\w+)\}/g, (placeholder, key) => key in params ? String(params[key]) : placeholder);
+	const [before, after = ""] = template.split("{value}");
+
+	return [[fill(before), true], [value, false], [fill(after), true]].filter(([text]) => text !== "");
+}
+
+/* Each rater cell's list of what that rater gave the song's other versions,
+   read off those songs' own cells - what was really written, never what they
+   borrow in turn - for the cell's tooltip (versionLine). */
+function refreshVersionTooltips(songId) {
+	const pair = rowsBySongId.get(String(songId));
+	if (!pair) {
+		return;
+	}
+
+	const versions = lendingVersions(songId);
+
+	[pair.tr, pair.card].forEach(container => {
+		container.querySelectorAll(".songRatingCell[data-field]").forEach(cell => {
+			const lines = [];
+			versions.forEach(version => {
+				const other = rowsBySongId.get(String(version.song_id));
+				const source = other ? fieldCell(other.tr, cell.dataset.field) : null;
+				/// What the gate covers there stays covered here; revealing it refreshes this list.
+				const value = source && !source.classList.contains("songGated") ? cellText(source).trim() : "";
+				if (value !== "") {
+					lines.push(versionLine(cell, container, version, value));
+				}
+			});
+
+			if (lines.length > 0) {
+				cell.dataset.versions = JSON.stringify(lines);
+			}
+			else if ("versions" in cell.dataset) {
+				delete cell.dataset.versions;
+			}
+			else {
+				return;
+			}
+
+			/// A covered cell withholds its tooltip, the list included.
+			if (!cell.classList.contains("songGated")) {
+				refreshCellTooltip(cell);
+			}
+		});
+	});
+}
+
+// Every cell holding one score on the 0-10 ramp, rater and statistic alike, and every borrowed score.
 Array.from(document.querySelectorAll(".songScoreColoured")).forEach(colorScoreCell);
+Array.from(document.querySelectorAll(".songRatingScoreCell.songInheritedCell")).forEach(colourBorrowed);
+
+// Every song with a version lists in its rating tooltips what was given to the others.
+rowPairs().forEach(pair => {
+	if (lendingVersions(pair.tr.dataset.songId).length > 0) {
+		refreshVersionTooltips(pair.tr.dataset.songId);
+	}
+});
 
 /* Undoes any edit, typed, pasted or deleted, that leaves something fits() rejects.
    Put back, never stripped: the score opens selected, so a stripped letter would
@@ -1530,6 +2031,8 @@ function saveCell(songId, domField, cell, spec, original, value) {
    the names come back from the server rather than being worked out here. The
    canonical title is what the album filter falls back to. */
 function applyRenamedTitles(songId, title, titles) {
+	forgetRelationChoices();
+
 	syncField(songId, "title", cell => {
 		cell.dataset.canonicalTitle = title;
 
@@ -1598,6 +2101,9 @@ function openCardAndFlash(songId, findTarget) {
 }
 
 function handleListClick(event) {
+	if (handleRelationClick(event)) {
+		return;
+	}
 	handleCardEditClick(event);
 	handleEdit(event);
 }
@@ -1823,17 +2329,22 @@ function flashCell(cell) {
 	cell.addEventListener("animationend", () => cell.classList.remove("songRatingFlash"), { once: true });
 }
 
-function applyRatingHalf(pair, field, spec, value) {
+/// The server says which half is borrowed (ratings.php): that value goes beside an empty real one.
+function applyRatingHalf(pair, field, spec, value, borrowed) {
+	const real = borrowed ? "" : value;
+	const lent = borrowed ? value : "";
+
 	[pair.tr, pair.card].forEach(container => {
 		const cell = fieldCell(container, field);
 		if (!cell || isBeingEdited(cell) || cell.dataset.pending) {
 			return;
 		}
-		if (cellText(cell) === value) {
+		if (cellText(cell) === real && borrowedValue(cell) === lent) {
 			return;
 		}
 
-		setCellValue(cell, spec, value);
+		setBorrowed(cell, lent);
+		setCellValue(cell, spec, real);
 		flashCell(cell);
 	});
 }
@@ -1870,8 +2381,8 @@ function applyRatingChange(change) {
 		return;
 	}
 
-	applyRatingHalf(pair, "score_" + change.account, SCORE_SPEC, change.score);
-	applyRatingHalf(pair, "note_" + change.account, NOTE_SPEC, change.note);
+	applyRatingHalf(pair, "score_" + change.account, SCORE_SPEC, change.score, change.scoreBorrowed);
+	applyRatingHalf(pair, "note_" + change.account, NOTE_SPEC, change.note, change.noteBorrowed);
 }
 
 function scheduleRatingPoll(delay) {
@@ -2109,6 +2620,10 @@ function sendRating(songId, field, value, original) {
 			syncResult(songId, saved ? "" : result.message);
 			unsavedToasted.delete(String(songId));
 		}
+
+		/// What the write changed besides this cell: borrowed ratings here and on the songs it lends to.
+		(result.ratings || []).forEach(applyRatingChange);
+		(result.relatedStats || []).forEach(applySongStats);
 
 		return saved ? "saved" : "refused";
 	})

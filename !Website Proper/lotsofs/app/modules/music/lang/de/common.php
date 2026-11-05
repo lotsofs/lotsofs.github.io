@@ -56,6 +56,8 @@ return [
 	'addSongs.columnMapping.columnLabel' => 'Spalte {n}',
 	'addSongs.columnMapping.continue' => 'Weiter',
 	'addSongs.columnMapping.needsArtistAndTitle' => 'Wähle eine Spalte für Interpret und eine für Titel, bevor du fortfährst.',
+	'addSongs.separateAll' => 'Jedes Lied, dessen Titel der Interpret schon hat, als eigenes Lied anlegen',
+	'addSongs.separateRelation' => 'Jeder getrennte Song ist die {relation} dem Song mit demselben Titel.',
 
 	'ajax.notLoggedIn' => 'Du musst angemeldet sein.',
 	'ajax.badCsrf' => 'Diese Seite ist abgelaufen, bitte neu laden und erneut versuchen.',

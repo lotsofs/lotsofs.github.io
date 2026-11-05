@@ -10,6 +10,24 @@ function showMusicTooltip(text) {
 	musicTooltipBox.style.display = "block";
 }
 
+/* data-tooltip-rich: the same text as [[piece, bold], ...], for a tooltip with
+   bold parts. Built with textContent, never markup, since a piece can be a song
+   title or a note somebody typed. data-tooltip still holds the plain text. */
+function showMusicTooltipRich(pieces) {
+	musicTooltipBox.textContent = "";
+	pieces.forEach(([text, bold]) => {
+		if (bold) {
+			const strong = document.createElement("strong");
+			strong.textContent = text;
+			musicTooltipBox.appendChild(strong);
+		}
+		else {
+			musicTooltipBox.appendChild(document.createTextNode(text));
+		}
+	});
+	musicTooltipBox.style.display = "block";
+}
+
 function hideMusicTooltip() {
 	musicTooltipBox.style.display = "none";
 	musicTooltipBox.style.left = "0";
@@ -85,7 +103,12 @@ if (musicTooltipBox) {
 			return;
 		}
 
-		showMusicTooltip(target.dataset.tooltip);
+		if ("tooltipRich" in target.dataset) {
+			showMusicTooltipRich(JSON.parse(target.dataset.tooltipRich));
+		}
+		else {
+			showMusicTooltip(target.dataset.tooltip);
+		}
 		moveMusicTooltip(event);
 	});
 

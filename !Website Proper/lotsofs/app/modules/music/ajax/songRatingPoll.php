@@ -14,24 +14,29 @@ $since = ajaxInt($data['since'] ?? null);
 $sinceAudit = ajaxInt($data['sinceAudit'] ?? null);
 
 $rows = $db->query("
-	SELECT song_id, account_id, score, subjective_note, updated_at
+	SELECT song_id, account_id, updated_at
 	FROM account_song
 	WHERE updated_at >= ?
 	ORDER BY updated_at
 ", [$since])->fetchAll();
 
 $cursor = $since;
-$changes = [];
+$songsByAccount = [];
 
 foreach ($rows as $row) {
 	$cursor = max($cursor, (int)$row['updated_at']);
+	$songsByAccount[(int)$row['account_id']][] = (int)$row['song_id'];
+}
 
-	$changes[] = [
-		'song' => (int)$row['song_id'],
-		'account' => (int)$row['account_id'],
-		'score' => $row['score'] === null ? '' : (string)(float)$row['score'],
-		'note' => $row['subjective_note'] ?? '',
-	];
+/* Each change as the cells hold it, effective, so a cleared score that borrows
+   again says so; and the same account's ratings on the songs a changed one
+   lends to, which no row of their own would bring. */
+require_once __MODULES__ . '/music/ratings.php';
+musicRatingView($db);
+
+$changes = [];
+foreach ($songsByAccount as $changedAccount => $songs) {
+	$changes = array_merge($changes, musicEffectiveRatings($db, array_merge($songs, musicVersionIds($db, $songs)), [$changedAccount]));
 }
 
 /// The song list's statistics columns for the songs in this tick's changes.
@@ -44,7 +49,7 @@ if ($changedSongs) {
 	$scoresBySong = [];
 	foreach ($db->query("
 		SELECT song_id, score
-		FROM account_song
+		FROM effective_rating
 		WHERE score IS NOT NULL AND song_id IN ({$placeholders})
 	", $changedSongs)->fetchAll() as $row) {
 		$scoresBySong[(int)$row['song_id']][] = (float)$row['score'];

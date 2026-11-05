@@ -587,6 +587,9 @@ function hideSongTable() {
 	songTable.classList.remove("tableProcessed");
 	submitSongsButton.hidden = true;
 	submitSongsButton.disabled = false;
+	songSeparate.hidden = true;
+	songSeparateAll.checked = false;
+	songSeparateAll.indeterminate = false;
 	latestSongResults = [];
 	hideExtrasTable();
 }
@@ -594,6 +597,22 @@ function hideSongTable() {
 const SONG_OPTION_SKIP = "skip";
 const SONG_OPTION_NEW = "new";
 const SONG_OPTION_CUSTOM = "custom";
+/// A new song although one by this artist already has the title: another recording of it.
+const SONG_OPTION_SEPARATE = "separate";
+
+const songSeparate = document.getElementById("songSeparate");
+const songSeparateAll = document.getElementById("songSeparateAll");
+const songSeparateRelation = document.getElementById("songSeparateRelation");
+const songSeparateRelationSelect = document.getElementById("songSeparateRelationSelect");
+const data_relationTypes = JSON.parse(document.getElementById("songRelationTypes").textContent);
+
+/// How every separate song relates to the one it shares a title with, set once per import.
+appendChildToElement(songSeparateRelationSelect, "option", "—").value = "";
+data_relationTypes.forEach(type => {
+	["variant", "target"].forEach(role => {
+		appendChildToElement(songSeparateRelationSelect, "option", type[role]).value = type.type + ":" + role;
+	});
+});
 
 let songsByArtistId = new Map();
 let artistNameById = new Map();
@@ -602,7 +621,7 @@ function songExtrasFor(selectValue, providedName, artistId) {
 	if (selectValue === SONG_OPTION_CUSTOM) {
 		return { typedName: true, rawName: false, keepRawAlias: true };
 	}
-	if (selectValue === SONG_OPTION_NEW) {
+	if (selectValue === SONG_OPTION_NEW || selectValue === SONG_OPTION_SEPARATE) {
 		return { typedName: false, rawName: true, keepRawAlias: false };
 	}
 	if (selectValue === SONG_OPTION_SKIP) {
@@ -622,6 +641,38 @@ function syncSongRow(row) {
 	row.querySelector(".extrasCell .rawNamePreview").hidden = !extras.rawName;
 	row.querySelector(".extrasCell label").hidden = !extras.keepRawAlias;
 }
+
+/// The rows that offer <New, separate>: those whose title the artist already has.
+function matchedSongRows() {
+	return Array.from(songRows.querySelectorAll("tr[data_matched_song_id]"));
+}
+
+/* The box above the table ticks itself from the rows, half-filled when only some
+   are separate, so a row changed by hand afterwards is still told the truth. */
+function refreshSeparateControls() {
+	const matched = matchedSongRows();
+	const separate = matched.filter(row => row.querySelector(".songSelectCell select").value === SONG_OPTION_SEPARATE).length;
+
+	songSeparate.hidden = matched.length === 0;
+	songSeparateAll.checked = matched.length > 0 && separate === matched.length;
+	songSeparateAll.indeterminate = separate > 0 && separate < matched.length;
+	songSeparateRelation.hidden = separate === 0;
+}
+
+/// Every matched row still to be sent becomes separate, or goes back to the song it matched. Never ticked for you.
+songSeparateAll.addEventListener("change", () => {
+	matchedSongRows()
+		.filter(row => !row.classList.contains("rowHandled"))
+		.forEach(row => {
+			row.querySelector(".songSelectCell select").value = songSeparateAll.checked
+				? SONG_OPTION_SEPARATE
+				: row.getAttribute("data_matched_song_id");
+			syncSongRow(row);
+		});
+
+	/// Once, after the rows: it reads every matched row, so once per row would be quadratic.
+	refreshSeparateControls();
+});
 
 function buildSongTable(artistResults) {
 	artistIdByProvidedName = new Map();
@@ -684,11 +735,17 @@ function buildSongTable(artistResults) {
 		const resultCell = appendChildToElement(row, "td", "");
 		resultCell.classList.add("resultCell");
 
+		const aliases = songsByArtistId.get(artistId) || [];
+		const matchedAlias = aliases.find(song => song.name === item.Title);
+
 		appendChildToElement(select, "option", t("artist.option.new")).value = SONG_OPTION_NEW;
+		/// Only where New would be answered with the song that already has the title.
+		if (matchedAlias) {
+			appendChildToElement(select, "option", t("song.option.separate")).value = SONG_OPTION_SEPARATE;
+			row.setAttribute("data_matched_song_id", matchedAlias.id);
+		}
 		appendChildToElement(select, "option", t("artist.option.custom")).value = SONG_OPTION_CUSTOM;
 		appendChildToElement(select, "option", t("artist.option.skip")).value = SONG_OPTION_SKIP;
-
-		const aliases = songsByArtistId.get(artistId) || [];
 
 		const songLabels = new Map();
 		aliases.forEach(song => {
@@ -700,14 +757,19 @@ function buildSongTable(artistResults) {
 			appendChildToElement(select, "option", name).value = songId;
 		});
 
-		const matchedAlias = aliases.find(song => song.name === item.Title);
 		if (matchedAlias) {
 			select.value = matchedAlias.id;
 		}
 
-		select.addEventListener("change", () => syncSongRow(row));
+		select.addEventListener("change", () => {
+			syncSongRow(row);
+			refreshSeparateControls();
+		});
 		syncSongRow(row);
 	});
+
+	/// Once, after the rows, for the same reason as the box's own handler.
+	refreshSeparateControls();
 
 	const hasSongs = songRows.children.length > 0;
 	songTable.hidden = !hasSongs;
@@ -736,16 +798,26 @@ submitSongsButton.addEventListener('click', () => {
 	const songs = [];
 	songRows.querySelectorAll("tr:not(.rowHandled)").forEach(row => {
 		const select = row.querySelector(".songSelectCell select");
+		const separate = select.value === SONG_OPTION_SEPARATE;
 		const isNew = select.value === SONG_OPTION_NEW || select.value === SONG_OPTION_CUSTOM;
 		const typedName = row.querySelector(".extrasCell input[type='text']").value.trim();
 
-		songs.push({
+		const song = {
 			artist_id: row.getAttribute("data_artist_id"),
 			title: row.getAttribute("data_title"),
-			song_id: isNew ? SONG_OPTION_NEW : select.value,
+			song_id: separate ? SONG_OPTION_SEPARATE : (isNew ? SONG_OPTION_NEW : select.value),
 			og_name: select.value === SONG_OPTION_CUSTOM ? typedName : "",
 			also_alias_provided_name: row.querySelector(".extrasCell input[type='checkbox']").checked,
-		});
+		};
+
+		if (separate && songSeparateRelationSelect.value !== "") {
+			const [type, role] = songSeparateRelationSelect.value.split(":");
+			song.related_song_id = row.getAttribute("data_matched_song_id");
+			song.relationship_type = type;
+			song.relationship_role = role;
+		}
+
+		songs.push(song);
 	});
 	if (songs.length === 0) {
 		return;

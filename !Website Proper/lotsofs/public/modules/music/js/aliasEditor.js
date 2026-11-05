@@ -2,7 +2,8 @@ const ALIAS_ADD_ENDPOINT = "/music/ajax/alias-add";
 const ALIAS_DELETE_ENDPOINT = "/music/ajax/alias-delete";
 
 /* A card's other names in edit mode, each with a button to make it the current
-   name and one to delete it, and a box under them to write in another. Shared by
+   name and one to delete it, and a + under them that opens a box to write in
+   another, as the song card's artists and albums wait behind theirs. Shared by
    the song card (songs.js) and the album and artist cards (albumCard.js), each of
    which says how to make a name current and what to do with the answer. config:
    kind and id for alias-add and alias-delete; names as the server lists them,
@@ -15,13 +16,26 @@ function renderAliasEditor(cell, config) {
 	list.className = "cardAliasList";
 
 	config.names.slice(1).forEach(name => list.appendChild(aliasEditorRow(name, config)));
-	list.appendChild(aliasEditorAddRow(cell, config));
+	list.appendChild(aliasEditorOpenButton(cell, config));
 
 	cell.appendChild(list);
 }
 
+function aliasEditorOpenButton(cell, config) {
+	const open = document.createElement("button");
+	open.type = "button";
+	open.className = "songEditRowAdd cardAliasOpen";
+	open.textContent = "+";
+	open.addEventListener("click", () => {
+		const row = aliasEditorAddRow(cell, config);
+		open.replaceWith(row);
+		row.querySelector(".cardAliasNew").focus();
+	});
+	return open;
+}
+
 /* Saved on blur, as every other box in the card editors is; Enter does the same
-   and leaves the cursor in the fresh box for the next one. */
+   and opens a fresh box for the next one, since the save redraws the editor closed. */
 function aliasEditorAddRow(cell, config) {
 	const row = document.createElement("div");
 	row.className = "cardAliasRow cardAliasAddRow";
@@ -59,9 +73,9 @@ function aliasEditorAddRow(cell, config) {
 					config.status("");
 					config.onChange(result, "add", name);
 
-					const fresh = cell.querySelector(".cardAliasNew");
-					if (refocus && fresh) {
-						fresh.focus();
+					const open = cell.querySelector(".cardAliasOpen");
+					if (refocus && open) {
+						open.click();
 					}
 					return;
 				}

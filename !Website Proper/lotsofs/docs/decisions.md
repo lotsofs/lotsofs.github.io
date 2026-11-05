@@ -16,13 +16,13 @@ The shape that works: an **account setting, off by default and changeable any ti
 
 ## COV — How are covers modelled
 
-Not at all. `song_cover` and `composition` went in the ground-up rewrite (`app/modules/music/notes.txt` has the original sketch). The earlier reasoning: a cover is a separate song sharing a composition, which needs `composition` back. Nothing forces it until a cover needs recording.
+Not at all. `song_cover` and `composition` went in the ground-up rewrite (`app/modules/music/notes.txt` has the original sketch). The earlier reasoning: a cover is a separate song sharing a composition, which needs `composition` back. Nothing forces it until a cover needs recording. A `cover` type in `musicSongRelationTypes()` would now link a cover to its original on both cards, though it shares no composition.
 
 **Docs.** `music.md` (the data model), `music-reference.md` (schema).
 
 ## VER — When is a recording a separate song
 
-The settled rule: split on edit or performance, not on master or encoding, and override when it would change the score. It is not implemented: `song_version` was dropped, and no constraint stops two same-titled songs by one artist (duplicate detection is an application check in `song.php`). Nothing blocks recording one; it is just not modelled on purpose.
+The settled rule: split on edit or performance, not on master or encoding, and override when it would change the score. Partly built since 2026-11-04: the import's Song step can add a song under a title its artist already has (`<New, separate>`, which skips the duplicate check in `song.php`), and `song_relationship` says how two songs relate, shown on both cards (only a `remaster` type so far). What is left is the rule itself: nothing applies it or suggests a split, rename and adding a name still refuse a name another song by the artist has, and two such songs look alike in the import and the album card (TWN).
 
 **Docs.** `music.md` (the data model), `music-reference.md` (schema).
 

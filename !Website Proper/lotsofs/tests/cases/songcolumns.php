@@ -70,11 +70,11 @@ function columnsCellTitles($cell) {
 
 return [
 
-	'a new account sees every column but Also Known As' => function ($ctx) {
+	'a new account sees every column but Also Known As and Related' => function ($ctx) {
 		$body = columnsPage($ctx, 'columns_fresh');
 		$me = columnsAccountId($ctx, 'columns_fresh');
 
-		assertSame(['songHideAliases'], columnsTableHides($body), 'only Also Known As starts hidden');
+		assertSame(['songHideAliases', 'songHideRelations'], columnsTableHides($body), 'only Also Known As and Related start hidden');
 
 		$boxes = columnsPickerBoxes($body);
 		$raters = [];
@@ -84,15 +84,15 @@ return [
 
 		assertSame(
 			array_merge(
-				['id', 'artist', 'title', 'aliases', 'album', 'year', 'duration', 'links'],
+				['id', 'artist', 'title', 'aliases', 'relations', 'album', 'year', 'duration', 'links'],
 				$raters,
 				['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated']
 			),
 			array_keys($boxes),
 			'the picker lists the fixed columns, every rater with you first, then the statistics'
 		);
-		assertSame(false, $boxes['aliases'], 'Also Known As is unticked');
-		assertSame([], array_keys(array_filter($boxes, fn($ticked, $key) => !$ticked && $key !== 'aliases', ARRAY_FILTER_USE_BOTH)), 'and everything else ticked');
+		assertSame([false, false], [$boxes['aliases'], $boxes['relations']], 'Also Known As and Related are unticked');
+		assertSame([], array_keys(array_filter($boxes, fn($ticked, $key) => !$ticked && !in_array($key, ['aliases', 'relations'], true), ARRAY_FILTER_USE_BOTH)), 'and everything else ticked');
 
 		assertContains('<summary class="songColumnPickerButton">Columns</summary>', $body, 'the picker is a button labelled Columns');
 		assertTrue(strpos($body, 'id="songCardViewToggle"') < strpos($body, 'id="songColumnPicker"'), 'beside the card view button');
@@ -110,7 +110,7 @@ return [
 		assertSame(['album' => 0], columnsChoiceRows($ctx, 'columns_picker'), 'and stored as one row');
 
 		$body = $ctx->get('/music/songs')['body'];
-		assertSame(['songHideAliases', 'songHideAlbum'], columnsTableHides($body), 'the table hides it');
+		assertSame(['songHideAliases', 'songHideRelations', 'songHideAlbum'], columnsTableHides($body), 'the table hides it');
 		assertSame(false, columnsPickerBoxes($body)['album'], 'and its box is unticked');
 
 		$ctx->post(COLUMNS_ENDPOINT, ['column' => 'album', 'shown' => true]);
@@ -120,12 +120,12 @@ return [
 		$ctx->post(COLUMNS_ENDPOINT, ['column' => "rater_{$other}", 'shown' => false]);
 
 		$body = $ctx->get('/music/songs')['body'];
-		assertSame(["songHideRater{$other}"], columnsTableHides($body), 'Also Known As shows once ticked, and a rater hides');
+		assertSame(['songHideRelations', "songHideRater{$other}"], columnsTableHides($body), 'Also Known As shows once ticked, and a rater hides');
 		assertSame(true, columnsPickerBoxes($body)['aliases'], 'with its box ticked');
 		assertSame(['album' => 1, 'aliases' => 1, "rater_{$other}" => 0], columnsChoiceRows($ctx, 'columns_picker'), 'each key is a row of its own');
 
 		$ctx->ensureLoggedIn('columns_fresh', 'test password', false);
-		assertSame(['songHideAliases'], columnsTableHides($ctx->get('/music/songs')['body']), 'another account keeps its own columns');
+		assertSame(['songHideAliases', 'songHideRelations'], columnsTableHides($ctx->get('/music/songs')['body']), 'another account keeps its own columns');
 	},
 
 	'the picker refuses what it does not offer' => function ($ctx) {

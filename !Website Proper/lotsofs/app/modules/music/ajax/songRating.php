@@ -2,18 +2,9 @@
 
 require_once __MODULES__ . '/music/ajaxGuard.php';
 require_once __MODULES__ . '/music/stats.php';
+require_once __MODULES__ . '/music/ratings.php';
 
 requireMusicAccountJson($db, t('ajax.notLoggedIn'));
-
-/// The song list's statistics columns as they stand after a write.
-function songRatingStats($db, $songId) {
-	$scores = [];
-	foreach ($db->query("SELECT score FROM account_song WHERE song_id = ? AND score IS NOT NULL", [$songId])->fetchAll() as $row) {
-		$scores[] = (float)$row['score'];
-	}
-
-	return array_merge(['song' => (int)$songId], musicSongStatFields($scores));
-}
 
 $accountId = (int)currentAccountId();
 
@@ -85,9 +76,18 @@ catch (PDOException $e) {
 	throw $e;
 }
 
+musicRatingView($db);
+
+/* What this write changed besides its own cell: this account's ratings on the
+   songs it lends to, and on this one, which borrows again once cleared; and the
+   statistics of the songs it lends to. */
+$versionIds = musicVersionIds($db, [$songId]);
+
 echo json_encode([
 	'status' => 'ok',
 	'value' => $stored === null ? '' : $stored,
 	'message' => '',
-	'stats' => songRatingStats($db, $songId),
+	'stats' => musicSongStatsRow($db, $songId),
+	'ratings' => musicEffectiveRatings($db, array_merge([$songId], $versionIds), [$accountId]),
+	'relatedStats' => array_map(fn($versionId) => musicSongStatsRow($db, $versionId), $versionIds),
 ]);

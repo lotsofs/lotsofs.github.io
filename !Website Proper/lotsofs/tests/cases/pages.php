@@ -7,6 +7,7 @@ const MUSIC_AJAX_ENDPOINTS = [
 	'/music/ajax/song-rating',
 	'/music/ajax/song-rating-poll',
 	'/music/ajax/album',
+	'/music/ajax/song-relationship',
 ];
 
 return [
@@ -240,8 +241,9 @@ return [
 			'the rows come back in the same order, so the card parameters disturb nothing'
 		);
 
+		/// Counted against the page without them: a Related line links its song as ?songCard=<id> anyway.
 		foreach (['songCard=1', 'albumCard=2', 'artistCard=3'] as $param) {
-			assertTrue(strpos($linked, $param) === false, "{$param} is never echoed into the page, only read from the address by script");
+			assertSame(substr_count($plain, $param), substr_count($linked, $param), "{$param} is never echoed into the page, only read from the address by script");
 		}
 
 		assertSame(200, $ctx->get('/music/albums?albumCard=2')['status'], 'and the album list takes one too');

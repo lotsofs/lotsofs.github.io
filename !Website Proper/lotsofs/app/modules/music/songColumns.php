@@ -3,12 +3,12 @@
 /// Which columns of the song list's table the column picker shows.
 
 /// The columns left of the raters, in table order.
-const MUSIC_SONG_COLUMNS = ['id', 'artist', 'title', 'aliases', 'album', 'year', 'duration', 'links'];
+const MUSIC_SONG_COLUMNS = ['id', 'artist', 'title', 'aliases', 'relations', 'album', 'year', 'duration', 'links'];
 
 /// The statistics right of the raters, in table order; also the orders sorted in PHP.
 const MUSIC_SONG_STAT_COLUMNS = ['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated'];
 
-const MUSIC_SONG_COLUMNS_HIDDEN_BY_DEFAULT = ['aliases'];
+const MUSIC_SONG_COLUMNS_HIDDEN_BY_DEFAULT = ['aliases', 'relations'];
 
 /// A key the picker offers, or null for anything else.
 function musicSongColumnKey($raw) {

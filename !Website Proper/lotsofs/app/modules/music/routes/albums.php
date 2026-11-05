@@ -53,11 +53,15 @@ foreach ($db->query("
 	$trackTotals[(int)$row['album_id']] = ['tracks' => (int)$row['tracks'], 'duration' => $row['duration']];
 }
 
+/// Effective ratings, so a score borrowed from another version counts here as on the song list.
+require_once __MODULES__ . '/music/ratings.php';
+musicRatingView($db);
+
 $scoresByAlbum = [];
 foreach ($db->query("
 	SELECT at.album_id, acs.score
 	FROM album_track at
-	JOIN account_song acs ON acs.song_id = at.song_id
+	JOIN effective_rating acs ON acs.song_id = at.song_id
 	WHERE acs.score IS NOT NULL
 ")->fetchAll() as $row) {
 	$scoresByAlbum[(int)$row['album_id']][] = (float)$row['score'];

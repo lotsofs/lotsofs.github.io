@@ -328,6 +328,22 @@ return [
 		assertSame(1, $count, 'the check that replaced idx_song_unique still holds');
 	},
 
+	'a separate song can share a title with one by its artist' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Separate Owner');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Recorded Twice']]);
+		$first = $ctx->songId('Recorded Twice');
+
+		$response = $ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Recorded Twice', 'song_id' => 'separate']]);
+
+		assertSame('ok', $response['json'][0]['status'], 'status');
+		$second = (int)$response['json'][0]['song_id'];
+		assertTrue($second !== $first && $second > 0, 'a song of its own');
+		assertSame('Recorded Twice', $ctx->songTitle($second), 'under the same title');
+		assertSame(2, $ctx->songCount('Recorded Twice'), 'both exist');
+	},
+
 	'the artist endpoint hands back that artists songs for the dropdown' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 

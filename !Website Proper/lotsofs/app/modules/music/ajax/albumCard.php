@@ -55,20 +55,27 @@ $album['tracks'] = $db->query("
 ", [$albumId])->fetchAll();
 
 /// One score query, pivoted by account for the rater table and by song for the tracks.
+/// Effective ratings: a score borrowed from another version counts, and its graph dot is faded.
 require_once __MODULES__ . '/music/stats.php';
+require_once __MODULES__ . '/music/ratings.php';
+musicRatingView($db);
 
 $scoresByAccount = [];
 $allScores = [];
 $album['trackScores'] = [];
+$album['trackBorrowed'] = [];
 foreach ($db->query("
-	SELECT acs.account_id, acs.song_id, acs.score
-	FROM account_song acs
+	SELECT acs.account_id, acs.song_id, acs.score, acs.score_borrowed
+	FROM effective_rating acs
 	JOIN album_track at ON at.song_id = acs.song_id
 	WHERE at.album_id = ? AND acs.score IS NOT NULL
 	ORDER BY acs.score
 ", [$albumId])->fetchAll() as $row) {
 	$scoresByAccount[(int)$row['account_id']][] = (float)$row['score'];
 	$album['trackScores'][(int)$row['song_id']][(int)$row['account_id']] = (float)$row['score'];
+	if ($row['score_borrowed']) {
+		$album['trackBorrowed'][(int)$row['song_id']][(int)$row['account_id']] = true;
+	}
 	$allScores[] = (float)$row['score'];
 }
 

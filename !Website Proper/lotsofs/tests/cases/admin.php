@@ -8,6 +8,7 @@ const ADMIN_ENDPOINTS = [
 	'/music/ajax/song-album',
 	'/music/ajax/song-link',
 	'/music/ajax/song-year',
+	'/music/ajax/song-relationship',
 ];
 
 const ADMIN_PAGES = ['/music/add-songs', '/music/invites', '/music/accounts'];

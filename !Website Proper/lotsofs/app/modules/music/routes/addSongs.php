@@ -32,4 +32,7 @@ $globalData['albumNames'] = $db->query("
 	JOIN album a ON a.id = al.album_id
 ")->fetchAll();
 
+require_once __MODULES__ . '/music/relationships.php';
+$globalData['relationTypes'] = musicSongRelationTypeList();
+
 require __MODULES__ . "/music/views/addSongs.view.php";

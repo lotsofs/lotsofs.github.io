@@ -186,7 +186,8 @@
 			<?php foreach ($graphOrdered as $index => $song): ?>
 				<?php $score = $graphScores[(int)$song['song_id']][$raterId] ?? null ?>
 				<?php if ($score !== null): ?>
-					<circle class="albumGraphDot" cx="<?= $graphX($index) ?>" cy="<?= $graphY($score) ?>" r="<?= $graphDotRadius ?>" fill="<?= $colour ?>">
+					<?php /// A score borrowed from another version (ratings.php) counts, but is drawn faded. ?>
+					<circle class="albumGraphDot<?= empty($graphBorrowed[(int)$song['song_id']][$raterId]) ? '' : ' albumGraphDotBorrowed' ?>" cx="<?= $graphX($index) ?>" cy="<?= $graphY($score) ?>" r="<?= $graphDotRadius ?>" fill="<?= $colour ?>">
 						<title><?= htmlspecialchars(t('album.card.graphPoint', [
 							'name' => $rater['account_name'],
 							'track' => $graphLabel($song),

@@ -41,14 +41,19 @@ $selects = '';
 foreach ($raters as $rater) {
 	$id = (int)$rater['id'];
 
-	$aggregates .= ", MAX(CASE WHEN account_id = {$id} THEN score END) AS score_{$id}, MAX(CASE WHEN account_id = {$id} THEN subjective_note END) AS note_{$id}";
-	$selects .= ", r.score_{$id} AS score_{$id}, r.note_{$id} AS note_{$id}";
+	$aggregates .= ", MAX(CASE WHEN account_id = {$id} THEN score END) AS score_{$id}, MAX(CASE WHEN account_id = {$id} THEN subjective_note END) AS note_{$id}"
+		. ", MAX(CASE WHEN account_id = {$id} THEN score_borrowed END) AS score_borrowed_{$id}, MAX(CASE WHEN account_id = {$id} THEN note_borrowed END) AS note_borrowed_{$id}";
+	$selects .= ", r.score_{$id} AS score_{$id}, r.note_{$id} AS note_{$id}, r.score_borrowed_{$id} AS score_borrowed_{$id}, r.note_borrowed_{$id} AS note_borrowed_{$id}";
 
 	$sortable["score_{$id}"] = ['value' => "score_{$id}", 'order' => "score_{$id}"];
 	$sortable["note_{$id}"] = ['value' => "note_{$id}", 'order' => "note_{$id} COLLATE NOCASE"];
 }
 
-$joins = " LEFT JOIN (SELECT song_id{$aggregates} FROM account_song GROUP BY song_id) r ON r.song_id = s.id";
+/// Effective ratings, so a rating borrowed from another version sorts and counts like a real one.
+require_once __MODULES__ . '/music/ratings.php';
+musicRatingView($db);
+
+$joins = " LEFT JOIN (SELECT song_id{$aggregates} FROM effective_rating GROUP BY song_id) r ON r.song_id = s.id";
 
 require_once __MODULES__ . '/music/songColumns.php';
 
@@ -309,11 +314,16 @@ foreach ($db->query("SELECT song_id, name FROM song_alias ORDER BY song_id, is_a
 
 $globalData['namesBySong'] = $namesBySong;
 
+require_once __MODULES__ . '/music/relationships.php';
+$globalData['relationsBySong'] = musicSongRelations($db);
+$globalData['relationTypes'] = musicSongRelationTypeList();
+
 $columns = [
 	['key' => 'id', 'type' => 'number', 'class' => 'songIdCell', 'label' => t('song.column.id')],
 	['key' => 'artist', 'type' => 'text', 'class' => 'songArtistCell', 'label' => t('song.column.artist')],
 	['key' => 'title', 'type' => 'text', 'class' => 'songTitleCell', 'label' => t('song.column.title')],
 	['key' => 'aliases', 'type' => 'text', 'class' => 'songAliasesCell', 'label' => t('song.column.aliases'), 'sortable' => false],
+	['key' => 'relations', 'type' => 'text', 'class' => 'songRelationsCell', 'label' => t('song.column.relations'), 'sortable' => false],
 	['key' => 'album', 'type' => 'text', 'class' => 'songAlbumCell', 'label' => t('song.column.album')],
 	['key' => 'year', 'type' => 'number', 'class' => 'songYearCell', 'label' => t('song.column.year')],
 	['key' => 'duration', 'type' => 'duration', 'class' => 'songDurationCell', 'label' => t('song.column.duration')],

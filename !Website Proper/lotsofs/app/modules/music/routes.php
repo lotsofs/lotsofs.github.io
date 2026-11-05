@@ -36,4 +36,5 @@ $routes += [
 	"/music/ajax/song-link" => __MODULES__ . "/music/ajax/songLink.php",
 	"/music/ajax/song-year" => __MODULES__ . "/music/ajax/songYear.php",
 	"/music/ajax/song-duration" => __MODULES__ . "/music/ajax/songDuration.php",
+	"/music/ajax/song-relationship" => __MODULES__ . "/music/ajax/songRelationship.php",
 ];

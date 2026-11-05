@@ -56,6 +56,8 @@ return [
 	'addSongs.columnMapping.columnLabel' => 'Column {n}',
 	'addSongs.columnMapping.continue' => 'Continue',
 	'addSongs.columnMapping.needsArtistAndTitle' => 'Pick one column for Artist and one for Title before continuing.',
+	'addSongs.separateAll' => 'Add every song whose title its artist already has as a separate song',
+	'addSongs.separateRelation' => 'Each separate song is the {relation} the song it shares its title with.',
 
 	'ajax.notLoggedIn' => 'You need to be logged in.',
 	'ajax.badCsrf' => 'That page expired, please reload it and try again.',

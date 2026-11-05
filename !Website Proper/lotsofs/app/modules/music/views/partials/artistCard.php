@@ -74,6 +74,7 @@
 		<?php
 			$graphSongs = $artistSongs;
 			$graphScores = $artistSongScores;
+			$graphBorrowed = $artist['songBorrowed'] ?? [];
 			$graphRaters = $artistGraphRaters;
 			$graphColours = $artistRaterColours;
 			$graphSortKey = $artist['graphSort'] ?? '';

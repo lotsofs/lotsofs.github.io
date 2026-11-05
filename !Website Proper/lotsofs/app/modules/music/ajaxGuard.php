@@ -32,6 +32,10 @@ if (!is_array($data)) {
 
 $db = require __MODULES__ . '/music/db.php';
 
+/// As every route does: a tab left open across a deploy polls and writes before anyone loads a page.
+require_once __MODULES__ . '/music/migrate.php';
+runMusicMigrations($db);
+
 require_once __MODULES__ . '/music/auth.php';
 
 function ajaxInt($raw) {

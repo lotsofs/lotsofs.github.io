@@ -145,6 +145,7 @@
 								<td class="songArtistCell" data-field="artist" title="<?= $song['artistValue'] ?>"><span class="songCellText"><?= $song['artistHtml'] ?></span></td>
 								<td class="songTitleCell<?= $song['titleAliasedClass'] ?>" data-field="title" data-canonical-title="<?= $song['canonicalTitleAttr'] ?>"<?= $song['titleTooltipAttr'] ?>><span class="songCellText"><?= $song['titleValue'] ?></span></td>
 								<td class="songAliasesCell" data-field="aliases" title="<?= $song['aliasesValue'] ?>"<?= $song['titlesAttr'] ?>><span class="songCellText"><?= $song['aliasesValue'] ?></span></td>
+								<td class="songRelationsCell" data-field="relations"<?= $song['relationsAttr'] ?>><?= $song['relationsTableHtml'] ?></td>
 								<td class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><span class="songCellText"><?= $song['albumsHtml'] ?></span></td>
 								<td class="songYearCell" data-field="year"><?= $song['displayYearValue'] ?></td>
 								<td class="songDurationCell" data-field="duration"><?= $song['durationValue'] ?></td>
@@ -171,8 +172,8 @@
 										$labels = $raterLabels[$raterId];
 										$rating = $song['ratings'][$raterId];
 									?>
-									<td class="<?= $rating['scoreCellClass'] ?><?= $rating['scoreEmptyClass'] ?><?= $rating['scoreGatedClass'] ?>" data-field="score_<?= $raterId ?>" data-account-id="<?= $raterId ?>"<?= $labels['placeholder'] ?>><?= $rating['scoreGateHtml'] ?><span class="songGateValue"><?= $rating['scoreValue'] ?></span></td>
-									<td class="<?= $rater['noteClass'] ?><?= $rating['noteEmptyClass'] ?><?= $rating['noteGatedClass'] ?>" data-field="note_<?= $raterId ?>" data-account-id="<?= $raterId ?>" data-rater-name="<?= $labels['name'] ?>"<?= $labels['placeholder'] ?><?= $rating['noteTitleAttr'] ?>><?= $rating['noteGateHtml'] ?><span class="ratingNoteText songGateValue"><?= $rating['noteValue'] ?></span></td>
+									<td class="<?= $rating['scoreCellClass'] ?><?= $rating['scoreEmptyClass'] ?><?= $rating['scoreGatedClass'] ?>" data-field="score_<?= $raterId ?>" data-account-id="<?= $raterId ?>"<?= $labels['placeholder'] ?>><?= $rating['scoreGateHtml'] ?><span class="songGateValue"><?= $rating['scoreValue'] ?></span><?= $rating['scoreBorrowedHtml'] ?></td>
+									<td class="<?= $rater['noteClass'] ?><?= $rating['noteEmptyClass'] ?><?= $rating['noteGatedClass'] ?>" data-field="note_<?= $raterId ?>" data-account-id="<?= $raterId ?>" data-rater-name="<?= $labels['name'] ?>"<?= $labels['placeholder'] ?><?= $rating['noteTitleAttr'] ?>><?= $rating['noteGateHtml'] ?><span class="ratingNoteText songGateValue"><?= $rating['noteValue'] ?></span><?= $rating['noteBorrowedHtml'] ?></td>
 								<?php endforeach ?>
 								<?php foreach ($globalData['statColumns'] as $stat): ?>
 									<?php $statCell = $song['statCells'][$stat['key']] ?>
@@ -208,6 +209,7 @@
 	<script id="songAlbumData" type="application/json"><?= json_encode($globalData['albumOptions'], JSON_HEX_TAG) ?></script>
 	<script id="songLinkFieldData" type="application/json"><?= json_encode($globalData['linkFields'], JSON_HEX_TAG) ?></script>
 	<script id="songTrackAliases" type="application/json"><?= json_encode($globalData['trackAliases'], JSON_HEX_TAG) ?></script>
+	<script id="songRelationTypes" type="application/json"><?= json_encode($globalData['relationTypes'], JSON_HEX_TAG) ?></script>
 	<script id="songGateSetting" type="application/json"><?= json_encode($globalData['blindRating']) ?></script>
 	<script id="songToastSeconds" type="application/json"><?= (int)$globalData['toastSeconds'] ?></script>
 	<script id="songAccountId" type="application/json"><?= (int)$globalData['accountId'] ?></script>

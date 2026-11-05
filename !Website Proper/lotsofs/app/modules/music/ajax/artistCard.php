@@ -58,17 +58,25 @@ $artist['albums'] = $db->query("
 	ORDER BY al.release_year, name COLLATE NOCASE
 ", [$artistId])->fetchAll();
 
+/// Effective ratings: a score borrowed from another version counts, and its graph dot is faded.
+require_once __MODULES__ . '/music/ratings.php';
+musicRatingView($db);
+
 $scoresByAccount = [];
 $allScores = [];
 $artist['songScores'] = [];
+$artist['songBorrowed'] = [];
 foreach ($db->query("
-	SELECT acs.account_id, acs.song_id, acs.score
-	FROM account_song acs
+	SELECT acs.account_id, acs.song_id, acs.score, acs.score_borrowed
+	FROM effective_rating acs
 	WHERE acs.score IS NOT NULL
 		AND acs.song_id IN (SELECT song_id FROM song_artist WHERE artist_id = ?)
 ", [$artistId])->fetchAll() as $row) {
 	$scoresByAccount[(int)$row['account_id']][] = (float)$row['score'];
 	$artist['songScores'][(int)$row['song_id']][(int)$row['account_id']] = (float)$row['score'];
+	if ($row['score_borrowed']) {
+		$artist['songBorrowed'][(int)$row['song_id']][(int)$row['account_id']] = true;
+	}
 	$allScores[] = (float)$row['score'];
 }
 
@@ -107,7 +115,7 @@ if ($albumIds) {
 	foreach ($db->query("
 		SELECT at.album_id, acs.account_id, acs.score
 		FROM album_track at
-		JOIN account_song acs ON acs.song_id = at.song_id
+		JOIN effective_rating acs ON acs.song_id = at.song_id
 		WHERE acs.score IS NOT NULL AND at.album_id IN ({$albumPlaceholders})
 	", $albumIds)->fetchAll() as $row) {
 		$albumScores[(int)$row['album_id']][] = (float)$row['score'];

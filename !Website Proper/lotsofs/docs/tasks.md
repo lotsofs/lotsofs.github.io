@@ -102,6 +102,46 @@ Loose ends from that audit. Read in the code.
 
 **Docs.** `music-reference.md` (the `song-edit` row points here); `conventions.md` if the SQL rule changes.
 
+## CHN — Borrowed ratings reach only direct versions
+
+A rater with no rating on a song borrows from the songs a relationship of a lending kind ties it to directly (`song_version` in `ratings.php`). In a chain, a 1998 original, its 2015 remaster and a later remaster of that, the original borrows from the 2015 song only, and the later one's ratings never reach it. Decided for now by the owner (2026-11-05), not a defect. Read in the code.
+
+**Plan.** If wanted, make `song_version` the transitive closure of lending relationships: a recursive CTE (SQLite has had them since 3.8.3, so the host's unknown version is no obstacle), guarding against cycles. Decide whether a farther version should weigh as much in the average as a near one.
+
+**Verify.** A–B–C with only C rated: A shows C's rating, borrowed; the song list, the cards and the poll agree.
+
+**Docs.** `music.md` (Statistics, the borrowed ratings bullet).
+
+## LNK — A relationship change reaches other open pages only on reload
+
+The poll finds changes through `account_song.updated_at`. Linking, unlinking or re-pointing two songs touches no `account_song` row, yet changes what both borrow (`ratings.php`), their statistics, the blind-rating covers and their Related lines. The page that made the change gets all of it back in the `song-relationship` answer; every other open page keeps the old state until it reloads, or until a rating write on one of those songs happens to bring part of it. Read in the code (2026-11-05 review), not reproduced.
+
+**Plan.** Give the poll a second cursor for relationships: a change counter or timestamp the endpoint bumps on add, update and remove (removals have no row left to stamp, so a counter beats a column), and, when it moved, answer with every account's effective ratings, the statistics and the relations of the songs involved, as `song-relationship` already does.
+
+**Verify.** Two sessions on `/music/songs`; linking two songs in one shows the borrowed values, the statistics and the Related lines in the other within a poll tick, and unlinking takes them away.
+
+**Docs.** `music.md` (Shared helpers and live updates; Statistics, the borrowed ratings bullet), `music-reference.md` (`song-rating-poll`).
+
+## TIP — A tooltip outlives the element it belongs to
+
+`public/modules/music/js/tooltip.js` hides its box on a `mouseout` from a `[data-tooltip]` element, and on scroll. An element removed from the page while the cursor is on it sends no `mouseout`, and a `mouseover` on an element without a tooltip returns early, so the box stays until the cursor crosses another tooltip or the page scrolls. Reproduced 2026-11-04 in headless Chrome: the name box's hint ("Write in another name…") stayed after the box was saved and redrawn as a +. Read in the code, not seen: clicking a card editor's × ("Delete this name", "Remove this relationship") removes its row under the cursor the same way, since `#songCardModal` and `#songCards` count plain titles as tooltips.
+
+**Plan.** In the `mouseover` handler, hide the box when the new element has no tooltip (and when its tooltip is empty), rather than returning.
+
+**Verify.** Headless: hover a card editor's × until its tooltip shows, click it, move the cursor a pixel; the box is gone. Hovering from one tooltip to another still swaps the text.
+
+**Docs.** `music.md` (the tooltip bullet) if the rule needs saying.
+
+## TWN — Songs that share a title look alike when picking one
+
+Since 2026-11-04 the import can give an artist two songs with one title (`<New, separate>`), and the 1998 Grim Fandango soundtrack brings 19 such pairs beside the 2015 remaster. Read in the code, not reproduced: the Song step's dropdown labels an existing song by its name alone (`buildSongTable` in `addSongs.js`), so two such songs are two identical options, and a pasted title preselects whichever `aliases.find()` meets first. The album card's song dropdown labels a song `Title — Artist` (`albumSongLabel` in `albumCard.js`), which is just as identical. A re-import of either soundtrack, or adding one of them to an album from its card, can pick the wrong song with nothing on screen to say so. The song card's relationship picker already adds the albums (`relationChoices()` in `songs.js`).
+
+**Plan.** Where two options would read the same, add the song's albums (or its id) to both dropdowns' labels. In the Song step, preselect nothing when a title matches more than one song.
+
+**Verify.** With two songs by one artist sharing a title on different albums, both dropdowns show two different labels, and pasting that title leaves the Song step's choice open.
+
+**Docs.** `music.md` (bulk import), `music-frontend.md`.
+
 ## BND — Bandcamp does not embed
 
 Bandcamp links render as plain links, while Spotify, YouTube and SoundCloud embed. An embed needs the numeric id in Bandcamp's `EmbeddedPlayer` URL, which a normal page URL does not contain, and Bandcamp's oEmbed API answered with a bot-detection page when called from the dev environment. The link-only rendering is read in the code; the oEmbed refusal was seen during development (date not recorded).

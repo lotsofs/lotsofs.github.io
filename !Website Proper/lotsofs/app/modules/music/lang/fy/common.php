@@ -56,6 +56,8 @@ return [
 	'addSongs.columnMapping.columnLabel' => 'Kolom {n}',
 	'addSongs.columnMapping.continue' => 'Trochgean',
 	'addSongs.columnMapping.needsArtistAndTitle' => 'Kies ien kolom foar Artyst en ien foar Titel foardat jo trochgeane.',
+	'addSongs.separateAll' => 'Elk liet dêr\'t de artyst de titel al fan hat as in apart liet tafoegje',
+	'addSongs.separateRelation' => 'Elk apart liet is de {relation} it liet mei deselde titel.',
 
 	'ajax.notLoggedIn' => 'Do moatst oanmeld wêze.',
 	'ajax.badCsrf' => 'Dizze side is ferrûn, laad opnij en besykje it nochris.',

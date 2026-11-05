@@ -31,6 +31,13 @@
 <button id="submitButton" hidden><?= t('artist.submit') ?></button>
 <p id="artistStatusMessage"></p>
 
+<?php [$separateBefore, $separateAfter] = explode('{relation}', t('addSongs.separateRelation'), 2) + ['', ''] ?>
+<div id="songSeparate" hidden>
+	<p><label><input type="checkbox" id="songSeparateAll"> <?= t('addSongs.separateAll') ?></label></p>
+	<p id="songSeparateRelation" hidden>
+		<label><?= htmlspecialchars($separateBefore) ?><select id="songSeparateRelationSelect"></select><?= htmlspecialchars($separateAfter) ?></label>
+	</p>
+</div>
 <table id="songTable" hidden>
 	<thead>
 		<tr>
@@ -80,6 +87,7 @@
 
 <script id="artistNamesData" type="application/json"><?= json_encode($globalData['artistNames']) ?></script>
 <script id="albumNamesData" type="application/json"><?= json_encode($globalData['albumNames']) ?></script>
+<script id="songRelationTypes" type="application/json"><?= json_encode($globalData['relationTypes'], JSON_HEX_TAG) ?></script>
 <script src="<?= asset('/modules/music/js/addSongs.js') ?>"></script>
 
 <?php require(__MODULES__ . '/music/views/partials/foot.php') ?>

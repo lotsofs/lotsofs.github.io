@@ -47,6 +47,7 @@ nav .navLogout button,
 .cardAliasUse,
 .cardAliasDelete,
 .cardAliasRelist,
+.cardRelationRemove,
 .songGateReveal {
 	border: solid 1px #000000;
 	border-radius: 16px;
@@ -57,6 +58,7 @@ nav .navLogout button,
 }
 
 #songListTable .ratingNoteText,
+#songListTable .songInherited,
 #songCards .songLinkChip,
 #songCardModal .songLinkChip,
 .providedName,
@@ -644,6 +646,22 @@ td.albumStatsRatedCell {
 	display: none;
 }
 
+/* A rating borrowed from another version (ratings.php): it counts, but nobody
+   wrote it here, so it is faded. */
+.songInherited {
+	opacity: 0.65;
+	font-style: italic;
+}
+
+/* Shown only beside an empty value, uncovered, and not while the cell is being
+   edited. The same three containers as above, and one class more than the
+   blocks' own .songRatingNoteCell .songInherited, so it wins wherever it sits. */
+#songListTable .songRatingCell:is(.songGated, :not(.songCellEmpty), :has(input, textarea)) .songInherited,
+#songCards .songRatingCell:is(.songGated, :not(.songCellEmpty), :has(input, textarea)) .songInherited,
+#songCardModal .songRatingCell:is(.songGated, :not(.songCellEmpty), :has(input, textarea)) .songInherited {
+	display: none;
+}
+
 #songListTable .songGated .songGateReveal,
 #songCards .songGated .songGateReveal,
 #songCardModal .songGated .songGateReveal {
@@ -719,10 +737,11 @@ td.albumStatsRatedCell {
 	&.songHideId thead .songArtistCell,
 	&.songHideId.songHideArtist thead .songTitleCell,
 	&.songHideId.songHideArtist.songHideTitle thead .songAliasesCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases thead .songAlbumCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum thead .songYearCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear thead .songDurationCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration thead .songLinksCell {
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases thead .songRelationsCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations thead .songAlbumCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum thead .songYearCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum.songHideYear thead .songDurationCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum.songHideYear.songHideDuration thead .songLinksCell {
 		box-shadow: inset 1px 0 0 var(--border), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
@@ -766,10 +785,11 @@ td.albumStatsRatedCell {
 	&.songHideId td.songArtistCell,
 	&.songHideId.songHideArtist td.songTitleCell,
 	&.songHideId.songHideArtist.songHideTitle td.songAliasesCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases td.songAlbumCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum td.songYearCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear td.songDurationCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration td.songLinksCell {
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases td.songRelationsCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations td.songAlbumCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum td.songYearCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum.songHideYear td.songDurationCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideRelations.songHideAlbum.songHideYear.songHideDuration td.songLinksCell {
 		border-left-width: 1px;
 	}
 
@@ -832,6 +852,12 @@ td.albumStatsRatedCell {
 		max-width: 10em;
 	}
 
+	/* A borrowed note clips as a written one does. */
+	.songRatingNoteCell .songInherited {
+		display: block;
+		max-width: 10em;
+	}
+
 	.songCellText {
 		display: block;
 	}
@@ -848,6 +874,14 @@ td.albumStatsRatedCell {
 	.songAliasesCell .songCellText {
 		max-width: 14em;
 		white-space: pre;
+	}
+
+	/* One relationship per line, clipped the same way; each line's title holds it whole. */
+	.songRelationsCell .songRelation {
+		max-width: 18em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.songAlbumCell .songCellText {
@@ -938,6 +972,7 @@ td.albumStatsRatedCell {
 	&.songHideArtist .songArtistCell,
 	&.songHideTitle .songTitleCell,
 	&.songHideAliases .songAliasesCell,
+	&.songHideRelations .songRelationsCell,
 	&.songHideAlbum .songAlbumCell,
 	&.songHideYear .songYearCell,
 	&.songHideDuration .songDurationCell,
@@ -1143,6 +1178,12 @@ td.albumStatsRatedCell {
 		font-style: italic;
 	}
 
+	/* A borrowed rating already fills the cell. */
+	.songMyScoreCell.songInheritedCell.songCellEmpty::after,
+	.songMyNoteCell.songInheritedCell.songCellEmpty::after {
+		content: none;
+	}
+
 	dd.songRatingScoreCell {
 		text-align: left;
 	}
@@ -1226,6 +1267,11 @@ td.albumStatsRatedCell {
 		white-space: pre-line;
 	}
 
+	.songRatingNoteCell .songInherited {
+		display: block;
+		white-space: pre-line;
+	}
+
 	.songMyScoreCell,
 	.songMyNoteCell {
 		border-left: 3px solid var(--mineAccent);
@@ -1287,27 +1333,47 @@ td.albumStatsRatedCell {
 	align-self: flex-start;
 }
 
-/* A card's other names in edit mode (aliasEditor.js), on all three cards. The
-   note about albums still listing a name wraps under its row. */
-.cardAliasList {
+/* A card's other names in edit mode (aliasEditor.js), on all three cards, and
+   the song card's relationships (relationFieldEditor in songs.js). The note about
+   albums still listing a name wraps under its row, as a long song choice does. */
+.cardAliasList,
+.cardRelationList {
 	display: flex;
 	flex-direction: column;
 	gap: 0.3em;
 }
 
-.cardAliasRow {
+.cardAliasRow,
+.cardRelationRow {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.3em 0.4em;
 }
 
+/* A name wraps beside its buttons rather than pushing them onto a line of
+   their own, and a word too long for the room breaks. */
 .cardAliasName {
-	flex: 1 1 auto;
+	flex: 1 1 0;
 	min-width: 0;
+	overflow-wrap: anywhere;
 }
 
-.cardAliasNew {
+/* A relationship's kind and song stack, with its × beside them both, as an
+   artist or album row's × sits beside its select. */
+.cardRelationEditRow {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+
+	.cardRelationRemove {
+		grid-column: 2;
+		grid-row: 1 / span 2;
+	}
+}
+
+.cardAliasNew,
+.cardRelationRow select,
+.cardRelationRow input {
 	flex: 1 1 auto;
 	min-width: 0;
 	font: inherit;
@@ -1320,7 +1386,8 @@ td.albumStatsRatedCell {
 
 .cardAliasUse,
 .cardAliasDelete,
-.cardAliasRelist {
+.cardAliasRelist,
+.cardRelationRemove {
 	flex: 0 0 auto;
 	line-height: 1.2;
 	padding: .2em .6em;
@@ -1597,8 +1664,14 @@ td.albumStatsRatedCell {
 	cursor: pointer;
 }
 
+/* A related song's title is set apart from the words naming the relationship. */
+.songRelationTitle {
+	font-style: italic;
+}
+
 .songAlbumLink,
-.songArtistLink {
+.songArtistLink,
+.songRelationLink {
 	color: inherit;
 	text-decoration: none;
 	border-bottom: 1px dotted var(--border);
@@ -1846,6 +1919,11 @@ td.albumStatsRatedCell {
 	.albumGraphDot {
 		stroke: #000000;
 		stroke-width: 0.8;
+	}
+
+	/* A score borrowed from another version: it counts, but nobody gave it here. */
+	.albumGraphDotBorrowed {
+		opacity: 0.65;
 	}
 
 	/* Invisible but not absent: fill="none" would let the pointer through, so

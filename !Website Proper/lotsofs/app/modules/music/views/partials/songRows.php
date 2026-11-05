@@ -7,6 +7,7 @@ require_once __MODULES__ . '/music/stats.php';
 $artistLabel = htmlspecialchars(t('song.column.artist'));
 $albumLabel = htmlspecialchars(t('song.column.album'));
 $aliasesLabel = htmlspecialchars(t('song.column.aliases'));
+$relationsLabel = htmlspecialchars(t('song.column.relations'));
 $yearLabel = htmlspecialchars(t('song.column.year'));
 $durationLabel = htmlspecialchars(t('song.column.duration'));
 $linksLabel = htmlspecialchars(t('song.column.links'));
@@ -18,6 +19,7 @@ $songLinkFields = $globalData['linkFields'] ?? songLinkFields();
 $songLinksBySong = $globalData['songLinksBySong'] ?? [];
 $listedAsBySong = $globalData['listedAsBySong'] ?? [];
 $namesBySong = $globalData['namesBySong'] ?? [];
+$relationsBySong = $globalData['relationsBySong'] ?? [];
 $albumsBySong = $globalData['albumsBySong'] ?? [];
 $artistsBySong = $globalData['artistsBySong'] ?? [];
 $filterArtist = $globalData['filterArtist'] ?? null;
@@ -101,6 +103,22 @@ foreach ($globalData['songs'] as $song) {
 	$song['titlesAttr'] = array_diff($names, [$canonicalTitle])
 		? ' data-titles="' . htmlspecialchars(json_encode($names)) . '"'
 		: '';
+
+	/* Each line is this song's end of the row and the other song, by id and title,
+	   since two songs may share a title; that part opens its card. The table clips
+	   its lines, so there each one carries its whole text. */
+	$relations = $relationsBySong[(int)$song['id']] ?? [];
+	$song['relationsAttr'] = $relations ? ' data-relations="' . htmlspecialchars(json_encode($relations)) . '"' : '';
+	$song['relationsHtml'] = '';
+	$song['relationsTableHtml'] = '';
+	foreach ($relations as $relation) {
+		$otherId = (int)$relation['song_id'];
+		$line = htmlspecialchars($relation['label']) . ' '
+			. '<a class="songRelationLink" href="/music/songs?songCard=' . $otherId . '" data-song-card-id="' . $otherId . '">'
+			. '<span class="songRelationId">' . $otherId . ':</span> <span class="songRelationTitle">' . htmlspecialchars($relation['title']) . '</span></a></div>';
+		$song['relationsHtml'] .= '<div class="songRelation">' . $line;
+		$song['relationsTableHtml'] .= '<div class="songRelation" title="' . htmlspecialchars($relation['label'] . ' ' . $otherId . ': ' . $relation['title']) . '">' . $line;
+	}
 
 	$song['albumsValue'] = htmlspecialchars($song['albums'] ?? '');
 	$song['artistIdsAttr'] = htmlspecialchars($song['artist_ids'] ?? '');
@@ -227,15 +245,23 @@ foreach ($globalData['songs'] as $song) {
 		$noteGated = $notesGated && $raterId !== $myRaterId && $note !== '';
 		$scoreGated = $scoresGated && $raterId !== $myRaterId && $score !== '';
 
+		/* A value borrowed from another version (ratings.php) counts like this
+		   rater's own, for the statistics above and the gates, but is shown faded
+		   beside an empty value: the editors only ever see what was really written. */
+		$scoreBorrowed = !empty($song['score_borrowed_' . $raterId]);
+		$noteBorrowed = !empty($song['note_borrowed_' . $raterId]);
+
 		$song['ratings'][$raterId] = [
-			'scoreValue' => htmlspecialchars($score),
-			'scoreEmptyClass' => $score === '' ? ' songCellEmpty' : '',
+			'scoreValue' => $scoreBorrowed ? '' : htmlspecialchars($score),
+			'scoreEmptyClass' => ($score === '' || $scoreBorrowed ? ' songCellEmpty' : '') . ($scoreBorrowed ? ' songInheritedCell' : ''),
+			'scoreBorrowedHtml' => $scoreBorrowed ? '<span class="songInherited">' . htmlspecialchars($score) . '</span>' : '',
 			'scoreCellClass' => $scoreGated ? $labels['scoreGatedClass'] : ($rater['scoreClass'] ?? ''),
 			'scoreGatedClass' => $scoreGated ? ' songGated' : '',
 			'scoreGateHtml' => $scoreGated ? $scorePillNarrow : '',
 			'scoreCardGateHtml' => $scoreGated ? $scorePillWide : '',
-			'noteValue' => htmlspecialchars($note),
-			'noteEmptyClass' => $note === '' ? ' songCellEmpty' : '',
+			'noteValue' => $noteBorrowed ? '' : htmlspecialchars($note),
+			'noteEmptyClass' => ($note === '' || $noteBorrowed ? ' songCellEmpty' : '') . ($noteBorrowed ? ' songInheritedCell' : ''),
+			'noteBorrowedHtml' => $noteBorrowed ? '<span class="songInherited">' . htmlspecialchars($note) . '</span>' : '',
 			'noteGatedClass' => $noteGated ? ' songGated' : '',
 			'noteGateHtml' => $noteGated ? $notePill : '',
 			/// Withheld with the text: the tooltip would hand it straight back.

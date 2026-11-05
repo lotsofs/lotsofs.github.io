@@ -113,6 +113,7 @@
 		<?php
 			$graphSongs = $albumTracks;
 			$graphScores = $albumTrackScores;
+			$graphBorrowed = $album['trackBorrowed'] ?? [];
 			$graphRaters = $albumGraphRaters;
 			$graphColours = $albumRaterColours;
 			$graphSortKey = $album['graphSort'] ?? '';
