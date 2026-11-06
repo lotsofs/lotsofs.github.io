@@ -123,11 +123,10 @@
 											<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
 										</th>
 									<?php else: ?>
-										<th rowspan="2" class="<?= $column['class'] ?>"><?= htmlspecialchars($column['label']) ?></th>
+										<th rowspan="2" class="<?= $column['class'] ?>"<?= isset($column['name']) ? ' title="' . htmlspecialchars($column['name']) . '"' : '' ?>><?= htmlspecialchars($column['label']) ?></th>
 									<?php endif ?>
 								<?php endif ?>
 							<?php endforeach ?>
-							<th rowspan="2" class="songLinksCell"><?= $linksLabel ?></th>
 							<?php foreach ($globalData['columns'] as $column): ?>
 								<?php if (isset($column['group']) && ($column['groupStart'] ?? false)): ?>
 									<th colspan="2" class="<?= $column['groupClass'] ?>"><?= htmlspecialchars($column['groupLabel']) ?></th>
@@ -154,11 +153,11 @@
 					</thead>
 					<tbody>
 						<?php foreach ($songRows as $song): ?>
-							<tr data-song-id="<?= (int)$song['id'] ?>" data-artist-id="<?= (int)$song['artist_id'] ?>" data-artist-ids="<?= $song['artistIdsAttr'] ?>" data-album-ids="<?= $song['albumIdsAttr'] ?>"<?= $song['hiddenAttr'] ?>>
+							<tr data-song-id="<?= (int)$song['id'] ?>" data-artist-id="<?= (int)$song['artist_id'] ?>" data-artist-ids="<?= $song['artistIdsAttr'] ?>" data-album-ids="<?= $song['albumIdsAttr'] ?>"<?= $song['relationsAttr'] ?><?= $song['hiddenAttr'] ?>>
 								<td class="songIdCell" data-field="id"><?= htmlspecialchars($song['id']) ?></td>
 								<td class="songArtistCell" data-field="artist" title="<?= $song['artistValue'] ?>"><span class="songCellText"><?= $song['artistHtml'] ?></span></td>
 								<td class="songTitleCell<?= $song['titleAliasedClass'] ?>" data-field="title" data-canonical-title="<?= $song['canonicalTitleAttr'] ?>"<?= $song['titleTooltipAttr'] ?>><span class="songCellText"><?= $song['titleValue'] ?></span></td>
-								<td class="songAliasesCell"><div class="songAliasLines" data-field="aliases"<?= $song['titlesAttr'] ?>><?= $song['aliasesTableHtml'] ?></div><div class="songRelationLines" data-field="relations"<?= $song['relationsAttr'] ?>><?= $song['relationsTableHtml'] ?></div></td>
+								<td class="songAliasesCell" data-field="aliases"<?= $song['titlesAttr'] ?>><?= $song['aliasesTableHtml'] ?></td>
 								<td class="songAlbumCell" data-field="album" title="<?= $song['albumsValue'] ?>"><span class="songCellText"><?= $song['albumsHtml'] ?></span></td>
 								<td class="songYearCell" data-field="year"><?= $song['displayYearValue'] ?></td>
 								<td class="songDurationCell" data-field="duration"><?= $song['durationValue'] ?></td>
@@ -179,6 +178,9 @@
 										<?php endif ?>
 									<?php endforeach ?>
 								</td>
+								<?php foreach ($globalData['relationColumns'] as $column): ?>
+									<td class="<?= $column['class'] ?>" data-field="<?= $column['key'] ?>"><?= $song['relationCells'][$column['key']] ?></td>
+								<?php endforeach ?>
 								<?php foreach ($globalData['raters'] as $rater): ?>
 									<?php
 										$raterId = (int)$rater['id'];

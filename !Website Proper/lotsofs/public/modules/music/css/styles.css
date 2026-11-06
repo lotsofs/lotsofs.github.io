@@ -757,7 +757,9 @@ td.albumStatsRatedCell {
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases thead .songAlbumCell,
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum thead .songYearCell,
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear thead .songDurationCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration thead .songLinksCell {
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration thead .songLinksCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks thead .songRemasteredByCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy thead .songRemasterOfCell {
 		box-shadow: inset 1px 0 0 var(--border), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
@@ -804,7 +806,9 @@ td.albumStatsRatedCell {
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases td.songAlbumCell,
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum td.songYearCell,
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear td.songDurationCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration td.songLinksCell {
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration td.songLinksCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks td.songRemasteredByCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy td.songRemasterOfCell {
 		border-left-width: 1px;
 	}
 
@@ -906,14 +910,22 @@ td.albumStatsRatedCell {
 		min-width: var(--songWidthAliases, auto);
 	}
 
-	/* Other names, then relationships, one per line, each clipped rather than
-	   wrapped; each line's title holds it whole. Narrower than the two columns
-	   this was, wider than either. */
-	.songAliasesCell .songAlias,
-	.songAliasesCell .songRelation {
-		max-width: var(--songWidthAliases, 22em);
+	/* The song's other names, then its versions', one per line, each clipped
+	   rather than wrapped; each line's title holds it whole. */
+	.songAliasesCell .songAlias {
+		max-width: var(--songWidthAliases, 14em);
 		overflow: hidden;
 		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	/* The other songs' ids, after Links, as wide as a statistic: the short
+	   header wraps inside that width, the ids widen it if they must. */
+	.songRelationCell {
+		width: 2.6em;
+	}
+
+	td.songRelationCell {
 		white-space: nowrap;
 	}
 
@@ -1036,6 +1048,8 @@ td.albumStatsRatedCell {
 	&.songHideYear .songYearCell,
 	&.songHideDuration .songDurationCell,
 	&.songHideLinks .songLinksCell,
+	&.songHideRemasteredBy .songRemasteredByCell,
+	&.songHideRemasterOf .songRemasterOfCell,
 	&.songHideAverage .songStatAverageCell,
 	&.songHideDeviation .songStatDeviationCell,
 	&.songHideMedian .songStatMedianCell,
@@ -1790,9 +1804,8 @@ html.songColumnResizing {
 	cursor: pointer;
 }
 
-/* A related song's title, or another name's, is set apart from the words before it. */
-.songRelationTitle,
-.songAliasTitle {
+/* A related song's title is set apart from the words before it. */
+.songRelationTitle {
 	font-style: italic;
 }
 
@@ -1807,6 +1820,21 @@ html.songColumnResizing {
 	&:hover {
 		border-bottom-color: currentColor;
 	}
+}
+
+/* A version under another name, with a tooltip saying which: in the song
+   table's Other names, and an id in its columns, where the line is brighter
+   than a link's own. After the links, which it outranks by order alone. */
+.songVersionHint {
+	font-style: italic;
+	border-bottom: 1px dotted currentColor;
+}
+
+/* A clipped line would cut a border off below it, so a name is underlined instead. */
+.songAlias .songVersionHint {
+	border-bottom: none;
+	text-decoration: underline dotted;
+	text-underline-offset: 0.15em;
 }
 
 /* Above the song card modal rather than beside it: an album card is opened

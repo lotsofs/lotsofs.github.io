@@ -9,7 +9,13 @@
 return [
 	[
 		'date' => null,
-		'changes' => [],
+		'changes' => [
+			[
+				'en' => 'Other names & versions is split into Other names, which also lists a version\'s names, and Remastered by and Remaster of after Links.',
+				'fy' => 'Oare nammen & ferzjes is splitst yn Oare nammen, dy\'t ek de nammen fan in oare ferzje lit sjen, en Remastere as en Remaster fan nei Keppelings.',
+				'de' => '„Andere Namen & Fassungen“ ist aufgeteilt in „Andere Namen“, das auch die Namen einer anderen Fassung zeigt, sowie „Remastert als“ und „Remaster von“ nach „Links“.',
+			],
+		],
 	],
 	[
 		'date' => '2026-11-05',

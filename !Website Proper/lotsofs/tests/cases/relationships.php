@@ -64,10 +64,11 @@ return [
 
 		assertTrue(strpos(songsCardFor($body, $loner), 'songRelationsCell') === false, 'a song with none has no row');
 
-		/// The table lists them in the Other names & versions column, in the half after the other names.
-		$tableHalf = fn($songId) => preg_match('/<div class="songRelationLines" data-field="relations"[^>]*>.*?<\/td>/s', songsRowFor($body, $songId), $match) ? $match[0] : '';
-		assertContains('<div class="songRelation" title="original version of ' . $remaster . ': Relation Card Remaster">original version of <a class="songRelationLink" href="/music/songs?songCard=' . $remaster . '" data-song-card-id="' . $remaster . '">', $tableHalf($original), 'the table has the line, its whole text in the title');
-		assertSame('<div class="songRelationLines" data-field="relations"></div></td>', $tableHalf($loner), 'and a song with none has an empty half');
+		/// The table lists the other song's id in each end's column, and the row carries the list.
+		assertContains('<a class="songRelationLink songVersionHint" href="/music/songs?songCard=' . $remaster . '" data-song-card-id="' . $remaster . '" title="as Relation Card Remaster">' . $remaster . '</a>', songsFieldCell(songsRowFor($body, $original), 'remasteredBy'), 'the table has the remaster under Remastered by');
+		assertContains('data-song-card-id="' . $original . '" title="as Relation Card Original">' . $original . '</a>', songsFieldCell(songsRowFor($body, $remaster), 'remasterOf'), 'and the original under Remaster of');
+		assertContains(' data-relations="', substr(songsRowFor($body, $original), 0, strpos(songsRowFor($body, $original), '>')), 'the row carries its relationships for the page');
+		assertTrue(strpos(substr(songsRowFor($body, $loner), 0, strpos(songsRowFor($body, $loner), '>')), 'data-relations') === false, 'and a song with none carries nothing');
 	},
 
 	'a relationship can be turned round in place' => function ($ctx) {

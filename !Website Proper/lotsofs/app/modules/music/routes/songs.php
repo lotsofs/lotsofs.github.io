@@ -326,7 +326,31 @@ $columns = [
 	['key' => 'album', 'type' => 'text', 'class' => 'songAlbumCell', 'label' => t('song.column.album')],
 	['key' => 'year', 'type' => 'number', 'class' => 'songYearCell', 'label' => t('song.column.year')],
 	['key' => 'duration', 'type' => 'duration', 'class' => 'songDurationCell', 'label' => t('song.column.duration')],
+	['key' => 'links', 'type' => 'text', 'class' => 'songLinksCell', 'label' => t('song.column.links'), 'sortable' => false],
 ];
+
+/// Each relationship type's id columns, the end listing its derivatives first.
+$relationColumns = [];
+foreach (musicSongRelationTypes() as $type => $spec) {
+	foreach (['target', 'variant'] as $role) {
+		if (isset($spec['columns'][$role])) {
+			$key = $spec['columns'][$role]['key'];
+			$relationColumns[] = [
+				'key' => $key,
+				'type' => 'number',
+				'class' => 'songRelationCell song' . ucfirst($key) . 'Cell',
+				'label' => $spec['columns'][$role]['label'],
+				'name' => $spec['columns'][$role]['name'],
+				'sortable' => false,
+				'relationType' => $type,
+				'relationRole' => $role,
+			];
+		}
+	}
+}
+
+$columns = array_merge($columns, $relationColumns);
+$globalData['relationColumns'] = $relationColumns;
 
 foreach ($raters as $index => $rater) {
 	$id = (int)$rater['id'];
@@ -385,7 +409,8 @@ $globalData['raters'] = $raters;
 $globalData['accountId'] = $accountId;
 
 /// The column picker, in table order: the fixed columns, each rater, the statistics.
-$columnLabels = array_column($columns, 'label', 'key') + ['links' => t('song.column.links')];
+/// A column headed by a short label is named in full.
+$columnLabels = array_map(fn($column) => $column['name'] ?? $column['label'], array_column($columns, null, 'key'));
 
 $columnPicker = ['columns' => [], 'raters' => [], 'stats' => []];
 foreach (MUSIC_SONG_COLUMNS as $key) {

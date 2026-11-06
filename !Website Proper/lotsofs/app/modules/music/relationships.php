@@ -4,6 +4,9 @@
 /// derivative, the target the original. A row's relationship_type is one of these keys.
 /// `inherits`: each song lends its ratings to the other where that one has none (ratings.php).
 /// `variantNoun`/`targetNoun`: each end on its own, for the song list's "You scored the remastered version".
+/// `columns`: the song list's id columns, keyed by the end whose row they are on, each headed by a
+/// short `label` and named in full (`name`) in the picker and the header's tooltip; their keys are
+/// also in MUSIC_SONG_COLUMNS and the stylesheet's left-edge chain and hide list.
 function musicSongRelationTypes() {
 	return [
 		'remaster' => [
@@ -12,6 +15,10 @@ function musicSongRelationTypes() {
 			'variantNoun' => t('relation.remasteredVersion'),
 			'targetNoun' => t('relation.originalVersion'),
 			'inherits' => true,
+			'columns' => [
+				'target' => ['key' => 'remasteredBy', 'label' => t('song.column.remasteredByShort'), 'name' => t('song.column.remasteredBy')],
+				'variant' => ['key' => 'remasterOf', 'label' => t('song.column.remasterOfShort'), 'name' => t('song.column.remasterOf')],
+			],
 		],
 	];
 }

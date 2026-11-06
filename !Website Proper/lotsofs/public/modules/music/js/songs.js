@@ -18,6 +18,9 @@ const songAlbumData = JSON.parse(document.getElementById("songAlbumData").textCo
 const songLinkFieldData = JSON.parse(document.getElementById("songLinkFieldData").textContent);
 const songTrackAliases = JSON.parse(document.getElementById("songTrackAliases").textContent);
 const songRelationTypes = JSON.parse(document.getElementById("songRelationTypes").textContent);
+/// The table's id columns, each a type's end: [{key, type, role}].
+const SONG_RELATION_COLUMNS = songRelationTypes.flatMap(type => Object.entries(type.columns || {})
+	.map(([role, column]) => ({ key: column.key, type: type.type, role })));
 const songCardModal = document.getElementById("songCardModal");
 const songCardModalBody = document.getElementById("songCardModalBody");
 const songCardModalClose = document.getElementById("songCardModalClose");
@@ -764,6 +767,8 @@ const aliasFieldEditor = {
 					applySongTitle(pair.tr);
 					applySongTitle(pair.card);
 				}
+				/// Its versions list its names too.
+				refreshVersionCells(songId);
 
 				if (card.dataset.editing === "1") {
 					aliasFieldEditor.enter(card);
@@ -823,15 +828,118 @@ function relationLink(relation) {
 	return link;
 }
 
-/// One line of a song's relationships. The table clips its lines, so there each carries its whole text.
-function relationLine(relation, withTitle) {
+/// One line of a card's relationships.
+function relationLine(relation) {
 	const line = document.createElement("div");
 	line.className = "songRelation";
 	line.append(relation.label + " ", relationLink(relation));
-	if (withTitle) {
-		line.title = relation.label + " " + Number(relation.song_id) + ": " + relation.title;
-	}
 	return line;
+}
+
+/// A song's relationships from its own end, off its table row.
+function songRelations(songId) {
+	const pair = rowsBySongId.get(String(songId));
+	return JSON.parse((pair && pair.tr.dataset.relations) || "[]");
+}
+
+/// Every name a song goes by, current first, off its table row.
+function songNames(songId) {
+	const pair = rowsBySongId.get(String(songId));
+	if (!pair) {
+		return [];
+	}
+
+	const cell = fieldCell(pair.tr, "aliases");
+	if (cell && "titles" in cell.dataset) {
+		return JSON.parse(cell.dataset.titles);
+	}
+
+	const title = fieldCell(pair.tr, "title").dataset.canonicalTitle;
+	return title ? [title] : [];
+}
+
+/* Every name the song's versions go by that it does not, once each, with which
+   versions go by it, as songRows.php lists them. */
+function versionNames(songId, own) {
+	const found = [];
+
+	songRelations(songId).forEach(relation => {
+		const type = songRelationTypes.find(candidate => candidate.type === relation.type);
+		const otherEnd = relation.role === "variant" ? "target" : "variant";
+		const which = t("song.list.versionName", { version: type ? type[otherEnd + "Noun"] : relation.type, id: Number(relation.song_id) });
+
+		songNames(relation.song_id).forEach(name => {
+			if (own.includes(name)) {
+				return;
+			}
+			const entry = found.find(candidate => candidate.name === name);
+			if (entry) {
+				entry.which.push(which);
+			}
+			else {
+				found.push({ name, which: [which] });
+			}
+		});
+	});
+
+	return found;
+}
+
+/* One id in a row's id columns, opening that song's card. One called otherwise
+   is marked, with its title as the tooltip, as songRows.php writes it; the title
+   is read off that song's row, so a rename shows at once. */
+function relationNumber(relation, ownTitle) {
+	const other = rowsBySongId.get(String(relation.song_id));
+	const title = other ? fieldCell(other.tr, "title").dataset.canonicalTitle : relation.title;
+
+	const link = document.createElement("a");
+	link.className = "songRelationLink";
+	link.href = "/music/songs?songCard=" + Number(relation.song_id);
+	link.dataset.songCardId = String(relation.song_id);
+	link.textContent = String(Number(relation.song_id));
+
+	if (title !== ownTitle) {
+		link.classList.add("songVersionHint");
+		link.title = t("song.list.versionAs", { title });
+	}
+	return link;
+}
+
+/// A row's id columns, lowest id first.
+function applyRelationCells(tr) {
+	const ownTitle = fieldCell(tr, "title").dataset.canonicalTitle;
+	const relations = songRelations(tr.dataset.songId);
+
+	SONG_RELATION_COLUMNS.forEach(column => {
+		const cell = fieldCell(tr, column.key);
+		if (!cell) {
+			return;
+		}
+
+		cell.textContent = "";
+		relations
+			.filter(relation => relation.type === column.type && relation.role === column.role)
+			.sort((a, b) => a.song_id - b.song_id)
+			.forEach((relation, index) => {
+				if (index > 0) {
+					cell.append(", ");
+				}
+				cell.appendChild(relationNumber(relation, ownTitle));
+			});
+	});
+}
+
+/* A song's Other names and ids in the table, and those of every song it relates
+   to, whose rows list its names and compare its title. */
+function refreshVersionCells(songId) {
+	const ids = new Set([String(songId), ...songRelations(songId).map(relation => String(relation.song_id))]);
+	ids.forEach(id => {
+		const pair = rowsBySongId.get(id);
+		if (pair) {
+			applyAliasCell(pair.tr);
+			applyRelationCells(pair.tr);
+		}
+	});
 }
 
 const SONG_RELATION_CHOICES_ID = "songRelationChoices";
@@ -906,25 +1014,24 @@ const relationFieldEditor = {
 		}
 		return cell;
 	},
-	/// The lines, in a card or a table row. The table keeps its cell when there are none.
-	show(container) {
-		const cell = fieldCell(container, "relations");
+	/// The card's lines.
+	show(card) {
+		const cell = fieldCell(card, "relations");
 		if (!cell) {
 			return;
 		}
 
 		const relations = JSON.parse(cell.dataset.relations || "[]");
-		const inTable = container.tagName === "TR";
 
-		/// As the server renders it: no card row for a song with no relationship.
-		if (relations.length === 0 && !inTable) {
+		/// As the server renders it: no row for a song with no relationship.
+		if (relations.length === 0) {
 			cell.previousElementSibling.remove();
 			cell.remove();
 			return;
 		}
 
 		cell.textContent = "";
-		relations.forEach(relation => cell.appendChild(relationLine(relation, inTable)));
+		relations.forEach(relation => cell.appendChild(relationLine(relation)));
 	},
 	/// Every song the answer names, row and card, since a relationship shows at both ends.
 	apply(relationsBySong) {
@@ -935,8 +1042,9 @@ const relationFieldEditor = {
 			}
 
 			const json = JSON.stringify(relations);
-			fieldCell(pair.tr, "relations").dataset.relations = json;
-			relationFieldEditor.show(pair.tr);
+			pair.tr.dataset.relations = json;
+			applyAliasCell(pair.tr);
+			applyRelationCells(pair.tr);
 
 			if (relations.length === 0 && !fieldCell(pair.card, "relations")) {
 				return;
@@ -1465,36 +1573,48 @@ function applySongTitle(container) {
 	applyAliasCell(container);
 }
 
-/// One of a song's other names in the table, a line like a relationship's, carrying its whole text.
+/// One of a song's other names in the table, carrying its whole text, since lines clip.
 function aliasLine(name) {
-	const label = t("song.list.alternativeName") + ": ";
-
-	const title = document.createElement("span");
-	title.className = "songAliasTitle";
-	title.textContent = name;
-
 	const line = document.createElement("div");
 	line.className = "songAlias";
-	line.title = label + name;
-	line.append(label, title);
+	line.title = name;
+	line.textContent = name;
 	return line;
 }
 
-/// Every name the song has but the one its title cell shows: a line each in the table, one per line on the card.
+/// A name only the song's versions go by, its tooltip saying which, as songRows.php writes it.
+function versionNameLine(name, which) {
+	const hint = document.createElement("span");
+	hint.className = "songVersionHint";
+	hint.textContent = name;
+
+	const line = document.createElement("div");
+	line.className = "songAlias";
+	line.title = [name, ...which].join("\n");
+	line.appendChild(hint);
+	return line;
+}
+
+/* Every name the song has but the one its title cell shows: a line each in the
+   table, then its versions' names, and one per line on the card, which lists
+   only its own. */
 function applyAliasCell(container) {
 	const cell = fieldCell(container, "aliases");
+	const inTable = container.tagName === "TR";
 
 	/// Not while the card's name editor is in it: that redraws itself.
-	if (!cell || !("titles" in cell.dataset) || cell.querySelector(".cardAliasList")) {
+	if (!cell || (!inTable && !("titles" in cell.dataset)) || cell.querySelector(".cardAliasList")) {
 		return;
 	}
 
 	const shown = cellText(fieldCell(container, "title"));
-	const names = JSON.parse(cell.dataset.titles).filter(name => name !== shown);
+	const own = inTable ? songNames(container.dataset.songId) : JSON.parse(cell.dataset.titles);
+	const names = own.filter(name => name !== shown);
 
-	if (container.tagName === "TR") {
+	if (inTable) {
 		cell.textContent = "";
 		names.forEach(name => cell.appendChild(aliasLine(name)));
+		versionNames(container.dataset.songId, own).forEach(entry => cell.appendChild(versionNameLine(entry.name, entry.which)));
 	}
 	else {
 		cell.textContent = names.join("\n");
@@ -1942,12 +2062,10 @@ const SONG_LENDING_TYPES = new Set(songRelationTypes.filter(type => type.inherit
 
 /// The songs a song borrows ratings from, and lends them to: its relationships of a lending kind, once each.
 function lendingVersions(songId) {
-	const pair = rowsBySongId.get(String(songId));
-	const cell = pair && fieldCell(pair.tr, "relations");
 	const seen = new Set();
 	const versions = [];
 
-	JSON.parse((cell && cell.dataset.relations) || "[]").forEach(relation => {
+	songRelations(songId).forEach(relation => {
 		if (SONG_LENDING_TYPES.has(relation.type) && !seen.has(relation.song_id)) {
 			seen.add(relation.song_id);
 			versions.push(relation);
@@ -2166,17 +2284,16 @@ function applyRenamedTitles(songId, title, titles) {
 		}
 	});
 
+	/// The table's cell even for a song that had one name; the card has the row only when it had more.
 	syncField(songId, "aliases", cell => {
-		if ("titles" in cell.dataset) {
-			cell.dataset.titles = JSON.stringify(titles);
-		}
+		cell.dataset.titles = JSON.stringify(titles);
 	});
 
 	const pair = rowsBySongId.get(String(songId));
 	if (pair) {
-		applyAliasCell(pair.tr);
 		applyAliasCell(pair.card);
 	}
+	refreshVersionCells(songId);
 }
 
 function editableCell(cell) {

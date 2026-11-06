@@ -1,8 +1,8 @@
 <?php
 
-/* The song list's column picker and its Other names & versions column. The
-   picker's tests use accounts of their own, so test_runner's table is left as
-   every later case file expects it. */
+/* The song list's column picker, its Other names column and its id columns.
+   The picker's tests use accounts of their own, so test_runner's table is left
+   as every later case file expects it. */
 
 const COLUMNS_ENDPOINT = '/music/ajax/song-columns';
 
@@ -68,9 +68,9 @@ function columnsCellTitles($cell) {
 		: null;
 }
 
-/// A row's Other names & versions cell, whole.
+/// A row's Other names cell, whole.
 function columnsNamesCell($row) {
-	return preg_match('/<td class="songAliasesCell">.*?<\/td>/s', (string)$row, $match) ? $match[0] : '';
+	return preg_match('/<td class="songAliasesCell" data-field="aliases"[^>]*>.*?<\/td>/s', (string)$row, $match) ? $match[0] : '';
 }
 
 /// Each other-name line of that cell as it reads.
@@ -79,13 +79,42 @@ function columnsAliasLines($cell) {
 	return array_map(fn($line) => html_entity_decode(strip_tags($line), ENT_QUOTES), $matches[1]);
 }
 
+/// Each line of that cell's tooltip, the version names' as name => lines.
+function columnsVersionTooltips($cell) {
+	preg_match_all('/<div class="songAlias" title="([^"]*)"><span class="songVersionHint">/', $cell, $matches);
+
+	$tooltips = [];
+	foreach ($matches[1] as $title) {
+		$lines = explode("\n", html_entity_decode($title, ENT_QUOTES));
+		$tooltips[array_shift($lines)] = $lines;
+	}
+	return $tooltips;
+}
+
+/// A row's id cell, whole.
+function columnsRelationCell($row, $key) {
+	return preg_match('/<td class="songRelationCell[^"]*" data-field="' . $key . '">.*?<\/td>/s', (string)$row, $match) ? $match[0] : '';
+}
+
+/// A separate song under a title, the remaster of another.
+function columnsRemaster($ctx, $artistId, $title, $originalId) {
+	return (int)$ctx->post('/music/ajax/song', [[
+		'artist_id' => $artistId,
+		'title' => $title,
+		'song_id' => 'separate',
+		'related_song_id' => $originalId,
+		'relationship_type' => 'remaster',
+		'relationship_role' => 'variant',
+	]])['json'][0]['song_id'];
+}
+
 return [
 
-	'a new account sees every column but Other names & versions' => function ($ctx) {
+	'a new account sees every column but Other names' => function ($ctx) {
 		$body = columnsPage($ctx, 'columns_fresh');
 		$me = columnsAccountId($ctx, 'columns_fresh');
 
-		assertSame(['songHideAliases'], columnsTableHides($body), 'only Other names & versions starts hidden');
+		assertSame(['songHideAliases'], columnsTableHides($body), 'only Other names starts hidden');
 
 		$boxes = columnsPickerBoxes($body);
 		$raters = [];
@@ -95,14 +124,14 @@ return [
 
 		assertSame(
 			array_merge(
-				['id', 'artist', 'title', 'aliases', 'album', 'year', 'duration', 'links'],
+				['id', 'artist', 'title', 'aliases', 'album', 'year', 'duration', 'links', 'remasteredBy', 'remasterOf'],
 				$raters,
 				['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated']
 			),
 			array_keys($boxes),
 			'the picker lists the fixed columns, every rater with you first, then the statistics'
 		);
-		assertSame(false, $boxes['aliases'], 'Other names & versions is unticked');
+		assertSame(false, $boxes['aliases'], 'Other names is unticked');
 		assertSame([], array_keys(array_filter($boxes, fn($ticked, $key) => !$ticked && $key !== 'aliases', ARRAY_FILTER_USE_BOTH)), 'and everything else ticked');
 
 		assertContains('<summary class="songColumnPickerButton">Columns</summary>', $body, 'the picker is a button labelled Columns');
@@ -121,7 +150,7 @@ return [
 		assertSame(['album' => 0], columnsChoiceRows($ctx, 'columns_picker'), 'and stored as one row');
 
 		$body = $ctx->get('/music/songs')['body'];
-		assertSame(['songHideAliases', 'songHideAlbum'], columnsTableHides($body), 'the table hides it');
+		assertSame(['songHideAliases', 'songHideAlbum'], columnsTableHides($body), 'the table hides it, in table order');
 		assertSame(false, columnsPickerBoxes($body)['album'], 'and its box is unticked');
 
 		$ctx->post(COLUMNS_ENDPOINT, ['column' => 'album', 'shown' => true]);
@@ -131,7 +160,7 @@ return [
 		$ctx->post(COLUMNS_ENDPOINT, ['column' => "rater_{$other}", 'shown' => false]);
 
 		$body = $ctx->get('/music/songs')['body'];
-		assertSame(["songHideRater{$other}"], columnsTableHides($body), 'Other names & versions shows once ticked, and a rater hides');
+		assertSame(["songHideRater{$other}"], columnsTableHides($body), 'Other names shows once ticked, and a rater hides');
 		assertSame(true, columnsPickerBoxes($body)['aliases'], 'with its box ticked');
 		assertSame(['album' => 1, 'aliases' => 1, "rater_{$other}" => 0], columnsChoiceRows($ctx, 'columns_picker'), 'each key is a row of its own');
 
@@ -178,7 +207,7 @@ return [
 		$fallbacks = [
 			'--songWidthArtist' => '14em',
 			'--songWidthTitle' => '14em',
-			'--songWidthAliases' => '22em',
+			'--songWidthAliases' => '14em',
 			'--songWidthAlbum' => '18em',
 			'--songNoteWidth' => '10em',
 		];
@@ -188,7 +217,7 @@ return [
 		assertContains('width: var(--songNoteWidth, 12em);', $css, 'and a note cell is 12em wide');
 	},
 
-	'Other names & versions lists every name but the one the title shows, a line each' => function ($ctx) {
+	'Other names lists every name but the one the title shows, a line each' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
 		$artistId = $ctx->makeArtist('Known As Artist');
@@ -214,10 +243,9 @@ return [
 		$body = $ctx->get("/music/songs?artist={$artistId}")['body'];
 		$cell = columnsNamesCell(songsRowFor($body, $songId));
 
-		assertSame(['alternative name: Known Alternate Take', 'alternative name: Known Sleeve Version'], columnsAliasLines($cell), 'the other names, a line each');
-		assertContains('<div class="songAlias" title="alternative name: Known Alternate Take">alternative name: <span class="songAliasTitle">Known Alternate Take</span></div>', $cell, 'the name set apart, and the whole line in its tooltip');
+		assertSame(['Known Alternate Take', 'Known Sleeve Version'], columnsAliasLines($cell), 'the other names, a line each');
+		assertContains('<div class="songAlias" title="Known Alternate Take">Known Alternate Take</div>', $cell, 'the name alone, whole in its tooltip');
 		assertSame(['Known Studio Version', 'Known Alternate Take', 'Known Sleeve Version'], columnsCellTitles($cell), 'every name travels with the cell, the current one first');
-		assertTrue(strpos($cell, 'class="songAliasLines" data-field="aliases"') < strpos($cell, 'class="songRelationLines" data-field="relations"'), 'above the relationships, each half under its own field');
 
 		$card = songsCardFor($body, $songId);
 		$cardCell = songsFieldCell($card, 'aliases');
@@ -225,16 +253,114 @@ return [
 		assertTrue(strpos($card, 'data-field="aliases"') < strpos($card, 'data-field="album"'), 'before the album, as the table has them');
 
 		$retitled = columnsNamesCell(songsRowFor($ctx->get("/music/songs?artist={$artistId}&album={$odd}")['body'], $songId));
-		assertSame(['alternative name: Known Studio Version', 'alternative name: Known Alternate Take'], columnsAliasLines($retitled), 'under the album\'s name for it, the real title is listed');
+		assertSame(['Known Studio Version', 'Known Alternate Take'], columnsAliasLines($retitled), 'under the album\'s name for it, the real title is listed');
 
 		$alone = columnsNamesCell(songsRowFor($body, $single));
-		assertContains('<div class="songAliasLines" data-field="aliases"></div><div class="songRelationLines" data-field="relations"></div>', $alone, 'a song with one name and no relationship has an empty cell');
+		assertSame('<td class="songAliasesCell" data-field="aliases"></td>', $alone, 'a song with one name and no versions has an empty cell');
 		assertSame(null, columnsCellTitles($alone), 'with no names for the script');
 		assertSame('', songsFieldCell(songsCardFor($body, $single), 'aliases'), 'and no row on its card');
 
 		assertTrue(strpos($body, 'data-sort-key="aliases"') === false, 'the column does not sort');
-		assertContains('<th rowspan="2" class="songAliasesCell">Other names &amp; versions</th>', $body, 'and its header is plain text, like Links');
-		assertTrue(strpos($body, '<th rowspan="2" class="songRelationsCell">') === false, 'and there is no Related column of its own');
+		assertContains('<th rowspan="2" class="songAliasesCell">Other names</th>', $body, 'and its header is plain text, like Links');
+		assertTrue(strpos($body, '<th rowspan="2" class="songRelationsCell">') === false, 'and there is no Related column');
+	},
+
+	'Other names sits between Title and Album, and the id columns between Links and the raters' => function ($ctx) {
+		$body = columnsPage($ctx, 'columns_order');
+
+		$headers = array_map(fn($class) => strpos($body, '<th rowspan="2" class="' . $class), ['songTitleCell', 'songAliasesCell', 'songAlbumCell', 'songLinksCell', 'songRelationCell songRemasteredByCell', 'songRelationCell songRemasterOfCell']);
+		$headers[] = strpos($body, 'class="songRaterGroup');
+		assertTrue(!in_array(false, $headers, true), 'every header is there');
+		assertSame($headers, array_values(array_unique($headers)), 'once each');
+		$sorted = $headers;
+		sort($sorted);
+		assertSame($sorted, $headers, 'Title, Other names, Album, then Links, Remastered by, Remaster of and the raters');
+		assertContains('<th rowspan="2" class="songRelationCell songRemasteredByCell" title="Remastered by">Rem. by</th>', $body, 'Remastered by is headed short, its full name the tooltip');
+		assertContains('<th rowspan="2" class="songRelationCell songRemasterOfCell" title="Remaster of">Rem. of</th>', $body, 'and Remaster of');
+		foreach (['remasteredBy' => 'Remastered by', 'remasterOf' => 'Remaster of'] as $key => $name) {
+			assertTrue((bool)preg_match('/data-column="' . $key . '"[^>]*>\s*<span>' . $name . '<\/span>/', $body), "the picker names {$key} in full");
+		}
+
+		$row = songsRowChunks($body)[0];
+		$cells = array_map(fn($field) => strpos($row, 'data-field="' . $field . '"'), ['title', 'aliases', 'album', 'links', 'remasteredBy', 'remasterOf']);
+		$cells[] = strpos($row, 'data-field="score_');
+		$sorted = $cells;
+		sort($sorted);
+		assertTrue(!in_array(false, $cells, true), 'every row has the cells');
+		assertSame($sorted, $cells, 'in the same order');
+	},
+
+	'Other names lists the names its versions go by, once each, saying which' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Version Names Artist');
+		$original = makeSong($ctx, $artistId, 'Version Names Ninth Heaven');
+		$ctx->post('/music/ajax/song', [[
+			'artist_id' => $artistId,
+			'title' => 'Version Names Nine',
+			'song_id' => $original,
+			'also_alias_provided_name' => true,
+		]]);
+		$first = columnsRemaster($ctx, $artistId, 'Version Names 9th Heaven', $original);
+		$second = columnsRemaster($ctx, $artistId, 'Version Names 9th Heaven', $original);
+		$same = columnsRemaster($ctx, $artistId, 'Version Names Ninth Heaven', $original);
+
+		$body = $ctx->get("/music/songs?artist={$artistId}")['body'];
+
+		$cell = columnsNamesCell(songsRowFor($body, $original));
+		assertSame(['Version Names Nine', 'Version Names 9th Heaven'], columnsAliasLines($cell), 'its own name, then the remasters\' name once, and none it has itself');
+		assertSame(
+			['Version Names 9th Heaven' => ["Name of the remastered version ({$first})", "Name of the remastered version ({$second})"]],
+			columnsVersionTooltips($cell),
+			'the remasters\' name is marked, its tooltip naming both'
+		);
+		assertContains('<div class="songAlias" title="Version Names Nine">Version Names Nine</div>', $cell, 'its own name is not marked');
+
+		$remaster = columnsNamesCell(songsRowFor($body, $first));
+		assertSame(['Version Names Ninth Heaven', 'Version Names Nine'], columnsAliasLines($remaster), 'a remaster lists every name of the original');
+		assertSame(
+			['Version Names Ninth Heaven' => ["Name of the original version ({$original})"], 'Version Names Nine' => ["Name of the original version ({$original})"]],
+			columnsVersionTooltips($remaster),
+			'each saying it is the original\'s'
+		);
+
+		assertSame(['Version Names Nine'], columnsAliasLines(columnsNamesCell(songsRowFor($body, $same))), 'and a remaster under the original\'s title lists only the name it lacks');
+		assertTrue(strpos(songsFieldCell(songsCardFor($body, $original), 'aliases'), '9th Heaven') === false, 'the card lists only its own names');
+	},
+
+	'the id columns list each end of a remaster, marking a song called otherwise' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Id Columns Artist');
+		$original = makeSong($ctx, $artistId, 'Id Columns Original');
+		$renamed = columnsRemaster($ctx, $artistId, 'Id Columns Remastered', $original);
+		$same = columnsRemaster($ctx, $artistId, 'Id Columns Original', $original);
+		$loner = makeSong($ctx, $artistId, 'Id Columns Loner');
+
+		$body = $ctx->get("/music/songs?artist={$artistId}")['body'];
+		$link = fn($id, $as) => '<a class="songRelationLink' . ($as === null ? '' : ' songVersionHint') . '" href="/music/songs?songCard=' . $id . '" data-song-card-id="' . $id . '"'
+			. ($as === null ? '' : ' title="as ' . $as . '"') . '>' . $id . '</a>';
+
+		assertSame(
+			'<td class="songRelationCell songRemasteredByCell" data-field="remasteredBy">' . $link($renamed, 'Id Columns Remastered') . ', ' . $link($same, null) . '</td>',
+			columnsRelationCell(songsRowFor($body, $original), 'remasteredBy'),
+			'the original lists its remasters, lowest first, marking the one called otherwise'
+		);
+		assertSame('<td class="songRelationCell songRemasterOfCell" data-field="remasterOf"></td>', columnsRelationCell(songsRowFor($body, $original), 'remasterOf'), 'and is the remaster of nothing');
+
+		assertSame(
+			'<td class="songRelationCell songRemasterOfCell" data-field="remasterOf">' . $link($original, 'Id Columns Original') . '</td>',
+			columnsRelationCell(songsRowFor($body, $renamed), 'remasterOf'),
+			'a remaster called otherwise lists the original, marked'
+		);
+		assertSame(
+			'<td class="songRelationCell songRemasterOfCell" data-field="remasterOf">' . $link($original, null) . '</td>',
+			columnsRelationCell(songsRowFor($body, $same), 'remasterOf'),
+			'and one under the same title, unmarked'
+		);
+		assertSame('<td class="songRelationCell songRemasteredByCell" data-field="remasteredBy"></td>', columnsRelationCell(songsRowFor($body, $loner), 'remasteredBy'), 'a song with none has empty cells');
+
+		assertTrue(strpos($body, 'data-sort-key="remasteredBy"') === false && strpos($body, 'data-sort-key="remasterOf"') === false, 'neither sorts');
 	},
 
 ];

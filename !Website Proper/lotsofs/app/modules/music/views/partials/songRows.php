@@ -8,7 +8,6 @@ $artistLabel = htmlspecialchars(t('song.column.artist'));
 $albumLabel = htmlspecialchars(t('song.column.album'));
 $aliasesLabel = htmlspecialchars(t('song.column.aliases'));
 $relationsLabel = htmlspecialchars(t('song.column.relations'));
-$alternativeName = t('song.list.alternativeName');
 $yearLabel = htmlspecialchars(t('song.column.year'));
 $durationLabel = htmlspecialchars(t('song.column.duration'));
 $linksLabel = htmlspecialchars(t('song.column.links'));
@@ -21,6 +20,8 @@ $songLinksBySong = $globalData['songLinksBySong'] ?? [];
 $listedAsBySong = $globalData['listedAsBySong'] ?? [];
 $namesBySong = $globalData['namesBySong'] ?? [];
 $relationsBySong = $globalData['relationsBySong'] ?? [];
+$relationTypes = array_column($globalData['relationTypes'] ?? [], null, 'type');
+$relationColumns = $globalData['relationColumns'] ?? [];
 $albumsBySong = $globalData['albumsBySong'] ?? [];
 $artistsBySong = $globalData['artistsBySong'] ?? [];
 $filterArtist = $globalData['filterArtist'] ?? null;
@@ -100,32 +101,72 @@ foreach ($globalData['songs'] as $song) {
 	/* Every name but the one the title cell shows, so a track an album lists under
 	   another name has its real title here. The names travel with the cell for
 	   songs.js, which redoes this when the album filter changes the title. The
-	   table writes each as a line like a relationship's, its whole text in its title. */
+	   table writes each as a line, its whole text in its title, since lines clip. */
 	$otherNames = array_values(array_diff($names, [$listedAs ?? $canonicalTitle]));
 	$song['aliasesValue'] = htmlspecialchars(implode("\n", $otherNames));
 	$song['aliasesTableHtml'] = '';
 	foreach ($otherNames as $name) {
-		$song['aliasesTableHtml'] .= '<div class="songAlias" title="' . htmlspecialchars($alternativeName . ': ' . $name) . '">'
-			. htmlspecialchars($alternativeName) . ': <span class="songAliasTitle">' . htmlspecialchars($name) . '</span></div>';
+		$song['aliasesTableHtml'] .= '<div class="songAlias" title="' . htmlspecialchars($name) . '">' . htmlspecialchars($name) . '</div>';
 	}
 	$song['titlesAttr'] = array_diff($names, [$canonicalTitle])
 		? ' data-titles="' . htmlspecialchars(json_encode($names)) . '"'
 		: '';
 
 	/* Each line is this song's end of the row and the other song, by id and title,
-	   since two songs may share a title; that part opens its card. The table clips
-	   its lines, so there each one carries its whole text. */
+	   since two songs may share a title; that part opens its card. */
 	$relations = $relationsBySong[(int)$song['id']] ?? [];
 	$song['relationsAttr'] = $relations ? ' data-relations="' . htmlspecialchars(json_encode($relations)) . '"' : '';
 	$song['relationsHtml'] = '';
-	$song['relationsTableHtml'] = '';
 	foreach ($relations as $relation) {
 		$otherId = (int)$relation['song_id'];
-		$line = htmlspecialchars($relation['label']) . ' '
+		$song['relationsHtml'] .= '<div class="songRelation">' . htmlspecialchars($relation['label']) . ' '
 			. '<a class="songRelationLink" href="/music/songs?songCard=' . $otherId . '" data-song-card-id="' . $otherId . '">'
 			. '<span class="songRelationId">' . $otherId . ':</span> <span class="songRelationTitle">' . htmlspecialchars($relation['title']) . '</span></a></div>';
-		$song['relationsHtml'] .= '<div class="songRelation">' . $line;
-		$song['relationsTableHtml'] .= '<div class="songRelation" title="' . htmlspecialchars($relation['label'] . ' ' . $otherId . ': ' . $relation['title']) . '">' . $line;
+	}
+
+	/* After the song's own names, every name its versions go by that it does not,
+	   once each, its tooltip saying which versions; songs.js applyAliasCell() draws
+	   the same. A list, not keyed by name: PHP makes a numeric key an integer. */
+	$versionNames = [];
+	foreach ($relations as $relation) {
+		$otherEnd = MUSIC_RELATION_ROLES[$relation['role']];
+		$noun = $relationTypes[$relation['type']][$otherEnd . 'Noun'] ?? $relation['type'];
+		$which = t('song.list.versionName', ['version' => $noun, 'id' => (int)$relation['song_id']]);
+
+		foreach ($namesBySong[(int)$relation['song_id']] ?? [] as $name) {
+			if (in_array($name, $names, true)) {
+				continue;
+			}
+			$index = array_search($name, array_column($versionNames, 'name'), true);
+			if ($index === false) {
+				$versionNames[] = ['name' => $name, 'which' => [$which]];
+			}
+			else {
+				$versionNames[$index]['which'][] = $which;
+			}
+		}
+	}
+	foreach ($versionNames as $versionName) {
+		$song['aliasesTableHtml'] .= '<div class="songAlias" title="' . htmlspecialchars(implode("\n", array_merge([$versionName['name']], $versionName['which']))) . '">'
+			. '<span class="songVersionHint">' . htmlspecialchars($versionName['name']) . '</span></div>';
+	}
+
+	/* The id columns, the other songs by id, each opening its card. One called
+	   otherwise is marked, its title in the tooltip; songs.js applyRelationCells() draws the same. */
+	$song['relationCells'] = [];
+	foreach ($relationColumns as $column) {
+		$matches = array_values(array_filter($relations, fn($relation) => $relation['type'] === $column['relationType'] && $relation['role'] === $column['relationRole']));
+		usort($matches, fn($a, $b) => $a['song_id'] <=> $b['song_id']);
+
+		$links = [];
+		foreach ($matches as $relation) {
+			$otherId = (int)$relation['song_id'];
+			$renamed = $relation['title'] !== $canonicalTitle;
+			$links[] = '<a class="songRelationLink' . ($renamed ? ' songVersionHint' : '') . '" href="/music/songs?songCard=' . $otherId . '" data-song-card-id="' . $otherId . '"'
+				. ($renamed ? ' title="' . htmlspecialchars(t('song.list.versionAs', ['title' => $relation['title']])) . '"' : '')
+				. '>' . $otherId . '</a>';
+		}
+		$song['relationCells'][$column['key']] = implode(', ', $links);
 	}
 
 	$song['albumsValue'] = htmlspecialchars($song['albums'] ?? '');

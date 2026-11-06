@@ -4,6 +4,7 @@ Finished work, one row per commit, newest first; `—` where the work had no cod
 
 | Date | Code | Area | Change | Why / how |
 |---|---|---|---|---|
+| 2026-11-06 | — | Music | Split the song list's Other names & versions into Other names and two narrow id columns after Links, Remastered by and Remaster of | The owner wanted versions as ids, a version's names among a song's own, and a hover where a name differs. Checked by the suite and in headless Chrome. |
 | 2026-11-05 | — | Site | Date the deployed release and freeze music migration 009 | The owner pushed to prod. Checked on the host: `/music` now sends you to login, and the login page, which runs migrations, answers. |
 | 2026-11-05 | — | Music | Fill the music home page with featured links into the song list, each with how much of it is rated, picked on the page, and land there on login | `/music` was an empty public page; it now needs a login, welcomes you and lists song list views an admin picks there. Checked by the suite and in headless Chrome. |
 | 2026-11-05 | — | Music | Let the song list's text columns be dragged wider or narrower, and widen Album to 18em | Long names were clipped at fixed widths; each text column's header now has a grip, the width kept in the browser, and Album starts at 18em instead of 10. Checked by the suite and headless Chrome at 100% and 125%. |
