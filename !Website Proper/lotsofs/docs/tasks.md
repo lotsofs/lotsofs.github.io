@@ -29,16 +29,6 @@ Every music key is translated into `de` and `fy` (`php tests/i18n-coverage.php`)
 
 **Docs.** None, unless a term choice becomes a rule worth recording in `music.md`.
 
-## RID — The Related row's song box cannot find a song by its id
-
-In a card's edit mode, a Related row's song is typed into a box whose suggestions are one `<datalist>` of every song on the page, labelled `Artist — Title · Albums` (`relationChoices()` in `songs.js`). A label gets ` #id` only when it would otherwise repeat, and `save()` looks the typed text up as a whole label. So a song cannot be found by its id, either among the suggestions or by typing it. The owner ran into this on 2026-11-07, linking the Director's Cut's Copal's Office and Domino's In Charge to songs 183 and 175, which the import TSV named by id. Seen by the owner; the lookup read in the code.
-
-**Plan.** Put the id in every label, in the shape the import's Song step uses (`139: Title · Album`, `songOptionLabels()` in `addSongs.js`), and keep sorting by artist and title. Have `save()` also accept a bare id that names a song on the page (`relationChoiceLabels` is keyed by id), so typing `183` and leaving the box links it without picking a suggestion.
-
-**Verify.** Headless Chrome and Firefox: typing `183` in a Related row's song box suggests Don Copal, and leaving the box with `183` in it saves the link. A title that two songs share still offers both, each naming one song.
-
-**Docs.** `music.md` (the relationships bullet describes the labels and the ` #id` rule).
-
 ## LGO — Logout takes two redirects
 
 `routes/logout.php` always redirects to `/music/songs`, which, with nobody signed in, redirects again to `/music/login`. Read in the code.
@@ -142,7 +132,7 @@ The page needs to know which values are borrowed: a cell holding only a `.songIn
 
 ## GAM — No game version relationship
 
-`musicSongRelationTypes()` in `relationships.php` has only `remaster`, so a cue taken from a game's files cannot be tied to the soundtrack track released from it. The Grim Fandango Remastered cues extracted from its `YEAR*MUS.LAB` files (TSV built 2026-11-07) are waiting on it: the TSV carries each cue's disc song ids in a column the import ignores. The mapping can be rebuilt from the owner's `D:\Music\VGM` file names, `Title (NN Disc title; cue; cue).mp3`, where NN is the track's position on the Director's Cut album (TSV built 2026-11-07; its 01–37 are album 12's songs, its 38–51 new songs). The game-cue TSV predates that album in the catalogue, so its ids point 38–51 at the 1998 songs those tracks remaster (39 Copal's Office is Don Copal); point them at the Director's Cut songs instead. One name is wrong: Casino Calavera lists `1106 - casino interior` for what is `1108`. Read in the code.
+`musicSongRelationTypes()` in `relationships.php` has only `remaster`, so a cue taken from a game's files cannot be tied to the soundtrack track released from it. The Grim Fandango Remastered cues extracted from its `YEAR*MUS.LAB` files (TSV built 2026-11-07) are waiting on it: the TSV carries each cue's disc song ids in a column the import ignores. The mapping can be rebuilt from the owner's `D:\Music\VGM` file names, `Title (NN Disc title; cue; cue).mp3`, where NN is the track's position on the Director's Cut album (TSV built 2026-11-07; its 01–37 are album 12's songs, its 38–51 new songs). The game-cue TSV, regenerated the same day, points 38–51 at the Director's Cut songs as the dev database numbers them (199–212); check that the live site's ids match before linking. One name is wrong: Casino Calavera lists `1106 - casino interior` for what is `1108`. Read in the code.
 
 **Plan.** One more entry in `musicSongRelationTypes()`, the variant being the game version and the target the disc release: labels "game version of …" and "disc release of …", and their two nouns, in each locale's part files. Decide two things first. Should it `inherit`, so that a game cue borrows its disc release's ratings as a remaster does? And should it get id columns in the song table (a `columns` entry, its keys in `MUSIC_SONG_COLUMNS`, the stylesheet's left-edge chain and hide list)? Then link the Grim cues, on each card or through IRC.
 

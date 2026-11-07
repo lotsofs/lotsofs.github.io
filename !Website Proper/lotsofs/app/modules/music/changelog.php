@@ -26,6 +26,12 @@ return [
 				'de' => 'Ein eingefügter YouTube-Link behält seinen Zeitstempel; früher eingefügte haben ihn verloren.',
 				'admin' => true,
 			],
+			[
+				'en' => 'A card\'s Related box shows each song\'s id, and an id typed into it picks that song.',
+				'fy' => 'It fakje Besibbe op in kaart lit de id fan elk liet sjen, en in id dy\'t dêr yntypt wurdt kiest dat liet.',
+				'de' => 'Das Feld „Verwandt“ auf einer Karte zeigt die ID jedes Songs, und eine dort eingetippte ID wählt diesen Song.',
+				'admin' => true,
+			],
 		],
 	],
 	[

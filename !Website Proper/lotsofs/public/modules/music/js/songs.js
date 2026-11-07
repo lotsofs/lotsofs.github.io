@@ -952,8 +952,9 @@ let relationChoiceIds = null;
 let relationChoiceLabels = null;
 
 /* Every song on the page as the song box's suggestions, one <datalist> built on
-   first use. The album is what tells two songs with one title apart, and a label
-   that would still repeat takes the song's id, so each label names one song. */
+   first use, each labelled "id: Artist — Title · Albums" as the import's Song
+   step labels them, so the id is there to find and every label names one song.
+   Sorted by artist and title, not by id. */
 function relationChoices() {
 	if (relationChoiceIds !== null) {
 		return relationChoiceIds;
@@ -961,12 +962,9 @@ function relationChoices() {
 
 	const choices = rowPairs().map(pair => {
 		const albums = cellText(fieldCell(pair.tr, "album"));
-		const label = cellText(fieldCell(pair.tr, "artist")) + " — " + fieldCell(pair.tr, "title").dataset.canonicalTitle;
-		return { id: pair.tr.dataset.songId, label: albums ? label + " · " + albums : label };
+		const name = cellText(fieldCell(pair.tr, "artist")) + " — " + fieldCell(pair.tr, "title").dataset.canonicalTitle;
+		return { id: pair.tr.dataset.songId, name: albums ? name + " · " + albums : name };
 	});
-
-	const counts = new Map();
-	choices.forEach(choice => counts.set(choice.label, (counts.get(choice.label) || 0) + 1));
 
 	const list = document.createElement("datalist");
 	list.id = SONG_RELATION_CHOICES_ID;
@@ -974,18 +972,29 @@ function relationChoices() {
 	relationChoiceLabels = new Map();
 
 	choices
-		.map(choice => counts.get(choice.label) > 1 ? { id: choice.id, label: choice.label + " #" + choice.id } : choice)
-		.sort((a, b) => a.label.localeCompare(b.label))
+		.sort((a, b) => a.name.localeCompare(b.name) || Number(a.id) - Number(b.id))
 		.forEach(choice => {
+			const label = choice.id + ": " + choice.name;
 			const option = document.createElement("option");
-			option.value = choice.label;
+			option.value = label;
 			list.appendChild(option);
-			relationChoiceIds.set(choice.label, choice.id);
-			relationChoiceLabels.set(choice.id, choice.label);
+			relationChoiceIds.set(label, choice.id);
+			relationChoiceLabels.set(choice.id, label);
 		});
 
 	document.body.appendChild(list);
 	return relationChoiceIds;
+}
+
+/// The song the box names: a whole label, or a song's id typed on its own (a leading # allowed).
+function relationChoiceId(value) {
+	const ids = relationChoices();
+	if (ids.has(value)) {
+		return ids.get(value);
+	}
+
+	const typed = value.trim().replace(/^#/, "");
+	return /^\d+$/.test(typed) && relationChoiceLabels.has(typed) ? typed : null;
 }
 
 /// A rename changes a label, so the list is built again when next needed.
@@ -1116,7 +1125,7 @@ const relationFieldEditor = {
 	   whenever either changes. A new row starts on neither, or picking the song
 	   first would save a kind nobody chose, and its × drops it unsaved. A picked
 	   suggestion saves at once; typing waits for Enter or leaving the box, since
-	   one label can be the start of another. */
+	   a typed id can be the start of another (18, 183). */
 	row(songId, relation) {
 		const row = document.createElement("div");
 		row.className = "cardRelationRow cardRelationEditRow" + (relation ? "" : " cardRelationAddRow");
@@ -1164,10 +1173,12 @@ const relationFieldEditor = {
 			: null;
 
 		function save() {
-			const otherId = relationChoices().get(other.value);
+			const otherId = relationChoiceId(other.value);
 			if (kind.disabled || kind.value === "" || !otherId) {
 				return;
 			}
+			/// A typed id reads as the pick it stands for.
+			other.value = relationChoiceLabels.get(otherId);
 			if (relation && kind.value === current && otherId === String(relation.song_id)) {
 				return;
 			}
@@ -1195,7 +1206,7 @@ const relationFieldEditor = {
 		});
 		/// A name that matches no song puts a saved row's own song back.
 		other.addEventListener("change", () => {
-			if (relationChoices().has(other.value)) {
+			if (relationChoiceId(other.value) !== null) {
 				save();
 			}
 			else if (relation) {
