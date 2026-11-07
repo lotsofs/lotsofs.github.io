@@ -14,7 +14,8 @@ function spotifyIdOnly($value) {
 }
 
 function youtubeIdOnly($value) {
-	return youtubeVideoIdIn($value) ?? $value;
+	$link = youtubeLinkIn($value);
+	return $link === null ? $value : youtubeLinkValue($link);
 }
 
 $songId = ajaxInt($data['song_id'] ?? null);

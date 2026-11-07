@@ -31,9 +31,9 @@
 				<div class="songSpotifyEmbed">
 					<iframe src="https://open.spotify.com/embed/track/<?= htmlspecialchars($song['spotifyTrackId']) ?>?theme=0" width="280" height="80" frameborder="0" loading="lazy" allow="encrypted-media; clipboard-write" title="Spotify"></iframe>
 				</div>
-			<?php endif ?><?php if ($song['youtubeTrackId'] !== null): ?>
+			<?php endif ?><?php if ($song['youtubeEmbedUrl'] !== null): ?>
 				<div class="songYoutubeEmbed">
-					<iframe src="https://www.youtube.com/embed/<?= htmlspecialchars($song['youtubeTrackId']) ?>" width="280" height="158" frameborder="0" loading="lazy" allowfullscreen title="YouTube"></iframe>
+					<iframe src="<?= htmlspecialchars($song['youtubeEmbedUrl']) ?>" width="280" height="158" frameborder="0" loading="lazy" allowfullscreen title="YouTube"></iframe>
 				</div>
 			<?php endif ?><?php if ($song['soundcloudEmbedUrl'] !== null): ?>
 				<div class="songSoundcloudEmbed">

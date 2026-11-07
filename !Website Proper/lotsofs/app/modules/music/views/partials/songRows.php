@@ -216,12 +216,11 @@ foreach ($globalData['songs'] as $song) {
 		}
 	}
 
-	$song['youtubeTrackId'] = null;
-	if (!empty($songLinks['youtube_url'])) {
-		$song['youtubeTrackId'] = youtubeVideoIdIn($songLinks['youtube_url']);
-		if ($song['youtubeTrackId'] === null && preg_match('#^[A-Za-z0-9_-]+$#', trim($songLinks['youtube_url']))) {
-			$song['youtubeTrackId'] = trim($songLinks['youtube_url']);
-		}
+	$song['youtubeEmbedUrl'] = null;
+	$youtubeLink = !empty($songLinks['youtube_url']) ? youtubeLinkIn($songLinks['youtube_url']) : null;
+	if ($youtubeLink !== null) {
+		$song['youtubeEmbedUrl'] = 'https://www.youtube.com/embed/' . $youtubeLink['id']
+			. ($youtubeLink['start'] !== null ? '?start=' . $youtubeLink['start'] : '');
 	}
 
 	$song['soundcloudEmbedUrl'] = null;
@@ -241,7 +240,7 @@ foreach ($globalData['songs'] as $song) {
 		if ($field['key'] === 'spotify_url' && $song['spotifyTrackId'] !== null) {
 			continue;
 		}
-		if ($field['key'] === 'youtube_url' && $song['youtubeTrackId'] !== null) {
+		if ($field['key'] === 'youtube_url' && $song['youtubeEmbedUrl'] !== null) {
 			continue;
 		}
 		if ($field['key'] === 'soundcloud_url' && $song['soundcloudEmbedUrl'] !== null) {

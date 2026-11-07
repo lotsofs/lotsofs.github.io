@@ -12,13 +12,19 @@ Detail in [tasks.md](tasks.md).
 |---|---|---|
 | [PWR](tasks.md#pwr--no-password-reset) | No password reset: a locked-out user needs the live database edited by hand (hideandseek has the same gap) | Medium |
 | [TRN](tasks.md#trn--de-and-fy-translations-are-unreviewed) | The `de` and `fy` (site default) translations are first drafts by Claude, never reviewed by a native speaker | Medium |
-| [NAM](tasks.md#nam--wrong-song-names-and-album-listings-in-the-data) | All 16 songs with a second name have wrong data (14 album tracks listed under another name, 2 curly-apostrophe twins); the owner fixes them by hand | Low |
+| [RID](tasks.md#rid--the-related-rows-song-box-cannot-find-a-song-by-its-id) | A card's Related row cannot find a song by its id: the suggestions show an id only on a label that would repeat, and a typed id matches nothing | Medium |
 | [LGO](tasks.md#lgo--logout-takes-two-redirects) | Logout redirects to `/music/songs`, which redirects again to `/music/login`; go straight to login | Low |
 | [REG](tasks.md#reg--registration-misreports-database-failures) | Registration reports "invalid invite" for any failure in its transaction, hiding real database errors (hideandseek too) | Low |
 | [REN](tasks.md#ren--rename-the-album-card-modal) | `#albumCardModal` and `albumCard.js` host artist cards too; rename them kind-neutral, as a change of its own | Low |
 | [LFT](tasks.md#lft--leftovers-from-the-2026-09-25-audit) | Audit leftovers: a song rename does not keep the old name as another name (History records it), and two SELECTs are duplicated between route and ajax files | Low |
 | [CHN](tasks.md#chn--borrowed-ratings-reach-only-direct-versions) | A song borrows ratings only from versions it is related to directly; in a chain A–B–C, A gets nothing from C | Low |
 | [LNK](tasks.md#lnk--a-relationship-change-reaches-other-open-pages-only-on-reload) | Linking or unlinking two songs reaches other open song lists only on reload: the poll never hears of it, so their borrowed values, statistics, covers and Related lines stay old | Low |
+| [OVR](tasks.md#ovr--a-song-card-does-not-show-that-a-rater-also-rated-another-version) | A song card gives no visible sign that a rater also scored or wrote about another version; only each rating's hover tooltip lists it | Low |
+| [ADO](tasks.md#ado--a-borrowed-rating-cannot-be-marked-as-true-for-this-version-too) | A borrowed score or note looks the same whether or not the rater heard this version; a button would mark "heard it, same verdict", drawing it upright and less faded without retyping it | Low |
+| [BSO](tasks.md#bso--a-borrowed-score-ties-with-real-ones-by-song-id) | Sorting by a score ties a borrowed value with real ones by song id; it should sink below them, or sit beside the version it is borrowed from | Low |
+| [GAM](tasks.md#gam--no-game-version-relationship) | No "game version of" / "disc release of" relationship: only `remaster` exists, so the Grim Fandango Remastered game cues cannot be linked to their soundtrack tracks | Low |
+| [ALT](tasks.md#alt--no-alternate-take-relationship) | No "alternate take" relationship: the Director's Cut's two Alt Solo tracks cannot be linked to Lost Souls' Alliance (138) and Blue Casket Bop (151) | Low |
+| [IRC](tasks.md#irc--the-import-cannot-read-relationships-from-a-column) | Add Songs links a song only to the one it shares a title with, one type per import; a column of related song ids would let a paste carry the links | Low |
 | [TIP](tasks.md#tip--a-tooltip-outlives-the-element-it-belongs-to) | A hover tooltip stays on screen when its element is removed under the cursor, as a card editor's × or name box is | Low |
 | [BND](tasks.md#bnd--bandcamp-does-not-embed) | Bandcamp links open Bandcamp instead of embedding; an embed needs a numeric id that the page URL lacks | Low |
 | [GRD](tasks.md#grd--song-table-lines-are-thicker-in-the-header-at-some-display-scales) | Song table column lines are shadows in the header and borders in the body, so at 150%+ (or 125% with columns hidden) some are 2px in the header and 1px in the body | Low |

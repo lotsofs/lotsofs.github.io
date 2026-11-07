@@ -15,6 +15,17 @@ return [
 				'fy' => 'Oare nammen & ferzjes is splitst yn Oare nammen, dy\'t ek de nammen fan in oare ferzje lit sjen, en Remastere as en Remaster fan nei Keppelings.',
 				'de' => '„Andere Namen & Fassungen“ ist aufgeteilt in „Andere Namen“, das auch die Namen einer anderen Fassung zeigt, sowie „Remastert als“ und „Remaster von“ nach „Links“.',
 			],
+			[
+				'en' => 'A song\'s YouTube player and link begin at the link\'s timestamp, if it has one.',
+				'fy' => 'De YouTube-spiler en -keppeling fan in liet begjinne by de tiidstimpel fan de keppeling, as dy der is.',
+				'de' => 'YouTube-Player und -Link eines Songs beginnen beim Zeitstempel des Links, falls er einen hat.',
+			],
+			[
+				'en' => 'A pasted YouTube link keeps its timestamp; links pasted before lost theirs.',
+				'fy' => 'In plakte YouTube-keppeling hâldt syn tiidstimpel; earder plakte keppelings binne harres kwyt.',
+				'de' => 'Ein eingefügter YouTube-Link behält seinen Zeitstempel; früher eingefügte haben ihn verloren.',
+				'admin' => true,
+			],
 		],
 	],
 	[

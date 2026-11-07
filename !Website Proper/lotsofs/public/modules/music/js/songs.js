@@ -395,13 +395,18 @@ function spotifyTrackId(value) {
 	return /^[A-Za-z0-9]+$/.test(trimmed) ? trimmed : null;
 }
 
-function youtubeTrackId(value) {
-	const match = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]+)/.exec(value);
-	if (match) {
-		return match[1];
-	}
+/// Mirrors youtubeLinkIn() in links.php: {id, start in whole seconds or null}, or null.
+function youtubeLink(value) {
 	const trimmed = value.trim();
-	return /^[A-Za-z0-9_-]+$/.test(trimmed) ? trimmed : null;
+	const match = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]+)/.exec(trimmed)
+		|| /^([A-Za-z0-9_-]+)(?=[?&]|$)/.exec(trimmed);
+	if (!match) {
+		return null;
+	}
+
+	const time = /[?&#](?:t|start)=(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?(?=[&#]|$)/.exec(trimmed);
+	const seconds = time ? Number(time[1] || 0) * 3600 + Number(time[2] || 0) * 60 + Number(time[3] || 0) : 0;
+	return { id: match[1], start: seconds > 0 ? seconds : null };
 }
 
 function renderSpotifyEmbed(url) {
@@ -426,16 +431,16 @@ function renderSpotifyEmbed(url) {
 }
 
 function renderYoutubeEmbed(url) {
-	const trackId = url ? youtubeTrackId(url) : null;
+	const link = url ? youtubeLink(url) : null;
 
-	if (!trackId) {
+	if (!link) {
 		return null;
 	}
 
 	const embed = document.createElement("div");
 	embed.className = "songYoutubeEmbed";
 	const iframe = document.createElement("iframe");
-	iframe.src = "https://www.youtube.com/embed/" + trackId;
+	iframe.src = "https://www.youtube.com/embed/" + link.id + (link.start !== null ? "?start=" + link.start : "");
 	iframe.width = "280";
 	iframe.height = "158";
 	iframe.frameBorder = "0";

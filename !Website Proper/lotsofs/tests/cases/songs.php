@@ -1903,6 +1903,44 @@ return [
 		assertContains('width="280"', $card, 'the youtube embed matches the other embeds\' width');
 	},
 
+	'a youtube link keeps its timestamp, in the embed and the link' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Youtube Timestamp Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Youtube Timestamp Song']]);
+		$songId = $ctx->songId('Youtube Timestamp Song');
+		$response = $ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'youtube_url', 'value' => 'https://youtu.be/Cs7AVq8fovU?t=656']);
+
+		assertSame('Cs7AVq8fovU&t=656', $response['json']['value'], 'the answer carries the stored form');
+		$stored = $ctx->db()->query("SELECT youtube_url FROM song_link WHERE song_id = {$songId}")->fetch();
+		assertSame('Cs7AVq8fovU&t=656', $stored['youtube_url'], 'the id is stored with the start in seconds');
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertContains('src="https://www.youtube.com/embed/Cs7AVq8fovU?start=656"', songsCardFor($body, $songId), 'the embed starts there');
+		assertContains('href="https://www.youtube.com/watch?v=Cs7AVq8fovU&amp;t=656"', songsRowFor($body, $songId), 'the table link starts there');
+	},
+
+	'a youtube start in any form is stored as whole seconds' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Youtube Start Form Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Youtube Start Form Song']]);
+		$songId = $ctx->songId('Youtube Start Form Song');
+
+		$cases = [
+			'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=1m30s' => 'dQw4w9WgXcQ&t=90',
+			'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=1h0m5s&list=PL123' => 'dQw4w9WgXcQ&t=3605',
+			'https://www.youtube.com/embed/dQw4w9WgXcQ?start=42' => 'dQw4w9WgXcQ&t=42',
+			'https://youtu.be/dQw4w9WgXcQ?t=0' => 'dQw4w9WgXcQ',
+			'dQw4w9WgXcQ&t=90' => 'dQw4w9WgXcQ&t=90',
+		];
+		foreach ($cases as $pasted => $expected) {
+			$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'youtube_url', 'value' => $pasted]);
+			$stored = $ctx->db()->query("SELECT youtube_url FROM song_link WHERE song_id = {$songId}")->fetch();
+			assertSame($expected, $stored['youtube_url'], "{$pasted} is stored as {$expected}");
+		}
+	},
+
 	'a soundcloud link renders as an embed too' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 

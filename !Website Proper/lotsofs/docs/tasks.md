@@ -6,6 +6,8 @@ Dependencies between the plans:
 
 - hideandseek's `001` freezes the day the module first ships (MIG). CAS, and the table PIN needs, are edits in place before that and table rebuilds after, so they come first. PRV and WHO also want doing before players arrive. Shipping it means taking it off `$unshippedModules` in `build-deploy.php`.
 - PAR waits on JST: there is nothing to run a JS test with.
+- IRC is most useful after GAM: the Grim Fandango game cues wait on both.
+- ALT and GAM are each one more relationship type; doing them together settles `inherits` and the id columns once.
 
 ## PWR — No password reset
 
@@ -27,37 +29,15 @@ Every music key is translated into `de` and `fy` (`php tests/i18n-coverage.php`)
 
 **Docs.** None, unless a term choice becomes a rule worth recording in `music.md`.
 
-## NAM — Wrong song names and album listings in the data
+## RID — The Related row's song box cannot find a song by its id
 
-Every song in `data/music.sqlite` that has a second `song_alias` name was judged wrong by the owner on 2026-11-03, who will fix them by hand. Which part of each is wrong (the current title, the second name, or the album listing) was not said. Read with a read-only query on 2026-11-03.
+In a card's edit mode, a Related row's song is typed into a box whose suggestions are one `<datalist>` of every song on the page, labelled `Artist — Title · Albums` (`relationChoices()` in `songs.js`). A label gets ` #id` only when it would otherwise repeat, and `save()` looks the typed text up as a whole label. So a song cannot be found by its id, either among the suggestions or by typing it. The owner ran into this on 2026-11-07, linking the Director's Cut's Copal's Office and Domino's In Charge to songs 183 and 175, which the import TSV named by id. Seen by the owner; the lookup read in the code.
 
-Album tracks whose `album_track.song_alias_id` points at a name that is not the song's current one, so filtering the song list to that album retitles them (song id, current title, listed as, album and track):
+**Plan.** Put the id in every label, in the shape the import's Song step uses (`139: Title · Album`, `songOptionLabels()` in `addSongs.js`), and keep sorting by artist and title. Have `save()` also accept a bare id that names a song on the page (`relationChoiceLabels` is keyed by id), so typing `183` and leaving the box links it without picking a suggestion.
 
-- 11 *Will Of The People*, as "Will of the People" (Will Of The People #1)
-- 17 *Kill Or Be Killed*, as "Kill or Be Killed" (Will Of The People #7)
-- 28 *Get up and Fight*, as "Get Up and Fight" (Simulation Theory #8)
-- 33 *(Drill Sergeant)*, as "Drill Sergeant" (Drones #2)
-- 38 *(JFK)*, as "JFK" (Drones #7)
-- 60 *United States of Eurasia (+Collateral Damage)*, as "United States of Eurasia" (The Resistance #4)
-- 64 *I Belong to You (+Mon Coeur S'Ouvre a Ta Voix)*, as "I Belong to You" (The Resistance #8)
-- 65 *Exogenesis: Symphony Pt. 1 (Overture)*, as "Exogenesis: Symphony Part 1 (Overture)" (The Resistance #9)
-- 66 *Exogenesis: Symphony Pt. 2 (Cross-pollination)*, as "Exogenesis: Symphony Part 2 (Cross-Pollination)" (The Resistance #10)
-- 67 *Exogenesis: Symphony Pt. 3 (Redemption)*, as "Exogenesis: Symphony Part 3 (Redemption)" (The Resistance #11)
-- 82 *Time is Running Out*, as "Time Is Running Out" (Absolution #3)
-- 89 *Butterflies & Hurricanes*, as "Butterflies and Hurricanes" (Absolution #10)
-- 99 *Plug in Baby*, as "Plug In Baby" (Origin of Symmetry #5)
-- 118 *Hate This and I'll Love You*, as "Hate This & I'll Love You" (Showbiz #12)
+**Verify.** Headless Chrome and Firefox: typing `183` in a Related row's song box suggests Don Copal, and leaving the box with `183` in it saves the link. A title that two songs share still offers both, each naming one song.
 
-Songs whose second name only swaps the straight apostrophe for a curly one, with no album listing them under it:
-
-- 14 *Won't Stand Down* (Won’t Stand Down), on Will Of The People
-- 16 *You Make Me Feel Like It's Halloween* (You Make Me Feel Like It’s Halloween), on Will Of The People
-
-**Plan.** The owner corrects each in the song's card, in edit mode, where every other name has "Use this name" and a delete button. Where the second name is the wrong one, delete it. If an album lists the song under it, the row names the album and offers to list the song there under its current title, all in one go. Where the second name is the right one, use it, then delete the old title, which is now the other name. The query ran against the local `data/music.sqlite`; check that the host's file holds the same before fixing there.
-
-**Verify.** Rerun both queries, `album_track` joined to `song_alias` where `is_actual = 0` and songs with any non-current name, and get only what the owner means to keep.
-
-**Docs.** None.
+**Docs.** `music.md` (the relationships bullet describes the labels and the ` #id` rule).
 
 ## LGO — Logout takes two redirects
 
@@ -121,6 +101,74 @@ The poll finds changes through `account_song.updated_at`. Linking, unlinking or 
 **Verify.** Two sessions on `/music/songs`; linking two songs in one shows the borrowed values, the statistics and the Related lines in the other within a poll tick, and unlinking takes them away.
 
 **Docs.** `music.md` (Shared helpers and live updates; Statistics, the borrowed ratings bullet), `music-reference.md` (`song-rating-poll`).
+
+## OVR — A song card does not show that a rater also rated another version
+
+Every rating cell, in the table and on the song card, lists in its hover tooltip what that rater gave the song's other versions (`refreshVersionTooltips()` in `songs.js`, which sets `data-versions`). Nothing else shows it. A borrowed value at least shows faded, but a card with its own score and note looks the same whether or not the rater also rated the remaster. So nothing invites the hover, and a touch screen has none. Read in the code; asked for by the owner, 2026-11-07.
+
+**Plan.** On the song card, put a small hint after a score or note whose cell has `data-versions` (a mark or a short "also on 1 other version"), carrying the same list as its tooltip. Set and clear it wherever `refreshVersionTooltips()` sets that attribute, so writes, the poll, reveals and relationship changes keep it right. The list already leaves out values the blind-rating gate covers on the other version. Decide whether a covered cell shows the hint: the `rated` count is never covered, so knowing a rating exists gives nothing away. Also decide whether the table gets it, where the 2em score columns have little room.
+
+**Verify.** Headless: the card of a song whose rater rated both versions shows the hint on that rater's score and note. Clearing the other version's rating takes it away. A covered value never shows through the hint.
+
+**Docs.** `music.md` (Statistics, the borrowed-ratings bullet's hover sentence).
+
+## ADO — A borrowed rating cannot be marked as true for this version too
+
+A rater with no rating on a song borrows their ratings on its versions (`effective_rating` in `ratings.php`). The borrowed value is drawn faded and italic (`.songInherited`, opacity 0.65), because nobody wrote it there. So a version the rater has not heard looks the same as one they have heard and found no different from the other, say a remaster they cannot tell from the original. The mark is what sets those two apart. The only way to say "heard it, same verdict" today is typing the same score and note in again, which also stops it following later changes on the other version. Asked for by the owner, 2026-11-07.
+
+**Plan.** A button beside the reader's own borrowed score or note marks it as theirs for this song. All the mark does is change how the value is drawn: upright, and less faded (opacity around 0.85), on every reader's page, since it is the rater's own statement. It stays borrowed. It still follows the other version, counts exactly as it does now, and a real rating still replaces it. A second press takes the mark back.
+- **Storage:** a table of its own in the unshipped migration (`010`), one row per account, song and field. Not a column on `account_song`, whose rows mean the rater wrote something there.
+- **Logging:** none, since `rating_audit` would turn the mark into a toast.
+- **To decide:** whether score and note are marked together or separately, and whether writing a real rating deletes the mark.
+- **Updates:** the song list and the rating answers carry the marks. Other open pages see one on reload, as with LNK.
+
+**Verify.** A test that marks a borrowed score through the endpoint, then finds the marked class on that cell for every reader, with the statistics unchanged. A rater cannot mark someone else's cell. Clearing the other version's rating leaves the mark on an empty cell drawing nothing.
+
+**Docs.** `music.md` (Statistics, the borrowed-ratings bullet), `music-reference.md` (the table and the endpoint), and a What's New entry in `changelog.php`.
+
+## BSO — A borrowed score ties with real ones by song id
+
+Sorting the song list by a score sorts a borrowed value as the rater's own (`music.md`, Statistics). Equal values are then ordered by song id, in all three places that sort: `sortRows()` in `songs.js`, `songsOrderBy()` in `routes/songs.php`, and the statistics `usort` below it. So a remaster borrowing an 8 lands wherever its id puts it among the real 8s, usually far from the original it borrows from. Read in the code; asked for by the owner, 2026-11-07.
+
+**Plan.** Change the tie-break, in all three places alike, to one of two rules:
+- **Sink:** real values before borrowed ones within each value. This is a second sort key, the same in both directions.
+- **Beside:** a borrowed value sits right after the song it borrows from. This works only when it has one lender, since an average over several versions may equal none of them. Such a value then falls back to sinking.
+
+The page needs to know which values are borrowed: a cell holding only a `.songInherited` span is one, and the server has `effective_rating`'s borrowed flag. Statistics columns are over everyone's ratings mixed, so decide whether a song whose statistic includes any borrowed value counts as borrowed, or whether the rule covers the rater columns only. ADO's mark may want to count as real here.
+
+**Verify.** With an original and its remaster, the remaster borrowing the 8, sorting by that rater's score in either direction puts the remaster where the rule says. Clicking the header and reloading the link the header writes give the same order.
+
+**Docs.** `music.md` (Linking and sorting: the rule that the three sorts agree).
+
+## GAM — No game version relationship
+
+`musicSongRelationTypes()` in `relationships.php` has only `remaster`, so a cue taken from a game's files cannot be tied to the soundtrack track released from it. The Grim Fandango Remastered cues extracted from its `YEAR*MUS.LAB` files (TSV built 2026-11-07) are waiting on it: the TSV carries each cue's disc song ids in a column the import ignores. The mapping can be rebuilt from the owner's `D:\Music\VGM` file names, `Title (NN Disc title; cue; cue).mp3`, where NN is the track's position on the Director's Cut album (TSV built 2026-11-07; its 01–37 are album 12's songs, its 38–51 new songs). The game-cue TSV predates that album in the catalogue, so its ids point 38–51 at the 1998 songs those tracks remaster (39 Copal's Office is Don Copal); point them at the Director's Cut songs instead. One name is wrong: Casino Calavera lists `1106 - casino interior` for what is `1108`. Read in the code.
+
+**Plan.** One more entry in `musicSongRelationTypes()`, the variant being the game version and the target the disc release: labels "game version of …" and "disc release of …", and their two nouns, in each locale's part files. Decide two things first. Should it `inherit`, so that a game cue borrows its disc release's ratings as a remaster does? And should it get id columns in the song table (a `columns` entry, its keys in `MUSIC_SONG_COLUMNS`, the stylesheet's left-edge chain and hide list)? Then link the Grim cues, on each card or through IRC.
+
+**Verify.** A test like the remaster ones in `tests/cases/relationships.php`: both cards read their own line. `php tests/i18n-coverage.php` stays clean.
+
+**Docs.** `music.md` (the relationships bullet says only `remaster` exists), and a What's New entry in `changelog.php`.
+
+## ALT — No alternate take relationship
+
+The Grim Fandango Remastered Director's Cut (imported 2026-11-07) has two alternate takes of tracks on the 2015 album: Lost Souls' Alliance (Alt Solo) of Lost Souls' Alliance (138), and Blue Casket Bop (Alt Solo) of Blue Casket Bop (151). Under the rule VER settled (split on edit or performance), a different solo is a separate song. But the only relationship type is `remaster`, which would call the alt solo a remastered version, so the pairs stay unlinked. Read in the code.
+
+**Plan.** The same change as GAM: one more entry in `musicSongRelationTypes()`, with the alternate take as the variant. Proposed labels are "alternate take of …" and "main take of …", with their nouns, in each locale's part files. Decide `inherits`: the takes share their composition and most of their performance, so borrowing may be wanted, unlike a game cue. Decide id columns as for GAM. Then link the two pairs on their cards.
+
+**Verify.** As GAM: a test like the remaster ones in `tests/cases/relationships.php`, and `php tests/i18n-coverage.php` clean.
+
+**Docs.** `music.md` (the relationships bullet), and a What's New entry in `changelog.php`, shared with GAM's if they ship together.
+
+## IRC — The import cannot read relationships from a column
+
+Add Songs relates a song to another only when the song is kept `<New, separate>` from one the artist already has under that title, and then with the one type chosen for the whole import (`songSeparateRelation` in `addSongs.js`, `related_song_id` in `ajax/song.php`). A paste cannot say that a row is the game version of song 137. So the Grim Fandango cues, which mostly have other titles than their releases, would be linked one card at a time. Read in the code.
+
+**Plan.** A column role, Related songs, holding comma-separated song ids, with one relationship type and end chosen for it in the column-mapping step. `song.php` writes those rows in the transaction that creates the song. It refuses an id that is no song, and checks `musicSongRelationExists()` both ways round. It logs each row through `musicLogEdit()` as a `relation` on the variant, as the card does. Decide what a row matched to an existing song does with the column: add the links to that song, or leave them out.
+
+**Verify.** A test that posts rows with the column and finds the relationships and their `edit_audit` rows, and that an unknown id is refused.
+
+**Docs.** `music.md` (the bulk import bullet), `music-reference.md` (the `song` endpoint), and a For admins entry in `changelog.php`.
 
 ## TIP — A tooltip outlives the element it belongs to
 
