@@ -759,7 +759,11 @@ td.albumStatsRatedCell {
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear thead .songDurationCell,
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration thead .songLinksCell,
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks thead .songRemasteredByCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy thead .songRemasterOfCell {
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy thead .songRemasterOfCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy.songHideRemasterOf thead .songInGameAsCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy.songHideRemasterOf.songHideInGameAs thead .songGameVersionOfCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy.songHideRemasterOf.songHideInGameAs.songHideGameVersionOf thead .songAlternateTakesCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy.songHideRemasterOf.songHideInGameAs.songHideGameVersionOf.songHideAlternateTakes thead .songAlternateTakeOfCell {
 		box-shadow: inset 1px 0 0 var(--border), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
@@ -808,7 +812,11 @@ td.albumStatsRatedCell {
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear td.songDurationCell,
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration td.songLinksCell,
 	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks td.songRemasteredByCell,
-	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy td.songRemasterOfCell {
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy td.songRemasterOfCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy.songHideRemasterOf td.songInGameAsCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy.songHideRemasterOf.songHideInGameAs td.songGameVersionOfCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy.songHideRemasterOf.songHideInGameAs.songHideGameVersionOf td.songAlternateTakesCell,
+	&.songHideId.songHideArtist.songHideTitle.songHideAliases.songHideAlbum.songHideYear.songHideDuration.songHideLinks.songHideRemasteredBy.songHideRemasterOf.songHideInGameAs.songHideGameVersionOf.songHideAlternateTakes td.songAlternateTakeOfCell {
 		border-left-width: 1px;
 	}
 
@@ -1050,6 +1058,10 @@ td.albumStatsRatedCell {
 	&.songHideLinks .songLinksCell,
 	&.songHideRemasteredBy .songRemasteredByCell,
 	&.songHideRemasterOf .songRemasterOfCell,
+	&.songHideInGameAs .songInGameAsCell,
+	&.songHideGameVersionOf .songGameVersionOfCell,
+	&.songHideAlternateTakes .songAlternateTakesCell,
+	&.songHideAlternateTakeOf .songAlternateTakeOfCell,
 	&.songHideAverage .songStatAverageCell,
 	&.songHideDeviation .songStatDeviationCell,
 	&.songHideMedian .songStatMedianCell,

@@ -54,6 +54,23 @@ return [
 		assertSame(null, $ctx->db()->query("SELECT score FROM account_song WHERE song_id = {$original}")->fetch()['score'] ?? null, 'and nothing was written for it');
 	},
 
+	'a game version and an alternate take lend their ratings as a remaster does' => function ($ctx) {
+		$me = borrowedReader($ctx);
+		$artistId = $ctx->makeArtist('Borrow Kinds Owner');
+		$soundtrack = makeSong($ctx, $artistId, 'Borrow Kinds Soundtrack');
+		$cue = makeSong($ctx, $artistId, 'Borrow Kinds Cue');
+		$main = makeSong($ctx, $artistId, 'Borrow Kinds Main Take');
+		$alternate = makeSong($ctx, $artistId, 'Borrow Kinds Alt Take');
+		$ctx->post('/music/ajax/song-relationship', ['action' => 'add', 'song_id' => $cue, 'other_song_id' => $soundtrack, 'type' => 'game', 'role' => 'variant']);
+		$ctx->post('/music/ajax/song-relationship', ['action' => 'add', 'song_id' => $alternate, 'other_song_id' => $main, 'type' => 'alternate', 'role' => 'variant']);
+		borrowedRate($ctx, $soundtrack, 'score', '7');
+		borrowedRate($ctx, $alternate, 'score', '9');
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertContains('<span class="songInherited">7</span>', songsFieldCell(songsRowFor($body, $cue), "score_{$me}"), 'the cue borrows its soundtrack release\'s score');
+		assertContains('<span class="songInherited">9</span>', songsFieldCell(songsRowFor($body, $main), "score_{$me}"), 'and the main take its alternate take\'s');
+	},
+
 	'several versions average their scores, and the newest note wins' => function ($ctx) {
 		$me = borrowedReader($ctx);
 		[$artistId, $original, $older] = borrowedPair($ctx, 'Borrow Many');

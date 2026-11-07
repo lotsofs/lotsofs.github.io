@@ -27,6 +27,17 @@ return [
 				'admin' => true,
 			],
 			[
+				'en' => 'Songs can be linked as a game version and its soundtrack release, or an alternate take and its main take, each with columns in the song list.',
+				'fy' => 'Lieten kinne keppele wurde as spulferzje en soundtrackútjefte, of as alternative opname en haadopname, elk mei kolommen yn de side Lieten.',
+				'de' => 'Songs lassen sich als Spielfassung und Soundtrack-Veröffentlichung oder als alternative Aufnahme und Hauptaufnahme verknüpfen, jeweils mit Spalten in der Songliste.',
+			],
+			[
+				'en' => 'A card\'s Related row can link a game version or an alternate take.',
+				'fy' => 'De rige Besibbe op in kaart kin in spulferzje of in alternative opname keppelje.',
+				'de' => 'Die Zeile „Verwandt“ auf einer Karte kann eine Spielfassung oder eine alternative Aufnahme verknüpfen.',
+				'admin' => true,
+			],
+			[
 				'en' => 'A card\'s Related box shows each song\'s id, and an id typed into it picks that song.',
 				'fy' => 'It fakje Besibbe op in kaart lit de id fan elk liet sjen, en in id dy\'t dêr yntypt wurdt kiest dat liet.',
 				'de' => 'Das Feld „Verwandt“ auf einer Karte zeigt die ID jedes Songs, und eine dort eingetippte ID wählt diesen Song.',

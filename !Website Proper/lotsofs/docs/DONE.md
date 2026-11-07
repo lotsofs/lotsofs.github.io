@@ -4,6 +4,7 @@ Finished work, one row per commit, newest first; `—` where the work had no cod
 
 | Date | Code | Area | Change | Why / how |
 |---|---|---|---|---|
+| 2026-11-07 | GAM, ALT | Music | Add game version and alternate take relationships, each lending ratings and with two id columns | Remaster was the only kind, so game cues and alt solos could not be linked. Checked by the suite and in headless Chrome. |
 | 2026-11-07 | RID | Music | Show each song's id in a card's Related box, and let an id typed into it pick that song | Labels named a song by artist, title and album only, and only a whole label was read. Checked in headless Chrome; Firefox's Playwright build was out of date. |
 | 2026-11-07 | — | Music | Keep a YouTube link's timestamp, so its embedded player and its link start there | A pasted link was cut to the bare video id; the id is now stored with `&t=` seconds. Checked by the suite and in headless Chrome. |
 | 2026-11-07 | NAM | Docs | Drop NAM and track the Grim Fandango follow-ups: game-version and alternate-take relations, an import relation column, and song-list fixes for versions and sorting | The owner stopped tracking NAM's second names; its album listings were already gone. The new items came from importing the game cues and the Director's Cut. |

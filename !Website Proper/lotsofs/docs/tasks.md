@@ -6,8 +6,6 @@ Dependencies between the plans:
 
 - hideandseek's `001` freezes the day the module first ships (MIG). CAS, and the table PIN needs, are edits in place before that and table rebuilds after, so they come first. PRV and WHO also want doing before players arrive. Shipping it means taking it off `$unshippedModules` in `build-deploy.php`.
 - PAR waits on JST: there is nothing to run a JS test with.
-- IRC is most useful after GAM: the Grim Fandango game cues wait on both.
-- ALT and GAM are each one more relationship type; doing them together settles `inherits` and the id columns once.
 
 ## PWR — No password reset
 
@@ -130,29 +128,11 @@ The page needs to know which values are borrowed: a cell holding only a `.songIn
 
 **Docs.** `music.md` (Linking and sorting: the rule that the three sorts agree).
 
-## GAM — No game version relationship
-
-`musicSongRelationTypes()` in `relationships.php` has only `remaster`, so a cue taken from a game's files cannot be tied to the soundtrack track released from it. The Grim Fandango Remastered cues extracted from its `YEAR*MUS.LAB` files (TSV built 2026-11-07) are waiting on it: the TSV carries each cue's disc song ids in a column the import ignores. The mapping can be rebuilt from the owner's `D:\Music\VGM` file names, `Title (NN Disc title; cue; cue).mp3`, where NN is the track's position on the Director's Cut album (TSV built 2026-11-07; its 01–37 are album 12's songs, its 38–51 new songs). The game-cue TSV, regenerated the same day, points 38–51 at the Director's Cut songs as the dev database numbers them (199–212); check that the live site's ids match before linking. One name is wrong: Casino Calavera lists `1106 - casino interior` for what is `1108`. Read in the code.
-
-**Plan.** One more entry in `musicSongRelationTypes()`, the variant being the game version and the target the disc release: labels "game version of …" and "disc release of …", and their two nouns, in each locale's part files. Decide two things first. Should it `inherit`, so that a game cue borrows its disc release's ratings as a remaster does? And should it get id columns in the song table (a `columns` entry, its keys in `MUSIC_SONG_COLUMNS`, the stylesheet's left-edge chain and hide list)? Then link the Grim cues, on each card or through IRC.
-
-**Verify.** A test like the remaster ones in `tests/cases/relationships.php`: both cards read their own line. `php tests/i18n-coverage.php` stays clean.
-
-**Docs.** `music.md` (the relationships bullet says only `remaster` exists), and a What's New entry in `changelog.php`.
-
-## ALT — No alternate take relationship
-
-The Grim Fandango Remastered Director's Cut (imported 2026-11-07) has two alternate takes of tracks on the 2015 album: Lost Souls' Alliance (Alt Solo) of Lost Souls' Alliance (138), and Blue Casket Bop (Alt Solo) of Blue Casket Bop (151). Under the rule VER settled (split on edit or performance), a different solo is a separate song. But the only relationship type is `remaster`, which would call the alt solo a remastered version, so the pairs stay unlinked. Read in the code.
-
-**Plan.** The same change as GAM: one more entry in `musicSongRelationTypes()`, with the alternate take as the variant. Proposed labels are "alternate take of …" and "main take of …", with their nouns, in each locale's part files. Decide `inherits`: the takes share their composition and most of their performance, so borrowing may be wanted, unlike a game cue. Decide id columns as for GAM. Then link the two pairs on their cards.
-
-**Verify.** As GAM: a test like the remaster ones in `tests/cases/relationships.php`, and `php tests/i18n-coverage.php` clean.
-
-**Docs.** `music.md` (the relationships bullet), and a What's New entry in `changelog.php`, shared with GAM's if they ship together.
-
 ## IRC — The import cannot read relationships from a column
 
 Add Songs relates a song to another only when the song is kept `<New, separate>` from one the artist already has under that title, and then with the one type chosen for the whole import (`songSeparateRelation` in `addSongs.js`, `related_song_id` in `ajax/song.php`). A paste cannot say that a row is the game version of song 137. So the Grim Fandango cues, which mostly have other titles than their releases, would be linked one card at a time. Read in the code.
+
+The cues are the case waiting on this. Their game-cue TSV (built 2026-11-07, from `D:\Music\VGM Q\Grim`) carries each cue's soundtrack song ids in an ignored column, to be linked as `game` with the cue as the variant. Those ids point 01–37 at album 12's songs and 38–51 at the Director's Cut songs as the dev database numbers them (199–212); check that the live site's ids match before using them. The mapping can be rebuilt from the owner's `D:\Music\VGM` file names, `Title (NN Disc title; cue; cue).mp3`, NN being the track's position on the Director's Cut. One name there is wrong: Casino Calavera lists `1106 - casino interior` for what is `1108`.
 
 **Plan.** A column role, Related songs, holding comma-separated song ids, with one relationship type and end chosen for it in the column-mapping step. `song.php` writes those rows in the transaction that creates the song. It refuses an id that is no song, and checks `musicSongRelationExists()` both ways round. It logs each row through `musicLogEdit()` as a `relation` on the variant, as the card does. Decide what a row matched to an existing song does with the column: add the links to that song, or leave them out.
 

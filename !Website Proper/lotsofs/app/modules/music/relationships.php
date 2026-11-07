@@ -20,6 +20,29 @@ function musicSongRelationTypes() {
 				'variant' => ['key' => 'remasterOf', 'label' => t('song.column.remasterOfShort'), 'name' => t('song.column.remasterOf')],
 			],
 		],
+		/// A cue as a game plays it, and the soundtrack track released from it.
+		'game' => [
+			'variant' => t('relation.gameVersionOf'),
+			'target' => t('relation.soundtrackReleaseOf'),
+			'variantNoun' => t('relation.gameVersion'),
+			'targetNoun' => t('relation.soundtrackRelease'),
+			'inherits' => true,
+			'columns' => [
+				'target' => ['key' => 'inGameAs', 'label' => t('song.column.inGameAsShort'), 'name' => t('song.column.inGameAs')],
+				'variant' => ['key' => 'gameVersionOf', 'label' => t('song.column.gameVersionOfShort'), 'name' => t('song.column.gameVersionOf')],
+			],
+		],
+		'alternate' => [
+			'variant' => t('relation.alternateTakeOf'),
+			'target' => t('relation.mainTakeOf'),
+			'variantNoun' => t('relation.alternateTake'),
+			'targetNoun' => t('relation.mainTake'),
+			'inherits' => true,
+			'columns' => [
+				'target' => ['key' => 'alternateTakes', 'label' => t('song.column.alternateTakesShort'), 'name' => t('song.column.alternateTakes')],
+				'variant' => ['key' => 'alternateTakeOf', 'label' => t('song.column.alternateTakeOfShort'), 'name' => t('song.column.alternateTakeOf')],
+			],
+		],
 	];
 }
 

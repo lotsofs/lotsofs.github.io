@@ -124,7 +124,7 @@ return [
 
 		assertSame(
 			array_merge(
-				['id', 'artist', 'title', 'aliases', 'album', 'year', 'duration', 'links', 'remasteredBy', 'remasterOf'],
+				['id', 'artist', 'title', 'aliases', 'album', 'year', 'duration', 'links', 'remasteredBy', 'remasterOf', 'inGameAs', 'gameVersionOf', 'alternateTakes', 'alternateTakeOf'],
 				$raters,
 				['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated']
 			),
@@ -268,21 +268,33 @@ return [
 	'Other names sits between Title and Album, and the id columns between Links and the raters' => function ($ctx) {
 		$body = columnsPage($ctx, 'columns_order');
 
-		$headers = array_map(fn($class) => strpos($body, '<th rowspan="2" class="' . $class), ['songTitleCell', 'songAliasesCell', 'songAlbumCell', 'songLinksCell', 'songRelationCell songRemasteredByCell', 'songRelationCell songRemasterOfCell']);
+		$relationColumns = [
+			'remasteredBy' => ['Remastered by', 'Rem. by'],
+			'remasterOf' => ['Remaster of', 'Rem. of'],
+			'inGameAs' => ['In game as', 'Game as'],
+			'gameVersionOf' => ['Game version of', 'Game of'],
+			'alternateTakes' => ['Alternate takes', 'Alt. takes'],
+			'alternateTakeOf' => ['Alternate take of', 'Alt. of'],
+		];
+
+		$headers = array_map(fn($class) => strpos($body, '<th rowspan="2" class="' . $class), array_merge(
+			['songTitleCell', 'songAliasesCell', 'songAlbumCell', 'songLinksCell'],
+			array_map(fn($key) => 'songRelationCell song' . ucfirst($key) . 'Cell', array_keys($relationColumns))
+		));
 		$headers[] = strpos($body, 'class="songRaterGroup');
 		assertTrue(!in_array(false, $headers, true), 'every header is there');
 		assertSame($headers, array_values(array_unique($headers)), 'once each');
 		$sorted = $headers;
 		sort($sorted);
-		assertSame($sorted, $headers, 'Title, Other names, Album, then Links, Remastered by, Remaster of and the raters');
-		assertContains('<th rowspan="2" class="songRelationCell songRemasteredByCell" title="Remastered by">Rem. by</th>', $body, 'Remastered by is headed short, its full name the tooltip');
-		assertContains('<th rowspan="2" class="songRelationCell songRemasterOfCell" title="Remaster of">Rem. of</th>', $body, 'and Remaster of');
-		foreach (['remasteredBy' => 'Remastered by', 'remasterOf' => 'Remaster of'] as $key => $name) {
+		assertSame($sorted, $headers, 'Title, Other names, Album, then Links, the relationship id columns and the raters');
+		foreach ($relationColumns as $key => [$name, $short]) {
+			$class = 'songRelationCell song' . ucfirst($key) . 'Cell';
+			assertContains('<th rowspan="2" class="' . $class . '" title="' . $name . '">' . $short . '</th>', $body, "{$name} is headed short, its full name the tooltip");
 			assertTrue((bool)preg_match('/data-column="' . $key . '"[^>]*>\s*<span>' . $name . '<\/span>/', $body), "the picker names {$key} in full");
 		}
 
 		$row = songsRowChunks($body)[0];
-		$cells = array_map(fn($field) => strpos($row, 'data-field="' . $field . '"'), ['title', 'aliases', 'album', 'links', 'remasteredBy', 'remasterOf']);
+		$cells = array_map(fn($field) => strpos($row, 'data-field="' . $field . '"'), array_merge(['title', 'aliases', 'album', 'links'], array_keys($relationColumns)));
 		$cells[] = strpos($row, 'data-field="score_');
 		$sorted = $cells;
 		sort($sorted);

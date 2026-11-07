@@ -3,9 +3,9 @@
 /// Which columns of the song list's table the column picker shows.
 
 /// The columns left of the raters, in table order.
-/// aliases is Other names, a song's and its versions'; remasteredBy and remasterOf are
-/// the remaster type's id columns, named in its `columns` (relationships.php).
-const MUSIC_SONG_COLUMNS = ['id', 'artist', 'title', 'aliases', 'album', 'year', 'duration', 'links', 'remasteredBy', 'remasterOf'];
+/// aliases is Other names, a song's and its versions'; the keys after links are the
+/// relationship types' id columns, named in their `columns` (relationships.php).
+const MUSIC_SONG_COLUMNS = ['id', 'artist', 'title', 'aliases', 'album', 'year', 'duration', 'links', 'remasteredBy', 'remasterOf', 'inGameAs', 'gameVersionOf', 'alternateTakes', 'alternateTakeOf'];
 
 /// The statistics right of the raters, in table order; also the orders sorted in PHP.
 const MUSIC_SONG_STAT_COLUMNS = ['average', 'deviation', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated'];

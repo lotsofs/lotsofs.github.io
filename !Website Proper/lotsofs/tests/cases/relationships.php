@@ -71,6 +71,32 @@ return [
 		assertTrue(strpos(substr(songsRowFor($body, $loner), 0, strpos(songsRowFor($body, $loner), '>')), 'data-relations') === false, 'and a song with none carries nothing');
 	},
 
+	'a game version and an alternate take read from both ends, each in its own columns' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Relation Kinds Owner');
+		$soundtrack = makeSong($ctx, $artistId, 'Relation Kinds Soundtrack');
+		$cue = makeSong($ctx, $artistId, 'Relation Kinds Cue');
+		$main = makeSong($ctx, $artistId, 'Relation Kinds Main Take');
+		$alternate = makeSong($ctx, $artistId, 'Relation Kinds Alt Take');
+		assertSame('ok', relateSongs($ctx, $cue, $soundtrack, 'variant', 'game')['json']['status'], 'a cue links to its soundtrack release');
+		assertSame('ok', relateSongs($ctx, $alternate, $main, 'variant', 'alternate')['json']['status'], 'an alternate take links to its main take');
+
+		$body = $ctx->get('/music/songs')['body'];
+		$line = fn($label, $id, $title) => $label . ' <a class="songRelationLink" href="/music/songs?songCard=' . $id . '" data-song-card-id="' . $id . '"><span class="songRelationId">' . $id . ':</span> <span class="songRelationTitle">' . $title . '</span></a>';
+		assertContains($line('game version of', $soundtrack, 'Relation Kinds Soundtrack'), songsCardFor($body, $cue), "the cue's line");
+		assertContains($line('soundtrack release of', $cue, 'Relation Kinds Cue'), songsCardFor($body, $soundtrack), "the soundtrack track's line");
+		assertContains($line('alternate take of', $main, 'Relation Kinds Main Take'), songsCardFor($body, $alternate), "the alternate take's line");
+		assertContains($line('main take of', $alternate, 'Relation Kinds Alt Take'), songsCardFor($body, $main), "the main take's line");
+
+		$ids = fn($songId, $field) => songsFieldCell(songsRowFor($body, $songId), $field);
+		assertContains('data-song-card-id="' . $cue . '"', $ids($soundtrack, 'inGameAs'), 'In game as lists the cue');
+		assertContains('data-song-card-id="' . $soundtrack . '"', $ids($cue, 'gameVersionOf'), 'Game version of lists the soundtrack track');
+		assertContains('data-song-card-id="' . $alternate . '"', $ids($main, 'alternateTakes'), 'Alternate takes lists the alternate take');
+		assertContains('data-song-card-id="' . $main . '"', $ids($alternate, 'alternateTakeOf'), 'Alternate take of lists the main take');
+		assertTrue(strpos($ids($soundtrack, 'remasteredBy') . $ids($main, 'inGameAs'), 'data-song-card-id') === false, 'and neither lands in another kind\'s column');
+	},
+
 	'a relationship can be turned round in place' => function ($ctx) {
 		$ctx->ensureLoggedIn();
 
