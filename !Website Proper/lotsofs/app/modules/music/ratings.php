@@ -11,6 +11,10 @@ require_once __MODULES__ . '/music/stats.php';
    song list, both lists and both cards agree on what counts; account_song stays
    the only thing written, and the poll's cursor stays on it.
 
+   Each effective rating carries updated_at, when it last changed: the song's own
+   row's time where that row holds a value, and for a borrowed half the time of
+   the version rows it is taken from, so a remaster sorts beside its original.
+
    The newest note is by its rating_audit time. Every note written since
    migration 005 is audited, so an unaudited note is older than any audited one,
    and only between unaudited notes does account_song.updated_at decide: it moves
@@ -39,7 +43,7 @@ function musicRatingView($db) {
 			GROUP BY song_id, version_id;
 
 		CREATE TEMP VIEW IF NOT EXISTS borrowed_score AS
-			SELECT v.song_id, a.account_id, ROUND(AVG(a.score), 2) AS score
+			SELECT v.song_id, a.account_id, ROUND(AVG(a.score), 2) AS score, MAX(a.updated_at) AS updated_at
 			FROM song_version v
 			JOIN account_song a ON a.song_id = v.version_id
 			WHERE a.score IS NOT NULL
@@ -58,7 +62,7 @@ function musicRatingView($db) {
 			WHERE a.subjective_note IS NOT NULL AND a.subjective_note != '';
 
 		CREATE TEMP VIEW IF NOT EXISTS borrowed_note AS
-			SELECT n.song_id, n.account_id, n.note
+			SELECT n.song_id, n.account_id, n.note, n.updated_at
 			FROM version_note n
 			WHERE NOT EXISTS (
 				SELECT 1 FROM version_note o
@@ -75,12 +79,18 @@ function musicRatingView($db) {
 				COALESCE(a.score, bs.score) AS score,
 				CASE WHEN a.subjective_note IS NULL OR a.subjective_note = '' THEN bn.note ELSE a.subjective_note END AS subjective_note,
 				a.score IS NULL AND bs.score IS NOT NULL AS score_borrowed,
-				(a.subjective_note IS NULL OR a.subjective_note = '') AND bn.note IS NOT NULL AS note_borrowed
+				(a.subjective_note IS NULL OR a.subjective_note = '') AND bn.note IS NOT NULL AS note_borrowed,
+				NULLIF(MAX(
+					CASE WHEN a.score IS NOT NULL OR (a.subjective_note IS NOT NULL AND a.subjective_note != '') THEN a.updated_at ELSE -1 END,
+					CASE WHEN a.score IS NULL THEN COALESCE(bs.updated_at, -1) ELSE -1 END,
+					CASE WHEN a.subjective_note IS NULL OR a.subjective_note = '' THEN COALESCE(bn.updated_at, -1) ELSE -1 END
+				), -1) AS updated_at
 			FROM account_song a
 			LEFT JOIN borrowed_score bs ON bs.song_id = a.song_id AND bs.account_id = a.account_id
 			LEFT JOIN borrowed_note bn ON bn.song_id = a.song_id AND bn.account_id = a.account_id
 			UNION ALL
-			SELECT k.account_id, k.song_id, bs.score, bn.note, bs.score IS NOT NULL, bn.note IS NOT NULL
+			SELECT k.account_id, k.song_id, bs.score, bn.note, bs.score IS NOT NULL, bn.note IS NOT NULL,
+				NULLIF(MAX(COALESCE(bs.updated_at, -1), COALESCE(bn.updated_at, -1)), -1)
 			FROM (SELECT song_id, account_id FROM borrowed_score UNION SELECT song_id, account_id FROM borrowed_note) k
 			LEFT JOIN borrowed_score bs ON bs.song_id = k.song_id AND bs.account_id = k.account_id
 			LEFT JOIN borrowed_note bn ON bn.song_id = k.song_id AND bn.account_id = k.account_id
@@ -116,14 +126,14 @@ function musicEffectiveRatings($db, $songIds, $accountIds = null) {
 	$entries = [];
 	foreach ($ids as $songId) {
 		foreach ($accounts as $accountId) {
-			$entries["{$songId}:{$accountId}"] = musicRatingEntry(['song_id' => $songId, 'account_id' => $accountId, 'score' => null, 'subjective_note' => null, 'score_borrowed' => 0, 'note_borrowed' => 0]);
+			$entries["{$songId}:{$accountId}"] = musicRatingEntry(['song_id' => $songId, 'account_id' => $accountId, 'score' => null, 'subjective_note' => null, 'score_borrowed' => 0, 'note_borrowed' => 0, 'updated_at' => null]);
 		}
 	}
 
 	$songIn = implode(', ', array_fill(0, count($ids), '?'));
 	$accountIn = implode(', ', array_fill(0, count($accounts), '?'));
 	foreach ($db->query("
-		SELECT account_id, song_id, score, subjective_note, score_borrowed, note_borrowed
+		SELECT account_id, song_id, score, subjective_note, score_borrowed, note_borrowed, updated_at
 		FROM effective_rating
 		WHERE song_id IN ({$songIn}) AND account_id IN ({$accountIn})
 	", array_merge($ids, $accounts))->fetchAll() as $row) {
@@ -133,7 +143,7 @@ function musicEffectiveRatings($db, $songIds, $accountIds = null) {
 	return array_values($entries);
 }
 
-/// One account's rating on one song for the page: values as the cells print them, and which half is borrowed.
+/// One account's rating on one song for the page: values as the cells print them, which half is borrowed, and when it last changed.
 function musicRatingEntry($row) {
 	return [
 		'song' => (int)$row['song_id'],
@@ -142,6 +152,41 @@ function musicRatingEntry($row) {
 		'note' => $row['subjective_note'] ?? '',
 		'scoreBorrowed' => (bool)$row['score_borrowed'],
 		'noteBorrowed' => (bool)$row['note_borrowed'],
+		'updated' => musicDateTime($row['updated_at']),
+		'updatedSort' => $row['updated_at'] === null ? null : (int)$row['updated_at'],
+	];
+}
+
+/* When each song was last updated: the newest of every account's rating time on
+   it (borrowed ones included, as effective_rating has them) and of every History
+   line about the song itself. Null for a song with neither. */
+function musicSongUpdatedAt($db, $songIds) {
+	$ids = array_values(array_unique(array_map('intval', $songIds)));
+	$times = array_fill_keys($ids, null);
+	if (!$ids) {
+		return $times;
+	}
+
+	$placeholders = implode(', ', array_fill(0, count($ids), '?'));
+	foreach ($db->query("
+		SELECT song_id, MAX(at) AS at FROM (
+			SELECT song_id, updated_at AS at FROM effective_rating WHERE song_id IN ({$placeholders})
+			UNION ALL
+			SELECT entity_id, created_at FROM edit_audit WHERE kind = 'song' AND entity_id IN ({$placeholders})
+		)
+		GROUP BY song_id
+	", array_merge($ids, $ids))->fetchAll() as $row) {
+		$times[(int)$row['song_id']] = $row['at'] === null ? null : (int)$row['at'];
+	}
+
+	return $times;
+}
+
+/// The song list's Last updated cell, as the live answers carry it beside the statistics.
+function musicSongUpdatedFields($timestamp) {
+	return [
+		'updated' => musicDateTime($timestamp),
+		'updatedSort' => $timestamp,
 	];
 }
 
@@ -152,5 +197,5 @@ function musicSongStatsRow($db, $songId) {
 		$scores[] = (float)$row['score'];
 	}
 
-	return array_merge(['song' => (int)$songId], musicSongStatFields($scores));
+	return array_merge(['song' => (int)$songId], musicSongStatFields($scores), musicSongUpdatedFields(musicSongUpdatedAt($db, [$songId])[(int)$songId]));
 }

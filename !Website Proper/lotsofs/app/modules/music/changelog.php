@@ -32,6 +32,16 @@ return [
 				'de' => 'Songs lassen sich als Spielfassung und Soundtrack-Veröffentlichung oder als alternative Aufnahme und Hauptaufnahme verknüpfen, jeweils mit Spalten in der Songliste.',
 			],
 			[
+				'en' => 'The song list can show when each rater last changed their rating, when a song was last changed and when it was added, and sort by each.',
+				'fy' => 'De side Lieten kin sjen litte wannear\'t elke beoardieler syn wurdearring foar it lêst feroare hat, wannear\'t in liet foar it lêst feroare is en wannear\'t it tafoege is, en dêrop sortearje.',
+				'de' => 'Die Songliste kann zeigen, wann jeder Bewertende seine Wertung zuletzt geändert hat, wann ein Song zuletzt geändert und wann er hinzugefügt wurde, und danach sortieren.',
+			],
+			[
+				'en' => 'Columns can hide every rater\'s scores, or every rater\'s notes, at once.',
+				'fy' => 'Kolommen kin de wurdearrings, of de notysjes, fan alle beoardielers tagelyk ferstopje.',
+				'de' => 'Unter „Spalten“ lassen sich die Wertungen oder die Notizen aller Bewertenden auf einmal ausblenden.',
+			],
+			[
 				'en' => 'A card\'s Related row can link a game version or an alternate take.',
 				'fy' => 'De rige Besibbe op in kaart kin in spulferzje of in alternative opname keppelje.',
 				'de' => 'Die Zeile „Verwandt“ auf einer Karte kann eine Spielfassung oder eine alternative Aufnahme verknüpfen.',

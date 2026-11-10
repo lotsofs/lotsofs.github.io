@@ -4,6 +4,7 @@ Finished work, one row per commit, newest first; `—` where the work had no cod
 
 | Date | Code | Area | Change | Why / how |
 |---|---|---|---|---|
+| 2026-11-10 | — | Music | Add sortable Updated columns per rater, and Last updated and Date added past the statistics, to the song list, and let Columns hide every rater's scores or notes | The owner wanted to sort by when a score or note last changed; a same-value rewrite no longer moves the time. Checked by the suite and in headless Chrome. |
 | 2026-11-07 | GAM, ALT | Music | Add game version and alternate take relationships, each lending ratings and with two id columns | Remaster was the only kind, so game cues and alt solos could not be linked. Checked by the suite and in headless Chrome. |
 | 2026-11-07 | RID | Music | Show each song's id in a card's Related box, and let an id typed into it pick that song | Labels named a song by artist, title and album only, and only a whole label was read. Checked in headless Chrome; Firefox's Playwright build was out of date. |
 | 2026-11-07 | — | Music | Keep a YouTube link's timestamp, so its embedded player and its link start there | A pasted link was cut to the bare video id; the id is now stored with `&t=` seconds. Checked by the suite and in headless Chrome. |

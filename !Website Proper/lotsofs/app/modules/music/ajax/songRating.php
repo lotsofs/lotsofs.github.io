@@ -52,28 +52,29 @@ $auditValue = function ($raw) use ($field) {
 $newValue = $auditValue($stored);
 $previousValue = $auditValue($existing ? $existing[$fields[$field]] : null);
 
-$db->pdo->beginTransaction();
-try {
-	$db->query("
-		INSERT INTO account_song (account_id, song_id, {$fields[$field]}, updated_at)
-		VALUES (?, ?, ?, ?)
-		ON CONFLICT (account_id, song_id)
-		DO UPDATE SET {$fields[$field]} = excluded.{$fields[$field]},
-			updated_at = excluded.updated_at
-	", [$accountId, $songId, $stored, time()]);
+/// A rewrite of the same value writes nothing, so updated_at stays when the rating last changed.
+if ($newValue !== $previousValue) {
+	$db->pdo->beginTransaction();
+	try {
+		$db->query("
+			INSERT INTO account_song (account_id, song_id, {$fields[$field]}, updated_at)
+			VALUES (?, ?, ?, ?)
+			ON CONFLICT (account_id, song_id)
+			DO UPDATE SET {$fields[$field]} = excluded.{$fields[$field]},
+				updated_at = excluded.updated_at
+		", [$accountId, $songId, $stored, time()]);
 
-	if ($newValue !== $previousValue) {
 		$db->query("
 			INSERT INTO rating_audit (account_id, song_id, field, value, previous_value, created_at)
 			VALUES (?, ?, ?, ?, ?, ?)
 		", [$accountId, $songId, $field, $newValue, $previousValue, time()]);
-	}
 
-	$db->pdo->commit();
-}
-catch (PDOException $e) {
-	$db->pdo->rollBack();
-	throw $e;
+		$db->pdo->commit();
+	}
+	catch (PDOException $e) {
+		$db->pdo->rollBack();
+		throw $e;
+	}
 }
 
 musicRatingView($db);

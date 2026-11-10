@@ -32,6 +32,10 @@ return [
 	'song.column.id' => 'ID',
 	'song.column.ratingScore' => 'Wert.', // ? short for "Wertung" / "Punkte" / "Bewertung"
 	'song.column.ratingNote' => 'Notiz',
+	'song.column.added' => 'Hinzugefügt',
+	'song.column.addedName' => 'Hinzugefügt am',
+	'song.column.updated' => 'Zuletzt geändert',
+	'song.column.ratingUpdated' => 'Geändert',
 
 	'song.submit' => 'Songs senden',
 	'song.option.separate' => '<Neu, getrennt>',
@@ -101,6 +105,7 @@ return [
 	'song.list.sortBy' => 'Sortieren nach',
 	'song.list.raterScoreLabel' => '{name} Wertung',
 	'song.list.raterNoteLabel' => '{name} Notiz',
+	'song.list.raterUpdatedLabel' => '{name} geändert',
 	'song.list.tapToEnter' => 'Zum Eingeben tippen',
 	'song.list.gateReveal' => 'Zum Ansehen klicken',
 	'song.list.gateRevealShort' => 'klick',
@@ -115,6 +120,9 @@ return [
 	'song.list.cardViewToggleOn' => 'Kartenansicht',
 	'song.list.cardViewToggleOff' => 'Tabellenansicht',
 	'song.list.columnPicker' => 'Spalten',
+	'song.list.columnRaterScore' => 'Wertung (jeder Bewertende)',
+	'song.list.columnRaterNote' => 'Notiz (jeder Bewertende)',
+	'song.list.columnRaterUpdated' => 'Geändert (jeder Bewertende)',
 	'song.list.columnsNotSaved' => 'Deine Spaltenauswahl wurde nicht gespeichert, beim nächsten Mal ist sie also wieder wie vorher: {error}',
 	'song.list.toastScore' => '{name} bewertete {song} mit {value}',
 	'song.list.toastNote' => '{name} schrieb eine Notiz zu {song}: {value}',

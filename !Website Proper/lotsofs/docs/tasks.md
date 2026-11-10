@@ -82,7 +82,7 @@ A rater with no rating on a song borrows from the songs a relationship of a lend
 
 ## LNK — A relationship change reaches other open pages only on reload
 
-The poll finds changes through `account_song.updated_at`. Linking, unlinking or re-pointing two songs touches no `account_song` row, yet changes what both borrow (`ratings.php`), their statistics, the blind-rating covers and their Related lines. The page that made the change gets all of it back in the `song-relationship` answer; every other open page keeps the old state until it reloads, or until a rating write on one of those songs happens to bring part of it. Read in the code (2026-11-05 review), not reproduced.
+The poll finds changes through `account_song.updated_at`. Linking, unlinking or re-pointing two songs touches no `account_song` row, yet changes what both borrow (`ratings.php`), their statistics, the blind-rating covers, their Related lines and their Updated and Last updated times. The page that made the change gets all of it back in the `song-relationship` answer; every other open page keeps the old state until it reloads, or until a rating write on one of those songs happens to bring part of it. Read in the code (2026-11-05 review), not reproduced.
 
 **Plan.** Give the poll a second cursor for relationships: a change counter or timestamp the endpoint bumps on add, update and remove (removals have no row left to stamp, so a counter beats a column), and, when it moved, answer with every account's effective ratings, the statistics and the relations of the songs involved, as `song-relationship` already does.
 

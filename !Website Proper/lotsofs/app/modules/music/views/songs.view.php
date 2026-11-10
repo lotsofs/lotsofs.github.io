@@ -18,7 +18,7 @@
 	<style>
 		<?php foreach ($globalData['raters'] as $rater): ?>
 			<?php $raterId = (int)$rater['id'] ?>
-			#songListTable.songHideRater<?= $raterId ?> :is(td[data-account-id="<?= $raterId ?>"], th[data-sort-key="score_<?= $raterId ?>"], th[data-sort-key="note_<?= $raterId ?>"], th.songRaterGroup<?= $raterId ?>) { display: none; }
+			#songListTable.songHideRater<?= $raterId ?> :is(td[data-account-id="<?= $raterId ?>"], th[data-sort-key="score_<?= $raterId ?>"], th[data-sort-key="note_<?= $raterId ?>"], th[data-sort-key="updated_<?= $raterId ?>"], th.songRaterGroup<?= $raterId ?>) { display: none; }
 			#songListTable :is(td[data-field="note_<?= $raterId ?>"], th[data-sort-key="note_<?= $raterId ?>"]) { --songNoteWidth: var(--songWidthRater<?= $raterId ?>); }
 		<?php endforeach ?>
 	</style>
@@ -117,9 +117,9 @@
 					<thead>
 						<tr>
 							<?php foreach ($globalData['columns'] as $column): ?>
-								<?php if (!isset($column['group']) && ($column['section'] ?? '') !== 'stats'): ?>
+								<?php if (!isset($column['group']) && !isset($column['section'])): ?>
 									<?php if ($column['sortable'] ?? true): ?>
-										<th rowspan="2" class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>">
+										<th rowspan="2" class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>"<?= isset($column['firstDir']) ? ' data-sort-first="' . $column['firstDir'] . '"' : '' ?>>
 											<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
 										</th>
 									<?php else: ?>
@@ -129,7 +129,7 @@
 							<?php endforeach ?>
 							<?php foreach ($globalData['columns'] as $column): ?>
 								<?php if (isset($column['group']) && ($column['groupStart'] ?? false)): ?>
-									<th colspan="2" class="<?= $column['groupClass'] ?>"><?= htmlspecialchars($column['groupLabel']) ?></th>
+									<th colspan="<?= (int)$globalData['raterColspan'] ?>" class="<?= $column['groupClass'] ?>"><?= htmlspecialchars($column['groupLabel']) ?></th>
 								<?php endif ?>
 							<?php endforeach ?>
 							<?php foreach ($globalData['columns'] as $column): ?>
@@ -139,12 +139,19 @@
 									</th>
 								<?php endif ?>
 							<?php endforeach ?>
+							<?php foreach ($globalData['columns'] as $column): ?>
+								<?php if (($column['section'] ?? '') === 'times'): ?>
+									<th rowspan="2" class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>" data-sort-first="<?= $column['firstDir'] ?>">
+										<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
+									</th>
+								<?php endif ?>
+							<?php endforeach ?>
 							<th rowspan="2" class="songResultCell"><?= $resultLabel ?></th>
 						</tr>
 						<tr>
 							<?php foreach ($globalData['columns'] as $column): ?>
 								<?php if (isset($column['group'])): ?>
-									<th class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>">
+									<th class="<?= $column['class'] ?>" data-sort-key="<?= $column['key'] ?>" data-sort-type="<?= $column['type'] ?>"<?= isset($column['firstDir']) ? ' data-sort-first="' . $column['firstDir'] . '"' : '' ?>>
 										<a href="<?= htmlspecialchars($column['link']) ?>" title="<?= htmlspecialchars($column['title']) ?>"><?= htmlspecialchars($column['label'] . $column['indicator']) ?></a>
 									</th>
 								<?php endif ?>
@@ -189,11 +196,14 @@
 									?>
 									<td class="<?= $rating['scoreCellClass'] ?><?= $rating['scoreEmptyClass'] ?><?= $rating['scoreGatedClass'] ?>" data-field="score_<?= $raterId ?>" data-account-id="<?= $raterId ?>"<?= $labels['placeholder'] ?>><?= $rating['scoreGateHtml'] ?><span class="songGateValue"><?= $rating['scoreValue'] ?></span><?= $rating['scoreBorrowedHtml'] ?></td>
 									<td class="<?= $rater['noteClass'] ?><?= $rating['noteEmptyClass'] ?><?= $rating['noteGatedClass'] ?>" data-field="note_<?= $raterId ?>" data-account-id="<?= $raterId ?>" data-rater-name="<?= $labels['name'] ?>"<?= $labels['placeholder'] ?><?= $rating['noteTitleAttr'] ?>><?= $rating['noteGateHtml'] ?><span class="ratingNoteText songGateValue"><?= $rating['noteValue'] ?></span><?= $rating['noteBorrowedHtml'] ?></td>
+									<td class="<?= $rater['updatedClass'] ?>" data-field="updated_<?= $raterId ?>" data-account-id="<?= $raterId ?>"<?= $rating['updatedCell']['sortAttr'] ?>><?= $rating['updatedCell']['value'] ?></td>
 								<?php endforeach ?>
 								<?php foreach ($globalData['statColumns'] as $stat): ?>
 									<?php $statCell = $song['statCells'][$stat['key']] ?>
 									<td class="<?= $statCell['class'] ?>" data-field="<?= $stat['key'] ?>"<?= $statCell['sortAttr'] ?>><?= $statCell['gateHtml'] ?><span class="songGateValue"><?= $statCell['value'] ?></span></td>
 								<?php endforeach ?>
+								<td class="songAddedCell" data-field="added"<?= $song['addedCell']['sortAttr'] ?>><?= $song['addedCell']['value'] ?></td>
+								<td class="songUpdatedCell" data-field="updated"<?= $song['updatedCell']['sortAttr'] ?>><?= $song['updatedCell']['value'] ?></td>
 								<td class="songResultCell" data-field="result"></td>
 							</tr>
 						<?php endforeach ?>

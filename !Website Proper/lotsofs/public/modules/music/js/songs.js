@@ -1358,6 +1358,17 @@ songCardViewToggle.addEventListener("click", () => {
 	setCardView(!document.documentElement.classList.contains("songCardView"));
 });
 
+/* A rater's name spans as many of their columns as the picker shows. CSS cannot
+   do this: under a colspan of 3 with one of them hidden, every later header would
+   sit a column to the left of its cells. With none shown the stylesheet hides the
+   name. The server renders the same. */
+const RATER_COLUMN_BOXES = Array.from(document.querySelectorAll('#songColumnPicker input[data-column="raterScore"], #songColumnPicker input[data-column="raterNote"], #songColumnPicker input[data-column="raterUpdated"]'));
+
+function setRaterColspan() {
+	const shown = RATER_COLUMN_BOXES.filter(box => box.checked).length;
+	songListTable.querySelectorAll("thead th.songRaterGroup").forEach(th => th.colSpan = Math.max(1, shown));
+}
+
 /* The column picker hides a column at once and saves the choice behind it. One
    save at a time: each is a single upsert, but two clicks on the same box have to
    reach the server in the order they were made. */
@@ -1371,6 +1382,9 @@ songColumnPicker.addEventListener("change", event => {
 	}
 
 	songListTable.classList.toggle(box.dataset.hideClass, !box.checked);
+	if (RATER_COLUMN_BOXES.includes(box)) {
+		setRaterColspan();
+	}
 
 	const choice = { column: box.dataset.column, shown: box.checked };
 	songColumnSaves = songColumnSaves
@@ -1736,12 +1750,17 @@ function sortRows(key, type) {
 	markLastVisibleRow();
 }
 
+/// The time columns start newest first; everything else ascending.
+function firstSortDir(header) {
+	return header.dataset.sortFirst || "asc";
+}
+
 function refreshHeaders() {
 	songListHeaders.forEach(header => {
 		const link = header.querySelector("a");
 		const key = header.dataset.sortKey;
 		const isActive = key === songSort;
-		const nextDir = isActive && songDir === "asc" ? "desc" : "asc";
+		const nextDir = isActive ? (songDir === "asc" ? "desc" : "asc") : firstSortDir(header);
 
 		link.textContent = link.dataset.baseLabel + (isActive ? (songDir === "asc" ? " ▲" : " ▼") : "");
 		link.href = songQuery(key, nextDir);
@@ -1772,7 +1791,7 @@ songListHeaders.forEach(header => {
 		event.preventDefault();
 
 		const key = header.dataset.sortKey;
-		const dir = key === songSort && songDir === "asc" ? "desc" : "asc";
+		const dir = key === songSort ? (songDir === "asc" ? "desc" : "asc") : firstSortDir(header);
 
 		applySort(key, dir, header.dataset.sortType);
 	});
@@ -2603,7 +2622,7 @@ function applyRatingHalf(pair, field, spec, value, borrowed) {
 	});
 }
 
-// The statistics columns after a score moved. The server sends finished strings.
+// The statistics columns and Last updated after a score moved. The server sends finished strings.
 const SONG_STAT_FIELDS = ["average", "deviation", "median", "mode", "highest", "lowest", "sum", "rated"];
 
 function applySongStats(stats) {
@@ -2627,6 +2646,10 @@ function applySongStats(stats) {
 
 		setCellValue(cell, {}, stats[field]);
 	});
+
+	if ("updated" in stats) {
+		setTimeCell(fieldCell(pair.tr, "updated"), stats.updated, stats.updatedSort);
+	}
 }
 
 function applyRatingChange(change) {
@@ -2637,6 +2660,24 @@ function applyRatingChange(change) {
 
 	applyRatingHalf(pair, "score_" + change.account, SCORE_SPEC, change.score, change.scoreBorrowed);
 	applyRatingHalf(pair, "note_" + change.account, NOTE_SPEC, change.note, change.noteBorrowed);
+	if ("updated" in change) {
+		setTimeCell(fieldCell(pair.tr, "updated_" + change.account), change.updated, change.updatedSort);
+	}
+}
+
+/// A time column's cell as the server wrote it: the text, and the unix time it sorts by.
+function setTimeCell(cell, text, sort) {
+	if (!cell) {
+		return;
+	}
+
+	cell.textContent = text;
+	if (sort === null || sort === undefined) {
+		delete cell.dataset.sortValue;
+	}
+	else {
+		cell.dataset.sortValue = String(sort);
+	}
 }
 
 function scheduleRatingPoll(delay) {

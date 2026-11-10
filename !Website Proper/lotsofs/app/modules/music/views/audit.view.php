@@ -28,7 +28,7 @@
 				<?php $previous = musicAuditValueText($entry['field'], $entry['previous_value']) ?>
 				<?php $value = musicAuditValueText($entry['field'], $entry['value']) ?>
 				<tr data-audit-id="<?= (int)$entry['id'] ?>" data-audit-source="<?= htmlspecialchars($entry['source']) ?>">
-					<td class="auditWhenCell"><?= htmlspecialchars(date('Y-m-d H:i:s', (int)$entry['created_at'])) ?></td>
+					<td class="auditWhenCell"><?= htmlspecialchars(musicDateTime($entry['created_at'])) ?></td>
 					<td class="auditWhoCell"><?= htmlspecialchars($entry['account_name'] ?? '') ?></td>
 					<td class="auditSubjectCell" title="<?= htmlspecialchars($entry['subject']) ?>"><?= htmlspecialchars($entry['subject']) ?></td>
 					<td class="auditFieldCell"><?= htmlspecialchars($fieldLabels[$entry['field']] ?? $entry['field']) ?></td>

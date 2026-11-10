@@ -39,7 +39,7 @@ foreach ($songsByAccount as $changedAccount => $songs) {
 	$changes = array_merge($changes, musicEffectiveRatings($db, array_merge($songs, musicVersionIds($db, $songs)), [$changedAccount]));
 }
 
-/// The song list's statistics columns for the songs in this tick's changes.
+/// The song list's statistics columns and Last updated for the songs in this tick's changes.
 $stats = [];
 $changedSongs = array_values(array_unique(array_column($changes, 'song')));
 
@@ -55,8 +55,10 @@ if ($changedSongs) {
 		$scoresBySong[(int)$row['song_id']][] = (float)$row['score'];
 	}
 
+	$updatedAt = musicSongUpdatedAt($db, $changedSongs);
+
 	foreach ($changedSongs as $songId) {
-		$stats[] = array_merge(['song' => $songId], musicSongStatFields($scoresBySong[$songId] ?? []));
+		$stats[] = array_merge(['song' => $songId], musicSongStatFields($scoresBySong[$songId] ?? []), musicSongUpdatedFields($updatedAt[$songId]));
 	}
 }
 

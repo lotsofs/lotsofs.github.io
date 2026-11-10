@@ -65,6 +65,14 @@ $gatePill = function ($label, $hint) {
 		. htmlspecialchars($label) . '</button>';
 };
 
+/// A time column's cell: the time as History prints it, sorting by the unix time; blank for none.
+$timeCell = function ($timestamp) {
+	return [
+		'value' => htmlspecialchars(musicDateTime($timestamp)),
+		'sortAttr' => $timestamp === null ? '' : ' data-sort-value="' . (int)$timestamp . '"',
+	];
+};
+
 $notePill = $gatePill(t('song.list.gateReveal'), t('song.list.gateNoteHint'));
 $scorePillWide = $gatePill(t('song.list.gateReveal'), t('song.list.gateScoreHint'));
 $scorePillNarrow = $gatePill(t('song.list.gateRevealShort'), t('song.list.gateScoreHint'));
@@ -231,6 +239,9 @@ foreach ($globalData['songs'] as $song) {
 
 	$song['linksAttr'] = htmlspecialchars(json_encode($songLinks));
 
+	$song['addedCell'] = $timeCell(isset($song['added_at']) ? (int)$song['added_at'] : null);
+	$song['updatedCell'] = $timeCell(isset($song['last_updated']) ? (int)$song['last_updated'] : null);
+
 	$song['linkChips'] = [];
 	foreach ($songLinkFields as $field) {
 		$linkValue = $songLinks[$field['key']] ?? null;
@@ -314,6 +325,8 @@ foreach ($globalData['songs'] as $song) {
 			'noteGateHtml' => $noteGated ? $notePill : '',
 			/// Withheld with the text: the tooltip would hand it straight back.
 			'noteTitleAttr' => $noteGated ? '' : ' title="' . htmlspecialchars($note) . '"',
+			/// Never covered: when somebody rated gives away nothing about what they thought.
+			'updatedCell' => $timeCell(isset($song['updated_' . $raterId]) ? (int)$song['updated_' . $raterId] : null),
 		];
 	}
 

@@ -790,12 +790,40 @@ td.albumStatsRatedCell {
 		box-shadow: inset 1px 0 0 var(--border), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
-	thead .songMyScoreCell {
-		box-shadow: inset 1px 0 0 var(--mineAccent), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
+	/* The time block's left edge, as the statistics block has one: Date added
+	   draws it, or Last updated when the picker hides that. */
+	thead .songAddedCell,
+	&.songHideAdded thead .songUpdatedCell {
+		box-shadow: inset 1px 0 0 var(--border), inset -1px 0 0 var(--border), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
-	thead .songMyNoteCell {
-		box-shadow: inset -1px 0 0 var(--mineAccent), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
+	td.songAddedCell,
+	&.songHideAdded td.songUpdatedCell {
+		box-shadow: inset 1px 0 0 var(--border);
+	}
+
+	/* Your own columns are edged in the accent round whichever of the three the
+	   picker leaves showing: Score draws the left edge, else Note, else Updated,
+	   and Updated the right, else Note, else Score. The header and the body share
+	   the two edges as custom properties so each combination is written once; a
+	   header cell's own right is otherwise the ordinary line, a body cell's its
+	   border. The right accent takes the border's place, as the header draws it:
+	   at a fractional display scale a border and a shadow round differently. */
+	.songMyScoreCell,
+	&.songHideRaterScore .songMyNoteCell,
+	&.songHideRaterScore.songHideRaterNote .songMyUpdatedCell {
+		--mineLeft: inset 1px 0 0 var(--mineAccent);
+	}
+
+	.songMyUpdatedCell,
+	&.songHideRaterUpdated .songMyNoteCell,
+	&.songHideRaterNote.songHideRaterUpdated .songMyScoreCell {
+		--mineRight: inset -1px 0 0 var(--mineAccent);
+		border-right-width: 0;
+	}
+
+	thead :is(.songMyScoreCell, .songMyNoteCell, .songMyUpdatedCell) {
+		box-shadow: var(--mineLeft, 0 0 transparent), var(--mineRight, inset -1px 0 0 var(--border)), inset 0 1px 0 var(--border), inset 0 -1px 0 var(--border);
 	}
 
 	/* Each cell draws one side of a line, or separate borders would double up. */
@@ -937,6 +965,12 @@ td.albumStatsRatedCell {
 		white-space: nowrap;
 	}
 
+	/* The time columns, yyyy-mm-dd hh:mm:ss, digits lined up down the column. */
+	td:is(.songAddedCell, .songUpdatedCell, .songRatingUpdatedCell) {
+		white-space: nowrap;
+		font-variant-numeric: tabular-nums;
+	}
+
 	.songAlbumCell {
 		width: var(--songWidthAlbum, auto);
 		min-width: var(--songWidthAlbum, auto);
@@ -976,25 +1010,13 @@ td.albumStatsRatedCell {
 		background-color: #101010;
 	}
 
-	.songMyScoreCell {
-		box-shadow: inset 1px 0 0 var(--mineAccent);
-	}
-
-	/* The accent alone on the right, as the header draws it, not beside a border:
-	   at a fractional display scale a border and a shadow round differently. */
-	.songMyNoteCell {
-		border-right-width: 0;
-		box-shadow: inset -1px 0 0 var(--mineAccent);
+	/* The edges set above, and along the bottom of the last row. */
+	td:is(.songMyScoreCell, .songMyNoteCell, .songMyUpdatedCell) {
+		box-shadow: var(--mineLeft, 0 0 transparent), var(--mineRight, 0 0 transparent), var(--mineBottom, 0 0 transparent);
 	}
 
 	.songRowLast {
-		.songMyScoreCell {
-			box-shadow: inset 1px 0 0 var(--mineAccent), inset 0 -1px 0 var(--mineAccent);
-		}
-
-		.songMyNoteCell {
-			box-shadow: inset -1px 0 0 var(--mineAccent), inset 0 -1px 0 var(--mineAccent);
-		}
+		--mineBottom: inset 0 -1px 0 var(--mineAccent);
 	}
 
 	tbody td:hover {
@@ -1062,6 +1084,12 @@ td.albumStatsRatedCell {
 	&.songHideGameVersionOf .songGameVersionOfCell,
 	&.songHideAlternateTakes .songAlternateTakesCell,
 	&.songHideAlternateTakeOf .songAlternateTakeOfCell,
+	&.songHideAdded .songAddedCell,
+	&.songHideUpdated .songUpdatedCell,
+	&.songHideRaterScore .songRatingScoreCell,
+	&.songHideRaterNote .songRatingNoteCell,
+	&.songHideRaterUpdated .songRatingUpdatedCell,
+	&.songHideRaterScore.songHideRaterNote.songHideRaterUpdated .songRaterGroup,
 	&.songHideAverage .songStatAverageCell,
 	&.songHideDeviation .songStatDeviationCell,
 	&.songHideMedian .songStatMedianCell,

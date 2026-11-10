@@ -32,6 +32,8 @@ $sortable = [
 	'album' => ['value' => 'albums', 'order' => 'albums COLLATE NOCASE'],
 	'year' => ['value' => 'COALESCE(song_year, fallback_year)', 'order' => 'COALESCE(song_year, fallback_year)'],
 	'duration' => ['value' => 's.duration', 'order' => 's.duration'],
+	'added' => ['value' => 'added_at', 'order' => 'added_at'],
+	'updated' => ['value' => 'last_updated', 'order' => 'last_updated'],
 ];
 
 
@@ -42,18 +44,24 @@ foreach ($raters as $rater) {
 	$id = (int)$rater['id'];
 
 	$aggregates .= ", MAX(CASE WHEN account_id = {$id} THEN score END) AS score_{$id}, MAX(CASE WHEN account_id = {$id} THEN subjective_note END) AS note_{$id}"
-		. ", MAX(CASE WHEN account_id = {$id} THEN score_borrowed END) AS score_borrowed_{$id}, MAX(CASE WHEN account_id = {$id} THEN note_borrowed END) AS note_borrowed_{$id}";
-	$selects .= ", r.score_{$id} AS score_{$id}, r.note_{$id} AS note_{$id}, r.score_borrowed_{$id} AS score_borrowed_{$id}, r.note_borrowed_{$id} AS note_borrowed_{$id}";
+		. ", MAX(CASE WHEN account_id = {$id} THEN score_borrowed END) AS score_borrowed_{$id}, MAX(CASE WHEN account_id = {$id} THEN note_borrowed END) AS note_borrowed_{$id}"
+		. ", MAX(CASE WHEN account_id = {$id} THEN updated_at END) AS updated_{$id}";
+	$selects .= ", r.score_{$id} AS score_{$id}, r.note_{$id} AS note_{$id}, r.score_borrowed_{$id} AS score_borrowed_{$id}, r.note_borrowed_{$id} AS note_borrowed_{$id}, r.updated_{$id} AS updated_{$id}";
 
 	$sortable["score_{$id}"] = ['value' => "score_{$id}", 'order' => "score_{$id}"];
 	$sortable["note_{$id}"] = ['value' => "note_{$id}", 'order' => "note_{$id} COLLATE NOCASE"];
+	$sortable["updated_{$id}"] = ['value' => "updated_{$id}", 'order' => "updated_{$id}"];
 }
 
 /// Effective ratings, so a rating borrowed from another version sorts and counts like a real one.
 require_once __MODULES__ . '/music/ratings.php';
 musicRatingView($db);
 
-$joins = " LEFT JOIN (SELECT song_id{$aggregates} FROM effective_rating GROUP BY song_id) r ON r.song_id = s.id";
+$joins = " LEFT JOIN (SELECT song_id{$aggregates}, MAX(updated_at) AS rated_at FROM effective_rating GROUP BY song_id) r ON r.song_id = s.id";
+
+/// The song's own History: its newest line, and when it was added (0, the epoch, for a song from before History).
+$joins .= " LEFT JOIN (SELECT entity_id, MAX(created_at) AS edited_at, MIN(CASE WHEN field = 'added' THEN created_at END) AS added_at
+	FROM edit_audit WHERE kind = 'song' GROUP BY entity_id) ea ON ea.entity_id = s.id";
 
 require_once __MODULES__ . '/music/songColumns.php';
 
@@ -179,7 +187,9 @@ $globalData['songs'] = $db->query("
 		s.duration,
 		(SELECT MIN(al.release_year) FROM album_track at
 			JOIN album al ON al.id = at.album_id
-			WHERE at.song_id = s.id AND al.release_year IS NOT NULL) AS fallback_year
+			WHERE at.song_id = s.id AND al.release_year IS NOT NULL) AS fallback_year,
+		COALESCE(ea.added_at, 0) AS added_at,
+		NULLIF(MAX(COALESCE(ea.edited_at, -1), COALESCE(r.rated_at, -1)), -1) AS last_updated
 		{$selects}
 	FROM song s
 	LEFT JOIN song_alias st ON st.song_id = s.id AND st.is_actual = 1
@@ -359,6 +369,8 @@ foreach ($raters as $index => $rater) {
 	$raters[$index]['isMine'] = $isMine;
 	$raters[$index]['scoreClass'] = 'songRatingCell songRatingScoreCell songScoreColoured' . ($isMine ? ' songMineCell songMyScoreCell' : '');
 	$raters[$index]['noteClass'] = 'songRatingCell songRatingNoteCell' . ($isMine ? ' songMineCell songMyNoteCell' : '');
+	/// Not a songRatingCell: nothing edits, covers or lends it.
+	$raters[$index]['updatedClass'] = 'songRatingUpdatedCell' . ($isMine ? ' songMineCell songMyUpdatedCell' : '');
 
 	$columns[] = [
 		'key' => "score_{$id}",
@@ -379,6 +391,15 @@ foreach ($raters as $index => $rater) {
 		'label' => t('song.column.ratingNote'),
 		'name' => t('song.list.raterNoteLabel', ['name' => $rater['account_name']]),
 		'group' => "rater_{$id}",
+	];
+	$columns[] = [
+		'key' => "updated_{$id}",
+		'type' => 'number',
+		'class' => $raters[$index]['updatedClass'],
+		'label' => t('song.column.ratingUpdated'),
+		'name' => t('song.list.raterUpdatedLabel', ['name' => $rater['account_name']]),
+		'group' => "rater_{$id}",
+		'firstDir' => 'desc',
 	];
 }
 
@@ -405,22 +426,33 @@ foreach ($statColumns as $stat) {
 }
 
 $globalData['statColumns'] = $statColumns;
+
+/// When the song was added and last changed, past the statistics, newest first on the first click.
+$columns[] = ['key' => 'added', 'type' => 'number', 'section' => 'times', 'class' => 'songAddedCell', 'label' => t('song.column.added'), 'name' => t('song.column.addedName'), 'firstDir' => 'desc'];
+$columns[] = ['key' => 'updated', 'type' => 'number', 'section' => 'times', 'class' => 'songUpdatedCell', 'label' => t('song.column.updated'), 'firstDir' => 'desc'];
 $globalData['raters'] = $raters;
 $globalData['accountId'] = $accountId;
 
-/// The column picker, in table order: the fixed columns, each rater, the statistics.
+/// The column picker, in table order: the fixed columns, each rater and then each of
+/// their columns at once, the statistics, the times.
 /// A column headed by a short label is named in full.
 $columnLabels = array_map(fn($column) => $column['name'] ?? $column['label'], array_column($columns, null, 'key'));
 
-$columnPicker = ['columns' => [], 'raters' => [], 'stats' => []];
+$columnPicker = ['columns' => [], 'raters' => [], 'stats' => [], 'times' => []];
 foreach (MUSIC_SONG_COLUMNS as $key) {
 	$columnPicker['columns'][] = ['key' => $key, 'label' => $columnLabels[$key]];
 }
 foreach ($raters as $rater) {
 	$columnPicker['raters'][] = ['key' => 'rater_' . (int)$rater['id'], 'label' => $rater['account_name']];
 }
+$columnPicker['raters'][] = ['key' => 'raterScore', 'label' => t('song.list.columnRaterScore')];
+$columnPicker['raters'][] = ['key' => 'raterNote', 'label' => t('song.list.columnRaterNote')];
+$columnPicker['raters'][] = ['key' => 'raterUpdated', 'label' => t('song.list.columnRaterUpdated')];
 foreach ($statColumns as $stat) {
 	$columnPicker['stats'][] = ['key' => $stat['key'], 'label' => $stat['name']];
+}
+foreach (MUSIC_SONG_TIME_COLUMNS as $key) {
+	$columnPicker['times'][] = ['key' => $key, 'label' => $columnLabels[$key]];
 }
 
 $columnChoices = musicSongColumnChoices($db, $accountId);
@@ -439,6 +471,8 @@ foreach ($columnPicker as $group => $entries) {
 
 $globalData['columnPicker'] = $columnPicker;
 $globalData['tableHideClasses'] = $tableHideClasses;
+/// A rater's name spans the columns of theirs the picker shows; songs.js keeps it so.
+$globalData['raterColspan'] = max(1, count(array_filter(MUSIC_SONG_RATER_COLUMNS, fn($key) => musicSongColumnShown($columnChoices, $key))));
 
 require_once __MODULES__ . '/music/blindRating.php';
 $globalData['blindRating'] = musicBlindRating();
@@ -453,7 +487,8 @@ $globalData['columns'] = [];
 foreach ($columns as $index => $column) {
 
 	$isActive = $column['key'] === $sort;
-	$nextDir = $isActive && $globalData['dir'] === 'asc' ? 'desc' : 'asc';
+	$firstDir = $column['firstDir'] ?? 'asc';
+	$nextDir = $isActive ? ($globalData['dir'] === 'asc' ? 'desc' : 'asc') : $firstDir;
 
 	$column['link'] = '?sort=' . $column['key'] . '&dir=' . $nextDir . $filterQuery;
 	$column['indicator'] = $isActive ? ($globalData['dir'] === 'asc' ? ' ▲' : ' ▼') : '';

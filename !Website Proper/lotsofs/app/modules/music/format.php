@@ -25,3 +25,12 @@ function musicSongLabel($artists, $title) {
 
 	return $artists === '' ? $title : $artists . ' — ' . $title;
 }
+
+/// A unix time as yyyy-mm-dd hh:mm:ss, as History and the song list's time columns print it; null stays empty.
+function musicDateTime($timestamp) {
+	if ($timestamp === null || $timestamp === '') {
+		return '';
+	}
+
+	return date('Y-m-d H:i:s', (int)$timestamp);
+}
