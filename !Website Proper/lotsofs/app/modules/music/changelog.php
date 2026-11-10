@@ -42,6 +42,11 @@ return [
 				'de' => 'Unter „Spalten“ lassen sich die Wertungen oder die Notizen aller Bewertenden auf einmal ausblenden.',
 			],
 			[
+				'en' => 'The heading, Filter and buttons above the song list stay in view when the table scrolls sideways.',
+				'fy' => 'De kop, it filter en de knoppen boppe de side Lieten bliuwe yn byld as de tabel nei de kant skowt.',
+				'de' => 'Überschrift, Filter und Schaltflächen über der Songliste bleiben sichtbar, wenn die Tabelle seitwärts scrollt.',
+			],
+			[
 				'en' => 'A card\'s Related row can link a game version or an alternate take.',
 				'fy' => 'De rige Besibbe op in kaart kin in spulferzje of in alternative opname keppelje.',
 				'de' => 'Die Zeile „Verwandt“ auf einer Karte kann eine Spielfassung oder eine alternative Aufnahme verknüpfen.',

@@ -39,68 +39,71 @@
 		catch (error) {}
 	</script>
 	<div class="songLayout">
-		<form class="songFilters" method="get" action="/music/songs">
-			<h2><?= t('song.list.filterHeading') ?></h2>
-			<input type="hidden" name="sort" value="<?= htmlspecialchars($globalData['sort']) ?>">
-			<input type="hidden" name="dir" value="<?= htmlspecialchars($globalData['dir']) ?>">
-			<div class="filterRow">
-				<div class="filterGroup">
-					<label for="filterArtist"><?= t('song.list.filterArtist') ?></label>
-					<select id="filterArtist" name="artist">
-						<option value=""><?= t('song.list.filterAllArtists') ?></option>
-						<?php foreach ($globalData['artistOptions'] as $option): ?>
-							<?php
-								$selectedAttr = (int)$option['id'] === $globalData['filterArtist'] ? ' selected' : '';
-								$optionLabel = $option['name'] === null ? t('artist.list.noName') : htmlspecialchars($option['name']);
-							?>
-							<option value="<?= (int)$option['id'] ?>"<?= $selectedAttr ?>><?= $optionLabel ?></option>
-						<?php endforeach ?>
-					</select>
-				</div>
-				<div class="filterGroup">
-					<label for="filterAlbum"><?= t('song.list.filterAlbum') ?></label>
-					<select id="filterAlbum" name="album">
-						<option value=""><?= t('song.list.filterAnyAlbum') ?></option>
-						<?php foreach ($globalData['albumOptions'] as $option): ?>
-							<?php
-								$inScope = $globalData['filterArtist'] !== null
-									? (int)$option['artist_id'] === $globalData['filterArtist']
-									: $option['artist_id'] === null;
-							?>
-							<?php if ($inScope): ?>
+		<?php /* One box, so it can stick to the left while the table scrolls the page sideways. */ ?>
+		<div class="songTop">
+			<form class="songFilters" method="get" action="/music/songs">
+				<h2><?= t('song.list.filterHeading') ?></h2>
+				<input type="hidden" name="sort" value="<?= htmlspecialchars($globalData['sort']) ?>">
+				<input type="hidden" name="dir" value="<?= htmlspecialchars($globalData['dir']) ?>">
+				<div class="filterRow">
+					<div class="filterGroup">
+						<label for="filterArtist"><?= t('song.list.filterArtist') ?></label>
+						<select id="filterArtist" name="artist">
+							<option value=""><?= t('song.list.filterAllArtists') ?></option>
+							<?php foreach ($globalData['artistOptions'] as $option): ?>
 								<?php
-									$selectedAttr = (int)$option['id'] === $globalData['filterAlbum'] ? ' selected' : '';
-									$optionLabel = $option['name'] === null ? t('album.list.noName') : htmlspecialchars($option['name']);
+									$selectedAttr = (int)$option['id'] === $globalData['filterArtist'] ? ' selected' : '';
+									$optionLabel = $option['name'] === null ? t('artist.list.noName') : htmlspecialchars($option['name']);
 								?>
 								<option value="<?= (int)$option['id'] ?>"<?= $selectedAttr ?>><?= $optionLabel ?></option>
-							<?php endif ?>
-						<?php endforeach ?>
-					</select>
-				</div>
-			</div>
-			<button type="submit"><?= t('song.list.filterApply') ?></button>
-		</form>
-
-		<div class="songSidePanel">
-			<div class="songSideButtons">
-				<button type="button" id="songCardViewToggle" class="songCardViewToggle" aria-pressed="false"><?= t('song.list.cardViewToggleOn') ?></button>
-				<details class="songColumnPicker" id="songColumnPicker">
-					<summary class="songColumnPickerButton"><?= t('song.list.columnPicker') ?></summary>
-					<div class="songColumnPickerMenu">
-						<?php foreach ($globalData['columnPicker'] as $entries): ?>
-							<div class="songColumnPickerGroup">
-								<?php foreach ($entries as $entry): ?>
-									<label class="songColumnPickerRow">
-										<input type="checkbox" data-column="<?= htmlspecialchars($entry['key']) ?>" data-hide-class="<?= htmlspecialchars($entry['hideClass']) ?>"<?= $entry['shown'] ? ' checked' : '' ?>>
-										<span><?= htmlspecialchars($entry['label']) ?></span>
-									</label>
-								<?php endforeach ?>
-							</div>
-						<?php endforeach ?>
+							<?php endforeach ?>
+						</select>
 					</div>
-				</details>
+					<div class="filterGroup">
+						<label for="filterAlbum"><?= t('song.list.filterAlbum') ?></label>
+						<select id="filterAlbum" name="album">
+							<option value=""><?= t('song.list.filterAnyAlbum') ?></option>
+							<?php foreach ($globalData['albumOptions'] as $option): ?>
+								<?php
+									$inScope = $globalData['filterArtist'] !== null
+										? (int)$option['artist_id'] === $globalData['filterArtist']
+										: $option['artist_id'] === null;
+								?>
+								<?php if ($inScope): ?>
+									<?php
+										$selectedAttr = (int)$option['id'] === $globalData['filterAlbum'] ? ' selected' : '';
+										$optionLabel = $option['name'] === null ? t('album.list.noName') : htmlspecialchars($option['name']);
+									?>
+									<option value="<?= (int)$option['id'] ?>"<?= $selectedAttr ?>><?= $optionLabel ?></option>
+								<?php endif ?>
+							<?php endforeach ?>
+						</select>
+					</div>
+				</div>
+				<button type="submit"><?= t('song.list.filterApply') ?></button>
+			</form>
+
+			<div class="songSidePanel">
+				<div class="songSideButtons">
+					<button type="button" id="songCardViewToggle" class="songCardViewToggle" aria-pressed="false"><?= t('song.list.cardViewToggleOn') ?></button>
+					<details class="songColumnPicker" id="songColumnPicker">
+						<summary class="songColumnPickerButton"><?= t('song.list.columnPicker') ?></summary>
+						<div class="songColumnPickerMenu">
+							<?php foreach ($globalData['columnPicker'] as $entries): ?>
+								<div class="songColumnPickerGroup">
+									<?php foreach ($entries as $entry): ?>
+										<label class="songColumnPickerRow">
+											<input type="checkbox" data-column="<?= htmlspecialchars($entry['key']) ?>" data-hide-class="<?= htmlspecialchars($entry['hideClass']) ?>"<?= $entry['shown'] ? ' checked' : '' ?>>
+											<span><?= htmlspecialchars($entry['label']) ?></span>
+										</label>
+									<?php endforeach ?>
+								</div>
+							<?php endforeach ?>
+						</div>
+					</details>
+				</div>
+				<p id="songEditHint"><?= t('song.list.editHint') ?></p>
 			</div>
-			<p id="songEditHint"><?= t('song.list.editHint') ?></p>
 		</div>
 
 		<div class="songListArea">

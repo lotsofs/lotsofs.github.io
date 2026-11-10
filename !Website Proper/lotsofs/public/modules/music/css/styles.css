@@ -7,6 +7,10 @@
 
 	--border: #555555;
 	--mineAccent: #999999;
+	/* The body's side padding, which what sticks to the left keeps as its gap.
+	   In rem: an em here would resolve in each element that reads it, and the
+	   heading's are twice the size. */
+	--pageGutter: 1.5rem;
 	--buttonFill: hsl(var(--hue), 100%, 9%);
 	--buttonFillHover: hsl(var(--hue), 100%, 13%);
 }
@@ -16,7 +20,7 @@ body {
 	margin: 0;
 	width: min-content;
 	min-width: 100%;
-	padding: var(--navHeight, 3.35em) 1.5em 0;
+	padding: var(--navHeight, 3.35em) var(--pageGutter) 0;
 	background: linear-gradient(
 		-45deg,
 		#000000,
@@ -385,6 +389,20 @@ td.albumStatsRatedCell {
 	}
 }
 
+/* What is above the table stays at the left while the wide table scrolls the
+   page sideways. Each needs room to move inside its containing block: the
+   heading's is the body, as wide as the table, once the heading is only as wide
+   as its text; the Filter box and the side panel share .songTop, which spans
+   both grid columns for the same reason, since a grid item's containing block
+   is its own grid area. The max-width keeps either inside the screen, wrapping
+   rather than running off it. */
+#songListHeading {
+	position: sticky;
+	left: var(--pageGutter);
+	width: fit-content;
+	max-width: calc(100vw - 2 * var(--pageGutter));
+}
+
 .songLayout {
 	display: grid;
 	grid-template-columns: 22em minmax(min-content, auto);
@@ -392,10 +410,24 @@ td.albumStatsRatedCell {
 	gap: 1.5em;
 }
 
-.songFilters {
-	grid-column: 1;
+/* A sticky box is a stacking context of its own, so the Columns menu inside
+   could rise no higher than this does: above the table's sticky header (3). */
+.songTop {
+	grid-column: 1 / -1;
 	grid-row: 1;
-	align-self: start;
+	justify-self: start;
+	display: flex;
+	align-items: flex-start;
+	gap: 1.5em;
+	position: sticky;
+	left: var(--pageGutter);
+	z-index: 4;
+	max-width: calc(100vw - 2 * var(--pageGutter));
+}
+
+.songFilters {
+	flex: 0 0 22em;
+	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
 	gap: 0.8em;
@@ -450,17 +482,10 @@ td.albumStatsRatedCell {
 }
 
 .songSidePanel {
-	grid-column: 2;
-	grid-row: 1 / span 2;
 	display: flex;
 	flex-direction: column;
 	gap: 0.8em;
 	min-width: 0;
-	pointer-events: none;
-
-	> * {
-		pointer-events: auto;
-	}
 }
 
 .songCardViewToggle {
@@ -1131,6 +1156,16 @@ html.songColumnResizing {
 	margin-inline: auto;
 }
 
+/* Card view has no wide table to stick past, and centres the hint in the room
+   beside the Filter box, which needs that room back. */
+.songCardView .songTop {
+	justify-self: stretch;
+}
+
+.songCardView .songSidePanel {
+	flex-grow: 1;
+}
+
 #songCards {
 	display: none;
 }
@@ -1641,8 +1676,8 @@ html.songColumnResizing {
 }
 
 @media (max-width: 700px) {
-	body {
-		padding: var(--navHeight, 3.35em) 0.5em 0;
+	:root {
+		--pageGutter: 0.5rem;
 	}
 
 	nav {
@@ -1667,19 +1702,22 @@ html.songColumnResizing {
 		right: auto;
 	}
 
+	/* Not 1fr, for the reason the wide layout's second column is not: the table
+	   would count for nothing in the body's width, which would stay the screen's,
+	   leaving nothing above the table room to stick in table view. */
 	.songLayout {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(min-content, auto);
 	}
 
-	.songFilters,
-	.songSidePanel,
-	.songListArea {
-		grid-column: auto;
-		grid-row: auto;
+	/* Stacked, each the screen's width, as the one column used to make them. */
+	.songTop {
+		flex-direction: column;
+		align-items: stretch;
+		justify-self: stretch;
 	}
 
-	.songSidePanel {
-		pointer-events: auto;
+	.songFilters {
+		flex: none;
 	}
 
 	.songCardMeta {
