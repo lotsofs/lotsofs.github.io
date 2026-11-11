@@ -1500,6 +1500,70 @@ songResizableColumns.forEach(column => {
 	});
 });
 
+/* ID, Artist and Title stay at the screen's left edge while the table scrolls the
+   page sideways, each sticky at the widths of those before it. Measured, since
+   the widths follow the content and any dragged width, and a column the picker
+   hides measures 0. Not while the three would take more than half the window,
+   where they would leave too little room for anything else, as on a phone. */
+const songPinnedHeaders = ["songIdCell", "songArtistCell", "songTitleCell"]
+	.map(cellClass => songListTable.querySelector(`thead th.${cellClass}`));
+
+/* The pinned cells stay transparent, like every other cell, so they show the
+   page's hue-tinted gradient; what hides the columns scrolling under them is
+   this one element behind them, painting that gradient where it stands. One
+   element lined up on scroll, rather than every pinned cell. */
+const songPinBackdrop = document.createElement("div");
+songPinBackdrop.className = "songPinBackdrop";
+songPinBackdrop.hidden = true;
+songListTable.before(songPinBackdrop);
+
+function pinSongColumns() {
+	const [id, artist, title] = songPinnedHeaders.map(header => header.getBoundingClientRect().width);
+	const pinned = id + artist + title > 0 && id + artist + title <= document.documentElement.clientWidth / 2;
+
+	songListTable.style.setProperty("--songPinArtist", id + "px");
+	songListTable.style.setProperty("--songPinTitle", id + artist + "px");
+	songListTable.classList.toggle("songPinned", pinned);
+
+	songPinBackdrop.hidden = !pinned;
+	if (pinned) {
+		const height = songListTable.getBoundingClientRect().height;
+		songPinBackdrop.style.width = id + artist + title + "px";
+		songPinBackdrop.style.height = height + "px";
+		songPinBackdrop.style.marginBottom = -height + "px";
+		placeSongPinBackdrop();
+	}
+}
+
+/// The gradient as big as the body and where the body is, which moves as the backdrop sticks.
+function placeSongPinBackdrop() {
+	if (songPinBackdrop.hidden) {
+		return;
+	}
+
+	const page = document.body.getBoundingClientRect();
+	const box = songPinBackdrop.getBoundingClientRect();
+	songPinBackdrop.style.backgroundSize = `${page.width}px ${page.height}px`;
+	songPinBackdrop.style.backgroundPosition = `${page.left - box.left}px ${page.top - box.top}px`;
+}
+
+const songPinObserver = new ResizeObserver(pinSongColumns);
+songPinnedHeaders.forEach(header => songPinObserver.observe(header));
+songPinObserver.observe(songListTable);
+songPinObserver.observe(document.body);
+window.addEventListener("resize", pinSongColumns);
+
+let songPinFrame = 0;
+window.addEventListener("scroll", () => {
+	if (!songPinFrame) {
+		songPinFrame = requestAnimationFrame(() => {
+			songPinFrame = 0;
+			placeSongPinBackdrop();
+		});
+	}
+}, { passive: true });
+pinSongColumns();
+
 function songQuery(sort, dir) {
 	const params = new URLSearchParams();
 	params.set("sort", sort);

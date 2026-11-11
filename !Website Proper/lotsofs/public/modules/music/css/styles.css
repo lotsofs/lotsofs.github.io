@@ -13,6 +13,13 @@
 	--pageGutter: 1.5rem;
 	--buttonFill: hsl(var(--hue), 100%, 9%);
 	--buttonFillHover: hsl(var(--hue), 100%, 13%);
+	/* The page's hue-tinted glow; the song list's pinned columns paint it too. */
+	--pageGradient: linear-gradient(
+		-45deg,
+		#000000,
+		hsl(var(--hue), 100%, 3%),
+		#000000
+	);
 }
 
 body {
@@ -21,12 +28,7 @@ body {
 	width: min-content;
 	min-width: 100%;
 	padding: var(--navHeight, 3.35em) var(--pageGutter) 0;
-	background: linear-gradient(
-		-45deg,
-		#000000,
-		hsl(var(--hue), 100%, 3%),
-		#000000
-	);
+	background: var(--pageGradient);
 	font-family: 'Noto Sans', sans-serif;
 	box-sizing: border-box;
 }
@@ -584,6 +586,20 @@ td.albumStatsRatedCell {
 	min-width: 0;
 }
 
+/* Behind the song table's pinned columns, as wide and tall as they are, sticking
+   with them: it hides the columns scrolling under them by painting the page's
+   own gradient, which songs.js sizes to the body and lines up with it, so the
+   pinned cells, transparent over it, read as the page behind them. Its size and
+   negative margin, putting the table back over it, are set there too. */
+.songPinBackdrop {
+	position: sticky;
+	left: 0;
+	z-index: 1;
+	background-image: var(--pageGradient);
+	background-repeat: no-repeat;
+	pointer-events: none;
+}
+
 .songMobileSort {
 	display: none;
 }
@@ -654,12 +670,10 @@ td.albumStatsRatedCell {
 	}
 }
 
+/* No end colour: it fades back to whatever the cell's own fill is. */
 @keyframes songRatingFlash {
 	from {
 		background-color: var(--border);
-	}
-	to {
-		background-color: transparent;
 	}
 }
 
@@ -1009,6 +1023,35 @@ td.albumStatsRatedCell {
 	   header; the note headers are positioned already. */
 	thead :is(.songArtistCell, .songTitleCell, .songAliasesCell, .songAlbumCell) {
 		position: relative;
+	}
+
+	/* While songs.js finds room for them (songPinned), ID, Artist and Title stick
+	   at the screen's edge, each at the widths before it, which songs.js measures.
+	   The edge rather than the gutter, or the columns scrolling past would show
+	   to the left of ID. The body cells stay transparent like every other, over
+	   .songPinBackdrop (1), which hides what scrolls under them; they sit above
+	   it and the positioned note cells, header cells above the other headers'
+	   grips, and the sticky thead (3) still covers the body. Sticky is a
+	   containing block for the grip as relative was. */
+	&.songPinned :is(th, td):is(.songIdCell, .songArtistCell, .songTitleCell) {
+		position: sticky;
+		z-index: 2;
+	}
+
+	&.songPinned thead :is(.songIdCell, .songArtistCell, .songTitleCell) {
+		z-index: 2;
+	}
+
+	&.songPinned .songIdCell {
+		left: 0;
+	}
+
+	&.songPinned .songArtistCell {
+		left: var(--songPinArtist, 0px);
+	}
+
+	&.songPinned .songTitleCell {
+		left: var(--songPinTitle, 0px);
 	}
 
 	.songColumnGrip {

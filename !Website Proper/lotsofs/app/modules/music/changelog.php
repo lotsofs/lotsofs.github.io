@@ -47,6 +47,11 @@ return [
 				'de' => 'Überschrift, Filter und Schaltflächen über der Songliste bleiben sichtbar, wenn die Tabelle seitwärts scrollt.',
 			],
 			[
+				'en' => 'ID, Artist and Title stay in view when the song list scrolls sideways, where the window has room for them.',
+				'fy' => 'ID, Artyst en Titel bliuwe yn byld as de side Lieten nei de kant skowt, wêr\'t it finster der romte foar hat.',
+				'de' => 'ID, Interpret und Titel bleiben sichtbar, wenn die Songliste seitwärts scrollt, sofern das Fenster Platz dafür hat.',
+			],
+			[
 				'en' => 'A card\'s Related row can link a game version or an alternate take.',
 				'fy' => 'De rige Besibbe op in kaart kin in spulferzje of in alternative opname keppelje.',
 				'de' => 'Die Zeile „Verwandt“ auf einer Karte kann eine Spielfassung oder eine alternative Aufnahme verknüpfen.',
