@@ -1,0 +1,183 @@
+:root {
+	--ink: #1b1b1b;
+	--inkDim: #6a6a6a;
+	--ground: #f4f2ec;
+	--panel: #ffffff;
+	--border: #d4d0c6;
+	--accent: #2d5bd1;
+	--accentInk: #ffffff;
+	--current: #fff1bf;
+	color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--ink: #ececec;
+		--inkDim: #9c9c9c;
+		--ground: #151515;
+		--panel: #222222;
+		--border: #3c3c3c;
+		--accent: #7896ea;
+		--accentInk: #0d0d0d;
+		--current: #3b3420;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding-bottom: 9rem;
+	background: var(--ground);
+	color: var(--ink);
+	font: 1.05rem/1.5 system-ui, sans-serif;
+}
+
+.rehearse {
+	max-width: 40rem;
+	margin: 0 auto;
+	padding: 1rem;
+}
+
+h1 {
+	margin: 0.25rem 0 0;
+	font-size: 1.6rem;
+}
+
+.rehearseSource {
+	margin: 0.2rem 0 1rem;
+	color: var(--inkDim);
+	font-size: 0.85rem;
+}
+
+.rehearseDirection {
+	font-style: italic;
+	color: var(--inkDim);
+}
+
+.rehearseWarning {
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--current);
+}
+
+.rehearseSettings {
+	margin-bottom: 1rem;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--panel);
+}
+
+.rehearseSettings summary {
+	cursor: pointer;
+}
+
+.rehearseSettings label {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 0.6rem 0;
+}
+
+.rehearseSettings select {
+	flex: 1 1 12rem;
+	min-width: 0;
+	font: inherit;
+}
+
+.rehearseSettings input[type="range"] {
+	flex: 1 1 8rem;
+}
+
+#rehearseLines {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: line;
+}
+
+#rehearseLines li {
+	position: relative;
+	margin: 0.4rem 0;
+	padding: 0.6rem 0.75rem 0.6rem 2.6rem;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--panel);
+	cursor: pointer;
+	counter-increment: line;
+}
+
+#rehearseLines li::before {
+	content: counter(line);
+	position: absolute;
+	left: 0.75rem;
+	top: 0.6rem;
+	color: var(--inkDim);
+	font-size: 0.85rem;
+	font-variant-numeric: tabular-nums;
+}
+
+#rehearseLines li.rehearseCurrent {
+	border-color: var(--accent);
+	background: var(--current);
+	box-shadow: inset 4px 0 0 var(--accent);
+}
+
+#rehearseLines.rehearseBlurred li > span {
+	filter: blur(0.4em);
+	user-select: none;
+}
+
+.rehearseControls {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 0.6rem 1rem 0.8rem;
+	border-top: 1px solid var(--border);
+	background: var(--panel);
+}
+
+#rehearseStatus {
+	max-width: 40rem;
+	min-height: 1.5em;
+	margin: 0 auto 0.5rem;
+	text-align: center;
+	font-size: 0.95rem;
+}
+
+.rehearseButtons {
+	display: grid;
+	grid-template-columns: 1fr 1fr 2fr;
+	gap: 0.5rem;
+	max-width: 40rem;
+	margin: 0 auto;
+}
+
+button {
+	padding: 0.9rem 0.5rem;
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	background: var(--ground);
+	color: var(--ink);
+	font: inherit;
+	cursor: pointer;
+	touch-action: manipulation;
+}
+
+.rehearseSettings button {
+	padding: 0.5rem 0.9rem;
+}
+
+.rehearsePrimary {
+	border-color: var(--accent);
+	background: var(--accent);
+	color: var(--accentInk);
+	font-size: 1.15rem;
+	font-weight: 600;
+}

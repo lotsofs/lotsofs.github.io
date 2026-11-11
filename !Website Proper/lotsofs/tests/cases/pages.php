@@ -20,6 +20,7 @@ return [
 			'/contact' => 200,
 			'/exchange-rates' => 200,
 			'/ktane' => 302,
+			'/rehearse' => 200,
 			'/music' => 200,
 			'/music/add-songs' => 200,
 			'/music/songs' => 200,

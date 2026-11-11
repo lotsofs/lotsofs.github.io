@@ -4,6 +4,8 @@ Finished work, one row per commit, newest first; `—` where the work had no cod
 
 | Date | Code | Area | Change | Why / how |
 |---|---|---|---|---|
+| 2026-11-11 | — | Site | Date the deployed release | The owner pushed to prod; no new migration to freeze. Checked on the host: `/rehearse` and its script answer. |
+| 2026-11-11 | — | Main | Add an unlinked /rehearse page that reads the suspect's lines of "The Suspect" aloud, one per button press | The owner rehearses #1 with no scene partner; browser speech, a sentence per utterance, a beat per stage direction. Checked in headless Chrome with speech stubbed. |
 | 2026-11-10 | — | Music | Pin the song list's ID, Artist and Title columns while the table scrolls sideways | They scrolled away; now sticky at measured offsets while they fit in half the window, over a backdrop painting the page's tinted gradient. Checked in headless Chrome. |
 | 2026-11-10 | — | Music | Keep the song list's heading, Filter and buttons in view while the table scrolls sideways | They scrolled away with the page; they now stick to the left. Positions at scroll 0 and card view checked unchanged in headless Chrome. |
 | 2026-11-10 | — | Music | Add sortable Updated columns per rater, and Last updated and Date added past the statistics, to the song list, and let Columns hide every rater's scores or notes | The owner wanted to sort by when a score or note last changed; a same-value rewrite no longer moves the time. Checked by the suite and in headless Chrome. |

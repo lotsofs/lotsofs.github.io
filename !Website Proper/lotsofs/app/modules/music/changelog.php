@@ -9,6 +9,10 @@
 return [
 	[
 		'date' => null,
+		'changes' => [],
+	],
+	[
+		'date' => '2026-11-11',
 		'changes' => [
 			[
 				'en' => 'Other names & versions is split into Other names, which also lists a version\'s names, and Remastered by and Remaster of after Links.',

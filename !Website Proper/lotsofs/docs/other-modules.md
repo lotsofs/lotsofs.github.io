@@ -1,16 +1,17 @@
 # main, swat4 and ss2
 
-These three have no database, no accounts, no i18n and no tests beyond "every route serves" (`tests/cases/pages.php`). They are plain routes and views.
+These three have no database, no accounts and no i18n, and apart from main's rehearsal page (`tests/cases/rehearse.php`) no tests beyond "every route serves" (`tests/cases/pages.php`). They are plain routes and views.
 
 ## main
 
-Routes (`app/modules/main/routes.php`): `/` (home), `/exchange-rates`, `/contact` (a link dump titled "Links" in the nav), `/ktane` (302 to `/raw/ktane/translated.html`).
+Routes (`app/modules/main/routes.php`): `/` (home), `/exchange-rates`, `/contact` (a link dump titled "Links" in the nav), `/ktane` (302 to `/raw/ktane/translated.html`), `/rehearse` (unlinked, below).
 
 - Views use `main/views/partials/{head,nav,foot}.php`. `head.php` is English-only, sets `<title>$pageTitle - LotsOfS</title>`, loads `modules/main/css/styles.css` and `js/util.js` through `asset()`.
 - `error.php` (`abort()` target for **every** module's 404/other errors) renders `error.view.php` with `$responseCode` and `$errorMessage`.
 - `home.view.php` shows a whitelisted subset of exchange rates and links to `/contact`, `/exchange-rates`, `/ktane` and `/music` (relative hrefs, so only valid because every route is one segment deep).
 - **Exchange rates are frozen.** `exchangeRatesController.php` has both fetch implementations (file_get_contents and curl against `https://fer.eltrick.uk/latest?base=EUR`) commented out and falls back to a stub JSON; but the pages do not even use `$exchangeRatesJson`: `public/modules/main/js/exchangeRates.js` fetches the checked-in `modules/main/json/exchangeRates.json` (dated 2025-10-04) and `iso4217.json` itself. To revive live rates, a server-side job must refresh that JSON file (or the controller must output the data), and `cacert.pem` handling restored. The fetch paths in JS are *relative* (`modules/main/json/...`).
 - `exchangeRates.js` globals: `processExchangeRates()` (entry; the view calls it inline), `currencyWhiteList` (set before the call on the home page to restrict rows), `displayExchangeRates`, `addCurrencyTableRow`, `calculateConversions` (editing one currency box recomputes the others via EUR, rounding to ISO 4217 minor units; 5-decimal rate display). Currencies missing from the rates JSON appear with rate `-1` and no input box.
+- **`/rehearse` is the owner's rehearsal page, linked from nowhere and `noindex`** (2026-11-11). The owner plays #1 in "The Suspect" with no scene partner, and each press of Next line speaks #2's next line through the browser's Web Speech API. Only #2's lines are in `scenes/theSuspect.php`, since the owner's own are left out on purpose. The view has its own head and stylesheet (`rehearse.css`), because main's `styles.css` floats and borders every `div`. The route splits each line into spoken text and parenthesised stage directions. `public/modules/main/js/rehearse.js` then speaks one sentence per utterance, because Chrome cuts a long one off after about 15 seconds. A direction with more speech after it becomes a 1.5-second beat; one at the end of a line adds nothing. The voice, the speed, Show the lines and the current line are kept in `localStorage`. Checked in headless Chrome with the speech engine stubbed; real voices only on a device.
 - `public/raw/ktane/` is a static copy of a translated Keep Talking and Nobody Explodes manual site (including ~120 Korean font subsets). Not part of the app; excluded from the test copy; shipped by the build.
 
 ## swat4

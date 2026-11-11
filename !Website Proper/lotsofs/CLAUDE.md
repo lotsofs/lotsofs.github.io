@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A plain PHP site (no framework, no Composer, no npm/build step — vanilla PHP + vanilla JS/CSS) with one front controller and a hand-rolled router. Six modules live side by side: `main` (home/contact/exchange-rates/ktane pages), `swat4`, `ss2`, `music` (by far the largest and most actively developed — a song/artist/album cataloguing and rating tool, 60+ files), `hideandseek` (boilerplate only so far), and `basstabs` (read-only printable bass tab sheets, no accounts or database).
+A plain PHP site (no framework, no Composer, no npm/build step — vanilla PHP + vanilla JS/CSS) with one front controller and a hand-rolled router. Six modules live side by side: `main` (home/contact/exchange-rates/ktane pages, plus an unlinked rehearsal page), `swat4`, `ss2`, `music` (by far the largest and most actively developed — a song/artist/album cataloguing and rating tool, 60+ files), `hideandseek` (boilerplate only so far), and `basstabs` (read-only printable bass tab sheets, no accounts or database).
 
 ## Commands
 
