@@ -9,7 +9,28 @@
 return [
 	[
 		'date' => null,
-		'changes' => [],
+		'changes' => [
+			[
+				'en' => 'The Columns menu no longer scrolls sideways.',
+				'fy' => 'It menu Kolommen skowt net mear nei de kant.',
+				'de' => 'Das Menü „Spalten“ scrollt nicht mehr seitwärts.',
+			],
+			[
+				'en' => 'An Updated time taken from another version is shown faded, like the rating it comes with.',
+				'fy' => 'In Bywurke-tiid fan in oare ferzje stiet ferbleke, krekt as de wurdearring dêr\'t er by heart.',
+				'de' => 'Eine Geändert-Zeit, die von einer anderen Fassung stammt, wird blass angezeigt, wie die Wertung, zu der sie gehört.',
+			],
+		],
+	],
+	[
+		'date' => '2026-11-12',
+		'changes' => [
+			[
+				'en' => 'The song list\'s id columns, and every statistic but the average and σ, now start hidden; Columns brings them back.',
+				'fy' => 'De id-kolommen fan de side Lieten, en alle statistiken útsein it gemiddelde en σ, binne no standert ferstoppe; Kolommen bringt se werom.',
+				'de' => 'Die ID-Spalten der Songliste und alle Statistiken außer Durchschnitt und σ sind jetzt anfangs ausgeblendet; unter „Spalten“ lassen sie sich wieder einblenden.',
+			],
+		],
 	],
 	[
 		'date' => '2026-11-11',

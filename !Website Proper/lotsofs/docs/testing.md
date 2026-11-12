@@ -1,20 +1,24 @@
 # Testing
 
-Run: `php tests/run.php` (about 35 s; ~8k lines of cases), or `php tests/run.php basstabs` for one case file. Locale coverage: `php tests/i18n-coverage.php`.
+Run: `php tests/run.php` (about 60 s; ~8k lines of cases), or `php tests/run.php basstabs` for one case file. Locale coverage: `php tests/i18n-coverage.php`.
 
 ## How the harness works (`tests/run.php`)
 
 1. Copies the repo to `sys_get_temp_dir()/lotsofs_tests_<pid>`, skipping `public/modules/ss2/img`, `.../ss2/fonts`, `public/raw`, `tests`, `_deploy`, and every `*.sqlite`/`*.db` file. The scratch copy has its own empty `data/`.
 2. Starts `php -S localhost:<free port> -t <copy>/public` with `LOTSOFS_LOCALE=en`, via `proc_open` with `bypass_shell => true` (without it Windows orphans the server). The `cli-server` SAPI is what routes every module to its `_test` database and drops bcrypt cost to 5.
-3. `require`s `tests/helpers.php`, then each `tests/cases/*.php` in `glob()` order. A case file returns `['test name' => function ($ctx) {...}]`; a throwing closure is a failure. Naming case files runs only those: `php tests/run.php basstabs` takes 1.4 s against about 35 s for the lot (2026-10-26), and an unknown name exits 1 rather than passing nothing. Files share one database (below), so a filtered run is only trustworthy for a file that sets up its own state: `basstabs` does; `pages` does not, and two of its music tests fail on their own.
-4. A shutdown function kills the server and deletes the copy, cookie jar and log.
+3. `require`s `tests/helpers.php`, then each `tests/cases/*.php` in `glob()` order. A case file returns `['test name' => function ($ctx) {...}]`; a throwing closure is a failure. Naming case files runs only those: `php tests/run.php basstabs` takes 1.4 s against about 60 s for the lot (2026-11-12), and an unknown name exits 1 rather than passing nothing. Files share one database (below), so a filtered run is only trustworthy for a file that sets up its own state: `basstabs` does; `pages` does not, and two of its music tests fail on their own.
+4. After each case file, `dropAccountsAfter()` deletes every music account the file created except `test_runner`, with its ratings, audit rows, column choices and invites, and starts a new session (below).
+5. A shutdown function kills the server and deletes the copy, cookie jar and log.
+
+Each response is held once: curl hands back the body alone and the headers arrive through `CURLOPT_HEADERFUNCTION`. Splitting one combined string afterwards held a page twice, which at 42.6 MB mattered.
 
 Everything is driven over real HTTP with curl against real PHP and a real SQLite file. The suite never executes JavaScript or CSS.
 
 ### Shared state: the traps
 
 - **One database for all case files**, and files run in filename order. `accounts.php` sorts first, which is what makes its "account table starts empty" assertion true. A new case file that sorts before it and logs in breaks *that* test, not its own. `hideandseek.php` has its own database (`hideandseek_test.sqlite`) but shares the cookie jar/session with the music cases.
-- By the end of a run `/music/songs` renders every song against 40-odd accounts' rater columns, which dominates the runtime.
+- **A case file's accounts end with it.** Every music account but `test_runner` is deleted when the file that made it ends, so a test can only use `test_runner` or an account its own file makes, and a file that made any leaves the next one signed out. Every account is a rater on the song list, whether or not it rated anything, so keeping them made that page grow as accounts × songs: 104 accounts and 42.6 MB by the end of a run, a 142 MB peak in the runner against PHP's 128 MB default, and 145 s for the suite (2026-11-12). Now the page ends at 2.8 MB, the peak is 42 MB and the suite takes about 60 s.
+- What dominates the runtime now is the `songs` case file (27 s): 161 tests, most loading `/music/songs`, which by then lists the 436 songs every earlier file made. Songs are never deleted.
 - The cookie jar is one file; `$ctx->newSession()` deletes it. Logging in while already signed in is a redirect no-op, so tests that need another identity log out or start a new session first.
 - The CSRF token is **session-wide, not per module**. `$ctx->post()` lazily fetches it from the `<meta name="csrfToken">` on `/music`, and hideandseek's ajax tests reuse it.
 
@@ -31,6 +35,7 @@ Everything is driven over real HTTP with curl against real PHP and a real SQLite
 | `db()` / `dbFor($file)` | PDO on the scratch copy's SQLite (`music_test.sqlite` / named file), `FETCH_ASSOC`, `busy_timeout` set |
 | `ensureLoggedIn($name = 'test_runner', $pw = 'test password', $isAdmin = true)` | creates the account row directly (bcrypt cost 5) if missing and logs in via the real form |
 | `songId($title)`, `songTitle($id)`, `songArtistId($id)`, `songCount($title)`, `makeArtist($name)` | catalogue shortcuts |
+| `lastAccountId()` / `dropAccountsAfter($id)` | the runner's own, between case files: the newest music account id, and deleting every account after it but `test_runner` |
 
 Global asserts: `assertSame($expected, $actual, $what)`, `assertTrue($cond, $what)`, `assertContains($needle, $haystack, $what)`.
 

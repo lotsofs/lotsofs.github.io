@@ -1034,6 +1034,9 @@ return [
 	},
 
 	'rater columns run in account id order, with your own pulled to the front' => function ($ctx) {
+		/// Made in this order, so id order and name order disagree.
+		$ctx->ensureLoggedIn('rater_order_zed', 'test password', false);
+		$ctx->ensureLoggedIn('rater_order_amy', 'test password', false);
 		$ctx->ensureLoggedIn();
 
 		$mine = (int)$ctx->db()->query("SELECT id FROM account WHERE account_name = 'test_runner'")->fetch()['id'];

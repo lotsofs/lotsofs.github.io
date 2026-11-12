@@ -532,7 +532,8 @@ td.albumStatsRatedCell {
 	}
 }
 
-/* Above the table's sticky header, which is z-index 3. */
+/* Above the table's sticky header, which is z-index 3. Firefox leaves the
+   scrollbar out of the shrink-wrapped width; the stable gutter puts it back. */
 .songColumnPickerMenu {
 	position: absolute;
 	top: 100%;
@@ -544,6 +545,7 @@ td.albumStatsRatedCell {
 	gap: 0.5em;
 	max-height: 70vh;
 	overflow-y: auto;
+	scrollbar-gutter: stable;
 	background-color: var(--buttonFill);
 	border: solid 1px #000000;
 	border-radius: 12px;

@@ -17,7 +17,7 @@ const MUSIC_SONG_STAT_COLUMNS = ['average', 'deviation', 'median', 'mode', 'high
 /// Date added and Last updated, right of the statistics.
 const MUSIC_SONG_TIME_COLUMNS = ['added', 'updated'];
 
-const MUSIC_SONG_COLUMNS_HIDDEN_BY_DEFAULT = ['aliases', 'raterUpdated', 'added', 'updated'];
+const MUSIC_SONG_COLUMNS_HIDDEN_BY_DEFAULT = ['aliases', 'remasteredBy', 'remasterOf', 'inGameAs', 'gameVersionOf', 'alternateTakes', 'alternateTakeOf', 'raterUpdated', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated', 'added', 'updated'];
 
 /// A key the picker offers, or null for anything else.
 function musicSongColumnKey($raw) {

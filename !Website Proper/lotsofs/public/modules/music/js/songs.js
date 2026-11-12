@@ -2725,17 +2725,25 @@ function applyRatingChange(change) {
 	applyRatingHalf(pair, "score_" + change.account, SCORE_SPEC, change.score, change.scoreBorrowed);
 	applyRatingHalf(pair, "note_" + change.account, NOTE_SPEC, change.note, change.noteBorrowed);
 	if ("updated" in change) {
-		setTimeCell(fieldCell(pair.tr, "updated_" + change.account), change.updated, change.updatedSort);
+		setTimeCell(fieldCell(pair.tr, "updated_" + change.account), change.updated, change.updatedSort, change.updatedBorrowed);
 	}
 }
 
-/// A time column's cell as the server wrote it: the text, and the unix time it sorts by.
-function setTimeCell(cell, text, sort) {
+/// A time column's cell as the server wrote it: the text, faded when a version's (songRows.php), and the unix time it sorts by.
+function setTimeCell(cell, text, sort, borrowed) {
 	if (!cell) {
 		return;
 	}
 
-	cell.textContent = text;
+	if (borrowed && text !== "") {
+		const span = document.createElement("span");
+		span.className = "songInherited";
+		span.textContent = text;
+		cell.replaceChildren(span);
+	}
+	else {
+		cell.textContent = text;
+	}
 	if (sort === null || sort === undefined) {
 		delete cell.dataset.sortValue;
 	}

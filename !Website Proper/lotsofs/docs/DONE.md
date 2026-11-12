@@ -4,6 +4,11 @@ Finished work, one row per commit, newest first; `—` where the work had no cod
 
 | Date | Code | Area | Change | Why / how |
 |---|---|---|---|---|
+| 2026-11-12 | — | Site | Delete each test case file's accounts when it ends, and hold each response once in the test runner | Every account is a song-list rater, so the page grew to 42.6 MB and the runner ran out of memory. Peak 142 → 42 MB, suite 145 → 60 s. |
+| 2026-11-12 | — | Music | Fade a rater's Updated time when it is a version's, as a borrowed rating is | It read like the rater's own write; the rating view now flags a time newer from a version than from the song itself. Checked by the suite. |
+| 2026-11-12 | — | Music | Stop the Columns menu scrolling sideways in Firefox | Firefox left the scrollbar out of the menu's width, clipping the longest names; a stable scrollbar gutter puts it back. Measured in headless Firefox and Chrome. |
+| 2026-11-12 | — | Site | Date the deployed release | The owner pushed to prod; no new migration to freeze. `_deploy/` matched the source but for this date. |
+| 2026-11-12 | — | Music | Start the song list's relationship id columns and every statistic but Average and σ hidden | The owner wanted them off by default; only the defaults changed, so a box someone ticked still shows. Checked by the suite. |
 | 2026-11-11 | — | Site | Date the deployed release | The owner pushed to prod; no new migration to freeze. Checked on the host: `/rehearse` and its script answer. |
 | 2026-11-11 | — | Main | Add an unlinked /rehearse page that reads the suspect's lines of "The Suspect" aloud, one per button press | The owner rehearses #1 with no scene partner; browser speech, a sentence per utterance, a beat per stage direction. Checked in headless Chrome with speech stubbed. |
 | 2026-11-10 | — | Music | Pin the song list's ID, Artist and Title columns while the table scrolls sideways | They scrolled away; now sticky at measured offsets while they fit in half the window, over a backdrop painting the page's tinted gradient. Checked in headless Chrome. |

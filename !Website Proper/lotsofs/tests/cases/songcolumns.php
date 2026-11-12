@@ -6,8 +6,14 @@
 
 const COLUMNS_ENDPOINT = '/music/ajax/song-columns';
 
+/// The relationship id columns, all hidden until ticked.
+const COLUMNS_RELATION_HIDES = ['songHideRemasteredBy', 'songHideRemasterOf', 'songHideInGameAs', 'songHideGameVersionOf', 'songHideAlternateTakes', 'songHideAlternateTakeOf'];
+
+/// Everything a table hides by default after the raters, in table order.
+const COLUMNS_LATER_HIDES = ['songHideRaterUpdated', 'songHideMedian', 'songHideMode', 'songHideHighest', 'songHideLowest', 'songHideSum', 'songHideRated', 'songHideAdded', 'songHideUpdated'];
+
 /// What a table hides for an account that has chosen nothing, in table order.
-const COLUMNS_DEFAULT_HIDES = ['songHideAliases', 'songHideRaterUpdated', 'songHideAdded', 'songHideUpdated'];
+const COLUMNS_DEFAULT_HIDES = ['songHideAliases', ...COLUMNS_RELATION_HIDES, ...COLUMNS_LATER_HIDES];
 
 /// The song list, with one song of its own so the table is there to read.
 function columnsPage($ctx, $name) {
@@ -162,11 +168,11 @@ function columnsSetHistoryTime($ctx, $songId, $time) {
 
 return [
 
-	'a new account sees every column but Other names and the time columns' => function ($ctx) {
+	'a new account sees every column but Other names, the id columns, the statistics past σ and the time columns' => function ($ctx) {
 		$body = columnsPage($ctx, 'columns_fresh');
 		$me = columnsAccountId($ctx, 'columns_fresh');
 
-		assertSame(COLUMNS_DEFAULT_HIDES, columnsTableHides($body), 'only Other names, Date added, Last updated and every Updated column start hidden');
+		assertSame(COLUMNS_DEFAULT_HIDES, columnsTableHides($body), 'only Other names, the id columns, every statistic but Average and σ, Date added, Last updated and every Updated column start hidden');
 
 		$boxes = columnsPickerBoxes($body);
 		$raters = [];
@@ -185,7 +191,7 @@ return [
 			array_keys($boxes),
 			'the picker lists the fixed columns, every rater with you first and then each of their columns, the statistics, then the times'
 		);
-		assertSame(['aliases', 'raterUpdated', 'added', 'updated'], array_keys(array_filter($boxes, fn($ticked) => !$ticked)), 'Other names and the time columns are unticked, everything else ticked');
+		assertSame(['aliases', 'remasteredBy', 'remasterOf', 'inGameAs', 'gameVersionOf', 'alternateTakes', 'alternateTakeOf', 'raterUpdated', 'median', 'mode', 'highest', 'lowest', 'sum', 'rated', 'added', 'updated'], array_keys(array_filter($boxes, fn($ticked) => !$ticked)), 'Other names, the id columns, the statistics past σ and the time columns are unticked, everything else ticked');
 		foreach (['raterScore' => 'Score', 'raterNote' => 'Note', 'raterUpdated' => 'Updated'] as $key => $label) {
 			assertTrue((bool)preg_match('/data-column="' . $key . '"[^>]*>\s*<span>' . $label . ' \(each rater\)<\/span>/', $body), "every rater's {$label} column is one entry");
 		}
@@ -207,7 +213,7 @@ return [
 		assertSame(['album' => 0], columnsChoiceRows($ctx, 'columns_picker'), 'and stored as one row');
 
 		$body = $ctx->get('/music/songs')['body'];
-		assertSame(['songHideAliases', 'songHideAlbum', 'songHideRaterUpdated', 'songHideAdded', 'songHideUpdated'], columnsTableHides($body), 'the table hides it, in table order');
+		assertSame(['songHideAliases', 'songHideAlbum', ...COLUMNS_RELATION_HIDES, ...COLUMNS_LATER_HIDES], columnsTableHides($body), 'the table hides it, in table order');
 		assertSame(false, columnsPickerBoxes($body)['album'], 'and its box is unticked');
 
 		$ctx->post(COLUMNS_ENDPOINT, ['column' => 'album', 'shown' => true]);
@@ -217,7 +223,7 @@ return [
 		$ctx->post(COLUMNS_ENDPOINT, ['column' => "rater_{$other}", 'shown' => false]);
 
 		$body = $ctx->get('/music/songs')['body'];
-		assertSame(["songHideRater{$other}", 'songHideRaterUpdated', 'songHideAdded', 'songHideUpdated'], columnsTableHides($body), 'Other names shows once ticked, and a rater hides');
+		assertSame([...COLUMNS_RELATION_HIDES, "songHideRater{$other}", ...COLUMNS_LATER_HIDES], columnsTableHides($body), 'Other names shows once ticked, and a rater hides');
 		assertSame(true, columnsPickerBoxes($body)['aliases'], 'with its box ticked');
 		assertSame(['album' => 1, 'aliases' => 1, "rater_{$other}" => 0], columnsChoiceRows($ctx, 'columns_picker'), 'each key is a row of its own');
 
@@ -473,6 +479,43 @@ return [
 		$body = $ctx->get('/music/songs')['body'];
 		assertSame(['', null], columnsTimeCell(songsRowFor($body, $original), "updated_{$me}"), 'a rating cleared to nothing has no time');
 		assertSame(['', null], columnsTimeCell(songsRowFor($body, $remaster), "updated_{$me}"), 'nor does what borrowed it');
+	},
+
+	'a rater\'s Updated is faded while it is a version\'s time rather than their own' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+		$artistId = $ctx->makeArtist('Times Borrowed Artist');
+		$original = makeSong($ctx, $artistId, 'Times Borrowed Original');
+		$remaster = columnsRemaster($ctx, $artistId, 'Times Borrowed Remaster', $original);
+
+		$ctx->ensureLoggedIn('times_borrowed', 'test password', false);
+		$me = columnsAccountId($ctx, 'times_borrowed');
+		$faded = fn($body, $song) => strpos(songsFieldCell(songsRowFor($body, $song), "updated_{$me}"), '<span class="songInherited">') !== false;
+
+		$rated = $ctx->post('/music/ajax/song-rating', ['id' => $original, 'field' => 'score', 'value' => '6']);
+		$borrowed = [];
+		foreach ($rated['json']['ratings'] as $entry) {
+			$borrowed[$entry['song']] = $entry['updatedBorrowed'];
+		}
+		assertSame([$original => false, $remaster => true], array_intersect_key($borrowed, [$original => 0, $remaster => 0]), 'the answer says which time is borrowed, for the page');
+
+		columnsSetRatingTime($ctx, $me, $original, 1700000000);
+		$body = $ctx->get('/music/songs')['body'];
+		assertTrue(!$faded($body, $original), 'a time of your own is plain');
+		assertTrue($faded($body, $remaster), 'one borrowed with the score is faded');
+		assertSame([date('Y-m-d H:i:s', 1700000000), '1700000000'], columnsTimeCell(songsRowFor($body, $remaster), "updated_{$me}"), 'and still reads and sorts as the time');
+
+		$ctx->post('/music/ajax/song-rating', ['id' => $original, 'field' => 'note', 'value' => 'Times borrowed note']);
+		columnsSetRatingTime($ctx, $me, $original, 1700000000);
+		$ctx->post('/music/ajax/song-rating', ['id' => $remaster, 'field' => 'score', 'value' => '8']);
+		columnsSetRatingTime($ctx, $me, $remaster, 1600000000);
+		$body = $ctx->get('/music/songs')['body'];
+		assertSame(date('Y-m-d H:i:s', 1700000000), columnsTimeCell(songsRowFor($body, $remaster), "updated_{$me}")[0], 'a borrowed note newer than your own score sets the time');
+		assertTrue($faded($body, $remaster), 'so it is faded');
+
+		columnsSetRatingTime($ctx, $me, $remaster, 1800000000);
+		$body = $ctx->get('/music/songs')['body'];
+		assertSame(date('Y-m-d H:i:s', 1800000000), columnsTimeCell(songsRowFor($body, $remaster), "updated_{$me}")[0], 'your own score newer than the borrowed note sets it');
+		assertTrue(!$faded($body, $remaster), 'and it is plain');
 	},
 
 	'Date added is from History, the epoch for older songs, and Last updated the newest rating or History line' => function ($ctx) {

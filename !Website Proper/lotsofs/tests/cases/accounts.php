@@ -16,8 +16,9 @@ return [
 
 		assertSame(302, $response['status'], 'registration redirects on success');
 
-		$account = $ctx->db()->query("SELECT account_name FROM account WHERE account_name = 'first_owner'")->fetch();
+		$account = $ctx->db()->query("SELECT account_name, is_admin FROM account WHERE account_name = 'first_owner'")->fetch();
 		assertTrue($account !== false, 'account row exists');
+		assertSame(1, (int)$account['is_admin'], 'the first registered account is an admin');
 	},
 
 	'the password is stored as a hash' => function ($ctx) {
@@ -80,6 +81,7 @@ return [
 			'password_confirm' => 'correct horse',
 		]);
 		assertSame(302, $response['status'], 'registration succeeded');
+		assertSame(0, (int)$ctx->db()->query("SELECT is_admin FROM account WHERE account_name = 'invited_friend'")->fetch()['is_admin'], 'an invited account is not an admin');
 
 		$invite = $ctx->db()->query("SELECT used_at, used_by_account_id FROM invite WHERE code = '{$code}'")->fetch();
 		assertTrue($invite['used_at'] !== null, 'invite is marked used');

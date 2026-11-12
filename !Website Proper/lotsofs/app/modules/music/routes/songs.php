@@ -45,8 +45,8 @@ foreach ($raters as $rater) {
 
 	$aggregates .= ", MAX(CASE WHEN account_id = {$id} THEN score END) AS score_{$id}, MAX(CASE WHEN account_id = {$id} THEN subjective_note END) AS note_{$id}"
 		. ", MAX(CASE WHEN account_id = {$id} THEN score_borrowed END) AS score_borrowed_{$id}, MAX(CASE WHEN account_id = {$id} THEN note_borrowed END) AS note_borrowed_{$id}"
-		. ", MAX(CASE WHEN account_id = {$id} THEN updated_at END) AS updated_{$id}";
-	$selects .= ", r.score_{$id} AS score_{$id}, r.note_{$id} AS note_{$id}, r.score_borrowed_{$id} AS score_borrowed_{$id}, r.note_borrowed_{$id} AS note_borrowed_{$id}, r.updated_{$id} AS updated_{$id}";
+		. ", MAX(CASE WHEN account_id = {$id} THEN updated_at END) AS updated_{$id}, MAX(CASE WHEN account_id = {$id} THEN updated_borrowed END) AS updated_borrowed_{$id}";
+	$selects .= ", r.score_{$id} AS score_{$id}, r.note_{$id} AS note_{$id}, r.score_borrowed_{$id} AS score_borrowed_{$id}, r.note_borrowed_{$id} AS note_borrowed_{$id}, r.updated_{$id} AS updated_{$id}, r.updated_borrowed_{$id} AS updated_borrowed_{$id}";
 
 	$sortable["score_{$id}"] = ['value' => "score_{$id}", 'order' => "score_{$id}"];
 	$sortable["note_{$id}"] = ['value' => "note_{$id}", 'order' => "note_{$id} COLLATE NOCASE"];

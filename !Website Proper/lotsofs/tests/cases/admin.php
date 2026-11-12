@@ -19,16 +19,6 @@ function logInAsViewer($ctx) {
 
 return [
 
-	'the first registered account is an admin' => function ($ctx) {
-		$isAdmin = $ctx->db()->query("SELECT is_admin FROM account WHERE account_name = 'first_owner'")->fetch()['is_admin'];
-		assertSame(1, (int)$isAdmin, 'first_owner is an admin');
-	},
-
-	'an invited account is not an admin' => function ($ctx) {
-		$isAdmin = $ctx->db()->query("SELECT is_admin FROM account WHERE account_name = 'invited_friend'")->fetch()['is_admin'];
-		assertSame(0, (int)$isAdmin, 'invited_friend is not an admin');
-	},
-
 	'a non admin is redirected away from the admin pages' => function ($ctx) {
 		logInAsViewer($ctx);
 

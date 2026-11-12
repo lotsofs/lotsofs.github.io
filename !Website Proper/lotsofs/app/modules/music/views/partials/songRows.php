@@ -66,9 +66,12 @@ $gatePill = function ($label, $hint) {
 };
 
 /// A time column's cell: the time as History prints it, sorting by the unix time; blank for none.
-$timeCell = function ($timestamp) {
+/// A borrowed one, a version's time rather than the rater's own, is faded as a borrowed rating is.
+$timeCell = function ($timestamp, $borrowed = false) {
+	$value = htmlspecialchars(musicDateTime($timestamp));
+
 	return [
-		'value' => htmlspecialchars(musicDateTime($timestamp)),
+		'value' => $borrowed && $value !== '' ? '<span class="songInherited">' . $value . '</span>' : $value,
 		'sortAttr' => $timestamp === null ? '' : ' data-sort-value="' . (int)$timestamp . '"',
 	];
 };
@@ -326,7 +329,7 @@ foreach ($globalData['songs'] as $song) {
 			/// Withheld with the text: the tooltip would hand it straight back.
 			'noteTitleAttr' => $noteGated ? '' : ' title="' . htmlspecialchars($note) . '"',
 			/// Never covered: when somebody rated gives away nothing about what they thought.
-			'updatedCell' => $timeCell(isset($song['updated_' . $raterId]) ? (int)$song['updated_' . $raterId] : null),
+			'updatedCell' => $timeCell(isset($song['updated_' . $raterId]) ? (int)$song['updated_' . $raterId] : null, !empty($song['updated_borrowed_' . $raterId])),
 		];
 	}
 

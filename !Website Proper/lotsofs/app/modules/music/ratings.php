@@ -14,6 +14,7 @@ require_once __MODULES__ . '/music/stats.php';
    Each effective rating carries updated_at, when it last changed: the song's own
    row's time where that row holds a value, and for a borrowed half the time of
    the version rows it is taken from, so a remaster sorts beside its original.
+   updated_borrowed says the newer of the two was a version's.
 
    The newest note is by its rating_audit time. Every note written since
    migration 005 is audited, so an unaudited note is older than any audited one,
@@ -73,24 +74,29 @@ function musicRatingView($db) {
 			);
 
 		CREATE TEMP VIEW IF NOT EXISTS effective_rating AS
-			SELECT
-				a.account_id,
-				a.song_id,
-				COALESCE(a.score, bs.score) AS score,
-				CASE WHEN a.subjective_note IS NULL OR a.subjective_note = '' THEN bn.note ELSE a.subjective_note END AS subjective_note,
-				a.score IS NULL AND bs.score IS NOT NULL AS score_borrowed,
-				(a.subjective_note IS NULL OR a.subjective_note = '') AND bn.note IS NOT NULL AS note_borrowed,
-				NULLIF(MAX(
-					CASE WHEN a.score IS NOT NULL OR (a.subjective_note IS NOT NULL AND a.subjective_note != '') THEN a.updated_at ELSE -1 END,
-					CASE WHEN a.score IS NULL THEN COALESCE(bs.updated_at, -1) ELSE -1 END,
-					CASE WHEN a.subjective_note IS NULL OR a.subjective_note = '' THEN COALESCE(bn.updated_at, -1) ELSE -1 END
-				), -1) AS updated_at
-			FROM account_song a
-			LEFT JOIN borrowed_score bs ON bs.song_id = a.song_id AND bs.account_id = a.account_id
-			LEFT JOIN borrowed_note bn ON bn.song_id = a.song_id AND bn.account_id = a.account_id
+			SELECT account_id, song_id, score, subjective_note, score_borrowed, note_borrowed,
+				NULLIF(MAX(own_at, borrowed_at), -1) AS updated_at,
+				borrowed_at > own_at AS updated_borrowed
+			FROM (
+				SELECT
+					a.account_id,
+					a.song_id,
+					COALESCE(a.score, bs.score) AS score,
+					CASE WHEN a.subjective_note IS NULL OR a.subjective_note = '' THEN bn.note ELSE a.subjective_note END AS subjective_note,
+					a.score IS NULL AND bs.score IS NOT NULL AS score_borrowed,
+					(a.subjective_note IS NULL OR a.subjective_note = '') AND bn.note IS NOT NULL AS note_borrowed,
+					CASE WHEN a.score IS NOT NULL OR (a.subjective_note IS NOT NULL AND a.subjective_note != '') THEN a.updated_at ELSE -1 END AS own_at,
+					MAX(
+						CASE WHEN a.score IS NULL THEN COALESCE(bs.updated_at, -1) ELSE -1 END,
+						CASE WHEN a.subjective_note IS NULL OR a.subjective_note = '' THEN COALESCE(bn.updated_at, -1) ELSE -1 END
+					) AS borrowed_at
+				FROM account_song a
+				LEFT JOIN borrowed_score bs ON bs.song_id = a.song_id AND bs.account_id = a.account_id
+				LEFT JOIN borrowed_note bn ON bn.song_id = a.song_id AND bn.account_id = a.account_id
+			)
 			UNION ALL
 			SELECT k.account_id, k.song_id, bs.score, bn.note, bs.score IS NOT NULL, bn.note IS NOT NULL,
-				NULLIF(MAX(COALESCE(bs.updated_at, -1), COALESCE(bn.updated_at, -1)), -1)
+				NULLIF(MAX(COALESCE(bs.updated_at, -1), COALESCE(bn.updated_at, -1)), -1), 1
 			FROM (SELECT song_id, account_id FROM borrowed_score UNION SELECT song_id, account_id FROM borrowed_note) k
 			LEFT JOIN borrowed_score bs ON bs.song_id = k.song_id AND bs.account_id = k.account_id
 			LEFT JOIN borrowed_note bn ON bn.song_id = k.song_id AND bn.account_id = k.account_id
@@ -126,14 +132,14 @@ function musicEffectiveRatings($db, $songIds, $accountIds = null) {
 	$entries = [];
 	foreach ($ids as $songId) {
 		foreach ($accounts as $accountId) {
-			$entries["{$songId}:{$accountId}"] = musicRatingEntry(['song_id' => $songId, 'account_id' => $accountId, 'score' => null, 'subjective_note' => null, 'score_borrowed' => 0, 'note_borrowed' => 0, 'updated_at' => null]);
+			$entries["{$songId}:{$accountId}"] = musicRatingEntry(['song_id' => $songId, 'account_id' => $accountId, 'score' => null, 'subjective_note' => null, 'score_borrowed' => 0, 'note_borrowed' => 0, 'updated_at' => null, 'updated_borrowed' => 0]);
 		}
 	}
 
 	$songIn = implode(', ', array_fill(0, count($ids), '?'));
 	$accountIn = implode(', ', array_fill(0, count($accounts), '?'));
 	foreach ($db->query("
-		SELECT account_id, song_id, score, subjective_note, score_borrowed, note_borrowed, updated_at
+		SELECT account_id, song_id, score, subjective_note, score_borrowed, note_borrowed, updated_at, updated_borrowed
 		FROM effective_rating
 		WHERE song_id IN ({$songIn}) AND account_id IN ({$accountIn})
 	", array_merge($ids, $accounts))->fetchAll() as $row) {
@@ -154,6 +160,7 @@ function musicRatingEntry($row) {
 		'noteBorrowed' => (bool)$row['note_borrowed'],
 		'updated' => musicDateTime($row['updated_at']),
 		'updatedSort' => $row['updated_at'] === null ? null : (int)$row['updated_at'],
+		'updatedBorrowed' => (bool)$row['updated_borrowed'],
 	];
 }
 

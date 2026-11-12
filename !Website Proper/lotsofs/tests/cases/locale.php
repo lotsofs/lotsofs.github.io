@@ -149,8 +149,7 @@ return [
 	},
 
 	'a guest who picks a language keeps it through registration' => function ($ctx) {
-		$ctx->newSession();
-		logInAs($ctx, 'first_owner', 'correct horse');
+		$ctx->ensureLoggedIn();
 		$ctx->postForm('/music/invites', ['csrf_token' => $ctx->csrfTokenFrom('/music/invites')]);
 		$code = $ctx->db()->query("SELECT code FROM invite WHERE used_at IS NULL AND revoked_at IS NULL ORDER BY id DESC")->fetch()['code'];
 

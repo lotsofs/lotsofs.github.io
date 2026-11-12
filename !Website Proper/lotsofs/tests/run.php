@@ -4,6 +4,7 @@
 // copies the project to a temp dir, serves it, runs tests/cases/*.php against it
 // naming cases (basstabs pages) runs only those files; they share one database, so a filtered
 // run of cases that read what an earlier file wrote can fail where the full suite passes
+// every music account a case file makes, but test_runner, is deleted when that file ends
 
 if (php_sapi_name() !== 'cli') {
 	exit;
@@ -72,6 +73,7 @@ require __DIR__ . '/helpers.php';
 
 foreach ($caseFiles as $caseFile) {
 	echo "\n" . basename($caseFile, '.php') . "\n";
+	$lastAccount = $ctx->lastAccountId();
 
 	foreach (require $caseFile as $name => $test) {
 		try {
@@ -85,6 +87,8 @@ foreach ($caseFiles as $caseFile) {
 			$failed++;
 		}
 	}
+
+	$ctx->dropAccountsAfter($lastAccount);
 }
 
 echo "\n{$passed} passed, {$failed} failed" . ($only ? ' (only ' . implode(', ', $only) . ')' : '') . "\n";
@@ -148,9 +152,14 @@ class TestContext {
 
 	private function request($method, $path, $body, $followRedirects, $contentType = 'application/json', $withCsrf = true, $extraHeaders = []) {
 		$ch = curl_init("http://localhost:{$this->port}{$path}");
+		/// Headers apart from the body, which a split afterwards would hold twice.
+		$responseHeaders = '';
 		curl_setopt_array($ch, [
 			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_HEADER => true,
+			CURLOPT_HEADERFUNCTION => function ($ch, $line) use (&$responseHeaders) {
+				$responseHeaders .= $line;
+				return strlen($line);
+			},
 			CURLOPT_FOLLOWLOCATION => $followRedirects,
 			CURLOPT_CUSTOMREQUEST => $method,
 			CURLOPT_COOKIEJAR => $this->cookieJar,
@@ -167,22 +176,22 @@ class TestContext {
 		if ($headers) {
 			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		}
-		$raw = curl_exec($ch);
+		$content = curl_exec($ch);
 		$status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 		curl_close($ch);
 
-		$headers = substr($raw, 0, $headerSize);
-		$content = substr($raw, $headerSize);
+		if ($content === false) {
+			$content = '';
+		}
 		$location = null;
-		if (preg_match('/^location:\s*(.+)$/mi', $headers, $m)) {
+		if (preg_match('/^location:\s*(.+)$/mi', $responseHeaders, $m)) {
 			$location = trim($m[1]);
 		}
 
 		return [
 			'status' => $status,
 			'body' => $content,
-			'headers' => $headers,
+			'headers' => $responseHeaders,
 			'location' => $location,
 			'json' => json_decode($content, true),
 		];
@@ -190,6 +199,33 @@ class TestContext {
 
 	public function db() {
 		return $this->dbFor('music_test.sqlite');
+	}
+
+	public function lastAccountId() {
+		return (int)$this->db()->query("SELECT COALESCE(MAX(id), 0) FROM account")->fetchColumn();
+	}
+
+	/* The music accounts made after $id, but test_runner, and everything they wrote.
+	   Every account is a rater on the song list, so keeping them all made that page
+	   grow as accounts × songs: 104 accounts and 42.6 MB by the end of a run, which
+	   ran the runner out of memory (2026-11-12). No case file uses another's
+	   accounts. The session goes too, as it may be one of them. */
+	public function dropAccountsAfter($id) {
+		$db = $this->db();
+		$dropped = "SELECT id FROM account WHERE id > " . (int)$id . " AND account_name != 'test_runner'";
+		if (!$db->query($dropped)->fetch()) {
+			return;
+		}
+
+		$db->beginTransaction();
+		foreach (['account_song', 'rating_audit', 'account_song_column', 'edit_audit'] as $table) {
+			$db->exec("DELETE FROM {$table} WHERE account_id IN ({$dropped})");
+		}
+		$db->exec("DELETE FROM invite WHERE created_by_account_id IN ({$dropped}) OR used_by_account_id IN ({$dropped})");
+		$db->exec("DELETE FROM account WHERE id IN ({$dropped})");
+		$db->commit();
+
+		$this->newSession();
 	}
 
 	/// One module, one database. db() is music's because that is what nearly
