@@ -18,6 +18,8 @@ return [
 	'nav.colour' => 'Kleur',
 	'nav.settings' => 'Ynstellings',
 	'settings.blindRating' => 'Ferbergje skoares en notysjes fan oaren by in nûmer oant ik it sels beoardiele haw',
+	'settings.embeds' => 'Spilers fan Spotify, YouTube en SoundCloud op nûmerkaarten sjen litte',
+	'settings.embedsConsent' => 'Asto dit oanfinkest, giesto akkoard dat nûmerkaarten spilers fan Spotify, YouTube en SoundCloud lade. Dy bedriuwen kinne dan cookies pleatse en dyn IP-adres sjen en wat do ôfspilest, ûnder harren eigen privacybelied. Do kinst it altyd wer útsette; oant dan is elke spiler in gewoane keppeling.',
 	'settings.toastDuration' => 'Hoe lang meldingen oer wurdearrings bliuwe',
 	'settings.toastOff' => 'Út',
 	'settings.toastSeconds' => '{count} sekonden',

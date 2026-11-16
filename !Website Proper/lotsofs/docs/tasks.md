@@ -212,7 +212,7 @@ The site rule (`conventions.md`, owner 2026-10-06) is that tables declare no `RE
 
 hideandseek has accounts and a session cookie, kept for 399 days once signed in, and sends map-tile requests (the visitor's IP and referrer) to OpenFreeMap. No page says so. Tile requests already wait until the visitor presses a button that says it will contact a third party. Read in the code. Wanted before the module is opened to players.
 
-**Plan.** A privacy page (route, view, a link from every page) covering accounts, the session cookie, the tile requests, and pins once PIN stores location data. Serving a `.pmtiles` extract and pointing `sources.openmaptiles.url` in `json/mapStyle.json` at it would drop the third party and shorten the page, but not replace it. Music's embeds raise the same question (EMB), so one shared page may serve both.
+**Plan.** A privacy page (route, view, a link from every page) covering accounts, the session cookie, the tile requests, and pins once PIN stores location data. Serving a `.pmtiles` extract and pointing `sources.openmaptiles.url` in `json/mapStyle.json` at it would drop the third party and shorten the page, but not replace it. Music's Spotify, YouTube and SoundCloud players load only once an account ticks them on in the cog menu, which the page should say, so one shared page may serve both.
 
 **Verify.** The page is reachable from every hideandseek page, and what it lists matches the browser's network panel while the map loads.
 

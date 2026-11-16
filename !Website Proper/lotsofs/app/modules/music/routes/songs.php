@@ -477,6 +477,9 @@ $globalData['raterColspan'] = max(1, count(array_filter(MUSIC_SONG_RATER_COLUMNS
 require_once __MODULES__ . '/music/blindRating.php';
 $globalData['blindRating'] = musicBlindRating();
 
+require_once __MODULES__ . '/music/embeds.php';
+$globalData['embeds'] = musicEmbeds();
+
 require_once __MODULES__ . '/music/toastDuration.php';
 $globalData['toastSeconds'] = musicToastSeconds();
 

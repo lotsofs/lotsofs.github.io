@@ -54,6 +54,8 @@ foreach ($songRaters as $rater) {
 }
 
 $blindRating = $globalData['blindRating'] ?? false;
+/// Players only with the reader's consent (account.embeds); a link chip stands in otherwise.
+$embeds = $globalData['embeds'] ?? false;
 $songStatColumns = $globalData['statColumns'] ?? [];
 
 /* Three pills, built once rather than per cell. The long label where there is
@@ -220,7 +222,7 @@ foreach ($globalData['songs'] as $song) {
 
 	/// A stored value is normally a bare id, but older rows may hold a whole URL.
 	$song['spotifyTrackId'] = null;
-	if (!empty($songLinks['spotify_url'])) {
+	if ($embeds && !empty($songLinks['spotify_url'])) {
 		$song['spotifyTrackId'] = spotifyTrackIdIn($songLinks['spotify_url']);
 		if ($song['spotifyTrackId'] === null && preg_match('#^[A-Za-z0-9]+$#', trim($songLinks['spotify_url']))) {
 			$song['spotifyTrackId'] = trim($songLinks['spotify_url']);
@@ -228,14 +230,14 @@ foreach ($globalData['songs'] as $song) {
 	}
 
 	$song['youtubeEmbedUrl'] = null;
-	$youtubeLink = !empty($songLinks['youtube_url']) ? youtubeLinkIn($songLinks['youtube_url']) : null;
+	$youtubeLink = $embeds && !empty($songLinks['youtube_url']) ? youtubeLinkIn($songLinks['youtube_url']) : null;
 	if ($youtubeLink !== null) {
 		$song['youtubeEmbedUrl'] = 'https://www.youtube.com/embed/' . $youtubeLink['id']
 			. ($youtubeLink['start'] !== null ? '?start=' . $youtubeLink['start'] : '');
 	}
 
 	$song['soundcloudEmbedUrl'] = null;
-	if (!empty($songLinks['soundcloud_url'])) {
+	if ($embeds && !empty($songLinks['soundcloud_url'])) {
 		$song['soundcloudEmbedUrl'] = 'https://w.soundcloud.com/player/?url=' . urlencode($songLinks['soundcloud_url'])
 			. '&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true';
 	}

@@ -1,6 +1,6 @@
 <?php
 
-/* The cog menu: the blind-rating switch and the toast duration. Every test here uses an account of
+/* The cog menu: the blind-rating switch, the players switch and the toast duration. Every test here uses an account of
    its own: this file sorts before songs.php and shares its database, so a test
    that left `test_runner` with the gate off would break every gate test there
    rather than its own. */
@@ -42,6 +42,18 @@ function toastSettingOf($ctx, $name) {
 	$row = $stmt->fetch();
 
 	return $row === false ? null : (int)$row['toast_seconds'];
+}
+
+function embedSettingOf($ctx, $name) {
+	$stmt = $ctx->db()->prepare("SELECT embeds FROM account WHERE account_name = ?");
+	$stmt->execute([$name]);
+	$row = $stmt->fetch();
+
+	return $row === false ? null : (int)$row['embeds'];
+}
+
+function pageEmbedSetting($body) {
+	return preg_match('#<script id="songEmbedSetting" type="application/json">(true|false)</script>#', $body, $match) ? $match[1] === 'true' : null;
 }
 
 function pageToastSeconds($body) {
@@ -207,6 +219,62 @@ return [
 		$ctx->postForm('/music/settings', ['csrf_token' => 'not the token', 'return' => '/music/songs', 'blind_rating' => '1', 'toast_seconds' => '10']);
 
 		assertSame(180, toastSettingOf($ctx, 'toast_forged'), 'the duration is untouched');
+	},
+
+	'a new account has the players off' => function ($ctx) {
+		$ctx->ensureLoggedIn('embeds_fresh', 'test password', false);
+
+		$body = $ctx->get('/music/songs')['body'];
+
+		assertSame(0, embedSettingOf($ctx, 'embeds_fresh'), 'the column defaults to off');
+		assertContains('name="embeds" value="1">', $body, 'the box is in the cog menu, unticked');
+		assertContains('aria-describedby="navEmbedsConsent"', $body, 'tied to the text saying what ticking it agrees to');
+		assertContains('id="navEmbedsConsent" class="navSettingsNote">By ticking this you agree', $body, 'which is under it');
+		assertSame(false, pageEmbedSetting($body), 'and the page hands that to the script');
+	},
+
+	'ticking the players box stores it and leaves blind rating alone' => function ($ctx) {
+		$ctx->ensureLoggedIn('embeds_switcher', 'test password', false);
+
+		assertSame(303, saveEmbedSetting($ctx, true)['status'], 'saving redirects back');
+		assertSame(1, embedSettingOf($ctx, 'embeds_switcher'), 'and is stored on the account');
+		assertSame(1, gateSettingOf($ctx, 'embeds_switcher'), 'with the blind-rating box still ticked');
+
+		$body = $ctx->get('/music/songs')['body'];
+		assertContains('name="embeds" value="1" checked', $body, 'the box shows ticked');
+		assertSame(true, pageEmbedSetting($body), 'and the script is told');
+
+		saveEmbedSetting($ctx, false);
+		assertSame(0, embedSettingOf($ctx, 'embeds_switcher'), 'unticking turns it off again');
+		assertSame(false, pageEmbedSetting($ctx->get('/music/songs')['body']), 'on the page too');
+	},
+
+	'the players box survives logging back in' => function ($ctx) {
+		$ctx->ensureLoggedIn('embeds_returner', 'test password', false);
+		saveEmbedSetting($ctx, true);
+
+		$ctx->newSession();
+		$ctx->ensureLoggedIn('embeds_returner', 'test password', false);
+
+		assertSame(true, pageEmbedSetting($ctx->get('/music/songs')['body']), 'the account carries it between sessions');
+	},
+
+	'logging out does not leave the players on for the next person' => function ($ctx) {
+		$ctx->ensureLoggedIn('embeds_leaver', 'test password', false);
+		saveEmbedSetting($ctx, true);
+
+		$ctx->postForm('/music/logout', ['csrf_token' => $ctx->csrfTokenFrom('/music/songs')]);
+		$ctx->ensureLoggedIn('embeds_arriver', 'test password', false);
+
+		assertSame(false, pageEmbedSetting($ctx->get('/music/songs')['body']), 'the next account on this browser gets its own');
+	},
+
+	'a forged players post changes nothing' => function ($ctx) {
+		$ctx->ensureLoggedIn('embeds_forged', 'test password', false);
+
+		$ctx->postForm('/music/settings', ['csrf_token' => 'not the token', 'return' => '/music/songs', 'blind_rating' => '1', 'embeds' => '1']);
+
+		assertSame(0, embedSettingOf($ctx, 'embeds_forged'), 'the players stay off');
 	},
 
 ];

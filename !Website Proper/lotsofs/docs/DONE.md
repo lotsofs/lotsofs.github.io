@@ -4,6 +4,7 @@ Finished work, one row per commit, newest first; `—` where the work had no cod
 
 | Date | Code | Area | Change | Why / how |
 |---|---|---|---|---|
+| 2026-11-16 | EMB | Music | Load song cards' Spotify, YouTube and SoundCloud players only once the account ticks them on in the cog menu, which says what that agrees to, links otherwise | The iframes set cookies before any consent; a new account setting, off for everyone, gates them. Checked by the suite and in headless Chrome: no request to the three while off. |
 | 2026-11-12 | — | Site | Delete each test case file's accounts when it ends, and hold each response once in the test runner | Every account is a song-list rater, so the page grew to 42.6 MB and the runner ran out of memory. Peak 142 → 42 MB, suite 145 → 60 s. |
 | 2026-11-12 | — | Music | Fade a rater's Updated time when it is a version's, as a borrowed rating is | It read like the rater's own write; the rating view now flags a time newer from a version than from the song itself. Checked by the suite. |
 | 2026-11-12 | — | Music | Stop the Columns menu scrolling sideways in Firefox | Firefox left the scrollbar out of the menu's width, clipping the longest names; a stable scrollbar gutter puts it back. Measured in headless Firefox and Chrome. |

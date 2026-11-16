@@ -11,6 +11,11 @@ return [
 		'date' => null,
 		'changes' => [
 			[
+				'en' => '**Spotify, YouTube and SoundCloud players on song cards are off until you turn them on in the ⚙ menu; until then they are plain links.**',
+				'fy' => '**De spilers fan Spotify, YouTube en SoundCloud op nûmerkaarten steane út oant do se oansetst yn it ⚙-menu; oant dan binne it gewoane keppelings.**',
+				'de' => '**Die Player von Spotify, YouTube und SoundCloud auf Liedkarten sind aus, bis du sie im ⚙-Menü einschaltest; bis dahin sind es einfache Links.**',
+			],
+			[
 				'en' => 'The Columns menu no longer scrolls sideways.',
 				'fy' => 'It menu Kolommen skowt net mear nei de kant.',
 				'de' => 'Das Menü „Spalten“ scrollt nicht mehr seitwärts.',

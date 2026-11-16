@@ -2,18 +2,6 @@
 
 Detail for the **Open decisions** rows in [TODO.md](TODO.md), grouped by module in the index's order. A decision closes when the owner makes it, and what is decided then becomes work in [tasks.md](tasks.md) or a rule in the module's doc. Until then they block work downstream and keep resurfacing.
 
-## EMB — Do the embeds need consent, and in what shape
-
-The songs page loads real Spotify, YouTube and SoundCloud iframes, which set cookies and send the visitor's IP and referrer to those services whatever the visitor wants (*Fashion ID*, C-40/17, makes the operator jointly responsible). Under ePrivacy (in the Netherlands, Telecommunicatiewet 11.7a) consent has to come before the iframe loads, so a banner over running embeds satisfies nothing. A mandatory signup checkbox is the wrong answer (GDPR 7(4): not freely given; 7(3): withdrawing has to be as easy as granting). Read in the code and the law; not legal advice.
-
-The shape that works: an **account setting, off by default and changeable any time** ("load Spotify/YouTube players inline"), with a plain link in place of the player while it is off, optionally offered unticked at signup. Every viewer is logged in, so a setting covers the whole audience with no banner. It is not urgent while the audience is a few invited friends; it decides whether the embeds can ever be shown more widely.
-
-**If adopted.** An `account` column (in the unshipped migration, see `music.md`), a toggle in the cog menu beside blind rating, and `songRows.php` rendering the link while it is off.
-
-**Verify.** With the setting off, loading the songs page makes no request to Spotify, YouTube or SoundCloud.
-
-**Docs.** `music.md` (the `song_link` bullet), `music-reference.md` (schema, settings route).
-
 ## COV — How are covers modelled
 
 Not at all. `song_cover` and `composition` went in the ground-up rewrite (`app/modules/music/notes.txt` has the original sketch). The earlier reasoning: a cover is a separate song sharing a composition, which needs `composition` back. Nothing forces it until a cover needs recording. A `cover` type in `musicSongRelationTypes()` would now link a cover to its original on both cards, though it shares no composition.
@@ -30,7 +18,7 @@ The settled rule: split on edit or performance, not on master or encoding, and o
 
 Music is 60+ files and the most developed thing here, yet `main`'s home page still says "There currently isn't much here yet", and only that page links to `/music`. Worth deciding rather than drifting.
 
-**Bears on.** Whether `main` should present music, and how much EMB and PRV matter: a public tool needs both sooner.
+**Bears on.** Whether `main` should present music, and how much PRV matters: a public tool needs it sooner.
 
 **Docs.** `CLAUDE.md` ("What this is"), `other-modules.md`.
 

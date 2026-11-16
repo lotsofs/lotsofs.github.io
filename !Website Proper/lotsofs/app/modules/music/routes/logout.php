@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && checkCsrf($_POST['csrf_token'] ?? n
 	forgetModulePreference('hue', 'music');
 	forgetModulePreference('blind', 'music');
 	forgetModulePreference('toast', 'music');
+	forgetModulePreference('embeds', 'music');
 	logOut();
 }
 

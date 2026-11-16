@@ -239,6 +239,7 @@
 	<script id="songTrackAliases" type="application/json"><?= json_encode($globalData['trackAliases'], JSON_HEX_TAG) ?></script>
 	<script id="songRelationTypes" type="application/json"><?= json_encode($globalData['relationTypes'], JSON_HEX_TAG) ?></script>
 	<script id="songGateSetting" type="application/json"><?= json_encode($globalData['blindRating']) ?></script>
+	<script id="songEmbedSetting" type="application/json"><?= json_encode($globalData['embeds']) ?></script>
 	<script id="songToastSeconds" type="application/json"><?= (int)$globalData['toastSeconds'] ?></script>
 	<script id="songAccountId" type="application/json"><?= (int)$globalData['accountId'] ?></script>
 	<script id="songRatingCursor" type="application/json"><?= (int)$globalData['ratingCursor'] ?></script>

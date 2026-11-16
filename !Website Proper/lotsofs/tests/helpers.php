@@ -15,6 +15,24 @@ function logInAs($ctx, $name, $password) {
 	]);
 }
 
+/// Ticks or unticks the cog menu's players box, posting the blind-rating box as it stands.
+function saveEmbedSetting($ctx, $on) {
+	$body = $ctx->get('/music/songs')['body'];
+	$fields = [
+		'csrf_token' => $ctx->csrfTokenFrom('/music/songs'),
+		'return' => '/music/songs',
+	];
+
+	if (strpos($body, 'name="blind_rating" value="1" checked') !== false) {
+		$fields['blind_rating'] = '1';
+	}
+	if ($on) {
+		$fields['embeds'] = '1';
+	}
+
+	return $ctx->postForm('/music/settings', $fields);
+}
+
 function makeAlbum($ctx, $name, $artistId, $tracks) {
 	$response = $ctx->post('/music/ajax/album', [[
 		'provided_name' => $name,

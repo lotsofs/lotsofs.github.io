@@ -18,6 +18,8 @@ return [
 	'nav.colour' => 'Farbe',
 	'nav.settings' => 'Einstellungen',
 	'settings.blindRating' => 'Wertungen und Notizen anderer bei einem Lied verbergen, bis ich es selbst bewertet habe',
+	'settings.embeds' => 'Player von Spotify, YouTube und SoundCloud auf Liedkarten anzeigen',
+	'settings.embedsConsent' => 'Mit dem Häkchen stimmst du zu, dass Liedkarten Player von Spotify, YouTube und SoundCloud laden. Diese Unternehmen können dann Cookies setzen und deine IP-Adresse sehen und was du abspielst, nach ihren eigenen Datenschutzrichtlinien. Du kannst es jederzeit wieder abwählen; bis dahin ist jeder Player ein einfacher Link.',
 	'settings.toastDuration' => 'Wie lange Bewertungshinweise bleiben',
 	'settings.toastOff' => 'Aus',
 	'settings.toastSeconds' => '{count} Sekunden',

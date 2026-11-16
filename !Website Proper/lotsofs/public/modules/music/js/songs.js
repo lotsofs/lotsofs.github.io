@@ -16,6 +16,8 @@ const songListHeading = document.getElementById("songListHeading");
 const songArtistData = JSON.parse(document.getElementById("songArtistData").textContent);
 const songAlbumData = JSON.parse(document.getElementById("songAlbumData").textContent);
 const songLinkFieldData = JSON.parse(document.getElementById("songLinkFieldData").textContent);
+/// Players only with the reader's consent, as songRows.php renders them.
+const songEmbedsOn = JSON.parse(document.getElementById("songEmbedSetting").textContent) === true;
 const songTrackAliases = JSON.parse(document.getElementById("songTrackAliases").textContent);
 const songRelationTypes = JSON.parse(document.getElementById("songRelationTypes").textContent);
 /// The table's id columns, each a type's end: [{key, type, role}].
@@ -487,17 +489,17 @@ function linkHref(value, prefix) {
 function renderLinkDisplay(links) {
 	const container = document.createElement("div");
 
-	const spotifyEmbed = renderSpotifyEmbed(links.spotify_url);
+	const spotifyEmbed = songEmbedsOn ? renderSpotifyEmbed(links.spotify_url) : null;
 	if (spotifyEmbed) {
 		container.appendChild(spotifyEmbed);
 	}
 
-	const youtubeEmbed = renderYoutubeEmbed(links.youtube_url);
+	const youtubeEmbed = songEmbedsOn ? renderYoutubeEmbed(links.youtube_url) : null;
 	if (youtubeEmbed) {
 		container.appendChild(youtubeEmbed);
 	}
 
-	const soundcloudEmbed = renderSoundcloudEmbed(links.soundcloud_url);
+	const soundcloudEmbed = songEmbedsOn ? renderSoundcloudEmbed(links.soundcloud_url) : null;
 	if (soundcloudEmbed) {
 		container.appendChild(soundcloudEmbed);
 	}

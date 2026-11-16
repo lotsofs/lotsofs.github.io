@@ -34,7 +34,6 @@ Detail in [decisions.md](decisions.md). No done state until the owner decides; t
 
 | Code | Summary | Severity |
 |---|---|---|
-| [EMB](decisions.md#emb--do-the-embeds-need-consent-and-in-what-shape) | Spotify, YouTube and SoundCloud iframes load before any consent; the workable shape is an account setting, off by default | Medium |
 | [COV](decisions.md#cov--how-are-covers-modelled) | Covers are not modelled; a cover as a separate song sharing a composition would need `composition` back | Low |
 | [VER](decisions.md#ver--when-is-a-recording-a-separate-song) | When a recording becomes a separate song: the rule is settled (split on edit or performance) and the import can now keep one apart and relate it, but nothing applies the rule | Low |
 

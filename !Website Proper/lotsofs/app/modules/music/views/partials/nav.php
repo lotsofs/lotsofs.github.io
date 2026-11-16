@@ -1,6 +1,7 @@
 <?php require_once __ROOT__ . '/session.php' ?>
 <?php require_once __MODULES__ . '/music/blindRating.php' ?>
 <?php require_once __MODULES__ . '/music/toastDuration.php' ?>
+<?php require_once __MODULES__ . '/music/embeds.php' ?>
 <?php sessionScope('music') ?>
 
 <nav>
@@ -45,6 +46,13 @@
 					<input type="checkbox" name="blind_rating" value="1"<?= musicBlindRating() ? ' checked' : '' ?>>
 					<span><?= t('settings.blindRating') ?></span>
 				</label>
+				<div>
+					<label class="navSettingsRow">
+						<input type="checkbox" aria-describedby="navEmbedsConsent" name="embeds" value="1"<?= musicEmbeds() ? ' checked' : '' ?>>
+						<span><?= t('settings.embeds') ?></span>
+					</label>
+					<p id="navEmbedsConsent" class="navSettingsNote"><?= t('settings.embedsConsent') ?></p>
+				</div>
 				<label class="navSettingsField">
 					<span><?= t('settings.toastDuration') ?></span>
 					<select name="toast_seconds">

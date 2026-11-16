@@ -1849,6 +1849,7 @@ return [
 
 	'a spotify link renders as an embed on the card' => function ($ctx) {
 		$ctx->ensureLoggedIn();
+		saveEmbedSetting($ctx, true);
 
 		$artistId = $ctx->makeArtist('Embed Artist');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Embed Song']]);
@@ -1858,10 +1859,13 @@ return [
 		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
 		assertContains('songSpotifyEmbed', $card, 'the embed container is present');
 		assertContains('/embed/track/ddddddddddddddddddddddd', $card, 'the iframe points at the right track');
+
+		saveEmbedSetting($ctx, false);
 	},
 
 	'a bare spotify track id embeds without a full url' => function ($ctx) {
 		$ctx->ensureLoggedIn();
+		saveEmbedSetting($ctx, true);
 
 		$artistId = $ctx->makeArtist('Bare Spotify Artist');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bare Spotify Song']]);
@@ -1874,10 +1878,13 @@ return [
 
 		$stored = $ctx->db()->query("SELECT spotify_url FROM song_link WHERE song_id = {$songId}")->fetch();
 		assertSame('4iV5W9uYEdYUVa79Axb7Rh', $stored['spotify_url'], 'the bare id is stored as-is, not expanded into a url');
+
+		saveEmbedSetting($ctx, false);
 	},
 
 	'a bare youtube video id embeds without a full url' => function ($ctx) {
 		$ctx->ensureLoggedIn();
+		saveEmbedSetting($ctx, true);
 
 		$artistId = $ctx->makeArtist('Bare Youtube Artist');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Bare Youtube Song']]);
@@ -1890,10 +1897,13 @@ return [
 
 		$stored = $ctx->db()->query("SELECT youtube_url FROM song_link WHERE song_id = {$songId}")->fetch();
 		assertSame('dQw4w9WgXcQ', $stored['youtube_url'], 'the bare id is stored as-is, not expanded into a url');
+
+		saveEmbedSetting($ctx, false);
 	},
 
 	'a youtube link renders as an embed too' => function ($ctx) {
 		$ctx->ensureLoggedIn();
+		saveEmbedSetting($ctx, true);
 
 		$artistId = $ctx->makeArtist('Youtube Embed Artist');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Youtube Embed Song']]);
@@ -1904,10 +1914,13 @@ return [
 		assertContains('songYoutubeEmbed', $card, 'the embed container is present');
 		assertContains('/embed/86cl_p3uw5E', $card, 'the iframe points at the right video');
 		assertContains('width="280"', $card, 'the youtube embed matches the other embeds\' width');
+
+		saveEmbedSetting($ctx, false);
 	},
 
 	'a youtube link keeps its timestamp, in the embed and the link' => function ($ctx) {
 		$ctx->ensureLoggedIn();
+		saveEmbedSetting($ctx, true);
 
 		$artistId = $ctx->makeArtist('Youtube Timestamp Artist');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Youtube Timestamp Song']]);
@@ -1921,6 +1934,8 @@ return [
 		$body = $ctx->get('/music/songs')['body'];
 		assertContains('src="https://www.youtube.com/embed/Cs7AVq8fovU?start=656"', songsCardFor($body, $songId), 'the embed starts there');
 		assertContains('href="https://www.youtube.com/watch?v=Cs7AVq8fovU&amp;t=656"', songsRowFor($body, $songId), 'the table link starts there');
+
+		saveEmbedSetting($ctx, false);
 	},
 
 	'a youtube start in any form is stored as whole seconds' => function ($ctx) {
@@ -1946,6 +1961,7 @@ return [
 
 	'a soundcloud link renders as an embed too' => function ($ctx) {
 		$ctx->ensureLoggedIn();
+		saveEmbedSetting($ctx, true);
 
 		$artistId = $ctx->makeArtist('Soundcloud Embed Artist');
 		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Soundcloud Embed Song']]);
@@ -1955,6 +1971,38 @@ return [
 		$card = songsCardFor($ctx->get('/music/songs')['body'], $songId);
 		assertContains('songSoundcloudEmbed', $card, 'the embed container is present');
 		assertContains('w.soundcloud.com/player/?url=' . urlencode('https://soundcloud.com/artist/track'), $card, 'the iframe points at the right track');
+
+		saveEmbedSetting($ctx, false);
+	},
+
+	'without consent the players are links and nothing loads from their sites' => function ($ctx) {
+		$ctx->ensureLoggedIn();
+
+		$artistId = $ctx->makeArtist('Unconsented Embed Artist');
+		$ctx->post(SONG_ENDPOINT, [['artist_id' => $artistId, 'title' => 'Unconsented Embed Song']]);
+		$songId = $ctx->songId('Unconsented Embed Song');
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'spotify_url', 'value' => '4iV5W9uYEdYUVa79Axb7Rh']);
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'youtube_url', 'value' => 'https://youtu.be/Cs7AVq8fovU?t=656']);
+		$ctx->post(SONG_LINK_ENDPOINT, ['song_id' => $songId, 'field' => 'soundcloud_url', 'value' => 'https://soundcloud.com/artist/track']);
+
+		$body = $ctx->get('/music/songs')['body'];
+		$card = songsCardFor($body, $songId);
+
+		assertContains('<script id="songEmbedSetting" type="application/json">false</script>', $body, 'the page tells the script the players are off');
+		foreach (['open.spotify.com/embed', 'youtube.com/embed', 'w.soundcloud.com', '<iframe'] as $player) {
+			assertTrue(strpos($body, $player) === false, "the page has no {$player} anywhere");
+		}
+		assertContains('href="https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh"', $card, 'spotify is a link to the track');
+		assertContains('href="https://www.youtube.com/watch?v=Cs7AVq8fovU&amp;t=656"', $card, 'youtube is a link that keeps its start');
+		assertContains('href="https://soundcloud.com/artist/track"', $card, 'soundcloud is a link to the track');
+		assertContains('>Spotify<', $card, 'each labelled by its platform');
+
+		saveEmbedSetting($ctx, true);
+		$body = $ctx->get('/music/songs')['body'];
+		assertContains('<script id="songEmbedSetting" type="application/json">true</script>', $body, 'and on once the box is ticked');
+		assertContains('songSpotifyEmbed', songsCardFor($body, $songId), 'when the players come back');
+
+		saveEmbedSetting($ctx, false);
 	},
 
 	'an other link renders as a plain chip, not an embed' => function ($ctx) {

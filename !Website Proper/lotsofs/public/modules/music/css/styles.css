@@ -221,6 +221,14 @@ nav {
 		}
 	}
 
+	/* Under a checkbox row, indented to its text. */
+	.navSettingsNote {
+		margin: 0.3em 0 0 1.85em;
+		font-size: 0.8em;
+		line-height: 1.35;
+		color: #b4b4b4;
+	}
+
 	.navSettingsField {
 		display: flex;
 		flex-direction: column;

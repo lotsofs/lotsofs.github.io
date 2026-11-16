@@ -18,6 +18,8 @@ return [
 	'nav.colour' => 'Colour',
 	'nav.settings' => 'Settings',
 	'settings.blindRating' => 'Hide other people\'s scores and notes on a song until I have rated it myself',
+	'settings.embeds' => 'Show Spotify, YouTube and SoundCloud players on song cards',
+	'settings.embedsConsent' => 'By ticking this you agree to song cards loading players from Spotify, YouTube and SoundCloud. Those companies can then set cookies and see your IP address and what you play, under their own privacy policies. You can untick it at any time; until then every player is a plain link.',
 	'settings.toastDuration' => 'How long rating pop-ups stay',
 	'settings.toastOff' => 'Off',
 	'settings.toastSeconds' => '{count} seconds',
