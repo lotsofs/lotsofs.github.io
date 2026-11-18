@@ -9,6 +9,10 @@
 return [
 	[
 		'date' => null,
+		'changes' => [],
+	],
+	[
+		'date' => '2026-11-18',
 		'changes' => [
 			[
 				'en' => '**Spotify, YouTube and SoundCloud players on song cards are off until you turn them on in the ⚙ menu; until then they are plain links.**',

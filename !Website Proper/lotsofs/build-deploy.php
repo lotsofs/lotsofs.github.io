@@ -33,7 +33,7 @@ $excludeRel = [
 ];
 
 // modules left out of both trees; shipping one means taking it off this list
-$unshippedModules = ['hideandseek', 'basstabs'];
+$unshippedModules = ['hideandseek'];
 
 foreach ($unshippedModules as $module) {
 	$excludeRel['public'][] = 'modules/' . $module;
@@ -141,6 +141,23 @@ $mustExist = [
 	'lotsofs.com/modules/basstabs/css/styles.css',
 	'app/modules/basstabs/tabs.php',
 	'app/modules/basstabs/songs/my-favourite-game.php',
+	'lotsofs.com/modules/games/css/styles.css',
+	'lotsofs.com/modules/games/js/aoe2.js',
+	'lotsofs.com/modules/games/js/sims2.js',
+	'app/modules/games/ajaxGuard.php',
+	'app/modules/games/database/migrations/001_create.sql',
+	'lotsofs.com/modules/mtasa/css/styles.css',
+	'lotsofs.com/modules/mtasa/js/preview.js',
+	'lotsofs.com/modules/mtasa/js/analysis.js',
+	'lotsofs.com/modules/mtasa/js/zip.js',
+	'lotsofs.com/modules/mtasa/img/map_2048.png',
+	'lotsofs.com/modules/mtasa/data/zones.json',
+	'app/modules/mtasa/ajaxGuard.php',
+	'app/modules/mtasa/database/migrations/001_create.sql',
+	'app/modules/mtasa/data/vehicles.json',
+	'app/modules/mtasa/data/zone_names.json',
+	'app/modules/mtasa/import/classics.csv',
+	'app/modules/mtasa/import/points.csv',
 ];
 // app/secure/cacert.pem is gitignored (large CA bundle, referenced only by
 // currently-disabled code); copied if present, not required.

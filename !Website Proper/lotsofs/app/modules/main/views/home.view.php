@@ -43,6 +43,7 @@
 	<li>Look at my <a class="links-link" href="contact">socials</a>.</li>
 	<li>Click <a class="links-link" href="exchange-rates">this redundant link</a> for currency exchange rates.</li>
 	<li>Access my Keep Talking and Nobody Explodes <a class="links-link" href="ktane">merged translated modules manuals w/ bonus languages</a>.</li>
+	<li>Consult my <a class="links-link" href="mtasa">information database</a> of old MTASA center numbered maps.</li>
 	<li>Use my <a class="links-link" href="music">music thing</a>.</li>
 </ul>
 
