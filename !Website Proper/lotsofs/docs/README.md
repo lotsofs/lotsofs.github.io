@@ -1,6 +1,6 @@
 # docs/ index
 
-Reference material for working in this repo. `CLAUDE.md` (repo root) is the always-loaded summary and imports `music.md`, `hideandseek.md` and `basstabs.md`; everything else here is read on demand.
+Reference material for working in this repo. `CLAUDE.md` (repo root) is the always-loaded summary and imports `music.md`, `hideandseek.md`, `basstabs.md`, `games.md` and `mtasa.md`; everything else here is read on demand.
 
 | File | Read it when |
 |---|---|
@@ -13,6 +13,9 @@ Reference material for working in this repo. `CLAUDE.md` (repo root) is the alwa
 | [hideandseek.md](hideandseek.md) | Design rules and traps of the hideandseek module (imported by CLAUDE.md). |
 | [hideandseek-reference.md](hideandseek-reference.md) | Looking up hideandseek facts: schema, routes, endpoints, import/export formats, JS file map. |
 | [basstabs.md](basstabs.md) | Adding a bass tab sheet or touching the basstabs module (imported by CLAUDE.md): the song file format and the notation. |
+| [games.md](games.md) | Touching the games module (imported by CLAUDE.md): its copied accounts, and the Age of Empires timeline read live from a Google sheet. |
+| [mtasa-analysis.md](mtasa-analysis.md) | Touching a script column of the mtasa module or rerunning the analysis: how `tools/mtasa/` makes every column, the race gamemode's rules, and what `js/analysis.js` works out in the browser. |
+| [mtasa.md](mtasa.md) | Touching the mtasa module (imported by CLAUDE.md): the map catalogue, its one-time import from the owner's sheet, the worked-out duplicates, the route preview, and the comment threads. |
 | [other-modules.md](other-modules.md) | Working on `main`, `swat4`, or `ss2` (ss2 has a data-driven JS front end worth understanding). |
 | [TODO.md](TODO.md) | Before assuming a rough edge is unintentional: the index of open work by three-letter code. Start here for any task. |
 | [tasks.md](tasks.md) | Working on a tracked task: its evidence, plan, how to verify it and which docs to update. |

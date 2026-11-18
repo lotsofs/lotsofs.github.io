@@ -92,7 +92,7 @@ Detail in [tasks.md](tasks.md).
 |---|---|---|
 | [SLG](tasks.md#slg--logins-for-ss2) | ss2 could get logins: `session.php` is module-agnostic | Low |
 
-## Bass tabs
+## Games
 
 ### Defects and tasks
 
@@ -100,7 +100,26 @@ Detail in [tasks.md](tasks.md).
 
 | Code | Summary | Severity |
 |---|---|---|
-| [TAB](tasks.md#tab--bass-tabs-are-held-back-from-the-deploy) | The bass tabs are on `$unshippedModules` for now, so they are not on the host; shipping them means taking them off that list and putting their `CHANGELOG.md` entry back | Low |
+| [GMS](tasks.md#gms--check-games-on-the-host-after-its-first-deploy) | Games was deployed 2026-11-18; register first on the host (the first account is the admin, no invite needed) and check the host can fetch the Google sheet the Age of Empires page reads | Low |
+
+### Open decisions
+
+Detail in [decisions.md](decisions.md).
+
+| Code | Summary | Severity |
+|---|---|---|
+| [GAM](decisions.md#gam--what-the-games-module-holds) | What the games module tracks is decided game by game. Age of Empires is the first (a scenario timeline with ticks); the first idea for the rest was Game → Level → each account's ranking and note, with alternate names | Low |
+
+## MTA:SA
+
+### Defects and tasks
+
+Detail in [tasks.md](tasks.md).
+
+| Code | Summary | Severity |
+|---|---|---|
+| [MTS](tasks.md#mts--import-mtasa-on-the-host-after-its-first-deploy) | mtasa was deployed 2026-11-18; register first on the host (the first account is the admin, no invite needed) and run the one-time import, which fetches the sheet's Numbered tab from the host | Low |
+| [JSP](tasks.md#jsp--port-the-rest-of-the-map-analysis-to-js) | `js/analysis.js` works out Start, Route, Finish and Settings from a map's GitHub files; Problems without the water checks, the Notes, the category guess and About's meta fields are portable but still only the Python's | Low |
 
 ## Site
 
@@ -122,7 +141,7 @@ Detail in [decisions.md](decisions.md).
 | Code | Summary | Severity |
 |---|---|---|
 | [PER](decisions.md#per--is-music-a-personal-tool-or-part-of-the-site) | Is music a personal tool or part of the public site? The home page still says there isn't much here | Low |
-| [SHR](decisions.md#shr--should-music-and-hideandseek-share-code) | Music and hideandseek keep near-copies of the rate limiter, invite codes, hue, auth, ajax guard and tooltip; revisit once hideandseek has real pages | Low |
+| [SHR](decisions.md#shr--should-the-modules-with-accounts-share-code) | Music, hideandseek, games and mtasa keep near-copies of the rate limiter, invite codes, auth, ajax guard and account pages (music and hideandseek also the hue and tooltip); revisit now that games and mtasa have real pages | Low |
 
 ### Possible, not planned
 

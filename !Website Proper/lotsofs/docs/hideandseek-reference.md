@@ -77,4 +77,4 @@ Category edits (`hnsSaveCategoryEdits($db, $mapId, $rows, $only)`): validates ev
 
 ## Duplicated-from-music code
 
-`rateLimit.php`, `inviteCode.php` (`hnsGenerateInviteCode`), `auth.php` (`hns*`), `ajaxGuard.php`, `migrate.php`, `db.php` and `tooltip.js` are intentional near-copies of music's (SHR in `TODO.md`). When fixing a bug in one, check the other.
+`rateLimit.php`, `inviteCode.php` (`hnsGenerateInviteCode`), `auth.php` (`hns*`), `ajaxGuard.php`, `migrate.php`, `db.php` and `tooltip.js` are intentional near-copies of music's, games copies all of them but `tooltip.js`, and mtasa copies games' (SHR in `TODO.md`). When fixing a bug in one, check the others.

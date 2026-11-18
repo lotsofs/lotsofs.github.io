@@ -105,7 +105,7 @@ Every rating cell, in the table and on the song card, lists in its hover tooltip
 A rater with no rating on a song borrows their ratings on its versions (`effective_rating` in `ratings.php`). The borrowed value is drawn faded and italic (`.songInherited`, opacity 0.65), because nobody wrote it there. So a version the rater has not heard looks the same as one they have heard and found no different from the other, say a remaster they cannot tell from the original. The mark is what sets those two apart. The only way to say "heard it, same verdict" today is typing the same score and note in again, which also stops it following later changes on the other version. Asked for by the owner, 2026-11-07.
 
 **Plan.** A button beside the reader's own borrowed score or note marks it as theirs for this song. All the mark does is change how the value is drawn: upright, and less faded (opacity around 0.85), on every reader's page, since it is the rater's own statement. It stays borrowed. It still follows the other version, counts exactly as it does now, and a real rating still replaces it. A second press takes the mark back.
-- **Storage:** a table of its own in the unshipped migration (`010`), one row per account, song and field. Not a column on `account_song`, whose rows mean the rater wrote something there.
+- **Storage:** a table of its own in the next migration (`011`, the one unshipped file once started), one row per account, song and field. Not a column on `account_song`, whose rows mean the rater wrote something there.
 - **Logging:** none, since `rating_audit` would turn the mark into a toast.
 - **To decide:** whether score and note are marked together or separately, and whether writing a real rating deletes the mark.
 - **Updates:** the song list and the rating answers carry the marks. Other open pages see one on reload, as with LNK.
@@ -324,17 +324,44 @@ The ss2 nav (`views/partials/nav.php`) links `/ss2/` and `/ss2/1` to `/ss2/7`, n
 
 **Docs.** `other-modules.md`.
 
-## TAB — Bass tabs are held back from the deploy
+## GMS — Check games on the host after its first deploy
 
-The owner took the module out of the build for now on 2026-11-02, by adding `basstabs` to `$unshippedModules` in `build-deploy.php`. It has never shipped: the 2026-11-05 build has no `basstabs` folder, and `/basstabs` is a 404 on the host (reproduced 2026-11-05).
+`games` left `$unshippedModules` in `build-deploy.php` and was deployed on 2026-11-18. Two things wait on the host.
 
-**Plan.** Take `basstabs` off `$unshippedModules`, which puts the module back in `_deploy/` and its `$mustExist` checks back in force. Put this entry back under Unreleased in `CHANGELOG.md`, under `### Added`, updated for any sheets added since:
+- **The first account is the admin, and needs no invite.** Until the owner registers on the host, anyone who finds `/games/register` could. Register straight after the deploy. `games_test.sqlite` holds the owner's account and ticks; uploading it as `games.sqlite` keeps them instead.
+- **The Age of Empires page fetches a Google sheet from the server.** That works from the dev machine (reproduced 2026-11-12), but whether the host lets PHP make outgoing HTTPS requests is unknown; the curl calls are guarded, so a host without curl shows "the spreadsheet could not be reached" rather than an error. If it cannot, the fallback is a copy fetched at home and uploaded by hand, as `hideandseek_geo.sqlite` is, which loses the live updates.
 
-> Bass tab sheets at lotsofs.com/basstabs: a list of songs, each opening a sheet of notes for 5-string bass, headed with the song's title, artist and key, with the name of each note under it and fretboards in greys beside the parts they belong to, each showing a key, the notes of its chord, and a hand position to play it from. Each sheet prints on A4 and fits a phone screen. There are seven so far: My Favourite Game by The Cardigans, Amsterdam by Nothing but Thieves, Bring Me to Life by Evanescence, Love Myself by Rondé, whose sheet is its riff and a fretboard for each of its four chords, Monday Morning by Melanie Fiona, which ends with the song's lyric cues in order, Inside by Stiltskin, and Creep by Radiohead. Sheets can show rests and slides. A sheet longer than a page carries on onto the next one without splitting a part in two.
+**Verify.** On the host, `/games/aoe2` lists scenarios and its "as it stood at" time moves on after 10 minutes.
 
-**Verify.** `php build-deploy.php` (run by the owner) passes its checks, and `/basstabs` answers on the host after the deploy.
+**Docs.** `games.md`, if the sheet has to come from a copy uploaded by hand.
 
-**Docs.** `basstabs.md`, `architecture.md` and `CLAUDE.md`, which all name it as unshipped.
+## MTS — Import mtasa on the host after its first deploy
+
+`mtasa` left `$unshippedModules` and was deployed on 2026-11-18, `import/classics.csv`, `import/points.csv` and the 6.6 MB `map_2048.png` included (all in `$mustExist`). The list is public and linked from the main home page.
+
+- **The first account is the admin, and needs no invite.** Register straight after the deploy, before anyone else can.
+- **The data comes in once, by the admin's Import button on the empty list**, which fetches the sheet's Numbered tab from the server (2.8 s from the dev machine, 2026-11-16). Whether the host may make outgoing HTTPS requests is unknown, as for GMS. If it cannot, import on the dev server and upload `mtasa_test.sqlite` renamed to `mtasa.sqlite`. The owner deprecates the sheet once the site holds it.
+
+**Verify.** On the host, the import reports every map (6,796 on 2026-11-16) and 6,504 with points, `/mtasa/map?id=264` reads "undecuplicate of 87", and `/mtasa/map?id=84` shows its route over the world map.
+
+**Docs.** `mtasa.md`, if the import has to be done on the dev server.
+
+## JSP — Port the rest of the map analysis to JS
+
+The owner wants the Python analysis (`tools/mtasa/`, `docs/mtasa-analysis.md`) to run on the GitHub files in the browser where it can. The first batch is done: `public/modules/mtasa/js/analysis.js` works out Start, Route, Finish and Settings on Increase detail and flags where they differ from the stored values, matching the Python on all 6,504 maps but for three routes of exactly 18.5 m (2026-11-17). What is left is portable, since each needs only the map's own files:
+
+- **Problems without the water checks**: no spawnpoints, an empty map, invalid spawn vehicles, unreadable positions, a chain that hangs, several chains, duplicate checkpoint ids, a dangling `nextid`, overlapping spawns, extremely far spawns, "waves" with no checkpoints, stray meta attributes, invalid vehicle change pickups (`analyze.py` lines 384–480);
+- **the Notes**: only N spawnpoints, interior height, test/beta in the description, the description's player or lap count, extra files, unknown elements;
+- **the category guess** (`categorize()` and `composition()` in `analyze.py`), per map;
+- **About's author, description, version and meta title**: `clean()` HTML-unescapes after XML parsing and collapses whitespace.
+
+The water checks could follow once `water.dat`'s triangles and quads are shipped as a slim file, as the zones were. Duplicates and titles from other copies stay Python: they need every map, or the rest of the repo.
+
+**Plan.** Extend `mtasaAnalyse()` with each group, a Problems row filled after Increase detail only where it has text (the section hides blank rows), and the same show-and-flag.
+
+**Verify.** Rerun the all-maps comparison against `classics.csv` (the harness loads `analysis.js` in headless Chrome over the local files), each new column matching on every map or each difference explained.
+
+**Docs.** `mtasa-analysis.md` (What the site works out itself) and `mtasa.md`.
 
 ## CFG — The site-wide config file is loaded by nothing
 
