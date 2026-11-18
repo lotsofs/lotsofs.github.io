@@ -352,6 +352,59 @@ return [
 		}
 	},
 
+	'a bar line opening a line stands where the staff lines start' => function ($ctx) {
+		foreach (bassTabStaves(bassTabParse('| E0 E3 | A5 | / |: A5 :|'), 'sharp') as $staff) {
+			$first = $staff['bars'][0]['x'];
+			assertSame($staff['lineStart'], $first, 'on the start of the lines');
+			assertSame($first + 23, $staff['notes'][0]['x'], 'and as far from the first note as a bar in the middle is from the note after it');
+		}
+		$middle = bassTabStaves(bassTabParse('| E0 E3 | A5 |'), 'sharp')[0];
+		assertSame($middle['bars'][1]['x'] + 23, $middle['notes'][2]['x'], 'which is 23 px');
+	},
+
+	'a line ending in a bar line stops at it, and any other runs on to the edge of the page' => function ($ctx) {
+		foreach (['E0 E3 |', 'E0 E3 :|', '["x" E0 E3 | ]'] as $closed) {
+			$staff = bassTabStaves(bassTabParse($closed), 'sharp')[0];
+			$bar = end($staff['bars'])['x'];
+			assertSame($bar, $staff['lineEnd'], "'{$closed}': the lines end on the bar");
+			assertSame(ceil($bar + 1), $staff['width'], "'{$closed}': with no room after it");
+		}
+		foreach (['E0 E3', 'E0 | E3'] as $open) {
+			$staff = bassTabStaves(bassTabParse($open), 'sharp')[0];
+			assertTrue($staff['lineEnd'] > 1000, "'{$open}': the lines run on");
+		}
+		$staff = bassTabStaves(bassTabParse('E0 E3 | / A5'), 'sharp');
+		assertSame(end($staff[0]['bars'])['x'], $staff[0]['lineEnd'], 'a line broken after its bar stops at it too');
+		assertTrue($staff[1]['lineEnd'] > 1000, 'while the next one runs on');
+	},
+
+	'a time signature stands across the staff before the note it starts from' => function ($ctx) {
+		$items = bassTabParse('| 2/4 A3/2 A3/2 | 12/8 ["x" E0 ]');
+		assertSame(['bar', 'time', 'note', 'note', 'bar', 'time', 'open', 'note', 'close'], array_column($items, 'kind'), 'read between bars, and before a bracket');
+		assertSame(['2', '4'], [$items[1]['top'], $items[1]['bottom']], 'the upper and lower number');
+
+		$staff = bassTabStaves($items, 'sharp')[0];
+		[$first, $second] = $staff['times'];
+		[$opening, $middle] = $staff['bars'];
+		assertSame([$staff['lineY']['A'] - 2, $staff['lineY']['A'] + 23], [$first['topY'], $first['bottomY']], 'baselines putting 21 px digits 2 px clear of the middle line');
+		assertSame($staff['lineY']['A'], $first['line'][2], 'which is drawn again over their paper strokes');
+		assertTrue($first['line'][0] < $first['x'] - 8 && $first['line'][1] > $first['x'] + 8, 'across their whole width');
+		assertSame($opening['x'] + 12 + 8, $first['x'], '12 px clear of the bar before it');
+		assertSame($middle['x'] + 12 + 16, $second['x'], 'two digits wide, still 12 px clear');
+		assertSame($first['x'] + 8 + 18, $staff['notes'][0]['x'], 'and the note after it 18 px past its edge');
+
+		foreach (['2/3 A3', '0/4 A3', '2/4', '2/4 |', 'A3 2/4', '2/4 / A3', '2/4 h A3'] as $bad) {
+			$refused = false;
+			try {
+				bassTabParse($bad);
+			}
+			catch (InvalidArgumentException $e) {
+				$refused = true;
+			}
+			assertTrue($refused, "'{$bad}' is refused");
+		}
+	},
+
 	'an s is a slide between two notes on one string, a slash rising or falling with it' => function ($ctx) {
 		assertSame(['note', 'slide', 'note'], array_column(bassTabParse('A5 s A7'), 'kind'), 'a slide between its two notes');
 
@@ -361,7 +414,23 @@ return [
 		assertTrue($up['y1'] > $up['y2'] && $down['y1'] < $down['y2'], 'the slash rises left to right going up and falls going down');
 		[$first, $second] = $staff['notes'];
 		assertTrue($first['x'] < $up['x1'] && $up['x2'] < $second['x'], 'between the two digits');
+		assertSame([$second['x'] - 19, $second['x'] - 11], [$up['x1'], $up['x2']], 'a beat apart, just before the second digit');
 		assertSame(30 * 3 + 38, (int)$staff['width'], 'taking no room of its own');
+
+		/// A digit is about 10 px wide, so 5 px either side of its x is the digit.
+		foreach (['E3/2 s E7/2', 'E3-/2 E3/2 s E7/2', 'A10 s A12'] as $close) {
+			$staff = bassTabStaves(bassTabParse($close), 'sharp')[0];
+			[$from, $to] = array_slice($staff['notes'], -2);
+			[$slide] = $staff['slides'];
+			assertTrue($slide['x1'] >= $from['x'] + 5 * strlen($from['fret']) && $slide['x2'] <= $to['x'] - 5 * strlen($to['fret']), "'{$close}': the slash clears both digits");
+			assertTrue($slide['x2'] - $slide['x1'] >= 3, "'{$close}': and is still a slash");
+		}
+
+		/// Two-digit frets half a beat apart touch already, so the slash goes where they meet.
+		$staff = bassTabStaves(bassTabParse('A10/2 s A12'), 'sharp')[0];
+		[$from, $to] = $staff['notes'];
+		[$slide] = $staff['slides'];
+		assertSame(($from['x'] + $to['x']) / 2, ($slide['x1'] + $slide['x2']) / 2, 'touching digits: centred between them');
 
 		foreach (['s A5', 'A5 s', 'A5 s E7', 'A5 s A5', 'A5 s | A7', 'A5 s , A7', 'r s A5', 'A5 s r', 'A5 s h A7'] as $bad) {
 			$refused = false;

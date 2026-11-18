@@ -35,6 +35,9 @@ return [
 			'/ss2/18' => 200,
 			'/basstabs' => 200,
 			'/basstabs/my-favourite-game' => 200,
+			'/games' => 302,
+			'/games/login' => 200,
+			'/games/aoe2' => 302,
 		];
 		foreach ($expected as $path => $status) {
 			assertSame($status, $ctx->get($path)['status'], "GET {$path}");

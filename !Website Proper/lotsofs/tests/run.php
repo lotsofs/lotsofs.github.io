@@ -22,7 +22,9 @@ if ($only) {
 	$caseFiles = array_values(array_filter($caseFiles, fn($file) => in_array(basename($file, '.php'), $only, true)));
 }
 
-const SKIP_DIRS = ['public/modules/ss2/img', 'public/modules/ss2/fonts', 'public/raw', 'tests', '_deploy'];
+/// data/ starts empty: a dev server's sessions or cached sheet would otherwise
+/// leak into the run (the AoE page would read its cache instead of the fixture).
+const SKIP_DIRS = ['public/modules/ss2/img', 'public/modules/ss2/fonts', 'public/modules/mtasa/img', 'public/raw', 'tests', '_deploy', 'data'];
 
 $projectRoot = realpath(__DIR__ . '/..');
 $tempRoot = sys_get_temp_dir() . '/lotsofs_tests_' . getmypid();
@@ -49,6 +51,20 @@ copyProject($projectRoot, $tempRoot);
 
 echo "serving scratch copy on port {$port}\n";
 putenv('LOTSOFS_LOCALE=en');
+/// The games module's Age of Empires page reads a Google sheet, as CSV and as
+/// HTML for its colours; the suite feeds it fixtures instead, from the real repo
+/// since the copy leaves tests/ out.
+putenv('LOTSOFS_AOE2_SOURCE=' . __DIR__ . '/fixtures/aoe2_scenarios.csv');
+putenv('LOTSOFS_AOE2_STYLED_SOURCE=' . __DIR__ . '/fixtures/aoe2_scenarios.html');
+/// The mtasa import reads the owner's sheet once (three tabs); the suite feeds it copies of
+/// the fixtures inside the scratch copy, which a test may break and restore.
+@mkdir($tempRoot . '/mtasa_source', 0777, true);
+foreach (['numbered', 'ai', 'mapgen'] as $tab) {
+	copy(__DIR__ . "/fixtures/mtasa_{$tab}.csv", "{$tempRoot}/mtasa_source/{$tab}.csv");
+}
+putenv('LOTSOFS_MTASA_SOURCE=' . $tempRoot . '/mtasa_source/numbered.csv');
+putenv('LOTSOFS_MTASA_AI_SOURCE=' . $tempRoot . '/mtasa_source/ai.csv');
+putenv('LOTSOFS_MTASA_MAPGEN_SOURCE=' . $tempRoot . '/mtasa_source/mapgen.csv');
 $server = proc_open(
 	escapeshellarg(PHP_BINARY) . " -S localhost:{$port} -t " . escapeshellarg($tempRoot . '/public'),
 	[1 => ['file', $serverLog, 'a'], 2 => ['file', $serverLog, 'a']],
