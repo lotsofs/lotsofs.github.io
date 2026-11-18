@@ -220,6 +220,9 @@ function bassTabParse($notation) {
 		else if (array_key_exists($token, BASS_TAB_BARS)) {
 			$items[] = ['kind' => 'bar', 'repeat' => BASS_TAB_BARS[$token]];
 		}
+		else if (preg_match('/^([1-9][0-9]?)\/(1|2|4|8|16|32)$/', $token, $match)) {
+			$items[] = ['kind' => 'time', 'top' => $match[1], 'bottom' => $match[2]];
+		}
 		else if ($token === ',') {
 			$items[] = ['kind' => 'gap'];
 		}
@@ -280,6 +283,10 @@ function bassTabParse($notation) {
 			|| $before['string'] !== $after['string'] || $after['fret'] === $before['fret']
 		)) {
 			throw new InvalidArgumentException("A slide 's' goes between two notes on one string, on different frets");
+		}
+
+		if ($item['kind'] === 'time' && !in_array($after['kind'] ?? null, ['note', 'rest', 'open'], true)) {
+			throw new InvalidArgumentException("A time signature '{$item['top']}/{$item['bottom']}' goes before a note or rest");
 		}
 
 		if ($item['kind'] === 'break' && ($before === null || $after === null || $after['kind'] === 'break')) {
@@ -354,6 +361,7 @@ function bassTabLayout($items, $accidentals) {
 	$hammerFrom = [];
 	$slideFrom = [];
 	$rests = [];
+	$times = [];
 
 	foreach ($items as $item) {
 		if ($item['kind'] === 'note') {
@@ -390,8 +398,15 @@ function bassTabLayout($items, $accidentals) {
 			$cursor += $item['length'] * $unit;
 		}
 		else if ($item['kind'] === 'bar') {
-			$cursor += $barGap;
-			$x = ($lastNoteEnd + $cursor) / 2;
+			if ($placed === []) {
+				/// A bar opening the line stands where the lines start, as far from the first note as any bar is from its next.
+				$x = $lineStart;
+				$cursor = $x + ($unit + $barGap) / 2;
+			}
+			else {
+				$cursor += $barGap;
+				$x = ($lastNoteEnd + $cursor) / 2;
+			}
 			$dotX = $x + ($item['repeat'] === 'end' ? -5 : 5);
 			$bars[] = [
 				'x' => $x,
@@ -407,6 +422,26 @@ function bassTabLayout($items, $accidentals) {
 		}
 		else if ($item['kind'] === 'gap') {
 			$cursor += $groupGap;
+		}
+		else if ($item['kind'] === 'time') {
+			/// Set on their baselines: digits 21 px tall (0.7 em at 30 px) stand $clear px from the middle line, above and below.
+			/// That is inside their paper strokes, so the piece of the line between them is drawn again on top.
+			/// About 8 px either side of their x per digit.
+			/// After a bar or at the line's start it stands 12 px clear of that, however close the next note would have been.
+			$clear = 2;
+			$half = 8 * max(strlen($item['top']), strlen($item['bottom']));
+			$afterBar = $placed === [] || $placed[array_key_last($placed)]['kind'] === 'bar';
+			$x = ($afterBar ? $lastNoteEnd + 12 : $cursor - 8) + $half;
+			$times[] = [
+				'x' => $x,
+				'topY' => $lineY['A'] - $clear,
+				'bottomY' => $lineY['A'] + $clear + 21,
+				'line' => [$x - $half - 4, $x + $half + 4, $lineY['A']],
+				'top' => $item['top'],
+				'bottom' => $item['bottom'],
+			];
+			$lastNoteEnd = $x + $half;
+			$cursor = $x + $half + 18;
 		}
 		else if ($item['kind'] === 'rest') {
 			$x = $cursor;
@@ -449,14 +484,23 @@ function bassTabLayout($items, $accidentals) {
 
 	/// A slash just before the second digit, as tab writes 5/7, rising for a slide up and falling for one down.
 	/// Measured from that digit, so after a held note it rises out of the end of the hold.
+	/// Between notes closer than a beat it narrows to the room between the digits, taking a digit as 5 px either side of its x.
 	$slides = [];
 	foreach ($slideFrom as $index) {
 		[$from, $to] = [$notes[$index], $notes[$index + 1]];
 		$rise = $to['fret'] > $from['fret'] ? 6 : -6;
+		$left = $from['x'] + 5 * strlen($from['fret']) + 0.5;
+		$right = $to['x'] - 5 * strlen($to['fret']) - 0.5;
+		$x1 = max($to['x'] - 19, $left);
+		$x2 = min($x1 + 8, $right);
+		if ($x2 - $x1 < 3) {
+			/// Digits touching: a short slash centred between them is the best there is.
+			[$x1, $x2] = [($left + $right) / 2 - 1.5, ($left + $right) / 2 + 1.5];
+		}
 		$slides[] = [
-			'x1' => $to['x'] - 19,
+			'x1' => $x1,
 			'y1' => $to['y'] + $rise,
-			'x2' => $to['x'] - 11,
+			'x2' => $x2,
 			'y2' => $to['y'] - $rise,
 			'direction' => $rise > 0 ? 'up' : 'down',
 		];
@@ -490,8 +534,11 @@ function bassTabLayout($items, $accidentals) {
 		];
 	}
 
+	/// A line whose last bar or note is a bar line stops at it, room after it and all; any other runs on to the edge of the page.
+	$closingBar = $placed !== [] && $placed[array_key_last($placed)]['kind'] === 'bar' ? $placed[array_key_last($placed)]['x'] : null;
+
 	/// Labels are centred under what they mark; this guesses their width, there being no font metrics here.
-	$width = $cursor;
+	$width = $closingBar !== null ? $closingBar + 1 : $cursor;
 	foreach ($arrows as $arrow) {
 		$width = max($width, $arrow['x'] + strlen($arrow['label']) * 3.5 + 4);
 	}
@@ -505,7 +552,7 @@ function bassTabLayout($items, $accidentals) {
 		'lineStart' => $lineStart,
 		'nameY' => $nameY,
 		/// Far past the viewBox: the lines overflow it to the edge of the page, which clips them.
-		'lineEnd' => 5000,
+		'lineEnd' => $closingBar ?? 5000,
 		'lineY' => $lineY,
 		'notes' => $notes,
 		'bars' => $bars,
@@ -514,6 +561,7 @@ function bassTabLayout($items, $accidentals) {
 		'hammers' => $hammers,
 		'slides' => $slides,
 		'rests' => $rests,
+		'times' => $times,
 		/// The band under the note names for brackets and arrows, and where its leftmost label starts.
 		'under' => $arrows || $brackets ? $under : 0,
 		'labelLeft' => min([INF, ...array_map(fn($arrow) => $arrow['x'] - strlen($arrow['label']) * 3.5, $arrows), ...array_map(fn($bracket) => $bracket['labelX'] - strlen($bracket['label']) * 3.5, $brackets)]),

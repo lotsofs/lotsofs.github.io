@@ -12,6 +12,13 @@
 				<circle class="bassTabRepeatDot" cx="<?= $cx ?>" cy="<?= $cy ?>" r="2" />
 			<?php endforeach; ?>
 		<?php endforeach; ?>
+		<?php foreach ($staff['times'] as $time): ?>
+			<g class="bassTabTime" data-time="<?= $time['top'] ?>/<?= $time['bottom'] ?>">
+				<text x="<?= $time['x'] ?>" y="<?= $time['topY'] ?>"><?= $time['top'] ?></text>
+				<text x="<?= $time['x'] ?>" y="<?= $time['bottomY'] ?>"><?= $time['bottom'] ?></text>
+				<line class="bassTabTimeLine" x1="<?= $time['line'][0] ?>" y1="<?= $time['line'][2] ?>" x2="<?= $time['line'][1] ?>" y2="<?= $time['line'][2] ?>" />
+			</g>
+		<?php endforeach; ?>
 		<?php foreach ($staff['notes'] as $note): ?>
 			<?php if ($note['hold'] !== null): ?>
 				<line class="bassTabHold" x1="<?= $note['hold'][0] ?>" y1="<?= $note['y'] ?>" x2="<?= $note['hold'][1] ?>" y2="<?= $note['y'] ?>" />
