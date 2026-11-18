@@ -4,3 +4,5 @@ app/secure/*
 !*.gitinclude
 /_deploy/
 /data/sessions/
+/data/games_aoe2_scenarios.csv
+/data/games_aoe2_scenarios.csv.*

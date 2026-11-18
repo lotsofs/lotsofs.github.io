@@ -1,0 +1,1267 @@
+/* One fixed theme, dark like music's, with music's blue as the accent. These
+   are the whole palette, so the theme turns over by editing this block. */
+:root {
+	color-scheme: dark;
+	background-color: #000000;
+
+	--ink: #e6e6e6;
+	--inkDim: #9a9a9a;
+	--ground: linear-gradient(-45deg, #000000, hsl(240, 100%, 3%), #000000);
+	--panel: hsl(240, 100%, 4%);
+	--panelRaised: hsl(240, 100%, 9%);
+	--panelHover: hsl(240, 100%, 13%);
+	--border: #555555;
+	--accent: hsl(240, 100%, 80%);
+	--accentDim: hsl(240, 100%, 60%);
+	--danger: #ff6b5e;
+
+	--navWidth: 12em;
+	--navBarHeight: 3.5em;
+}
+
+body {
+	margin: 0;
+	background: var(--ground);
+	color: var(--ink);
+	font-family: 'Noto Sans', system-ui, sans-serif;
+}
+
+/* Sidebar beside the page on a desktop, bar under it on a phone. One flex
+   container either way: the direction flips and the nav is taken out of flow. */
+.gamesLayout {
+	display: flex;
+	align-items: stretch;
+	min-height: 100vh;
+}
+
+.gamesMain {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 1.5em 2em;
+}
+
+.gamesNav {
+	flex: 0 0 var(--navWidth);
+	width: var(--navWidth);
+	position: sticky;
+	top: 0;
+	align-self: flex-start;
+	height: 100vh;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: 0.3em;
+	padding: 1em 0.6em;
+	background-color: var(--panel);
+	border-right: solid 1px var(--border);
+}
+
+.gamesNavBrand {
+	padding: 0 0.6em 0.8em;
+	color: var(--accent);
+	font-weight: bold;
+	text-decoration: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.gamesNavAccount {
+	position: relative;
+	min-width: 0;
+}
+
+.gamesNavLink {
+	display: block;
+	box-sizing: border-box;
+	padding: 0.5em 0.8em;
+	border: solid 1px transparent;
+	border-radius: 10px;
+	background-color: transparent;
+	color: var(--ink);
+	font: inherit;
+	text-align: left;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.gamesNavLink:hover {
+	background-color: var(--panelRaised);
+}
+
+.gamesNavCurrent {
+	background-color: var(--panelRaised);
+	border-color: var(--accentDim);
+	color: var(--accent);
+}
+
+.gamesNavMenuButton {
+	list-style: none;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.gamesNavMenuButton::-webkit-details-marker,
+.gamesNavMenuButton::marker {
+	display: none;
+}
+
+/* Opens downward in the sidebar, where the button sits in the flow with the
+   rest and may be the topmost thing on the bar. The bottom bar flips it. */
+.gamesNavMenu {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: 20;
+	margin-top: 0.3em;
+	display: flex;
+	flex-direction: column;
+	gap: 0.2em;
+	padding: 0.3em;
+	background-color: var(--panelRaised);
+	border: solid 1px var(--border);
+	border-radius: 10px;
+}
+
+.gamesNavLanguage {
+	display: contents;
+}
+
+.gamesNavMenuItem {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.45em 0.7em;
+	border: solid 1px transparent;
+	border-radius: 8px;
+	background-color: transparent;
+	color: var(--ink);
+	font: inherit;
+	text-align: left;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.gamesNavMenuItem:hover {
+	background-color: var(--panel);
+}
+
+h1 {
+	margin: 0 0 0.6em;
+	font-size: 1.6em;
+}
+
+h2 {
+	margin-bottom: 0;
+}
+
+/* No `a:visited` rule. It would carry a pseudo-class (0,1,1) and so outrank the
+   plain class on `.gamesNavLink` and `.gamesNavMenuItem` (0,1,0), marking every
+   nav button the moment its page had been opened once. Author styles beat the
+   browser's own `a:visited` whatever the specificity, so one `a` rule covers
+   both states. */
+a {
+	color: var(--accent);
+}
+
+form label {
+	display: inline-block;
+	min-width: 12em;
+}
+
+input[type="text"],
+input[type="password"] {
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	background-color: var(--panel);
+	color: var(--ink);
+	font: inherit;
+	padding: .45em .7em;
+}
+
+/* A bare element selector, so the nav's own button classes outrank it. */
+button {
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	background-color: var(--panelRaised);
+	color: var(--ink);
+	font: inherit;
+	padding: .35em .8em;
+	cursor: pointer;
+}
+
+button:hover {
+	background-color: var(--panelHover);
+}
+
+.formError {
+	color: var(--danger);
+}
+
+table {
+	border-collapse: collapse;
+}
+
+th, td {
+	border: solid 1px var(--border);
+	padding: 0.3em 0.5em;
+	text-align: left;
+}
+
+thead th {
+	font-size: 0.85em;
+	color: var(--inkDim);
+}
+
+/* The Age of Empires page. */
+.aoeSource {
+	color: var(--inkDim);
+}
+
+.aoeFilters {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.6em;
+}
+
+.aoeFilter {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3em 1em;
+	margin: 0;
+	padding: 0.4em 0.8em;
+	border: solid 1px var(--border);
+	border-radius: 8px;
+}
+
+.aoeFilter legend {
+	padding: 0 0.3em;
+	color: var(--inkDim);
+	font-size: 0.85em;
+}
+
+/* A filter whose options come in groups (the DLC, by game) gives each group a
+   row of its own, headed by the box of the filter that groups them (the game,
+   the owner's wish). While that box is unticked the row's options dim, but keep
+   their ticks, so ticking the game again brings its DLC back as they were. */
+.aoeFilterGroup {
+	display: grid;
+	flex: 1 0 100%;
+	grid-template-columns: 13em 1fr;
+	align-items: baseline;
+	column-gap: 1em;
+}
+
+.aoeFilterGroupName {
+	font-weight: 600;
+}
+
+.aoeFilterGroupOptions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.2em 1em;
+}
+
+.aoeFilterGroupOff .aoeFilterGroupOptions {
+	opacity: 0.4;
+}
+
+/* Outranks `form label`, which gives every form label a 12em column. */
+.aoeFilters label.aoeFilterOption {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+	min-width: 0;
+	cursor: pointer;
+}
+
+/* The to-scale switch: a checkbox drawn as a sliding switch. The box itself
+   stays, clipped, so it still takes focus and posts with the form. */
+.aoeFilters label.aoeSwitch {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+	min-width: 0;
+	cursor: pointer;
+}
+
+.aoeSwitch input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+}
+
+.aoeSwitchTrack {
+	position: relative;
+	width: 2.2em;
+	height: 1.2em;
+	border: solid 1px var(--border);
+	border-radius: 0.6em;
+	background-color: var(--panelRaised);
+}
+
+.aoeSwitchTrack::after {
+	content: '';
+	position: absolute;
+	top: 0.1em;
+	left: 0.1em;
+	width: 0.9em;
+	height: 0.9em;
+	border-radius: 50%;
+	background-color: var(--inkDim);
+	transition: transform 0.15s;
+}
+
+.aoeSwitch input:checked + .aoeSwitchTrack {
+	background-color: var(--accentDim);
+}
+
+.aoeSwitch input:checked + .aoeSwitchTrack::after {
+	background-color: #ffffff;
+	transform: translateX(1em);
+}
+
+.aoeSwitch input:focus-visible + .aoeSwitchTrack {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+.aoeProgress {
+	margin: 0.8em 0 0;
+}
+
+.aoeFoldAll {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5em;
+	margin: 0.6em 0 0;
+}
+
+/* Every row draws its own piece of each lane, so a row that wraps on a phone
+   stretches its lines with it and they still meet the rows above and below.
+   That is also why a row has no margin or padding of its own: any gap between
+   rows would break every line. */
+.aoeTimeline {
+	/* Room for a 1rem dot and its 2px of edges beside the next lane's line and
+	   its 1px, with three and a half pixels to spare. Phones too: at the 0.8rem
+	   they once had, the two would overlap. */
+	--laneWidth: 1rem;
+	/* Where the to-scale year axis runs down the year column. */
+	--axisLeft: 0.5rem;
+	list-style: none;
+	margin: 1em 0 0;
+	padding: 0;
+	/* One grid for the whole list, which every row joins as a subgrid, so a
+	   column is as wide as its widest entry in any row (the owner's wish), and
+	   the Note column takes what is left rather than the text columns
+	   spreading to the right. Year, lanes, then the sheet's Scenario,
+	   Civilization, Campaign, Game and Pack, then the account's own
+	   Descriptor, Rating, Note and YouTube. */
+	display: grid;
+	grid-template-columns: auto calc(var(--laneCount) * var(--laneWidth)) auto auto auto auto auto minmax(4em, auto) 2.5em minmax(6em, 1fr) minmax(3em, auto);
+	column-gap: 0.6em;
+}
+
+/* Each row is the colour the sheet gives it, at --rowAlpha over the dark page
+   (set by the view from GAMES_AOE2_ROW_ALPHA). Its text is dark, or light where
+   the view marks it .aoeRowLight, whichever reads better on that blend.
+   The gridline is a shadow rather than a border, which would take room. */
+.aoeRow,
+.aoeGroup {
+	display: grid;
+	grid-column: 1 / -1;
+	grid-template-columns: subgrid;
+	column-gap: 0.6em;
+	align-items: center;
+	position: relative;
+	background-color: color-mix(in srgb, var(--rowColour) var(--rowAlpha), transparent);
+	box-shadow: inset 0 -1px rgba(0, 0, 0, 0.15);
+	color: #000000;
+	cursor: pointer;
+}
+
+.aoeRow:hover,
+.aoeGroup:hover {
+	filter: brightness(0.94);
+}
+
+/* A scenario of a folded year, hidden until found: the browser hides it with
+   content-visibility, which leaves a row with no padding no height, and its
+   find still reaches it. Only plain hidden, for a browser without that, needs
+   display: none, which its own display: grid would otherwise beat; on an
+   until-found row it would put the row out of the find's reach again. */
+.aoeRow[hidden]:not([hidden="until-found"]) {
+	display: none;
+}
+
+/* To scale, a year of several scenarios: one row, grey rather than any one
+   campaign's colour (the owner's choice), so it reads as a bundle. Folded it
+   shows the year's dots, unfolded only the lines that pass through it. */
+.aoeGroup {
+	--rowColour: #808080;
+}
+
+.aoeGroup[data-expanded] .aoeFoldedOnly,
+.aoeGroup:not([data-expanded]) .aoeExpandedOnly {
+	display: none;
+}
+
+/* "N scenarios", which folds and unfolds the year; stretched over the whole
+   row by its ::after, as a scenario's label is. */
+.aoeGroupToggle {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	font: inherit;
+	color: inherit;
+	text-align: left;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+/* The triangle comes from a fallback font whose taller lines would make the
+   year a row of its own height; out of the line height, it is a scenario's. */
+.aoeGroupToggle::before {
+	content: '\25b8\00a0';
+	line-height: 0;
+}
+
+.aoeGroup[data-expanded] .aoeGroupToggle::before {
+	content: '\25be\00a0';
+}
+
+.aoeGroupToggle::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+}
+
+.aoeGroupToggle:hover {
+	background-color: transparent;
+}
+
+.aoeGroupToggle:focus-visible {
+	outline: none;
+}
+
+/* The last scenario of an unfolded year closes it with a 2px edge in the grey
+   the year's own row shows over the dark page (the owner's choice), so that
+   row above and this edge below frame the year. An inset shadow, as the row
+   lines are: it takes no room, and the lines and the axis cross it. */
+.aoeRow[data-group]:not([hidden]):not(:has(+ .aoeRow[data-group])) {
+	box-shadow: inset 0 -2px color-mix(in srgb, #808080 var(--rowAlpha), #000000);
+}
+
+/* An unfolded year's scenarios carry the white year axis down their left
+   edge, from the first to the last (the owner's wish), so they read as one
+   year opened out: the long line under the rows, shown over these, flush
+   against the year's own row above and the stretch's line below. */
+.aoeRow[data-group]:not([hidden])::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: var(--axisLeft);
+	width: 3px;
+	background-color: #ffffff;
+}
+
+.aoeGroup:has(.aoeGroupToggle:focus-visible) {
+	outline: 2px solid var(--accent);
+	outline-offset: -2px;
+}
+
+.aoeYear {
+	color: rgba(0, 0, 0, 0.8);
+	font-size: 0.85em;
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+.aoeLanes {
+	position: relative;
+	align-self: stretch;
+}
+
+/* A line carries one faint edge, black or white as the view decides (--edge),
+   whichever stands out against its colour; a dot is edged twice, below (both
+   the owner's choice). The tint is declared on the line itself: a custom
+   property resolves where it is declared, and --edge is set on each line. */
+.aoeLine {
+	--edgeTint: color-mix(in srgb, var(--edge, #000000) 35%, transparent);
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: calc((var(--lane) + 0.5) * var(--laneWidth) - 1.5px);
+	width: 3px;
+	background-color: var(--colour);
+	/* Edged on its sides only: a top or bottom edge would draw a seam at every
+	   row, where one row's piece of the line meets the next. */
+	box-shadow: -1px 0 var(--edgeTint), 1px 0 var(--edgeTint);
+}
+
+.aoeLineStart {
+	top: 50%;
+}
+
+.aoeLineEnd {
+	bottom: 50%;
+}
+
+.aoeDot {
+	position: absolute;
+	top: 50%;
+	left: calc((var(--lane) + 0.5) * var(--laneWidth));
+	width: 1rem;
+	height: 1rem;
+	box-sizing: border-box;
+	transform: translate(-50%, -50%);
+	border: solid 2px var(--colour);
+	border-radius: 50%;
+	/* Hollow by the row's own colour, made solid over black as the page nearly
+	   is, so it also hides the line behind it. */
+	background-color: color-mix(in srgb, var(--rowColour) var(--rowAlpha), #000000);
+	/* Edged twice, white against it and black round that, 1px each; the first
+	   shadow listed is drawn on top. */
+	box-shadow: 0 0 0 1px #ffffff, 0 0 0 2px #000000;
+}
+
+/* A ticked dot is filled, and its edges swap: black against it, white round
+   that (the owner's choice). */
+/* A folded year's dots zigzag in one lump (the owner's mockup), a lane's
+   width apart across and 0.375rem down or up by the lane, so two side by side,
+   20px with their edges, just touch: 16px across and 12px between their
+   heights make 20. Over the rows beside, which they reach 1.5px into. */
+.aoeGroup .aoeDot {
+	top: calc(50% + 0.375rem);
+	z-index: 1;
+}
+
+.aoeGroup .aoeDot.aoeDotUp {
+	top: calc(50% - 0.375rem);
+}
+
+.aoeRow:has(.aoeCheck:checked) .aoeDot,
+.aoeDot.aoeDotDone {
+	background-color: var(--colour);
+	box-shadow: 0 0 0 1px #000000, 0 0 0 2px #ffffff;
+}
+
+/* The sheet's columns, from the list's own grid (see .aoeTimeline). 0.8em
+   apart, not more: the list is about 1,024px wide in a 1280px window, and at
+   1.2em the account's columns pushed scenario names onto two lines. */
+.aoeText {
+	display: grid;
+	grid-column: 3 / -1;
+	grid-template-columns: subgrid;
+	align-items: baseline;
+	column-gap: 0.8em;
+	padding: 0.25em 0;
+}
+
+/* The room the to-scale layout opens between two rows (aoe2.js sets --gap):
+   no row background, just the lines that run on through it, so a row never
+   takes padding of its own and breaks its lanes. Nothing at all with the
+   layout off. */
+.aoeGap {
+	display: grid;
+	grid-column: 1 / -1;
+	grid-template-columns: subgrid;
+	column-gap: 0.6em;
+	height: var(--gap, 0px);
+}
+
+.aoeGap .aoeLanes {
+	grid-column: 2;
+}
+
+/* To scale, the years start right of the axis, as in the owner's mockup. */
+.aoeTimeline[data-scale] .aoeYear {
+	padding-left: calc(var(--axisLeft) + 10px);
+}
+
+.aoeGap {
+	position: relative;
+}
+
+/* The year axis down an open stretch, and the button that folds it: laid over
+   the whole stretch, out of the gap's grid, so a click anywhere on the empty
+   stretch folds it. aoe2.js enables it once the stretch is long enough. The
+   axis reads as one long white line under the rows (the owner's wish): flush
+   against the row above and the row below, which cover it, and drawn over an
+   unfolded year's rows, where it marks the year opened out. */
+.aoeAxis {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	font: inherit;
+	color: inherit;
+	cursor: default;
+}
+
+.aoeAxis::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: var(--axisLeft);
+	width: 3px;
+	background-color: #ffffff;
+}
+
+.aoeAxis:enabled {
+	cursor: pointer;
+}
+
+/* The site's button:hover would fill it with --panelHover, and it lies over
+   the stretch's lines; the tint below goes under them instead. */
+.aoeAxis:hover {
+	background-color: transparent;
+}
+
+/* On the stretch itself, which paints under its lines: on the button, which
+   lies over them, the tint shaded the lines passing through. */
+.aoeGap:has(> .aoeAxis:enabled:hover) {
+	background-color: rgba(255, 255, 255, 0.05);
+}
+
+.aoeAxis:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: -2px;
+}
+
+/* Folded to one row: the line breaks in the middle, and a kink bridges it. */
+.aoeGapCollapsed .aoeAxis::before {
+	background: linear-gradient(#ffffff calc(50% - 8px), transparent calc(50% - 8px), transparent calc(50% + 8px), #ffffff calc(50% + 8px));
+}
+
+.aoeKink {
+	display: none;
+	position: absolute;
+	top: 50%;
+	left: calc(var(--axisLeft) + 1.5px);
+	width: 12px;
+	height: 16px;
+	transform: translate(-50%, -50%);
+	overflow: visible;
+	fill: none;
+	stroke: #ffffff;
+	stroke-width: 3px;
+	stroke-linejoin: round;
+}
+
+.aoeGapCollapsed .aoeKink {
+	display: block;
+}
+
+.aoeDecade {
+	position: absolute;
+	left: calc(var(--axisLeft) + 10px);
+	transform: translateY(-50%);
+	color: #ffffff;
+	font-size: 0.75em;
+	line-height: 1;
+	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
+	pointer-events: none;
+}
+
+/* The headings join the list's grid like a row, so each sits over its column. */
+.aoeHead {
+	display: grid;
+	grid-column: 1 / -1;
+	grid-template-columns: subgrid;
+	column-gap: 0.6em;
+	color: var(--inkDim);
+}
+
+.aoeHead .aoeText > span {
+	font-size: 0.85em;
+}
+
+/* Over the page, not a row: the year cell's row colours would be black on black. */
+.aoeHead .aoeYear {
+	color: var(--inkDim);
+}
+
+/* A year later than one below it (the sheet keeps campaigns in their own order
+   in places), marked as belonging further down. Bold and an arrow rather than
+   a colour, which would clash with some row colour or other. */
+.aoeYear.aoeYearOutOfPlace {
+	font-weight: 700;
+}
+
+.aoeYearOutOfPlace::before {
+	content: '\2193\00a0';
+}
+
+.aoeLabel {
+	cursor: pointer;
+}
+
+/* Hidden but still there: the filled dot and the dimmed name already say a
+   scenario is done (the owner's choice), and the label around the name still
+   ticks it, by mouse or by keyboard. Clipped rather than display: none, which
+   would take it out of the tab order. */
+.aoeCheck {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* The whole row ticks it, year and timeline included (the owner's wish): the
+   label's own box is stretched over the row by this layer, so a click anywhere
+   on the row is a click on the label. Transparent, and above the lanes. */
+.aoeLabel::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+}
+
+/* What the account wrote: above the layer that ticks the row, so a click on
+   it edits rather than ticks. A button showing the text, as plain as the
+   other columns, and a box in its place while editing (aoe2.js). A descriptor
+   or note too long for its column is cut off with an ellipsis, on one line
+   with its line breaks as spaces, as music's notes are; the whole of it, line
+   breaks and all, is in the hover box. */
+.aoeField {
+	position: relative;
+	z-index: 2;
+	align-self: stretch;
+	display: flex;
+	align-items: center;
+	min-width: 3em;
+	font-size: 0.85em;
+}
+
+.aoeFieldText {
+	width: 100%;
+	min-height: 1.6em;
+	margin: 0;
+	padding: 0 0.3em;
+	border: 0;
+	border-radius: 4px;
+	background: transparent;
+	font: inherit;
+	color: inherit;
+	text-align: left;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	cursor: text;
+}
+
+/* The Note column is the rest of the row; a descriptor is cut off at 14em,
+   which is also as wide as its column grows. */
+.aoeField[data-field="descriptor"] .aoeFieldText {
+	max-width: 14em;
+}
+
+/* The site's button:hover would fill it. An empty cell shows where it is on
+   hover, or always where there is no hover to show it. */
+.aoeFieldText:hover {
+	background-color: transparent;
+}
+
+.aoeFieldText:empty:hover {
+	box-shadow: inset 0 0 0 1px currentColor;
+}
+
+@media (hover: none) {
+	.aoeFieldText:empty {
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 40%, transparent);
+	}
+}
+
+.aoeFieldText:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: -2px;
+}
+
+.aoeFieldInput {
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	padding: 0 0.3em;
+	border-radius: 4px;
+	font: inherit;
+	line-height: 1.6;
+}
+
+/* A YouTube link: a ▶ that opens it, then the pencil that edits it, quieter. */
+.aoeField[data-field="youtube"] {
+	gap: 0.3em;
+}
+
+.aoeFieldLink {
+	color: inherit;
+	text-decoration: none;
+	font-size: 1.15em;
+	line-height: 1;
+}
+
+.aoeFieldLink:hover {
+	color: var(--accent);
+}
+
+.aoeFieldLink + .aoeFieldText {
+	opacity: 0.6;
+}
+
+/* A descriptor or note is edited in a textarea, so it can hold line breaks
+   (Shift+Enter; Enter saves). */
+textarea.aoeFieldInput {
+	border: solid 1px var(--border);
+	background-color: var(--panel);
+	color: var(--ink);
+	resize: vertical;
+}
+
+/* The hover box (tooltip.js). Over the nav's 20. pre-line, so a note's line
+   breaks show. */
+#gamesTooltip {
+	position: absolute;
+	display: none;
+	z-index: 40;
+	max-width: 22em;
+	background-color: #000000;
+	color: var(--ink);
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 0.3em 0.5em;
+	font-size: 0.9em;
+	white-space: pre-line;
+	overflow-wrap: anywhere;
+	pointer-events: none;
+}
+
+.aoeRow:has(.aoeCheck:focus-visible) {
+	outline: 2px solid var(--accent);
+	outline-offset: -2px;
+}
+
+.aoeCiv,
+.aoeCampaign,
+.aoeGame,
+.aoePack {
+	color: rgba(0, 0, 0, 0.8);
+	font-size: 0.85em;
+}
+
+/* A ticked row turns all its text blue and bold, not just the name (the owner's wish). */
+.aoeRow:has(.aoeCheck:checked) :is(.aoeYear, .aoeName, .aoeCiv, .aoeCampaign, .aoeGame, .aoePack, .aoeFieldText) {
+	color: #0000ff;
+	font-weight: bold;
+}
+
+.aoeRowLight {
+	color: var(--ink);
+}
+
+.aoeRowLight .aoeYear,
+.aoeRowLight .aoeCiv,
+.aoeRowLight .aoeCampaign,
+.aoeRowLight .aoeGame,
+.aoeRowLight .aoePack {
+	color: rgba(230, 230, 230, 0.8);
+}
+
+.aoeRowLight:has(.aoeCheck:checked) :is(.aoeYear, .aoeName, .aoeCiv, .aoeCampaign, .aoeGame, .aoePack, .aoeFieldText) {
+	color: #0000ff;
+	font-weight: bold;
+}
+
+/* A folded year whose scenarios are all done turns blue and bold like a ticked row. */
+.aoeGroup.aoeGroupDone :is(.aoeYear, .aoeGroupToggle) {
+	color: #0000ff;
+	font-weight: bold;
+}
+
+.aoeSaving {
+	opacity: 0.6;
+}
+
+@media (max-width: 700px) {
+	.aoeYear {
+		font-size: 0.75em;
+	}
+
+	/* The game's name over its DLC rather than beside them. */
+	.aoeFilterGroup {
+		grid-template-columns: 1fr;
+	}
+
+	/* No room for the sheet's columns: each row is a grid of its own again,
+	   the details wrap under the name, and the headings go. */
+	.aoeTimeline {
+		display: block;
+	}
+
+	.aoeRow,
+	.aoeGroup,
+	.aoeGap {
+		grid-template-columns: 4.5em calc(var(--laneCount) * var(--laneWidth)) 1fr;
+	}
+
+	/* Wider by the room the year axis takes in front of the years. */
+	.aoeTimeline[data-scale] :is(.aoeRow, .aoeGroup, .aoeGap) {
+		grid-template-columns: calc(4.5em + var(--axisLeft) + 10px) calc(var(--laneCount) * var(--laneWidth)) 1fr;
+	}
+
+	/* min-width 0, or a long descriptor or note on its one line would hold
+	   the column, and the page, as wide as its whole text. */
+	.aoeText {
+		display: flex;
+		flex-wrap: wrap;
+		column-gap: 0.8em;
+		min-width: 0;
+	}
+
+	.aoeLabel {
+		flex: 1 0 100%;
+	}
+
+	/* Descriptor, Rating and YouTube side by side under the details, the Note
+	   last, on a line of its own. */
+	.aoeField[data-field="descriptor"] {
+		flex: 1 1 8em;
+	}
+
+	.aoeField[data-field="note"] {
+		flex: 1 0 100%;
+		order: 1;
+	}
+
+	.aoeHead {
+		display: none;
+	}
+}
+
+@media (max-width: 700px) {
+	.gamesLayout {
+		flex-direction: column;
+	}
+
+	/* Out of flow entirely, so it cannot be scrolled off the bottom. The main
+	   column pads itself by the bar's height instead, or the last row of a page
+	   sits underneath it. */
+	.gamesNav {
+		position: fixed;
+		top: auto;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		width: auto;
+		height: auto;
+		flex: 0 0 auto;
+		flex-direction: row;
+		align-items: center;
+		align-self: auto;
+		gap: 0.2em;
+		padding: 0.4em 0.6em;
+		border-right: none;
+		border-top: solid 1px var(--border);
+	}
+
+	.gamesMain {
+		padding: 1em 1em calc(var(--navBarHeight) + 1em);
+	}
+
+	/* The name is the page heading's job on a phone; the bar is for getting
+	   somewhere, and every character of it is width the buttons want. */
+	.gamesNavBrand {
+		display: none;
+	}
+
+	.gamesNav > * {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	.gamesNavLink {
+		text-align: center;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	/* Upward here: there is nothing below a bar stuck to the bottom. */
+	.gamesNavMenu {
+		top: auto;
+		bottom: 100%;
+		left: auto;
+		right: 0;
+		margin-top: 0;
+		margin-bottom: 0.3em;
+		min-width: 10em;
+	}
+
+	form label {
+		display: block;
+		min-width: 0;
+	}
+}
+
+/* The Sims 2 checklists: one card per list, in page order, on 16em columns,
+   each card straight under the one above it (the owner's wish). */
+.simsStatus {
+	margin: 0;
+	min-height: 1.4em;
+}
+
+.simsLists {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(16em, 1fr));
+	gap: 1em;
+	align-items: start;
+}
+
+/* Packed by sims2.js: rows 2px tall, each card spanning as many as its own
+   height and the gap under it take, and later cards filling any hole left
+   above them. Without the script the rows are a card's height again. */
+.simsLists.simsPacked {
+	grid-auto-rows: 2px;
+	grid-auto-flow: row dense;
+	row-gap: 0;
+}
+
+.simsList {
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	background-color: var(--panel);
+	padding: 0.6em 0.9em 0.8em;
+}
+
+.simsList h2 {
+	margin: 0;
+	font-size: 1.15em;
+}
+
+.simsProgress {
+	color: var(--inkDim);
+	font-size: 0.8em;
+	font-weight: normal;
+	white-space: nowrap;
+}
+
+.simsList h3 {
+	margin: 0.7em 0 0.1em;
+	color: var(--inkDim);
+	font-size: 0.85em;
+	font-weight: 600;
+}
+
+.simsList ul {
+	list-style: none;
+	margin: 0.3em 0 0;
+	padding: 0;
+}
+
+/* The whole row is the click area. */
+.simsItem {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5em;
+	padding: 0.1em 0;
+	cursor: pointer;
+}
+
+/* Done is blue and bold, as on the Age of Empires page (the owner's style). */
+.simsItem:has(.simsCheck:checked) {
+	color: #0000ff;
+	font-weight: bold;
+}
+
+/* A written-up vehicle: its tick and name, with an admin's − beside them, and
+   its occasions under it, indented past the box. Admins edit in place
+   (sims2.js): a double click on a name or an occasion swaps it for a box. */
+.simsVehicleHead {
+	display: flex;
+	align-items: baseline;
+	gap: 0.4em;
+}
+
+.simsVehicleHead .simsItem {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.simsList ul.simsOccasions {
+	margin: 0 0 0.2em 1.9em;
+	padding-left: 0.9em;
+	list-style: disc;
+	color: var(--inkDim);
+	font-size: 0.85em;
+}
+
+.simsOccasions .simsOccasionAddRow {
+	list-style: none;
+}
+
+/* Only an empty list says so. */
+.simsEmpty {
+	margin: 0.4em 0 0;
+	color: var(--inkDim);
+}
+
+.simsVehicles:has(.simsVehicle) + .simsEmpty {
+	display: none;
+}
+
+/* The − and + an admin edits with: small, so they sit in a line of text. */
+.simsMinus,
+.simsPlus {
+	margin-left: 0.3em;
+	padding: 0 0.5em;
+	border-radius: 4px;
+	font-size: 0.85em;
+	line-height: 1.4;
+}
+
+.simsVehicleAdd {
+	margin: 0.4em 0 0;
+}
+
+/* Outranks the site's input[type="text"] by coming after it. */
+input.simsEditInput {
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	padding: 0 0.3em;
+	border-radius: 4px;
+	font: inherit;
+	line-height: 1.4;
+}
+
+.simsSaving {
+	opacity: 0.6;
+}
+
+/* A grid list: a row per item, a box per level or card, its column sets
+   divided by a stronger line. The names stay at the card's left edge while
+   the grid scrolls sideways under them on a narrow screen. */
+/* A grid's card is only as wide as its grid (the owner's wish), and no wider
+   than the page, scrolling inside past that. Without the script it takes a
+   row of its own; sims2.js gives it as many columns as it needs. */
+.simsGridList {
+	grid-column: 1 / -1;
+	justify-self: start;
+	box-sizing: border-box;
+	width: fit-content;
+	min-width: 0;
+	max-width: 100%;
+}
+
+.simsGridScroll {
+	overflow-x: auto;
+	margin-top: 0.5em;
+}
+
+.simsGrid {
+	border-collapse: separate;
+	border-spacing: 0;
+}
+
+/* Without the site's border on every cell, at the specificity of that rule
+   (:where adds none), so the grid's own lines below still apply. */
+:where(.simsGrid) :is(th, td) {
+	border: 0;
+	padding: 0;
+	text-align: center;
+}
+
+.simsGrid thead tr:last-child th {
+	border-bottom: solid 1px var(--border);
+}
+
+.simsGrid thead th {
+	color: var(--inkDim);
+	font-size: 0.8em;
+	font-weight: 600;
+}
+
+.simsGridSet {
+	padding: 0 0.4em 0.2em;
+	border-left: solid 1px var(--border);
+	white-space: nowrap;
+}
+
+.simsGridNumber {
+	min-width: 1.5em;
+	padding-bottom: 0.2em;
+}
+
+.simsGrid tbody th {
+	position: sticky;
+	left: 0;
+	z-index: 1;
+	padding: 0.1em 0.8em 0.1em 0;
+	background-color: var(--panel);
+	text-align: left;
+	font-weight: normal;
+	white-space: nowrap;
+}
+
+.simsGridCorner {
+	position: sticky;
+	left: 0;
+	z-index: 1;
+	background-color: var(--panel);
+}
+
+.simsGridGroup th {
+	padding-top: 0.7em;
+	color: var(--inkDim);
+	font-size: 0.85em;
+	font-weight: 600;
+}
+
+.simsGridRow:hover :is(th, td) {
+	background-color: var(--panelRaised);
+}
+
+.simsGridCell,
+.simsGridNone {
+	width: 1.5em;
+	height: 1.6em;
+	border-top: solid 1px rgba(255, 255, 255, 0.06);
+}
+
+.simsGridCell .simsCheck {
+	margin: 0;
+	cursor: pointer;
+}
+
+.simsGridSetStart {
+	border-left: solid 1px var(--border);
+}
+
+/* A box the row cannot have: hatched, so it reads as not there rather than
+   as not done. */
+.simsGridNone {
+	background-image: repeating-linear-gradient(45deg, transparent 0 3px, rgba(255, 255, 255, 0.07) 3px 4px);
+}
+
+/* A row whose every box is ticked is done: blue and bold, like a ticked item. */
+.simsGridRow:not(:has(.simsCheck:not(:checked))) th {
+	color: #0000ff;
+	font-weight: bold;
+}
