@@ -198,6 +198,7 @@ a {
 }
 
 .bassTabLine,
+.bassTabTimeLine,
 .bassTabBoardString {
 	stroke: var(--line);
 	stroke-width: 1px;
@@ -214,6 +215,19 @@ a {
 	font-weight: bold;
 	text-anchor: middle;
 	dominant-baseline: central;
+}
+
+/* A time signature: two numerals across the staff, breaking the lines behind them as a fret's digit does.
+   Placed by their baselines, which is where a digit's ink ends, so the middle line runs between them. */
+.bassTabTime text {
+	fill: var(--ink);
+	stroke: var(--paper);
+	stroke-width: 6px;
+	stroke-linejoin: round;
+	paint-order: stroke;
+	font-size: 30px;
+	font-weight: bold;
+	text-anchor: middle;
 }
 
 .bassTabNoteName {
