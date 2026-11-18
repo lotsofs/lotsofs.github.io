@@ -1,0 +1,1177 @@
+/* One fixed theme, dark like music's, with music's blue as the accent. These
+   are the whole palette, so the theme turns over by editing this block. */
+:root {
+	color-scheme: dark;
+	background-color: #000000;
+
+	--ink: #e6e6e6;
+	--inkDim: #9a9a9a;
+	--ground: linear-gradient(-45deg, #000000, hsl(240, 100%, 3%), #000000);
+	--panel: hsl(240, 100%, 4%);
+	--panelRaised: hsl(240, 100%, 9%);
+	--panelHover: hsl(240, 100%, 13%);
+	--border: #555555;
+	--accent: hsl(240, 100%, 80%);
+	--accentDim: hsl(240, 100%, 60%);
+	--danger: #ff6b5e;
+
+	--navWidth: 12em;
+	--navBarHeight: 3.5em;
+}
+
+body {
+	margin: 0;
+	background: var(--ground);
+	color: var(--ink);
+	font-family: 'Noto Sans', system-ui, sans-serif;
+}
+
+/* Sidebar beside the page on a desktop, bar under it on a phone. One flex
+   container either way: the direction flips and the nav is taken out of flow. */
+.mtasaLayout {
+	display: flex;
+	align-items: stretch;
+	min-height: 100vh;
+}
+
+.mtasaMain {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 1.5em 2em;
+}
+
+.mtasaNav {
+	flex: 0 0 var(--navWidth);
+	width: var(--navWidth);
+	position: sticky;
+	top: 0;
+	align-self: flex-start;
+	height: 100vh;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: 0.3em;
+	padding: 1em 0.6em;
+	background-color: var(--panel);
+	border-right: solid 1px var(--border);
+}
+
+.mtasaNavBrand {
+	padding: 0 0.6em 0.8em;
+	color: var(--accent);
+	font-weight: bold;
+	text-decoration: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.mtasaNavAccount {
+	position: relative;
+	min-width: 0;
+}
+
+.mtasaNavLink {
+	display: block;
+	box-sizing: border-box;
+	padding: 0.5em 0.8em;
+	border: solid 1px transparent;
+	border-radius: 10px;
+	background-color: transparent;
+	color: var(--ink);
+	font: inherit;
+	text-align: left;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.mtasaNavLink:hover {
+	background-color: var(--panelRaised);
+}
+
+.mtasaNavCurrent {
+	background-color: var(--panelRaised);
+	border-color: var(--accentDim);
+	color: var(--accent);
+}
+
+.mtasaNavMenuButton {
+	list-style: none;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.mtasaNavMenuButton::-webkit-details-marker,
+.mtasaNavMenuButton::marker {
+	display: none;
+}
+
+/* Opens downward in the sidebar, where the button sits in the flow with the
+   rest and may be the topmost thing on the bar. The bottom bar flips it. */
+.mtasaNavMenu {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: 20;
+	margin-top: 0.3em;
+	display: flex;
+	flex-direction: column;
+	gap: 0.2em;
+	padding: 0.3em;
+	background-color: var(--panelRaised);
+	border: solid 1px var(--border);
+	border-radius: 10px;
+}
+
+.mtasaNavLanguage {
+	display: contents;
+}
+
+.mtasaNavMenuItem {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.45em 0.7em;
+	border: solid 1px transparent;
+	border-radius: 8px;
+	background-color: transparent;
+	color: var(--ink);
+	font: inherit;
+	text-align: left;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.mtasaNavMenuItem:hover {
+	background-color: var(--panel);
+}
+
+h1 {
+	margin: 0 0 0.6em;
+	font-size: 1.6em;
+}
+
+h2 {
+	margin-bottom: 0;
+}
+
+/* No `a:visited` rule. It would carry a pseudo-class (0,1,1) and so outrank the
+   plain class on `.mtasaNavLink` and `.mtasaNavMenuItem` (0,1,0), marking every
+   nav button the moment its page had been opened once. Author styles beat the
+   browser's own `a:visited` whatever the specificity, so one `a` rule covers
+   both states. */
+a {
+	color: var(--accent);
+}
+
+form label {
+	display: inline-block;
+	min-width: 12em;
+}
+
+input[type="text"],
+input[type="password"] {
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	background-color: var(--panel);
+	color: var(--ink);
+	font: inherit;
+	padding: .45em .7em;
+}
+
+/* A bare element selector, so the nav's own button classes outrank it. */
+button {
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	background-color: var(--panelRaised);
+	color: var(--ink);
+	font: inherit;
+	padding: .35em .8em;
+	cursor: pointer;
+}
+
+button:hover {
+	background-color: var(--panelHover);
+}
+
+.formError {
+	color: var(--danger);
+}
+
+table {
+	border-collapse: collapse;
+}
+
+th, td {
+	border: solid 1px var(--border);
+	padding: 0.3em 0.5em;
+	text-align: left;
+}
+
+thead th {
+	font-size: 0.85em;
+	color: var(--inkDim);
+}
+
+@media (max-width: 700px) {
+	.mtasaLayout {
+		flex-direction: column;
+	}
+
+	/* Out of flow entirely, so it cannot be scrolled off the bottom. The main
+	   column pads itself by the bar's height instead, or the last row of a page
+	   sits underneath it. */
+	.mtasaNav {
+		position: fixed;
+		top: auto;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		width: auto;
+		height: auto;
+		flex: 0 0 auto;
+		flex-direction: row;
+		align-items: center;
+		align-self: auto;
+		gap: 0.2em;
+		padding: 0.4em 0.6em;
+		border-right: none;
+		border-top: solid 1px var(--border);
+	}
+
+	.mtasaMain {
+		padding: 1em 1em calc(var(--navBarHeight) + 1em);
+	}
+
+	/* The name is the page heading's job on a phone; the bar is for getting
+	   somewhere, and every character of it is width the buttons want. */
+	.mtasaNavBrand {
+		display: none;
+	}
+
+	.mtasaNav > * {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	.mtasaNavLink {
+		text-align: center;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	/* Upward here: there is nothing below a bar stuck to the bottom. */
+	.mtasaNavMenu {
+		top: auto;
+		bottom: 100%;
+		left: auto;
+		right: 0;
+		margin-top: 0;
+		margin-bottom: 0.3em;
+		min-width: 10em;
+	}
+
+	form label {
+		display: block;
+		min-width: 0;
+	}
+}
+
+/* The list of maps. */
+.mtasaNotice {
+	color: var(--accent);
+}
+
+.mtasaFilters {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 0.6em 1em;
+	margin-bottom: 1em;
+}
+
+.mtasaFilters form label,
+.mtasaFilters label {
+	min-width: 0;
+}
+
+.mtasaSearch,
+.mtasaFilterSelect {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2em;
+	font-size: 0.9em;
+}
+
+.mtasaSearch span,
+.mtasaFilterSelect span {
+	color: var(--inkDim);
+}
+
+.mtasaFilter {
+	position: relative;
+	font-size: 0.9em;
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	padding: 0.35em 0.7em;
+	background-color: var(--panel);
+}
+
+.mtasaFilter summary {
+	cursor: pointer;
+}
+
+.mtasaFilter[open] > .mtasaFilterOption:first-of-type {
+	margin-top: 0.4em;
+}
+
+.mtasaFilters label.mtasaFilterOption {
+	display: block;
+	white-space: nowrap;
+	padding: 0.1em 0;
+}
+
+.mtasaFilterActions {
+	display: flex;
+	align-items: center;
+	gap: 0.8em;
+	align-self: flex-end;
+}
+
+select {
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	background-color: var(--panel);
+	color: var(--ink);
+	font: inherit;
+	padding: .35em .5em;
+}
+
+.mtasaCount {
+	color: var(--inkDim);
+	margin: 0.4em 0;
+}
+
+/* The pager: First, Previous, the page box, Next, Last, and the page size,
+   which a wide screen pushes right and a phone wraps below. */
+.mtasaPager {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5em 1em;
+	margin: 0.5em 0;
+}
+
+.mtasaPagerOff {
+	color: var(--inkDim);
+	opacity: 0.5;
+}
+
+/* Out from under the site's 12em labels, which left a gap before Go. */
+.mtasaPager label {
+	min-width: 0;
+}
+
+.mtasaPagerBox input {
+	width: 4.5em;
+}
+
+.mtasaPagerGo {
+	margin-left: -0.5em;
+}
+
+.mtasaPagerSize {
+	margin-left: auto;
+}
+
+/* The list may be wider than a phone: it scrolls inside its own box. */
+.mtasaListScroll {
+	overflow-x: auto;
+}
+
+.mtasaList {
+	font-size: 0.9em;
+}
+
+.mtasaList th a {
+	color: var(--inkDim);
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.mtasaList td {
+	max-width: 22em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* The script's guess, faded: the gamemode while none is set, and the name
+   while only the script's title names the map. */
+.mtasaGuess {
+	color: var(--inkDim);
+	font-style: italic;
+}
+
+/* The status as the map page colours it, smaller to keep the rows one line. */
+.mtasaList .mtasaChoicePill {
+	padding: 0 0.4em;
+	border-radius: 6px;
+}
+
+/* A button, not the link written out, which would widen the table. */
+.mtasaList td.mtasaVideo {
+	text-align: center;
+}
+
+.mtasaList td.mtasaVideo a {
+	text-decoration: none;
+}
+
+.mtasaList td.mtasaFinished {
+	text-align: center;
+	color: var(--accent);
+	font-weight: bold;
+}
+
+/* The whole number cell opens the map, not just its digits. */
+.mtasaList td.mtasaIdCell {
+	padding: 0;
+}
+
+.mtasaList td.mtasaIdCell a {
+	display: block;
+	padding: 0.3em 0.5em;
+}
+
+/* An admin edits a cell by clicking it (list.js). An open box may be wider
+   than the cell's cap, and a textarea taller than the row. */
+.mtasaList td[data-edit-field],
+.mtasaList td.mtasaFinished:has(.mtasaListCheck) {
+	cursor: pointer;
+}
+
+.mtasaList td[data-edit-field]:hover,
+.mtasaList td.mtasaFinished:has(.mtasaListCheck):hover {
+	background-color: var(--panel);
+}
+
+.mtasaList td.mtasaEditing {
+	max-width: none;
+	overflow: visible;
+	white-space: normal;
+}
+
+.mtasaList .mtasaListInput {
+	min-width: 12em;
+	padding: 0.1em 0.4em;
+}
+
+.mtasaList textarea.mtasaListInput {
+	min-width: 22em;
+}
+
+.mtasaListCheck {
+	width: 1.1rem;
+	height: 1.1rem;
+	margin: 0;
+	accent-color: var(--accent);
+	vertical-align: middle;
+}
+
+/* Some authors are a sentence of credits; the cell's hover box has it all. */
+.mtasaList td.mtasaAuthor {
+	max-width: 10em;
+}
+
+/* The script's warnings on one line, the hover box having them whole, after a
+   ! like the map page's when a guess differs from the owner's value. */
+.mtasaList td.mtasaWarnings {
+	max-width: 16em;
+}
+
+.mtasaListMismatch {
+	display: inline-block;
+	margin-right: 0.3em;
+	padding: 0 0.4em;
+	border: solid 1px #b07a00;
+	border-radius: 6px;
+	color: #ffb000;
+	font-weight: bold;
+	font-size: 0.85em;
+	cursor: help;
+}
+
+/* One line of the custom description, its line breaks as spaces; the hover
+   box has it whole, line breaks and all. */
+.mtasaList td.mtasaDescription {
+	max-width: 16em;
+}
+
+.mtasaNumber {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+.mtasaListComments {
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.mtasaExcerpt {
+	white-space: normal;
+}
+
+.mtasaThreadResolved td {
+	color: var(--inkDim);
+}
+
+/* One map. */
+.mtasaMapHead h1 {
+	margin-bottom: 0.2em;
+}
+
+.mtasaMapMeta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4em 1em;
+	margin: 0 0 0.6em;
+	color: var(--inkDim);
+}
+
+.mtasaMapSteps {
+	display: flex;
+	gap: 1.2em;
+}
+
+.mtasaStatus {
+	min-height: 1.4em;
+	color: var(--danger);
+}
+
+/* Each field is a row of label, value and comment badge; its threads unfold
+   under it, or beside it where there is room (below). */
+.mtasaMap {
+	max-width: 52em;
+}
+
+.mtasaSection h2 {
+	margin: 1.2em 0 0.4em;
+	font-size: 1.15em;
+}
+
+/* The copies table, under the Duplicates rows with no heading of its own. */
+.mtasaGroup {
+	margin-top: 0.8em;
+}
+
+.mtasaField {
+	position: relative;
+	display: grid;
+	grid-template-columns: 14em minmax(0, 1fr) 3.2em;
+	align-items: start;
+	column-gap: 0.8em;
+	padding: 0.3em 0;
+	border-bottom: solid 1px #262626;
+}
+
+.mtasaFieldOpen {
+	background-color: var(--panel);
+}
+
+.mtasaFieldLabel {
+	color: var(--inkDim);
+}
+
+.mtasaFieldValue {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5em;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.mtasaFieldShown {
+	white-space: pre-line;
+	min-width: 0;
+}
+
+.mtasaEdit {
+	padding: 0 0.4em;
+	font-size: 0.85em;
+	color: var(--inkDim);
+}
+
+/* A row or button the page hides; display above would otherwise show it. */
+.mtasaField[hidden],
+.mtasaFieldValue button[hidden] {
+	display: none;
+}
+
+/* A guess's ✓ (it is the owner's value) and ! (it differs from it). */
+.mtasaUseGuess,
+.mtasaGuessMismatch {
+	padding: 0 0.45em;
+	font-size: 0.85em;
+}
+
+.mtasaUseGuess {
+	color: var(--accent);
+}
+
+/* The title is already the original name. */
+.mtasaUseGuess[aria-disabled="true"],
+.mtasaUseGuess[aria-disabled="true"]:hover {
+	opacity: 0.4;
+	background-color: var(--panelRaised);
+	color: var(--inkDim);
+	cursor: default;
+}
+
+.mtasaGuessMismatch {
+	border-color: #b07a00;
+	color: #ffb000;
+	font-weight: bold;
+	cursor: help;
+}
+
+/* The status and the gamemode, coloured as the sheet coloured them: the
+   status by its conditional formatting, in black text, the gamemode by its
+   dropdown's dark chips, in white. A status it gave no colour (Mid,
+   Duplicate) keeps the plain button colours. Two of the status rules were
+   "text contains", hence the *=; no gamemode contains either word. */
+.mtasaChoiceSelect,
+.mtasaChoicePill {
+	border: solid 1px var(--choiceBorder, var(--border));
+	border-radius: 8px;
+	background-color: var(--choice, var(--panelRaised));
+	color: var(--choiceInk, var(--ink));
+	font: inherit;
+	padding: 0.2em 0.5em;
+}
+
+/* Each option in its own colour too, the open list a legend. The properties
+   would otherwise be inherited from the select, colouring Mid and the rest as
+   whatever is chosen; :where keeps the reset below the colour rules. */
+:where(.mtasaChoiceSelect option) {
+	--choice: initial;
+	--choiceInk: initial;
+}
+
+.mtasaChoiceSelect option {
+	background-color: var(--choice, var(--panel));
+	color: var(--choiceInk, var(--ink));
+}
+
+:is(.mtasaChoiceSelect, .mtasaChoicePill, .mtasaChoiceSelect option):is([data-choice="Bad"], [data-choice="Undetermined"], [data-choice="Good"], [data-choice="Complete"], [data-choice="Published"], [data-choice="Remake"], [data-choice="Error"], [data-choice="Patch Due"], [data-choice*="Named"], [data-choice*="Outsourced"]) {
+	--choiceBorder: transparent;
+	--choiceInk: #000000;
+}
+
+[data-choice="Bad"] { --choice: #b7b7b7; }
+[data-choice="Undetermined"] { --choice: #e06666; }
+[data-choice="Good"] { --choice: #f6b26b; }
+[data-choice="Complete"] { --choice: #6d9eeb; }
+[data-choice="Published"] { --choice: #93c47d; }
+[data-choice="Remake"] { --choice: #c27ba0; }
+[data-choice="Error"] { --choice: #666666; }
+[data-choice="Patch Due"] { --choice: #76a5af; }
+[data-choice*="Named"] { --choice: #ffd966; }
+[data-choice*="Outsourced"] { --choice: #8e7cc3; }
+
+:is(.mtasaChoiceSelect, .mtasaChoicePill, .mtasaChoiceSelect option):is([data-choice="Race"], [data-choice="Hunt the Hunter"], [data-choice="Teamwork"], [data-choice="Destruction Derby"], [data-choice="Misc"], [data-choice="Freeroam"], [data-choice="Cops Robbers"], [data-choice="Versus Race"], [data-choice="Vehicle Weapon Combat"]) {
+	--choiceBorder: transparent;
+	--choiceInk: #ffffff;
+}
+
+[data-choice="Race"] { --choice: #11734b; }
+[data-choice="Hunt the Hunter"] { --choice: #b10202; }
+[data-choice="Teamwork"] { --choice: #3d3d3d; }
+[data-choice="Destruction Derby"] { --choice: #753800; }
+[data-choice="Misc"] { --choice: #5a3286; }
+[data-choice="Freeroam"] { --choice: #0a53a8; }
+[data-choice="Cops Robbers"] { --choice: #b10202; }
+[data-choice="Versus Race"] { --choice: #215a6c; }
+[data-choice="Vehicle Weapon Combat"] { --choice: #473821; }
+
+.mtasaCheckField {
+	width: 1.5rem;
+	height: 1.5rem;
+	margin: -0.1rem 0;
+	accent-color: var(--accent);
+}
+
+.mtasaFieldInput {
+	flex: 1 1 auto;
+	min-width: 0;
+	box-sizing: border-box;
+	width: 100%;
+	border: solid 1px var(--accentDim);
+	border-radius: 8px;
+	background-color: var(--panel);
+	color: var(--ink);
+	font: inherit;
+	padding: 0.3em 0.5em;
+}
+
+.mtasaSaving {
+	opacity: 0.6;
+}
+
+.mtasaFieldComments {
+	text-align: right;
+}
+
+.mtasaBadge {
+	padding: 0 0.45em;
+	font-size: 0.85em;
+	white-space: nowrap;
+}
+
+.mtasaBadgeOpen {
+	border-color: var(--accentDim);
+	color: var(--accent);
+}
+
+/* An empty field's + only shows on hover or focus, where there is hover. */
+@media (hover: hover) {
+	.mtasaBadgeEmpty {
+		opacity: 0;
+	}
+
+	.mtasaField:hover .mtasaBadgeEmpty,
+	.mtasaBadgeEmpty:focus-visible,
+	.mtasaBadgeEmpty[aria-expanded="true"] {
+		opacity: 1;
+	}
+}
+
+.mtasaThreads {
+	grid-column: 1 / -1;
+	margin-top: 0.4em;
+	padding: 0.6em;
+	border: solid 1px var(--border);
+	border-radius: 10px;
+	background-color: var(--panelRaised);
+}
+
+.mtasaThreadsGeneral {
+	margin-top: 0;
+}
+
+/* Beside the field where the main column has room for both: the fields give
+   up the panel's width and its gap, so the panel ends inside the column. */
+.mtasaMain {
+	container-type: inline-size;
+}
+
+@container (min-width: 64em) {
+	.mtasaMap {
+		max-width: min(52em, calc(100% - 25.5em));
+	}
+
+	.mtasaField .mtasaThreads {
+		position: absolute;
+		top: 0;
+		left: calc(100% + 1.5em);
+		width: 24em;
+		margin-top: 0;
+		z-index: 5;
+	}
+}
+
+.mtasaThread {
+	padding-bottom: 0.5em;
+	margin-bottom: 0.5em;
+	border-bottom: solid 1px var(--border);
+}
+
+.mtasaComment {
+	margin-bottom: 0.4em;
+}
+
+.mtasaReply {
+	margin-left: 1.2em;
+	padding-left: 0.6em;
+	border-left: solid 2px var(--border);
+}
+
+.mtasaCommentHead {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 0.6em;
+	font-size: 0.85em;
+	color: var(--inkDim);
+}
+
+.mtasaCommentAuthor {
+	color: var(--ink);
+	font-weight: bold;
+}
+
+.mtasaCommentBody {
+	margin: 0.15em 0;
+	white-space: pre-line;
+	overflow-wrap: anywhere;
+}
+
+.mtasaCommentDeleted .mtasaCommentBody {
+	color: var(--inkDim);
+	font-style: italic;
+}
+
+.mtasaCommentActions,
+.mtasaThreadFoot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.3em 0.8em;
+	font-size: 0.85em;
+}
+
+.mtasaThreadResolved .mtasaCommentBody {
+	color: var(--inkDim);
+}
+
+.mtasaResolvedBy {
+	color: var(--inkDim);
+}
+
+/* A button that reads as a link, for the small actions under a comment. */
+button.mtasaLinkButton {
+	border: none;
+	background: none;
+	padding: 0;
+	color: var(--accent);
+	text-decoration: underline;
+}
+
+button.mtasaLinkButton:hover {
+	background: none;
+}
+
+.mtasaCommentForm,
+.mtasaCommentEditor {
+	display: flex;
+	align-items: flex-end;
+	gap: 0.5em;
+	width: 100%;
+	margin-top: 0.3em;
+}
+
+.mtasaCommentForm textarea,
+.mtasaCommentEditor textarea {
+	flex: 1 1 auto;
+	min-width: 0;
+	border: solid 1px var(--border);
+	border-radius: 8px;
+	background-color: var(--panel);
+	color: var(--ink);
+	font: inherit;
+	padding: 0.3em 0.5em;
+	resize: vertical;
+}
+
+.mtasaResolvedThreads {
+	margin-bottom: 0.5em;
+	font-size: 0.95em;
+}
+
+.mtasaResolvedThreads summary {
+	cursor: pointer;
+	color: var(--inkDim);
+	margin-bottom: 0.4em;
+}
+
+.mtasaCommentHint {
+	margin: 0;
+	font-size: 0.9em;
+}
+
+.mtasaGroupTable {
+	font-size: 0.9em;
+}
+
+/* A copy the owner has not marked is the script's guess: its whole row faded
+   and italic, as a guess is everywhere. */
+.mtasaGroupGuess td {
+	color: var(--inkDim);
+	font-style: italic;
+}
+
+.mtasaGroupSelf td {
+	background-color: var(--panelRaised);
+	font-weight: bold;
+}
+
+@media (max-width: 700px) {
+	/* Label over value on a phone, the badge staying at the right. */
+	.mtasaField {
+		grid-template-columns: minmax(0, 1fr) 3.2em;
+	}
+
+	.mtasaFieldLabel {
+		grid-column: 1;
+		font-size: 0.85em;
+	}
+
+	.mtasaFieldValue {
+		grid-column: 1;
+		grid-row: 2;
+	}
+
+	.mtasaFieldComments {
+		grid-column: 2;
+		grid-row: 1 / span 2;
+	}
+
+	.mtasaThreads {
+		grid-row: 3;
+	}
+}
+
+/* The route preview: drawn at 720 px, and on a narrower screen the whole
+   picture shrinks, so its framing and dot sizes stay the spec's. It sits in
+   the field column, which a wide screen narrows for the comment panels, so it
+   is held to the main column (100cqw) rather than to its own. */
+.mtasaPreviewFigure {
+	margin: 0 0 1em;
+}
+
+.mtasaPreview {
+	display: block;
+	max-width: 100cqw;
+	height: auto;
+	border: solid 1px var(--border);
+	border-radius: 6px;
+}
+
+/* The hover box (tooltip.js), as the games module's. pre-line, so line breaks show. */
+#mtasaTooltip {
+	position: absolute;
+	display: none;
+	z-index: 40;
+	max-width: 22em;
+	background-color: #000000;
+	color: var(--ink);
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 0.3em 0.5em;
+	font-size: 0.9em;
+	white-space: pre-line;
+	overflow-wrap: anywhere;
+	pointer-events: none;
+}
+
+/* The hover box as a small table (data-tooltip-table): wider, the cells
+   wrapping normally rather than by line breaks. */
+#mtasaTooltip.mtasaTooltipTable {
+	max-width: 40em;
+	white-space: normal;
+}
+
+#mtasaTooltip table {
+	border-collapse: collapse;
+}
+
+#mtasaTooltip th,
+#mtasaTooltip td {
+	border: solid 1px var(--border);
+	padding: 0.15em 0.4em;
+	vertical-align: top;
+	text-align: left;
+}
+
+#mtasaTooltip thead th,
+#mtasaTooltip tbody th {
+	color: var(--inkDim);
+	font-weight: normal;
+}
+
+#mtasaTooltip tbody th {
+	white-space: nowrap;
+}
+
+/* A value the map does not have, not one that reads "(none)". */
+#mtasaTooltip .mtasaTooltipNone {
+	font-style: italic;
+}
+
+/* The preview's settings sit right of the picture, and wrap below it where
+   the column has no room for both. The picture keeps its 720 px until the
+   column is narrower than that. The row spans the whole main column (100cqw),
+   past the 52em the fields are held to, which left no room beside the
+   picture on any screen. */
+.mtasaPreviewLayout {
+	width: 100cqw;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 1em 1.5em;
+}
+
+.mtasaPreviewLayout .mtasaPreviewFigure {
+	margin: 0;
+	flex: 0 1 auto;
+	min-width: 0;
+}
+
+.mtasaPreviewSide {
+	flex: 1 1 16em;
+	max-width: 26em;
+}
+
+.mtasaPreviewSettings {
+	display: flex;
+	flex-direction: column;
+	gap: 0.6em;
+}
+
+.mtasaPreviewSettings[hidden] {
+	display: none;
+}
+
+.mtasaPreviewDetail {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.4em;
+	padding-bottom: 0.8em;
+	border-bottom: solid 1px var(--border);
+}
+
+.mtasaPreviewHint,
+.mtasaPreviewNote {
+	margin: 0;
+	color: var(--inkDim);
+}
+
+.mtasaPreviewNote:empty {
+	display: none;
+}
+
+/* Label, control and, for a slider, its value, on one line. */
+.mtasaPreviewSetting {
+	display: grid;
+	grid-template-columns: 9em minmax(0, 1fr) 2.5em;
+	align-items: center;
+	gap: 0.6em;
+}
+
+.mtasaPreviewSetting select {
+	grid-column: 2 / span 2;
+}
+
+.mtasaPreviewSetting output {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+.mtasaPreviewReset {
+	align-self: flex-start;
+}
+
+/* A slider whose layer has nothing to draw (js/preview.js disables it). */
+.mtasaPreviewSetting:has(input:disabled) {
+	opacity: 0.45;
+}
+
+/* A row only the browser fills, from the map's files, before it has: in the
+   ordinary ink, not greyed (the owner's call), italic. */
+.mtasaAfterDetail {
+	font-style: italic;
+}
+
+/* Under the Checkpoints setting, while its colours wait for Increase detail. */
+.mtasaPreviewSettingNote {
+	margin: -0.3em 0 0;
+	color: var(--inkDim);
+	font-size: 0.9em;
+}
+
+.mtasaPreviewSettingNote[hidden] {
+	display: none;
+}
+
+/* The height profile under the picture (js/preview.js): as wide as the
+   picture, shrinking with it; hairline gridlines a step off the surface; the
+   line in the map's route colours (set per stretch) over a faint neutral
+   fill; a crosshair and the point on hover. */
+.mtasaProfile {
+	max-width: 100cqw;
+	margin-top: 0.8em;
+}
+
+.mtasaProfile[hidden] {
+	display: none;
+}
+
+.mtasaProfile h3 {
+	margin: 0 0 0.3em;
+}
+
+.mtasaProfileChart {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+.mtasaProfileGrid line {
+	stroke: var(--border);
+	stroke-opacity: 0.45;
+	stroke-width: 1;
+}
+
+.mtasaProfileLabels text {
+	fill: var(--inkDim);
+	font-size: 12px;
+}
+
+.mtasaProfileFill {
+	fill: var(--ink);
+	fill-opacity: 0.08;
+}
+
+.mtasaProfileLine line {
+	stroke-width: 2;
+	stroke-linecap: round;
+}
+
+/* Dots in their checkpoint's colour (set on each), ringed in the surface
+   colour so they stay legible on the line. */
+.mtasaProfileDots circle,
+.mtasaProfileHit circle {
+	stroke: #000000;
+	stroke-width: 2;
+}
+
+.mtasaProfileHit rect {
+	fill: transparent;
+}
+
+.mtasaProfileHit line {
+	stroke: var(--ink);
+	stroke-opacity: 0.6;
+	stroke-width: 1;
+}
+
+.mtasaProfileHit line,
+.mtasaProfileHit circle {
+	visibility: hidden;
+}
+
+.mtasaProfileHit:hover line,
+.mtasaProfileHit:hover circle {
+	visibility: visible;
+}
+
+/* A note under a form field (the register page's invite code). */
+.formNote {
+	margin-top: -0.4em;
+	color: var(--inkDim);
+	font-size: 0.9em;
+	max-width: 32em;
+}
