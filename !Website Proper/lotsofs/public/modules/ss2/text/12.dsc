@@ -1,2 +1,0 @@
-Great, you passed the cave and broke out on the other side of the mountain. Now, you must go upstream and over the bridge, M'Keke Village should be close on the other side.
-Then you will have an opportunity to talk to the Chief, one on one. I bet he will tell us a lot of useful information about the medallion.
